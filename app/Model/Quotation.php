@@ -56,16 +56,16 @@ class Quotation extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-//		'job_request_id' => array(
-//			'numeric' => array(
-//				'rule' => array('numeric'),
-//				//'message' => 'Your custom message here',
-//				//'allowEmpty' => false,
-//				//'required' => false,
-//				//'last' => false, // Stop validation after this rule
-//				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-//			),
-//		),
+		'job_request_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'subject' => array(
 			'notBlank' => array(
 				'rule' => array('notBlank'),
@@ -197,12 +197,12 @@ class Quotation extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-//		'JobRequest' => array(
-//			'className' => 'JobRequest',
-//			'foreignKey' => 'job_request_id',
-//			'conditions' => '',
-//			'fields' => '',
-//			'order' => ''
-//		)
+		'JobRequest' => array(
+			'className' => 'JobRequest',
+			'foreignKey' => 'job_request_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
 	);
 }

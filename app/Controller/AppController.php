@@ -3,6 +3,7 @@
 App::uses('Controller', 'Controller');
  
 class AppController extends Controller {
+     
     public $uses = ['User'];
     public $components = array(
         'Session',
@@ -20,9 +21,8 @@ class AppController extends Controller {
                 'Form' => array(
                     'passwordHasher' => 'Blowfish'
                 )
-            ),
-             
-        )
+            ), 
+        ) 
     );
 	
 	public function beforeFilter(){
