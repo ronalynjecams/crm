@@ -83,6 +83,9 @@
 					<?php echo $this->Form->input('validity_date', array('class' => 'form-control', 'placeholder' => 'Validity Date'));?>
 				</div>
 				<div class="form-group">
+					<?php echo $this->Form->input('bill_ship_address', array('class' => 'form-control', 'placeholder' => 'Bill Ship Address'));?>
+				</div>
+				<div class="form-group">
 					<?php echo $this->Form->input('bill_address', array('class' => 'form-control', 'placeholder' => 'Bill Address'));?>
 				</div>
 				<div class="form-group">

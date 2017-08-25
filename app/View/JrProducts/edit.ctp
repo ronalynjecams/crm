@@ -44,22 +44,31 @@
 					<?php echo $this->Form->input('user_id', array('class' => 'form-control', 'placeholder' => 'User Id'));?>
 				</div>
 				<div class="form-group">
-					<?php echo $this->Form->input('job_request_id', array('class' => 'form-control', 'placeholder' => 'Job Request Id'));?>
-				</div>
-				<div class="form-group">
 					<?php echo $this->Form->input('date_assigned', array('class' => 'form-control', 'placeholder' => 'Date Assigned'));?>
-				</div>
-				<div class="form-group">
-					<?php echo $this->Form->input('date_ongoing', array('class' => 'form-control', 'placeholder' => 'Date Ongoing'));?>
-				</div>
-				<div class="form-group">
-					<?php echo $this->Form->input('floor_plan_details', array('class' => 'form-control', 'placeholder' => 'Floor Plan Details'));?>
 				</div>
 				<div class="form-group">
 					<?php echo $this->Form->input('deadline', array('class' => 'form-control', 'placeholder' => 'Deadline'));?>
 				</div>
 				<div class="form-group">
+					<?php echo $this->Form->input('job_request_id', array('class' => 'form-control', 'placeholder' => 'Job Request Id'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('floor_plan_details', array('class' => 'form-control', 'placeholder' => 'Floor Plan Details'));?>
+				</div>
+				<div class="form-group">
 					<?php echo $this->Form->input('status', array('class' => 'form-control', 'placeholder' => 'Status'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('date_ongoing', array('class' => 'form-control', 'placeholder' => 'Date Ongoing'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('date_declined', array('class' => 'form-control', 'placeholder' => 'Date Declined'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('date_cancelled', array('class' => 'form-control', 'placeholder' => 'Date Cancelled'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('date_finished', array('class' => 'form-control', 'placeholder' => 'Date Finished'));?>
 				</div>
 				<div class="form-group">
 					<?php echo $this->Form->submit(__('Submit'), array('class' => 'btn btn-default')); ?>

@@ -21,8 +21,6 @@
 								<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Job Request'), array('action' => 'add'), array('escape' => false)); ?></li>
 								<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Quotations'), array('controller' => 'quotations', 'action' => 'index'), array('escape' => false)); ?> </li>
 		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Quotation'), array('controller' => 'quotations', 'action' => 'add'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Jr Products'), array('controller' => 'jr_products', 'action' => 'index'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Jr Product'), array('controller' => 'jr_products', 'action' => 'add'), array('escape' => false)); ?> </li>
 							</ul>
 						</div><!-- end body -->
 				</div><!-- end panel -->
@@ -35,6 +33,7 @@
 					<tr>
 						<th><?php echo $this->Paginator->sort('id'); ?></th>
 						<th><?php echo $this->Paginator->sort('jr_number'); ?></th>
+						<th><?php echo $this->Paginator->sort('user_id'); ?></th>
 						<th><?php echo $this->Paginator->sort('status'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
@@ -46,6 +45,7 @@
 					<tr>
 						<td><?php echo h($jobRequest['JobRequest']['id']); ?>&nbsp;</td>
 						<td><?php echo h($jobRequest['JobRequest']['jr_number']); ?>&nbsp;</td>
+						<td><?php echo h($jobRequest['JobRequest']['user_id']); ?>&nbsp;</td>
 						<td><?php echo h($jobRequest['JobRequest']['status']); ?>&nbsp;</td>
 						<td><?php echo h($jobRequest['JobRequest']['created']); ?>&nbsp;</td>
 						<td><?php echo h($jobRequest['JobRequest']['modified']); ?>&nbsp;</td>

@@ -1,6 +1,3 @@
-
-
-
 <div class="quotations index">
 
 	<div class="row">
@@ -35,9 +32,6 @@
 		</div><!-- end col md 3 -->
 
 		<div class="col-md-9">
-                    
-                    
-                    
 			<table cellpadding="0" cellspacing="0" class="table table-striped">
 				<thead>
 					<tr>
@@ -57,6 +51,7 @@
 						<th><?php echo $this->Paginator->sort('grand_total'); ?></th>
 						<th><?php echo $this->Paginator->sort('type'); ?></th>
 						<th><?php echo $this->Paginator->sort('validity_date'); ?></th>
+						<th><?php echo $this->Paginator->sort('bill_ship_address'); ?></th>
 						<th><?php echo $this->Paginator->sort('bill_address'); ?></th>
 						<th><?php echo $this->Paginator->sort('bill_geolocation'); ?></th>
 						<th><?php echo $this->Paginator->sort('bill_latitude'); ?></th>
@@ -99,6 +94,7 @@
 						<td><?php echo h($quotation['Quotation']['grand_total']); ?>&nbsp;</td>
 						<td><?php echo h($quotation['Quotation']['type']); ?>&nbsp;</td>
 						<td><?php echo h($quotation['Quotation']['validity_date']); ?>&nbsp;</td>
+						<td><?php echo h($quotation['Quotation']['bill_ship_address']); ?>&nbsp;</td>
 						<td><?php echo h($quotation['Quotation']['bill_address']); ?>&nbsp;</td>
 						<td><?php echo h($quotation['Quotation']['bill_geolocation']); ?>&nbsp;</td>
 						<td><?php echo h($quotation['Quotation']['bill_latitude']); ?>&nbsp;</td>

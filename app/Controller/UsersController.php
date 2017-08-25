@@ -119,7 +119,14 @@ class UsersController extends AppController {
                                 return $this->redirect('/users/dashboard_super_admin');
                             }else if($this->Auth->user('role') == 'it_staff'){
                                 return $this->redirect('/users/dashboard_it_staff');
+                            }else if($this->Auth->user('role') == 'design_head'){
+                                return $this->redirect('/users/dashboard_design_head');
+                            }else if($this->Auth->user('role') == 'designer'){
+                                return $this->redirect('/users/dashboard_designer');
+                            }else if($this->Auth->user('role') == 'supply_staff'){
+                                return $this->redirect('/users/dashboard_supply');
                             }
+                            
 		}
 	    
 	    if ($this->request->is('post')) {
@@ -131,6 +138,12 @@ class UsersController extends AppController {
                                 return $this->redirect('/users/dashboard_marketing');
                             }else if($this->Auth->user('role') == 'super_admin'){
                                 return $this->redirect('/users/dashboard_super_admin');
+                            }else if($this->Auth->user('role') == 'design_head'){
+                                return $this->redirect('/users/dashboard_design_head');
+                            }else if($this->Auth->user('role') == 'designer'){
+                                return $this->redirect('/users/dashboard_designer');
+                            }else if($this->Auth->user('role') == 'supply_staff'){
+                                return $this->redirect('/users/dashboard_supply');
                             }
 		        } 
 	    	
@@ -149,6 +162,10 @@ class UsersController extends AppController {
         
         public function dashboard_sales(){
          
+            
+        }
+        
+        public function demo_icons(){
             
         }
 }

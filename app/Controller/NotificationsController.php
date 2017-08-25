@@ -55,9 +55,9 @@ class NotificationsController extends AppController {
 				$this->Session->setFlash(__('The notification could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
 			}
 		}
-		$creators = $this->Notification->Creator->find('list');
+		$users = $this->Notification->User->find('list');
 		$positions = $this->Notification->Position->find('list');
-		$this->set(compact('creators', 'positions'));
+		$this->set(compact('users', 'positions'));
 	}
 
 /**
@@ -82,9 +82,9 @@ class NotificationsController extends AppController {
 			$options = array('conditions' => array('Notification.' . $this->Notification->primaryKey => $id));
 			$this->request->data = $this->Notification->find('first', $options);
 		}
-		$creators = $this->Notification->Creator->find('list');
+		$users = $this->Notification->User->find('list');
 		$positions = $this->Notification->Position->find('list');
-		$this->set(compact('creators', 'positions'));
+		$this->set(compact('users', 'positions'));
 	}
 
 /**

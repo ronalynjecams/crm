@@ -1,1 +1,3 @@
-<?php echo $content_for_layout; ?>
+<?php header("Content-type: application/pdf");
+echo $content_for_layout;
+?>

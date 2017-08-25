@@ -1,6 +1,6 @@
 <link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
+<!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />-->
 
 <link href="../css/sweetalert.css" rel="stylesheet">
 <!--<link href="plugins/bootstrap-validator/bootstrapValidator.min.css" rel="stylesheet">-->
@@ -161,7 +161,7 @@
                             <label>Delivery Mode</label>
                             <select id="delivery_mode" class="form-control">
                                 <?php if (!is_null($quote_data['Quotation']['delivery_mode'])) { ?>
-                                    <option value="<?php echo $quote_data['Quotation']['id']; ?>">
+                                    <option value="<?php echo $quote_data['Quotation']['delivery_mode']; ?>">
                                         <?php echo $quote_data['Quotation']['delivery_mode']; ?>
                                     </option>
                                     <?php
@@ -411,15 +411,6 @@
             </div>
         <?php } ?>
 
-
-
-
-
-
-
-
-
-
         <div class="panel">
             <div class="panel-heading">
                 <div class="panel-control">
@@ -434,14 +425,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
 
         <div class="panel">
             <div class="panel-heading">
@@ -534,7 +517,7 @@
                         <div class="col-sm-8">
                             <div class="form-group col-sm-12">
                                 <select id="product_id" class="form-control"> 
-                                    <option> </option>
+                                    <option> -- select product --</option>
                                     <?php foreach ($products as $product) { ?>
                                         <option value="<?php echo $product['Product']['id']; ?>"> <?php echo $product['Product']['name']; ?></option>
                                     <?php } ?>
@@ -735,7 +718,7 @@
 
 
             if (product_id != "") {
-                if (qty != "") {
+                if (qty != "" && qty >= 1) {
                     var data = {"quotation_id": quotation_id,
                         "product_id": product_id,
                         "image": image,
@@ -886,25 +869,44 @@
         });
 
         $('#jobRequestBtn').on('click', function (e) {
-            $("#jobRequestBtn").prop("disabled", true);
-            var date = new Date();
-            var month = date.getMonth();
-            var number = (Math.random() + ' ').substring(2, 5) + (Math.random() + ' ').substring(2, 5);
-            var quotation_id = $("#quotation_id").val();
-            var status = 'pending';
-            var jr_number = 'JECJR-' + month + number;
-            $.ajax({
-                url: "/job_requests/saveNewJobRequest",
-                type: 'POST',
-                data: {'status': status, 'jr_number': jr_number, 'quotation_id': quotation_id},
-                dataType: 'json',
-                success: function (dd) {
-                    location.reload();
-                },
-                error: function (dd) {
-                    console.log(dd);
-                }
-            });
+
+            swal({
+                title: "Are you sure?",
+                text: "Job request will be also be created for this quotation",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $("#jobRequestBtn").prop("disabled", true);
+                            var date = new Date();
+                            var month = date.getMonth();
+                            var number = (Math.random() + ' ').substring(2, 5) + (Math.random() + ' ').substring(2, 5);
+                            var quotation_id = $("#quotation_id").val();
+                            var status = 'pending';
+                            var jr_number = 'JECJR-' + month + number;
+                            $.ajax({
+                                url: "/job_requests/saveNewJobRequest",
+                                type: 'POST',
+                                data: {'status': status, 'jr_number': jr_number, 'quotation_id': quotation_id},
+                                dataType: 'json',
+                                success: function (dd) {
+                                    location.reload();
+                                },
+                                error: function (dd) {
+                                    console.log(dd);
+                                }
+                            });
+                        } else {
+                            swal("Cancelled", "", "error");
+                        }
+                    });
+
         });
 
 

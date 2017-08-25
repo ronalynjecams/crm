@@ -23,13 +23,13 @@ class JrProductTest extends CakeTestCase {
 		'app.department',
 		'app.team',
 		'app.agent_status',
+		'app.job_request',
 		'app.product',
 		'app.sub_category',
 		'app.category',
 		'app.product_property',
 		'app.product_value',
-		'app.quotation_product_property',
-		'app.job_request'
+		'app.quotation_product_property'
 	);
 
 /**

@@ -276,7 +276,9 @@ Configure::write('Routing.prefixes', array('admin', 'pdf'));
  * Uncomment this line and correct your server timezone to fix
  * any date & time related errors.
  */
-	//date_default_timezone_set('UTC');
+//	date_default_timezone_set('UTC');
+	date_default_timezone_set('Asia/Manila');
+//        Configure::write('Config.timezone', 'Asia/Manila');
 
 /**
  * `Config.timezone` is available in which you can set users' timezone string.

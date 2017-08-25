@@ -38,14 +38,17 @@
 						<th><?php echo $this->Paginator->sort('id'); ?></th>
 						<th><?php echo $this->Paginator->sort('quotation_product_id'); ?></th>
 						<th><?php echo $this->Paginator->sort('user_id'); ?></th>
-						<th><?php echo $this->Paginator->sort('job_request_id'); ?></th>
 						<th><?php echo $this->Paginator->sort('date_assigned'); ?></th>
-						<th><?php echo $this->Paginator->sort('date_ongoing'); ?></th>
-						<th><?php echo $this->Paginator->sort('floor_plan_details'); ?></th>
 						<th><?php echo $this->Paginator->sort('deadline'); ?></th>
+						<th><?php echo $this->Paginator->sort('job_request_id'); ?></th>
+						<th><?php echo $this->Paginator->sort('floor_plan_details'); ?></th>
 						<th><?php echo $this->Paginator->sort('status'); ?></th>
+						<th><?php echo $this->Paginator->sort('date_ongoing'); ?></th>
+						<th><?php echo $this->Paginator->sort('date_declined'); ?></th>
+						<th><?php echo $this->Paginator->sort('date_cancelled'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
+						<th><?php echo $this->Paginator->sort('date_finished'); ?></th>
 						<th class="actions"></th>
 					</tr>
 				</thead>
@@ -59,16 +62,19 @@
 								<td>
 			<?php echo $this->Html->link($jrProduct['User']['id'], array('controller' => 'users', 'action' => 'view', $jrProduct['User']['id'])); ?>
 		</td>
+						<td><?php echo h($jrProduct['JrProduct']['date_assigned']); ?>&nbsp;</td>
+						<td><?php echo h($jrProduct['JrProduct']['deadline']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($jrProduct['JobRequest']['id'], array('controller' => 'job_requests', 'action' => 'view', $jrProduct['JobRequest']['id'])); ?>
 		</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_assigned']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_ongoing']); ?>&nbsp;</td>
 						<td><?php echo h($jrProduct['JrProduct']['floor_plan_details']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['deadline']); ?>&nbsp;</td>
 						<td><?php echo h($jrProduct['JrProduct']['status']); ?>&nbsp;</td>
+						<td><?php echo h($jrProduct['JrProduct']['date_ongoing']); ?>&nbsp;</td>
+						<td><?php echo h($jrProduct['JrProduct']['date_declined']); ?>&nbsp;</td>
+						<td><?php echo h($jrProduct['JrProduct']['date_cancelled']); ?>&nbsp;</td>
 						<td><?php echo h($jrProduct['JrProduct']['created']); ?>&nbsp;</td>
 						<td><?php echo h($jrProduct['JrProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo h($jrProduct['JrProduct']['date_finished']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $jrProduct['JrProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $jrProduct['JrProduct']['id']), array('escape' => false)); ?>

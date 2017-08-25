@@ -3,11 +3,28 @@ App::uses('AppModel', 'Model');
 /**
  * Notification Model
  *
- * @property Creator $Creator
+ * @property User $User
  * @property Position $Position
  */
 class Notification extends AppModel {
 
+/**
+ * Validation rules
+ *
+ * @var array
+ */
+	public $validate = array(
+		'for_who' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+	);
 
 	// The Associations below have been created with all possible keys, those that are not needed can be removed
 
@@ -17,9 +34,9 @@ class Notification extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Creator' => array(
-			'className' => 'Creator',
-			'foreignKey' => 'creator_id',
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

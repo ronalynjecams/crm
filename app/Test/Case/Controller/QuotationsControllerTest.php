@@ -20,8 +20,7 @@ class QuotationsControllerTest extends ControllerTestCase {
 		'app.creator',
 		'app.department',
 		'app.team',
-		'app.agent_status',
-		'app.job_request'
+		'app.agent_status'
 	);
 
 /**

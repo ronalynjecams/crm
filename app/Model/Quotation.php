@@ -7,6 +7,7 @@ App::uses('AppModel', 'Model');
  * @property Team $Team
  * @property User $User
  * @property JobRequest $JobRequest
+ * @property QuotationProduct $QuotationProduct
  */
 class Quotation extends AppModel {
 
@@ -17,8 +18,8 @@ class Quotation extends AppModel {
  */
 	public $validate = array(
 		'quote_number' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -87,8 +88,8 @@ class Quotation extends AppModel {
 			),
 		),
 		'sub_total' => array(
-			'decimal' => array(
-				'rule' => array('decimal'),
+			'numeric' => array(
+				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -97,8 +98,8 @@ class Quotation extends AppModel {
 			),
 		),
 		'installation_charge' => array(
-			'decimal' => array(
-				'rule' => array('decimal'),
+			'numeric' => array(
+				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -107,8 +108,8 @@ class Quotation extends AppModel {
 			),
 		),
 		'delivery_charge' => array(
-			'decimal' => array(
-				'rule' => array('decimal'),
+			'numeric' => array(
+				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -117,8 +118,8 @@ class Quotation extends AppModel {
 			),
 		),
 		'discount' => array(
-			'decimal' => array(
-				'rule' => array('decimal'),
+			'numeric' => array(
+				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -136,29 +137,9 @@ class Quotation extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'target_delivery' => array(
-			'date' => array(
-				'rule' => array('date'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'date_moved' => array(
-			'datetime' => array(
-				'rule' => array('datetime'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'date_approved' => array(
-			'datetime' => array(
-				'rule' => array('datetime'),
+		'bill_ship_address' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -203,6 +184,35 @@ class Quotation extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		'QuotationTerm' => array(
+			'className' => 'QuotationTerm',
+			'foreignKey' => 'quotation_term_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+		'QuotationProduct' => array(
+			'className' => 'QuotationProduct',
+			'foreignKey' => 'quotation_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
+
 }

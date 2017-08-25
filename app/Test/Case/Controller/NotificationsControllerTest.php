@@ -13,8 +13,12 @@ class NotificationsControllerTest extends ControllerTestCase {
  */
 	public $fixtures = array(
 		'app.notification',
-		'app.creator',
-		'app.position'
+		'app.user',
+		'app.position',
+		'app.department',
+		'app.client',
+		'app.team',
+		'app.agent_status'
 	);
 
 /**

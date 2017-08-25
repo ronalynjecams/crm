@@ -56,30 +56,9 @@
 		</td>
 </tr>
 <tr>
-		<th><?php echo __('Job Request'); ?></th>
-		<td>
-			<?php echo $this->Html->link($jrProduct['JobRequest']['id'], array('controller' => 'job_requests', 'action' => 'view', $jrProduct['JobRequest']['id'])); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
 		<th><?php echo __('Date Assigned'); ?></th>
 		<td>
 			<?php echo h($jrProduct['JrProduct']['date_assigned']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Date Ongoing'); ?></th>
-		<td>
-			<?php echo h($jrProduct['JrProduct']['date_ongoing']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Floor Plan Details'); ?></th>
-		<td>
-			<?php echo h($jrProduct['JrProduct']['floor_plan_details']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -91,9 +70,44 @@
 		</td>
 </tr>
 <tr>
+		<th><?php echo __('Job Request'); ?></th>
+		<td>
+			<?php echo $this->Html->link($jrProduct['JobRequest']['id'], array('controller' => 'job_requests', 'action' => 'view', $jrProduct['JobRequest']['id'])); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
+		<th><?php echo __('Floor Plan Details'); ?></th>
+		<td>
+			<?php echo h($jrProduct['JrProduct']['floor_plan_details']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
 		<th><?php echo __('Status'); ?></th>
 		<td>
 			<?php echo h($jrProduct['JrProduct']['status']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
+		<th><?php echo __('Date Ongoing'); ?></th>
+		<td>
+			<?php echo h($jrProduct['JrProduct']['date_ongoing']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
+		<th><?php echo __('Date Declined'); ?></th>
+		<td>
+			<?php echo h($jrProduct['JrProduct']['date_declined']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
+		<th><?php echo __('Date Cancelled'); ?></th>
+		<td>
+			<?php echo h($jrProduct['JrProduct']['date_cancelled']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -108,6 +122,13 @@
 		<th><?php echo __('Modified'); ?></th>
 		<td>
 			<?php echo h($jrProduct['JrProduct']['modified']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
+		<th><?php echo __('Date Finished'); ?></th>
+		<td>
+			<?php echo h($jrProduct['JrProduct']['date_finished']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -22,7 +22,6 @@ class JobRequestsControllerTest extends ControllerTestCase {
 		'app.department',
 		'app.team',
 		'app.agent_status',
-		'app.jr_product',
 		'app.quotation_product',
 		'app.product',
 		'app.sub_category',

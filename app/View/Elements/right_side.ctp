@@ -119,7 +119,7 @@
 						            </li>
 						            <li>
  						                <a href=""> 
-                                                                    <i class="ion-ios-people"></i>
+                                                                    <i class="fa fa-address-card"></i>
 						                    <span class="menu-title">
 									<strong>Clients</strong>
                                                                     </span>
@@ -135,7 +135,7 @@
 						            </li> 
 						            <li>
  						                <a href=""> 
-                                                                    <i class="ion-ios-people"></i>
+                                                                    <i class="fa fa-file-pdf-o"></i>
 						                    <span class="menu-title">
 									<strong>Quotations</strong>
                                                                     </span>
@@ -145,7 +145,8 @@
 						                    <li><a href="/quotations/create">Create</a></li>
 						                    <li><a href="/quotations/pending">Pending</a></li>
 						                    <li><a href="/quotations/approved">Approved</a></li>
-                                                                    <li><a href="/quotations/lost">Lost</a></li>
+                                                                    <li><a href="/quotations/lost">Lost</a></li> 
+                                                                    <li><a href="/quotations/void">Void</a></li> 
 											 	
 						                </ul>
 						            </li> 
@@ -173,7 +174,7 @@
                                                             <!-- it_staff -->
                                                              <?php if($UserIn['User']['role'] == 'it_staff'){ ?>
 						            <li class="active-link">
-						                <a href="/users/dashboard_marketing"> 
+						                <a href="/users/dashboard_it_staff"> 
                                                                     <i class="ion-home"></i>
 						                    <span class="menu-title">
 									<strong>Dashboard</strong>
@@ -190,6 +191,121 @@
 						            </li>
                                                             <?php } ?>
                                                             <!-- it_staff -->
+                                                            <!-- design_head -->
+                                                             <?php if($UserIn['User']['role'] == 'design_head'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_design_head"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>
+                                                            
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="ion-soup-can"></i>
+						                    <span class="menu-title">
+									<strong>Job Request</strong>
+                                                                         <?php if($jr_head_count_left_side!=0){ ?>
+                                                                        <span class="label label-danger "><?php echo $jr_head_count_left_side; ?></span>
+                                                                        <?php } ?>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">
+						                    <li><a href="/job_requests/head_view?status=pending"> Pending </a></li>
+						                    <li><a href="/job_requests/head_view?status=ongoing"> Ongoing </a></li>
+						                    <li><a href="/job_requests/head_view?status=accomplished"> Accomplished </a></li>
+						                     			 	
+						                </ul>
+						            </li>   
+<!--						            <li >
+						                <a href="/job_requests/pending"> 
+                                                                    <i class="ion-soup-can"></i>
+						                    <span class="menu-title">
+                                                                       
+                                                                        <strong>Pending Job Request</strong>
+                                                                    </span>
+						                </a>
+						            </li>-->
+                                                            <?php } ?>
+                                                            <!-- design_head -->
+                                                            <!-- designer -->
+                                                             <?php if($UserIn['User']['role'] == 'designer'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_design_head"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="ion-soup-can"></i>
+						                    <span class="menu-title">
+									<strong>Job Request</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">
+						                    <li><a href="/job_requests/design_product?type=pending"> Pending </a></li>
+						                    <li><a href="/job_requests/design_product?type=ongoing"> Ongoing </a></li>
+						                    <li><a href="/job_requests/design_product?type=accomplished"> Accomplished </a></li>
+						                     			 	
+						                </ul>
+						            </li>   
+                                                            <?php } ?>
+                                                            <!-- designer -->
+                                                            <!-- supply_staff -->
+                                                             <?php if($UserIn['User']['role'] == 'supply_staff'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_supply"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li> 
+						            <li >
+						                <a href="/suppliers/supplier_list"> 
+                                                                    <i class="fa fa-shopping-cart"></i>
+						                    <span class="menu-title">
+									<strong>Suppliers</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-pdf-o"></i>
+						                    <span class="menu-title">
+									<strong>Quotations</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/quotations/approved">Approved</a></li>
+                                                                    <li><a href="/quotations/processed">Processed</a></li>   	
+						                </ul>
+						            </li> 
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Purchase Order</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/purchase_orders/ongoing">Ongoing</a></li>
+                                                                    <li><a href="/quotations/pending">Pending</a></li>   
+                                                                    <li><a href="/quotations/processed">Processed</a></li>   	
+						                </ul>
+						            </li> 
+						             
+                                                            <?php } ?>
+                                                            <!-- supply_staff -->
 						           
                                 <!--Widget-->
                                 <!--================================-->
