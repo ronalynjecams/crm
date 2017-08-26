@@ -21,13 +21,13 @@
             <div class="col-sm-12">
                 <div class="col-sm-12">
                     <h3 class="page-header text-overflow"> 
-                        <?php 
-                            echo $qprod['QuotationProduct']['Product']['name']; 
-                            
-                            echo '<input type="hidden" id="quotation_product_id" value="'.$qprod['QuotationProduct']['id'].'">';
-                            echo '<input type="hidden" id="jr_product_id" value="'.$qprod['JrProduct']['id'].'">'; 
+                        <?php
+                        echo $qprod['QuotationProduct']['Product']['name'];
+                        echo '&nbsp;&nbsp;&nbsp;&nbsp;<small>['.abs($qprod['QuotationProduct']['qty']).' pcs]</small>';
+
+                        echo '<input type="hidden" id="quotation_product_id" value="' . $qprod['QuotationProduct']['id'] . '">';
+                        echo '<input type="hidden" id="jr_product_id" value="' . $qprod['JrProduct']['id'] . '">';
 //                            echo '<input type="hidden" id="product_id" value="'.$qprod['QuotationProduct']['Product']['id'].'">'; 
-                        
                         ?>
                     </h3> 
                     <div class="panel">
@@ -48,14 +48,27 @@
                                         <th>Qty</th>    
                                         <th>Action</th>  
                                         <tbody> 
-                                            <?php foreach($raws as $raw){ ?>
-                                            <tr>
-                                                <td>#</td>
-                                                <td>Product Code</td>
-                                                <td>Description</td>
-                                                <td>Qty</td>  
-                                                <td>Action</td> 
-                                            </tr>
+                                            <?php
+//                                            pr($raws);
+                                            foreach ($raws as $raw) {
+                                                ?>
+                                                <tr>
+                                                    <td><img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $raw['Product']['image']; ?>"></td>
+                                                    <td><?php echo $raw['Product']['name']; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        foreach ($raw['PoRawRequestProperty'] as $desc) {
+                                                            echo '<li class="list-group-item"><b>' . $desc['property'] . '</b> : ' . $desc['value'] . '</li>';
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    <td><?php echo $raw['PoRawRequest']['qty']; ?></td>  
+                                                    <td>
+                                                        <?php if ($qprod['JrProduct']['status'] == 'ongoing' || $qprod['JrProduct']['status'] == 'pending' || $qprod['JrProduct']['status'] == 'onhold') { ?>
+                                                            <button class="btn btn-danger btn-icon btn-xs add-tooltip deleteProduct" data-rowid=<?php echo $raw['PoRawRequest']['id']; ?> data-toggle="tooltip" data-original-title="Delete Item  "><i class="fa fa-window-close "></i></button>
+                                                        <?php } ?>
+                                                    </td> 
+                                                </tr>
                                             <?php } ?>
                                         </tbody>
                                     </table>
@@ -270,7 +283,7 @@
 
 
         var counter = $('.property').length;
-        var ctr = counter;
+        var ctr = counter - 1;
 
         var data = {
             "quotation_product_id": quotation_product_id,
@@ -282,7 +295,7 @@
             "value": value,
             "counter": ctr
         }
- 
+
 
         if (qty == "" || date_needed == "") {
             alert("Invalid Quantity or Date Needed");
@@ -292,13 +305,52 @@
                 type: 'POST',
                 data: {'data': data},
                 dataType: 'json',
-                success: function (dd) { 
-                    console.log(dd);
+                success: function (dd) {
+//                    console.log(dd);
+                    location.reload();
                 },
                 error: function (dd) {
                     console.log('error' + dd);
                 }
             });
         }
+    });
+
+
+
+    $('.deleteProduct').each(function (index) {
+        $(this).click(function () {
+            var id = $(this).data("rowid");
+
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this product!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                url: "/po_raw_requests/delete",
+                                type: 'POST',
+                                data: {'id': id},
+                                dataType: 'json',
+                                success: function (dd) {
+                                    location.reload();
+                                },
+                                error: function (dd) {
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            swal("Cancelled", "", "error");
+                        }
+                    });
+        })
     });
 </script>  

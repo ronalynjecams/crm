@@ -298,9 +298,9 @@
                                                                     <i class="arrow"></i>
 						                </a> 
 						                <ul class="collapse">  
-						                    <li><a href="/purchase_orders/ongoing">Ongoing</a></li>
-                                                                    <li><a href="/quotations/pending">Pending</a></li>   
-                                                                    <li><a href="/quotations/processed">Processed</a></li>   	
+						                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li>
+                                                                    <li><a href="/purchase_orders/po?status=pending">Pending</a></li>   
+                                                                    <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
 						                </ul>
 						            </li> 
 						             

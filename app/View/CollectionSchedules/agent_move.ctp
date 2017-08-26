@@ -7,13 +7,13 @@
 <script src="../plugins/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
 <div id="content-container" >
     <div id="page-title">
-        <h1 class="page-header text-overflow">Move to Purchasing with collection schedule</h1>
+        <h1 class="page-header text-overflow">Collection schedule</h1>
     </div>
     <div id="page-content">  
         <div class="panel">
             <div class="panel-heading">
                 <h3 class="panel-title" align="center">
-                    <button class="btn btn-primary moveQuote" data-buttontype="save" >Move to purchasing</button> 
+                    <button class="btn btn-primary moveQuote" data-buttontype="save" >Collect Paymnet</button> 
                     <button class="btn btn-danger cancelQuote">Cancel</button> 
                 </h3>
             </div>
@@ -238,7 +238,7 @@
     $(document).ready(function () {
 
         $("#term_id").select2({
-            placeholder: "Select Product Code",
+            placeholder: "Select Term",
             width: '100%',
             allowClear: false
         });

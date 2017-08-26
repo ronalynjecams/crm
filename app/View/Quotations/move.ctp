@@ -256,7 +256,7 @@
     $(document).ready(function () {
 
        $("#term_id").select2({
-           placeholder: "Select Product Code", 
+           placeholder: "Select Term", 
            width: '100%',
            allowClear: false
        }); 

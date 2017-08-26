@@ -264,8 +264,14 @@ class QuotationProductsController extends AppController {
             $counter = $data['counter'];
 
             $quote_prod = $this->QuotationProduct->findById($quoted_prod_id); 
-            $processed_qty = $quote_prod['QuotationProduct']['processed_qty'] + $inv_qty_deduct;
+            $tt_qty = 0;
+            foreach($inv_qty_deduct as $inv_qty){
+                $tt_qty = $tt_qty + $inv_qty;
+            }
             
+            $processed_qty = floatval($quote_prod['QuotationProduct']['processed_qty']) + floatval($tt_qty);
+            
+//             echo json_encode($processed_qty);exit;
             $this->ProductSource->create();
             $this->ProductSource->set(array(
                 "quotation_product_id" => $quoted_prod_id,

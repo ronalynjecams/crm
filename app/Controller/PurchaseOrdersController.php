@@ -372,6 +372,7 @@ class PurchaseOrdersController extends AppController {
         $this->set(compact('products'));
 
         $this->loadModel('PoRawRequest');
+//        $this->PoRawRequest->recursive = 2;
         $raws = $this->PoRawRequest->findAllByJrProductId($id);
         $this->set(compact('raws'));
 
@@ -437,6 +438,32 @@ class PurchaseOrdersController extends AppController {
 //        $this->set(compact('locations'));
 //            pr($poprod);
 //        $additional_products = $this->Product->find()
+    }
+    
+    
+    public function po(){
+        $status = $this->params['url']['status'];
+        
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        if ($user['User']['department_id'] == 6) {
+            $type = 'supply';
+        } else if ($user['User']['department_id'] == 7) {
+            $type = 'raw';
+        }
+        $pendings = $this->PurchaseOrder->find('all', array(
+            'conditions' => array(
+                'PurchaseOrder.status' => $status,
+                'PurchaseOrder.type' => $type,
+            )
+        ));
+        $this->set(compact('pendings','type'));
+    }
+    
+    public function po_products(){
+        $id = $this->params['url']['id'];
+        $po = $this->PurchaseOrder->findById($id);
+        $this->set(compact('po'));
     }
 
 

@@ -59,7 +59,7 @@
                                             <tr>
                                                 <td > 
                                                     <?php
-                                                    echo $quote_prod['JrProduct']['id'];
+                                                    
                                                     echo date('F d, Y', strtotime($quote_prod['JrProduct']['created']));
                                                     echo '<br/><small>' . date('h:i a', strtotime($quote_prod['JrProduct']['created'])) . '</small>';
                                                     ?>  

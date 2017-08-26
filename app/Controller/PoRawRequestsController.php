@@ -98,18 +98,25 @@ class PoRawRequestsController extends AppController {
  * @param string $id
  * @return void
  */
-	public function delete($id = null) {
-		$this->PoRawRequest->id = $id;
-		if (!$this->PoRawRequest->exists()) {
-			throw new NotFoundException(__('Invalid po raw request'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->PoRawRequest->delete()) {
-			$this->Session->setFlash(__('The po raw request has been deleted.'), 'default', array('class' => 'alert alert-success'));
-		} else {
-			$this->Session->setFlash(__('The po raw request could not be deleted. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-		}
-		return $this->redirect(array('action' => 'index'));
+	public function delete() {
+            
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $id = $data['id'];
+            $this->PoRawRequest->id = $id;
+            $this->PoRawRequest->delete();
+            echo json_encode($id);
+//		$this->PoRawRequest->id = $id;
+//		if (!$this->PoRawRequest->exists()) {
+//			throw new NotFoundException(__('Invalid po raw request'));
+//		}
+//		$this->request->onlyAllow('post', 'delete');
+//		if ($this->PoRawRequest->delete()) {
+//			$this->Session->setFlash(__('The po raw request has been deleted.'), 'default', array('class' => 'alert alert-success'));
+//		} else {
+//			$this->Session->setFlash(__('The po raw request could not be deleted. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
+//		}
+//		return $this->redirect(array('action' => 'index'));
 	}
         
     public function addProduct() {
@@ -150,7 +157,7 @@ class PoRawRequestsController extends AppController {
                 ));
                 $this->PoRawRequestProperty->save();
             }
-            echo json_encode($counter);
+            echo json_encode($data);
         } 
 //        debug($this->PoRawRequest->validationErrors);
  
