@@ -29,50 +29,449 @@
         <div class="panel">
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
+                    <input type="hidden" id="po_idd" value="<?php echo $this->params['url']['id']; ?>">
 
-<!--                    <button class="btn btn-mint" id="addSupplierBtn" >
-                        <i class="fa fa-plus"></i>  Add New Purchase Order
-                    </button> -->
+                    <!--                    <button class="btn btn-mint" id="addSupplierBtn" >
+                                            <i class="fa fa-plus"></i>  Add New Purchase Order
+                                        </button> -->
                 </h3> 
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
-                
+
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
+                            <th>Date Created</th> 
                             <th>Image</th>
-                            <th>Date Created</th>
                             <th>Product Code</th>
                             <th>Quantity</th> 
-                            <th>Price</th> 
-                            <th></th> 
+                            <th>Price</th>  
+                            <th>Total</th>  
                         </tr>
                     </thead>
-                    <tfoot>
+<!--                    <tfoot>
                         <tr>
+                            <th>Date Created</th> 
                             <th>Image</th>
-                            <th>Date Created</th>
                             <th>Product Code</th>
-                            <th>Quantity</th> 
-                            <th>Price</th> 
-                            <th></th> 
+                            <th>Quantity</th>
+                            <th>Price</th>  
+                            <th>Total</th>  
                         </tr>
-                    </tfoot>
+                    </tfoot>-->
                     <tbody>
-                        <?php foreach($po['PoProduct'] as $po_products){?>
+                        <?php
+                        $ctrr = 1;
+                        $total_purchased = 0;
+                        foreach ($po['PoProduct'] as $po_products) {
+                            ?>
+                            <tr>
+                                <td>
+                                    <?php
+                                    echo date('F d, Y', strtotime($po_products['PurchaseOrder']['created']));
+                                    echo '<br/><small>' . date('h:i a', strtotime($po_products['PurchaseOrder']['created'])) . '</small>';
+                                    ?> 
+                                </td>
+
+                                <td>
+                                    <img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $po_products['Product']['image']; ?>" alt="Profile Picture">
+                                </td> 
+                                <td><?php
+                                    echo $po_products['Product']['name'];
+                                    if ($po_products['additional'] == 0) {
+                                        ?>
+
+                                        <button class="btn btn-sm btn-mint additional_po_product add-tooltip" data-toggle="tooltip"  data-original-title="Purchase Additional Product" data-qprdctid="<?php echo $po_products['QuotationProduct']['id']; ?>"  ><i class="fa fa-plus"></i></button>
+                                    <?php } ?>
+                                </td>
+                                <td><?php echo abs($po_products['qty']); ?>
+                                <!--<input type="text" value="<?php echo abs($po_products['qty']); ?>" class="qty"/>-->
+                                </td> 
+                                <td><input type="number" step="any" value="<?php echo abs($po_products['price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>"></td> 
+                                <?php
+                                $total = $po_products['qty'] * $po_products['price'];
+                                ?>
+                                <td><input type="number" step="any" class="form-control total_price" readonly value="<?php echo abs($total); ?>"></td> 
+
+                            </tr>
+                            <?php
+                            $total_purchased = $total_purchased + $total;
+                            $ctrr++;
+                        }
+                        ?>
+
                         <tr>
-                            <td>Image</td>
-                            <td>Date Created</td>
-                            <td>Product Code</td>
-                            <td>Quantity</td> 
-                            <td>Price</td> 
-                            <td></td> 
+                            <td colspan="5" align="right"><b>Total Purchased</b></td>  
+                            <td><input type="text" id="total_purchased" class="form-control" readonly value="<?php echo $total_purchased; ?>"/></td>  
                         </tr>
-                        <?php } ?>
+                        <tr >
+                            <td colspan="4" align="right"><input id="nonvat" type="checkbox" checked> Non Vat</td>  
+                            <td align="right"><div class="vatDiv"><b>ADD: 12% VAT:</b></div></td>  
+                            <td><div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
+
+                        </tr>
+                    
+                        <tr id="totalTR">
+                            <td colspan="5" align="right"><div class="vatDiv"><b>Total:</b></div></td>  
+                            <td><div class="vatDiv"><input type="text" id="total" class="form-control" readonly/></div></td>  
+                        </tr>
+                        
+                        <tr>
+                            <td colspan="5" align="right"><b>LESS: 1% EWT:</b></td>  
+                            <td><input type="text" id="ewt" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['ewt_amount']); ?>"/></td>  
+                        </tr>
+                        <tr>
+                            <td colspan="5" align="right"><b>Total Amount Due:</b></td>  
+                            <td><input type="text" id="grand_total" class="form-control" readonly  value="<?php echo abs($po['PurchaseOrder']['grand_total']); ?>"/></td>  
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+<div class="modal fade" id="set-supplier-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Additional PO for Product</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <input type="hidden" id="sup_pid"/>   
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Select Supplier</label> 
+                            <select id="selected_supplier" class="form-control" style="width: 100%;"> 
+                                <option>Select Supplier</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Select Product Supplier</label> 
+                            <select id="selected_product_supplier" class="form-control" style="width: 100%;"> 
+                                <option>Select Product Supplier</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div id="product_supplier_properties_div">
+                            <h4 align="center">Available product</h4>
+                            <div class="col-sm-12">
+                                <div class="col-sm-1">
+                                </div>
+                                <div class="col-sm-4" align="center"><b> Property </b></div>
+                                <div class="col-sm-4" align="center"><b> Value </b></div>
+                                <div class="col-sm-2"> Quantity </div> <div class="col-sm-2"> </div>
+                                <div class="col-sm-1">
+                                </div>
+                            </div>     
+                        </div></div>
+                    <!--                    <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label class="control-label" id="labelSupplier">Quantity</label> 
+                                                <input type="number" step="any" id="po_prod_qty" class="form-control">
+                                            </div>
+                                        </div>-->
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="savesetSupplier">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+//$( document ).load(function() {
+  
+    $(document).ready(function () {
+                $(".vatDiv").hide();
+                $("#vat").val(0);
+//        alert('asd');
+        var total_purchased = $("#total_purchased").val();
+        var po_id = $("#po_idd").val();
+        
+        if ($("#nonvat").checked) {
+            //non vat
+            var vat_value = total_purchased * 0.12;
+            var ewt = total_purchased * 0.01;
+            var gt = total_purchased + vat_value - ewt;
+        }else{
+            var vat_value = 0;
+            var nonvat_price = total_purchased / 1.12;
+            var ewt = nonvat_price * 0.01;
+            var gt = total_purchased - ewt;
+        }
+
+
+            var data = {
+                "total_purchased": total_purchased,
+                "po_id": po_id,
+                "vat": vat_value,
+                "ewt": ewt,
+                "grand_total": gt
+            }
+ 
+            $.ajax({
+                url: "/purchase_orders/poAmounts",
+                type: 'POST',
+                data: {'data': data},
+                dataType: 'json',
+                success: function (dd) { 
+                console.log(dd);
+//                    location.reload();
+                },
+                error: function (dd) {
+                    console.log('error');
+                }
+            });
+//});
+//    $(document).ready(function () {
+//                $(".vatDiv").hide();
+//                $("#vat").val(0);
+
+///////////////////////////////////////////////////////
+
+
+        $("#nonvat").on("click", function () {
+            if (this.checked) {
+                $(".vatDiv").hide();
+                $("#vat").val(0);
+            } else {
+                $(".vatDiv").show();
+            }
+        });
+                
+        
+        
+        
+        
+        
+
+    });
+
+    $('.price').each(function (index) {
+        $(this).keyup(function () {
+
+            var qty = $(this).data("qqty");
+            var tid = $(this).data("tid");
+            var po_product_id = $(this).data("poprodid");
+            var price = $(this).val();
+
+            var total = qty * price;
+
+
+            var data = {
+                "price": price,
+                "po_product_id": po_product_id
+            }
+ 
+            $.ajax({
+                url: "/purchase_orders/updatePoProductPrice",
+                type: 'POST',
+                data: {'data': data},
+                dataType: 'json',
+                success: function (dd) {
+                    location.reload();
+//                console.log(dd);
+                },
+                error: function (dd) {
+                    console.log('error');
+                }
+            });
+        });
+    });
+    $('.additional_po_product').each(function (index) {
+
+        $(this).click(function () {
+            $('#set-supplier-modal').modal('show');
+            $("#savesetSupplier").prop('disabled', true);
+            $('#selected_supplier').empty().append('<option></option>');
+            $("#selected_supplier").select2({
+                placeholder: "Select Supplier Name",
+                allowClear: true
+            });
+
+            var qid = $(this).data("qprdctid");
+            var po_prod_qty = $(this).data("supplierprodqty");
+            $('#po_prod_qty').val(po_prod_qty);
+            $("#added_suppliers_div").remove();
+            $('#sup_pid').val(qid);
+            $.get('/product_suppliers/get_supplier', {
+                id: qid,
+            }, function (data) {
+
+                for (i = 0; i < data.length; i++) {
+                    $('#selected_supplier').append($('<option>', {
+                        value: data[i]['Supplier']['id'],
+                        text: data[i]['Supplier']['name']
+                    }));
+                }
+
+            });
+
+
+
+
+            $("#selected_supplier").change(function () {
+                $('.product_supplier_properties_add').each(function (index) {
+                    $(".product_supplier_properties_add").remove();
+                });
+
+//                $("#savesetSupplier").prop('disabled', false);
+
+                var supplier_id = $(this).val();
+//                console.log(supplier_id);
+                $('#selected_product_supplier').empty().append('<option></option>');
+                $("#selected_product_supplier").select2({
+                    placeholder: "Select Product Supplier",
+                    allowClear: true,
+                });
+
+                $.get('/product_suppliers/get_product_supplier', {
+                    id: supplier_id,
+                }, function (data) {
+//                        console.log(data);
+                    for (i = 0; i < data.length; i++) {
+                        $('#selected_product_supplier').append($('<option>', {
+                            value: data[i]['ProductSupplier']['id'],
+                            text: data[i]['Product']['name'] + ' [' + data[i]['ProductSupplier']['product_code'] + ']'
+                        }));
+                    }
+
+                });
+
+            });
+
+
+            $("#selected_product_supplier").change(function () {
+
+                $('.product_supplier_properties_add').each(function (index) {
+                    $(".product_supplier_properties_add").remove();
+                });
+
+                var product_supplier_id = $("#selected_product_supplier").val();
+                $.get('/product_suppliers/get_product_supplier_properties', {
+                    id: product_supplier_id,
+                }, function (data) {
+                    for (i = 0; i < data.length; i++) {
+                        $('#product_supplier_properties_div').append('<div  class="col-sm-12 product_supplier_properties_add">' +
+                                '<div class="col-sm-1">' +
+                                '<button class="rm_psp_prod btn btn-danger btn-sm">x</button>' +
+                                '</div>' +
+                                '<div class="col-sm-4" align="center"> ' +
+                                '<input type="text" readonly class="form-control psp_property" value="' + data[i]['ProductSupplierProperty']['property'] + '">' +
+                                ' </div>' +
+                                '<div class="col-sm-4" align="center"> ' +
+                                '<input type="text" readonly class="form-control psp_value" value="' + data[i]['ProductSupplierProperty']['value'] + '">' +
+                                ' </div>' +
+                                '<div class="col-sm-2">' +
+                                '<input type="number" class="form-control psp_qty" step="any"></div>' +
+                                '<input type="text" class="form-control psp_price" value="' + data[i]['ProductSupplierProperty']['price'] + '">' +
+                                '<div class="col-sm-1">' +
+                                '</div>' +
+                                '</div>');
+                    }
+
+
+
+                    $('.rm_psp_prod').each(function (index) {
+                        $(this).click(function () {
+                            $(this).closest(".product_supplier_properties_add").remove();
+                        });
+                    });
+
+                    $('.psp_qty').each(function (index) {
+                        $(this).keyup(function () {
+                            $("#savesetSupplier").prop('disabled', false);
+                        });
+                    });
+                });
+            });
+
+
+
+        });
+    });
+
+
+
+    $("#savesetSupplier").click(function () {
+        $("#savesetSupplier").prop('disabled', true);
+        var quotation_product_id = $("#sup_pid").val();
+        var supplier_id = $("#selected_supplier").val();
+        var product_supplier_id = $("#selected_product_supplier").val();
+
+        var property = $('.psp_property').map(function () {
+            return $(this).val();
+        }).get();
+        var value = $('.psp_value').map(function () {
+            return $(this).val();
+        }).get();
+        var qty = $('.psp_qty').map(function () {
+            return $(this).val();
+        }).get();
+
+        var total_qty = 0;
+        $('.psp_qty').each(function (index) {
+            var qty = parseFloat($(this).val());
+            total_qty = total_qty + qty;
+        });
+
+        var total_price = 0;
+        $('.psp_price').each(function (index) {
+            var price = parseFloat($(this).val());
+            total_price = total_price + price;
+        });
+
+        var counter = $('.psp_property').length;
+        var ctr = counter - 1;
+        var additional = 1;
+//        var po_prod_qty = $("#po_prod_qty").val();
+//        //process add po product
+        var data = {
+            "quotation_product_id": quotation_product_id,
+            "supplier_id": supplier_id,
+            "product_supplier_id": product_supplier_id,
+            "property": property,
+            "value": value,
+            "total_qty": total_qty,
+            "total_price": total_price,
+            "counter": ctr,
+            "qty": qty,
+            "additional": additional
+        }
+
+        console.log(additional);
+        $.ajax({
+            url: "/purchase_orders/setPoProduct",
+            type: 'POST',
+            data: {'data': data},
+            dataType: 'json',
+            success: function (dd) {
+                location.reload();
+//                console.log(dd);
+            },
+            error: function (dd) {
+                console.log('error');
+            }
+        });
+
+    });
+</script>

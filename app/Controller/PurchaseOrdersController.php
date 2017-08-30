@@ -122,14 +122,14 @@ class PurchaseOrdersController extends AppController {
         $value = $data['value'];
         $counter = $data['counter'];
         $per_qty = $data['qty'];
-
-
+        $additional = $data['additional'];
+//pr($additional);exit;
         //check if purchase order exists for the selected supplier
 //        $this->loadModel('PoProduct');
         $check_po = $this->PurchaseOrder->find('first', array(
             'conditions' => array(
                 'PurchaseOrder.supplier_id' => $supplier_id,
-                'PurchaseOrder.status' => 'pending'
+                'PurchaseOrder.status' => 'ongoing'
         )));
         $this->loadModel('User');
         $user = $this->User->findById($this->Auth->user('id'));
@@ -173,13 +173,14 @@ class PurchaseOrdersController extends AppController {
                 //price of item should be from 
                 $this->PoProduct->create();
                 $this->PoProduct->set(array(
-                    'product_id' => $product_id,
+                    'product_id' => $product_supplier_id,
                     'purchase_order_id' => $po_id,
                     'qty' => $qty,
                     'price' => $price,
                     'quotation_product_id' => $quotation_product_id,
                     'user_id' => $this->Auth->user('id'),
-                    'quotation_id' => $quotation_id
+                    'quotation_id' => $quotation_id,
+                    'additional' => $additional
                 ));
                 if ($this->PoProduct->save()) {
                     $po_product_id = $this->PoProduct->getLastInsertID();
@@ -213,7 +214,7 @@ class PurchaseOrdersController extends AppController {
                     $this->ProductSource->create();
                     $this->ProductSource->set(array(
                         "quotation_product_id" => $quotation_product_id,
-                        "product_id" => $product_id,
+                        "product_id" => $product_supplier_id,
                         "source" => 'po',
                         "quotation_id" => $quotation_id,
                         "purchase_order_id" => $po_id,
@@ -243,12 +244,14 @@ class PurchaseOrdersController extends AppController {
             //get purchase order number then add the po product
             $this->PoProduct->create();
             $this->PoProduct->set(array(
-                'product_id' => $product_id,
+                'product_id' => $product_supplier_id,
                 'purchase_order_id' => $check_po['PurchaseOrder']['id'],
                 'qty' => $qty,
+                'price' => $price,
                 'quotation_product_id' => $quotation_product_id,
                 'user_id' => $this->Auth->user('id'),
-                'quotation_id' => $quotation_id
+                'quotation_id' => $quotation_id,
+                'additional' => $additional
             ));
             if ($this->PoProduct->save()) {
 
@@ -259,7 +262,8 @@ class PurchaseOrdersController extends AppController {
                     $this->PoProductProperty->set(array(
                         'property' => $property[$i],
                         'value' => $value[$i],
-                        'po_product_id' => $po_product_id
+                        'po_product_id' => $po_product_id,
+                        'additional' => $additional
                     ));
                     $this->PoProductProperty->save();
                 }
@@ -283,10 +287,10 @@ class PurchaseOrdersController extends AppController {
                 $this->ProductSource->create();
                 $this->ProductSource->set(array(
                     "quotation_product_id" => $quotation_product_id,
-                    "product_id" => $product_id,
+                    "product_id" => $product_supplier_id,
                     "source" => 'po',
                     "quotation_id" => $quotation_id,
-                    "purchase_order_id" => $po_id,
+                    "purchase_order_id" => $check_po['PurchaseOrder']['id'],
                     "status" => "pending",
                     "qty" => $qty
                 ));
@@ -439,11 +443,10 @@ class PurchaseOrdersController extends AppController {
 //            pr($poprod);
 //        $additional_products = $this->Product->find()
     }
-    
-    
-    public function po(){
+
+    public function po() {
         $status = $this->params['url']['status'];
-        
+
         $this->loadModel('User');
         $user = $this->User->findById($this->Auth->user('id'));
         if ($user['User']['department_id'] == 6) {
@@ -457,14 +460,59 @@ class PurchaseOrdersController extends AppController {
                 'PurchaseOrder.type' => $type,
             )
         ));
-        $this->set(compact('pendings','type'));
-    }
-    
-    public function po_products(){
-        $id = $this->params['url']['id'];
-        $po = $this->PurchaseOrder->findById($id);
-        $this->set(compact('po'));
+        $this->set(compact('pendings', 'type'));
     }
 
+    public function po_products() {
+        $id = $this->params['url']['id'];
+        $this->PurchaseOrder->recursive = 2;
+        $po = $this->PurchaseOrder->findById($id);
+        $this->set(compact('po'));
+
+
+        $this->loadModel('Product');
+        $products = $this->Product->find('all');
+        $this->set(compact('products'));
+    }
+    
+    public function updatePoProductPrice(){
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $po_product_id = $data['po_product_id'];
+        $price = $data['price'];
+        
+        $this->loadModel('PoProduct');
+        
+        $this->PoProduct->id = $po_product_id;
+        $this->PoProduct->set(array(
+            'price'=>$price
+        ));
+        if($this->PoProduct->save()){ 
+            echo json_encode($data); 
+        }
+        
+    }
+    
+    public function poAmounts(){
+        
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $total_purchased = $data['total_purchased'];
+        $po_id = $data['po_id'];
+        $vat = $data['vat'];
+        $ewt = $data['ewt'];
+        $grand_total = $data['grand_total'];
+ 
+        $this->PurchaseOrder->id = $po_id;
+        $this->PurchaseOrder->set(array(
+            'total_purchased'=>$total_purchased,
+            'vat_amount'=>$vat,
+            'ewt_amount'=>$ewt,
+            'grand_total'=>$grand_total        
+        ));
+        if($this->PurchaseOrder->save()){ 
+            echo json_encode($data); 
+        }
+    }
 
 }
