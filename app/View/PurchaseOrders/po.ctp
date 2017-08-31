@@ -71,7 +71,10 @@
                                 <td> 
                                     <?php 
                                     if($type == 'supply'){
-                                        echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="Update Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
+                                        echo 'request payment';
+                                        echo 'print po';
+                                        echo 'set schedule';
+//                                        echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="Update Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
                                     }else if($type == 'raw'){
                                     
                                     }

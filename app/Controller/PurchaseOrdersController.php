@@ -497,18 +497,71 @@ class PurchaseOrdersController extends AppController {
         
         $this->autoRender = false;
         $data = $this->request->data;
-        $total_purchased = $data['total_purchased'];
-        $po_id = $data['po_id'];
+        
+        
+        $discount = $data['discount'];
         $vat = $data['vat'];
+        $total_purchased_val = $data['total_purchased_val'];
+        $total_purchased = $data['total_purchased'];
+//        $total = $data['total'];
         $ewt = $data['ewt'];
         $grand_total = $data['grand_total'];
- 
+        $po_id = $data['po_id'];
+        
+            //get total of all poproduct
+            $this->loadModel('PoProduct');
+//            $po_prods = $this->PoProduct->FindAllByPurchaseOrderId($po_id);
+            $po_prods = $this->PoProduct->find('all',array(
+                'conditions'=> array('PoProduct.purchase_order_id'=>$po_id)
+            ));
+            $ntp = 0;
+            foreach($po_prods as $po_prod){
+                $total_p = $po_prod['PoProduct']['price'] * $po_prod['PoProduct']['qty'];
+                $ntp = $ntp+$total_p;
+            }
+            
+            
+        if($discount!=0){
+            $new_total_purchased = $ntp - $discount;
+        }else{
+            $new_total_purchased = $ntp;
+        }
+        if($vat == 0){
+            //computation for vat inc
+            $non_vat = $new_total_purchased / 1.12;
+            $new_ewt = $non_vat*0.01;
+            $new_grand_total = $new_total_purchased - $new_ewt;
+//            $new_vat = 0;
+        }else{
+            //computation for vat ex
+//           $new_vat =   $new_total_purchased *0.12;
+           $new_ewt = $new_total_purchased * 0.01;
+           $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+        } 
         $this->PurchaseOrder->id = $po_id;
         $this->PurchaseOrder->set(array(
-            'total_purchased'=>$total_purchased,
+            'total_purchased'=>$new_total_purchased,
             'vat_amount'=>$vat,
-            'ewt_amount'=>$ewt,
-            'grand_total'=>$grand_total        
+            'ewt_amount'=>$new_ewt,
+            'grand_total'=>$new_grand_total,
+            'discount' => $discount
+        ));
+        if($this->PurchaseOrder->save()){ 
+            echo json_encode($data); 
+        }
+    }
+    
+    public function changeStatus(){
+        $this->autoRender = false;
+        $data = $this->request->data;
+        
+        
+        $po_id = $data['po_id'];
+        $status = $data['savestatus'];
+         
+        $this->PurchaseOrder->id = $po_id;
+        $this->PurchaseOrder->set(array(
+            'status'=>$status 
         ));
         if($this->PurchaseOrder->save()){ 
             echo json_encode($data); 

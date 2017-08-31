@@ -5,11 +5,13 @@
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
+<link href="../css/sweetalert.css" rel="stylesheet">
 <!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
 <script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
 <script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
+<script src="../js/sweetalert.min.js"></script>  
 
 
 <!--CONTENT CONTAINER-->
@@ -26,6 +28,13 @@
     <div id="page-content">
         <!-- Basic Data Tables -->
         <!--===================================================-->
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title" align="center">
+                    <button class="btn btn-primary saveOngoingPO "  data-savestatus="pending">Save</button> 
+                </h3>
+            </div>
+        </div>
         <div class="panel">
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
@@ -101,22 +110,32 @@
                         }
                         ?>
 
+                        <tr >
+                            <td colspan="4" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?>>Without Discount</td>  
+                            <td align="right"><div class="discountDiv"><b>Discount:</b></div></td>  
+                            <td>
+                                <input type="hidden" step="any"  class="form-control" id="discount_val" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>"/>
+                                <div class="discountDiv"><input type="number" step="any"  class="form-control" id="discount" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>"/></div></td>  
+
+                        </tr> 
                         <tr>
                             <td colspan="5" align="right"><b>Total Purchased</b></td>  
-                            <td><input type="text" id="total_purchased" class="form-control" readonly value="<?php echo $total_purchased; ?>"/></td>  
+                            <td><input type="hidden" id="total_purchased_val" class="form-control" readonly value="<?php echo abs($total_purchased); ?>"/>
+                                <input type="text" id="total_purchased" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['total_purchased']); ?>"/></td>  
                         </tr>
                         <tr >
-                            <td colspan="4" align="right"><input id="nonvat" type="checkbox" checked> Non Vat</td>  
+                            <td colspan="4" align="right"><input id="nonvat" type="checkbox"  <?php if ($po['PurchaseOrder']['vat_amount'] != 0) echo 'checked'; ?>> Non Vat</td>  
                             <td align="right"><div class="vatDiv"><b>ADD: 12% VAT:</b></div></td>  
-                            <td><div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
+                            <td><input type="hidden"  readonly class="form-control" id="vat_val" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/>
+                                <div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
 
                         </tr>
-                    
-                        <tr id="totalTR">
-                            <td colspan="5" align="right"><div class="vatDiv"><b>Total:</b></div></td>  
-                            <td><div class="vatDiv"><input type="text" id="total" class="form-control" readonly/></div></td>  
-                        </tr>
-                        
+
+<!--                        <tr id="totalTR">
+                            <td colspan="5" align="right"><div class="totDiv"><b>Total:</b></div></td>  
+                            <td><div class="totDiv"><input type="text" id="total" class="form-control" readonly/></div></td>  
+                        </tr>-->
+
                         <tr>
                             <td colspan="5" align="right"><b>LESS: 1% EWT:</b></td>  
                             <td><input type="text" id="ewt" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['ewt_amount']); ?>"/></td>  
@@ -127,6 +146,13 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title" align="center">
+                    <button class="btn btn-primary saveOngoingPO "  data-savestatus="pending">Save</button> 
+                </h3>
             </div>
         </div>
     </div>
@@ -199,75 +225,153 @@
 </div>
 <script>
 //$( document ).load(function() {
-  
+
     $(document).ready(function () {
-                $(".vatDiv").hide();
-                $("#vat").val(0);
-//        alert('asd');
-        var total_purchased = $("#total_purchased").val();
-        var po_id = $("#po_idd").val();
-        
-        if ($("#nonvat").checked) {
-            //non vat
-            var vat_value = total_purchased * 0.12;
-            var ewt = total_purchased * 0.01;
-            var gt = total_purchased + vat_value - ewt;
-        }else{
-            var vat_value = 0;
-            var nonvat_price = total_purchased / 1.12;
-            var ewt = nonvat_price * 0.01;
-            var gt = total_purchased - ewt;
+        if ($("#vat").val() == 0) {
+            $(".vatDiv").hide();
+            $("#vat").val(0);
         }
-
-
-            var data = {
-                "total_purchased": total_purchased,
-                "po_id": po_id,
-                "vat": vat_value,
-                "ewt": ewt,
-                "grand_total": gt
-            }
- 
-            $.ajax({
-                url: "/purchase_orders/poAmounts",
-                type: 'POST',
-                data: {'data': data},
-                dataType: 'json',
-                success: function (dd) { 
-                console.log(dd);
-//                    location.reload();
-                },
-                error: function (dd) {
-                    console.log('error');
-                }
-            });
-//});
-//    $(document).ready(function () {
-//                $(".vatDiv").hide();
-//                $("#vat").val(0);
-
-///////////////////////////////////////////////////////
+        if ($("#discount").val() == 0) {
+            $(".discountDiv").hide();
+            $("#discount").val(0);
+        }
+        /////////////////////////////////
 
 
         $("#nonvat").on("click", function () {
             if (this.checked) {
                 $(".vatDiv").hide();
                 $("#vat").val(0);
+                var discount = $("#discount").val();
+                var total_purchased_val = $("#total_purchased_val").val();
+                var total_purchased = $("#total_purchased").val();
+//                var total = $("#total").val();
+                var ewt = $("#ewt").val();
+                var grand_total = $("#grand_total").val();
+                var po_id = $("#po_idd").val();
+
+                if ($("#nonvat").is(':checked')) {
+                    var new_total_purchased = parseFloat(total_purchased_val) - parseFloat(discount);
+                    var new_vat = parseFloat(new_total_purchased) * 0.12;
+
+                    var vat = new_vat;
+                } else {
+                    var vat = $("#vat").val();
+                }
+//                console.log(vat);
+                var data = {
+                    "discount": discount,
+                    "vat": parseFloat(vat),
+                    "total_purchased_val": total_purchased_val,
+                    "total_purchased": total_purchased,
+//                    "total": total,
+                    "ewt": ewt,
+                    "grand_total": grand_total,
+                    "po_id": po_id
+                }
+                changeAmount(data);
             } else {
                 $(".vatDiv").show();
+
+
+                var discount = $("#discount").val();
+                var vat = 0;
+                var total_purchased_val = $("#total_purchased_val").val();
+                var total_purchased = $("#total_purchased").val();
+//                var total = $("#total").val();
+                var ewt = $("#ewt").val();
+                var grand_total = $("#grand_total").val();
+                var po_id = $("#po_idd").val();
+
+                var data = {
+                    "discount": discount,
+                    "vat": vat,
+                    "total_purchased_val": total_purchased_val,
+                    "total_purchased": total_purchased,
+//                    "total": total,
+                    "ewt": ewt,
+                    "grand_total": grand_total,
+                    "po_id": po_id
+                }
+                changeAmount(data);
+
             }
         });
-                
-        
-        
-        
-        
-        
+        $("#nodiscount").on("click", function () {
+            if (this.checked) {
+                $(".discountDiv").hide();
+                $("#discount").val(0);
+
+                var discount = 0;
+                var total_purchased_val = $("#total_purchased_val").val();
+                var total_purchased = $("#total_purchased").val();
+//                var total = $("#total").val();
+                var ewt = $("#ewt").val();
+                var grand_total = $("#grand_total").val();
+                var po_id = $("#po_idd").val();
+                if ($("#nonvat").is(':checked')) {
+                    var new_total_purchased = parseFloat(total_purchased_val) - parseFloat(discount);
+                    var new_vat = parseFloat(new_total_purchased) * 0.12;
+
+                    var vat = new_vat;
+                } else {
+                    var vat = $("#vat").val();
+                }
+                var data = {
+                    "discount": discount,
+                    "vat": vat,
+                    "total_purchased_val": total_purchased_val,
+                    "total_purchased": total_purchased,
+//                    "total": total,
+                    "ewt": ewt,
+                    "grand_total": grand_total,
+                    "po_id": po_id
+                }
+                changeAmount(data);
+            } else {
+                $(".discountDiv").show();
+                var discount_val = $("#discount_val").val();
+                $("#discount").val(discount_val);
+
+            }
+        });
+
+
+        $("#discount, #vat").change(function () {
+            var discount = $("#discount").val();
+            var total_purchased_val = $("#total_purchased_val").val();
+            var total_purchased = $("#total_purchased").val();
+//            var total = $("#total").val();
+            var ewt = $("#ewt").val();
+            var grand_total = $("#grand_total").val();
+            var po_id = $("#po_idd").val();
+
+
+            if ($("#nonvat").is(':checked')) {
+                var new_total_purchased = parseFloat(total_purchased_val) - parseFloat(discount);
+                var new_vat = parseFloat(new_total_purchased) * 0.12;
+
+                var vat = new_vat;
+            } else {
+                var vat = $("#vat").val();
+            }
+            var data = {
+                "discount": discount,
+                "vat": vat,
+                "total_purchased_val": total_purchased_val,
+                "total_purchased": total_purchased,
+//                "total": total,
+                "ewt": ewt,
+                "grand_total": grand_total,
+                "po_id": po_id
+            }
+            changeAmount(data);
+        });
 
     });
 
     $('.price').each(function (index) {
-        $(this).keyup(function () {
+        $(this).change(function () {
 
             var qty = $(this).data("qqty");
             var tid = $(this).data("tid");
@@ -281,15 +385,40 @@
                 "price": price,
                 "po_product_id": po_product_id
             }
- 
+
             $.ajax({
                 url: "/purchase_orders/updatePoProductPrice",
                 type: 'POST',
                 data: {'data': data},
                 dataType: 'json',
                 success: function (dd) {
-                    location.reload();
-//                console.log(dd);
+                    var discount = $("#discount").val();
+                    var total_purchased_val = $("#total_purchased_val").val();
+                    var total_purchased = $("#total_purchased_val").val();
+                    //            var total = $("#total").val();
+                    var ewt = $("#ewt").val();
+                    var grand_total = $("#grand_total").val();
+                    var po_id = $("#po_idd").val();
+
+                    if ($("#nonvat").is(':checked')) {
+                        var new_total_purchased = parseFloat(total_purchased_val) - parseFloat(discount);
+                        var new_vat = parseFloat(new_total_purchased) * 0.12;
+
+                        var vat = new_vat;
+                    } else {
+                        var vat = $("#vat").val();
+                    }
+                    var data = {
+                        "discount": discount,
+                        "vat": vat,
+                        "total_purchased_val": total_purchased_val,
+                        "total_purchased": total_purchased_val,
+                        //                "total": total,
+                        "ewt": ewt,
+                        "grand_total": grand_total,
+                        "po_id": po_id
+                    }
+                    changeAmount(data);
                 },
                 error: function (dd) {
                     console.log('error');
@@ -383,7 +512,7 @@
                                 ' </div>' +
                                 '<div class="col-sm-2">' +
                                 '<input type="number" class="form-control psp_qty" step="any"></div>' +
-                                '<input type="text" class="form-control psp_price" value="' + data[i]['ProductSupplierProperty']['price'] + '">' +
+                                '<input type="hidden" class="form-control psp_price" value="' + data[i]['ProductSupplierProperty']['price'] + '">' +
                                 '<div class="col-sm-1">' +
                                 '</div>' +
                                 '</div>');
@@ -474,4 +603,64 @@
         });
 
     });
+
+    function changeAmount(data) {
+        $.ajax({
+            url: "/purchase_orders/poAmounts",
+            type: 'POST',
+            data: {'data': data},
+            dataType: 'json',
+            success: function (dd) {
+//                console.log(dd);
+                location.reload();
+            },
+            error: function (dd) {
+                console.log('error');
+            }
+        });
+
+    }
+
+
+    $('.saveOngoingPO').each(function (index) {
+        $(this).click(function () {
+            var po_id = $("#po_idd").val();
+            var savestatus = $(this).data("savestatus");
+            var data = {
+                "po_id": po_id,
+                "savestatus": savestatus
+            }
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to edit this PO",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes, save it!",
+                cancelButtonText: "No, cancel!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                url: "/purchase_orders/changeStatus",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'json',
+                                success: function (dd) {
+                                    //                console.log(dd);
+//                                        location.reload();
+                                    window.location.href = "/purchase_orders/po?status=pending";
+                                },
+                                error: function (dd) {
+                                    console.log('error');
+                                }
+                            });
+                        }
+                    }
+            );
+        });
+    });
+
 </script>
