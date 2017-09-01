@@ -115,8 +115,32 @@ class ProductSuppliersController extends AppController {
         $this->autoRender = false;
         $this->response->type('json');
         if ($this->request->is('ajax')) {
+            
+            
+            
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        //6 supply
+        //7 raw
+        //
+        $me = $this->Auth->user('id');
+        $this->set(compact('me'));
+        if ($user['User']['department_id'] == 6) {
+            $type = 'supply';
+            $subcon = 'supplysubcon';
+        } else if ($user['User']['department_id'] == 7) {
+            $type = 'raw';
+            $subcon = 'rawsubcon';
+        }
             $this->loadModel('Supplier');
-            $prod_supplier = $this->Supplier->find('all');
+ 
+        $prod_supplier = $this->Supplier->find('all', array(
+            'conditions' => array(
+                'Supplier.type' => array($type, $subcon, 'both')
+            )
+        ));
+            
+             
             return json_encode($prod_supplier);
             exit;
         }

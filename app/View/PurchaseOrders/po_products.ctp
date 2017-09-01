@@ -28,6 +28,9 @@
     <div id="page-content">
         <!-- Basic Data Tables -->
         <!--===================================================-->
+        <?php
+       if($po['PurchaseOrder']['status'] == 'ongoing'){
+        ?>
         <div class="panel">
             <div class="panel-heading">
                 <h3 class="panel-title" align="center">
@@ -35,6 +38,9 @@
                 </h3>
             </div>
         </div>
+       <?php } else if($po['PurchaseOrder']['status'] == 'pending'){?>
+           request payment
+     <?php   } ?>
         <div class="panel">
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
@@ -77,9 +83,9 @@
                             ?>
                             <tr>
                                 <td>
-                                    <?php
-                                    echo date('F d, Y', strtotime($po_products['PurchaseOrder']['created']));
-                                    echo '<br/><small>' . date('h:i a', strtotime($po_products['PurchaseOrder']['created'])) . '</small>';
+                                    <?php  
+                                    echo date('F d, Y', strtotime($po_products['created']));
+                                    echo '<br/><small>' . date('h:i a', strtotime($po_products['created'])) . '</small>';
                                     ?> 
                                 </td>
 
@@ -89,15 +95,18 @@
                                 <td><?php
                                     echo $po_products['Product']['name'];
                                     if ($po_products['additional'] == 0) {
+                                         if($po_products['PurchaseOrder']['status'] == 'ongoing'){
                                         ?>
 
                                         <button class="btn btn-sm btn-mint additional_po_product add-tooltip" data-toggle="tooltip"  data-original-title="Purchase Additional Product" data-qprdctid="<?php echo $po_products['QuotationProduct']['id']; ?>"  ><i class="fa fa-plus"></i></button>
-                                    <?php } ?>
+                                    <?php }
+                                    }
+                                    ?>
                                 </td>
                                 <td><?php echo abs($po_products['qty']); ?>
                                 <!--<input type="text" value="<?php echo abs($po_products['qty']); ?>" class="qty"/>-->
                                 </td> 
-                                <td><input type="number" step="any" value="<?php echo abs($po_products['price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>"></td> 
+                                <td><input type="number" step="any" value="<?php echo abs($po_products['price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>" <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>></td> 
                                 <?php
                                 $total = $po_products['qty'] * $po_products['price'];
                                 ?>
@@ -111,11 +120,11 @@
                         ?>
 
                         <tr >
-                            <td colspan="4" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?>>Without Discount</td>  
+                            <td colspan="4" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?> <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>>Without Discount</td>  
                             <td align="right"><div class="discountDiv"><b>Discount:</b></div></td>  
                             <td>
                                 <input type="hidden" step="any"  class="form-control" id="discount_val" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>"/>
-                                <div class="discountDiv"><input type="number" step="any"  class="form-control" id="discount" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>"/></div></td>  
+                                <div class="discountDiv"><input type="number" step="any"  class="form-control" id="discount" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>" <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>/></div></td>  
 
                         </tr> 
                         <tr>
@@ -124,7 +133,7 @@
                                 <input type="text" id="total_purchased" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['total_purchased']); ?>"/></td>  
                         </tr>
                         <tr >
-                            <td colspan="4" align="right"><input id="nonvat" type="checkbox"  <?php if ($po['PurchaseOrder']['vat_amount'] != 0) echo 'checked'; ?>> Non Vat</td>  
+                            <td colspan="4" align="right"><input id="nonvat" type="checkbox"  <?php if ($po['PurchaseOrder']['vat_amount'] != 0) echo 'checked'; ?> <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
                             <td align="right"><div class="vatDiv"><b>ADD: 12% VAT:</b></div></td>  
                             <td><input type="hidden"  readonly class="form-control" id="vat_val" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/>
                                 <div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
@@ -148,6 +157,9 @@
                 </table>
             </div>
         </div>
+        <?php
+       if($po['PurchaseOrder']['status'] == 'ongoing'){
+        ?>
         <div class="panel">
             <div class="panel-heading">
                 <h3 class="panel-title" align="center">
@@ -155,6 +167,7 @@
                 </h3>
             </div>
         </div>
+       <?php } ?>
     </div>
 </div>
 

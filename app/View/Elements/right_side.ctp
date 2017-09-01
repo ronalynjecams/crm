@@ -303,9 +303,82 @@
                                                                     <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
 						                </ul>
 						            </li> 
+						            <li >
+						                <a href=" "> 
+                                                                    <i class="fa fa-dropbox"></i>
+						                    <span class="menu-title">
+									<strong>Inventory</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
 						             
                                                             <?php } ?>
                                                             <!-- supply_staff -->
+                                                            <!-- raw_staff -->
+                                                             <?php if($UserIn['User']['role'] == 'raw_head'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_supply"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li> 
+						            <li >
+						                <a href="/suppliers/supplier_list"> 
+                                                                    <i class="fa fa-shopping-cart"></i>
+						                    <span class="menu-title">
+									<strong>Suppliers</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
+						            <li >
+						                <a  href="/quotations/approved"> 
+                                                                    <i class="fa fa-file-pdf-o"></i>
+						                    <span class="menu-title">
+									<strong>Quotations</strong>
+                                                                    </span>
+						                </a>
+						            </li>   
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-registered"></i>
+						                    <span class="menu-title">
+									<strong>Requests</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">   
+                                                                    <li><a href="/po_raw_requests/list_view?status=pending">Pending</a></li>   
+                                                                    <li><a href="/po_raw_requests/list_view?status=processed">Processed</a></li>   	
+						                </ul>
+						            </li> 
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Purchase Order</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li>
+                                                                    <li><a href="/purchase_orders/po?status=pending">Pending</a></li>   
+                                                                    <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
+						                </ul>
+						            </li> 
+						            <li >
+						                <a href=" "> 
+                                                                    <i class="fa fa-dropbox"></i>
+						                    <span class="menu-title">
+									<strong>Inventory</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
+						             
+                                                            <?php } ?>
+                                                            <!-- raw_staff -->
+						           
 						           
                                 <!--Widget-->
                                 <!--================================-->

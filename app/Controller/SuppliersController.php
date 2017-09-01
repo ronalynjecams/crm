@@ -137,7 +137,7 @@ class SuppliersController extends AppController {
         if ($user['User']['department_id'] == 6) {
             $type = 'supply';
             $subcon = 'supplysubcon';
-        } else if ($user['User']['department_id'] == 6) {
+        } else if ($user['User']['department_id'] == 7) {
             $type = 'raw';
             $subcon = 'rawsubcon';
         }

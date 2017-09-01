@@ -162,4 +162,26 @@ class PoRawRequestsController extends AppController {
 //        debug($this->PoRawRequest->validationErrors);
  
     }
+    
+    public function list_view(){
+        $status = $this->params['url']['status'];
+        $this->PoRawRequest->recursive=4;
+        $requests = $this->PoRawRequest->find('all',['conditions'=>['PoRawRequest.status'=>$status]]);
+
+        $this->loadModel('Client');
+        $clients = $this->Client->find('all', array(
+            'conditions' => array('Client.user_id' => $this->Auth->user('id'), 'Client.lead' => 0)
+        ));
+
+ 
+        $this->loadModel('Product');
+        $products = $this->Product->find('all'); 
+ 
+
+        $this->loadModel('InvLocation');
+        $locations = $this->InvLocation->find('all'); 
+        
+        
+        $this->set(compact('requests', 'status', 'clients', 'products', 'locations'));
+    }
 }

@@ -664,6 +664,21 @@ class QuotationsController extends AppController {
 //            pr($pending_quotations);
             $this->set(compact('pending_quotations'));
 //            exit;
+        } else if (($this->Auth->user('role') == 'raw_head') ) {
+            //if with all products except supply saka lang lalabas dito sa list ng supply purchasing 
+            $this->loadModel('QuotationProduct');
+            $this->QuotationProduct->recursive = 2;
+            $options = array('conditions' => array(
+                    'Quotation.status' => array('approved','processed'),
+                    'QuotationProduct.type !=' => array('supply')
+                ),
+                'group' => 'QuotationProduct.quotation_id'
+            );
+            $pending_quotations = $this->QuotationProduct->find('all', $options);
+
+//            pr($pending_quotations);
+            $this->set(compact('pending_quotations'));
+//            exit;
         }
     }
 
