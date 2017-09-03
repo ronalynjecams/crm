@@ -94,13 +94,22 @@
                                     ?>  </td>  
                                 <td> <?php echo $request['User']['first_name']; ?>  </td> 
                                 <td> <?php echo $request['User']['first_name']; ?>  </td> 
-                                <td> <?php echo $request['PoRawRequest']['processed_qty'] . '/' . $request['PoRawRequest']['qty']; ?>  </td> 
+                                <td> <?php echo abs($request['PoRawRequest']['processed_qty']) . '/' . abs($request['PoRawRequest']['qty']); ?>  </td> 
                                 <td>  
-                                    <button class="btn btn-sm btn-primary set_supplier" data-supplierprodid="<?php echo $request['QuotationProduct']['id']; ?>" data-supplierprodqty="<?php echo $request['PoRawRequest']['qty']; ?>" >Select Supplier</button>
-                                    <button class="btn btn-sm btn-warning warehouse_product_btn add-tooltip" data-toggle="tooltip"  data-original-title="Get Product From Warehouse" data-qprdctids="<?php echo $request['QuotationProduct']['id']; ?>" data-qprdctqty="<?php echo $request['PoRawRequest']['qty']; ?>"><i class="fa fa-cubes"></i></button>
+                                    <?php if ($status == 'pending') { ?>
+                                        <button class="btn btn-sm btn-primary set_supplier" data-supplierprodid="<?php echo $request['PoRawRequest']['id']; ?>" data-supplierprodqty="<?php echo $request['PoRawRequest']['qty']; ?>" >Select Supplier</button>
+                                        <button class="btn btn-sm btn-warning warehouse_product_btn add-tooltip" data-toggle="tooltip"  data-original-title="Get Product From Warehouse" data-qprdctids="<?php echo $request['PoRawRequest']['id']; ?>" data-qprdctqty="<?php echo $request['PoRawRequest']['qty']; ?>"><i class="fa fa-cubes"></i></button>
+                                        <?php
+                                    } else {
+
+                                        echo date('F d, Y', strtotime($request['PoRawRequest']['date_processed']));
+                                        echo '<br/><small>' . date('h:i a', strtotime($request['PoRawRequest']['date_processed'])) . '</small>';
+                                    }
+                                    ?>
+
                                 </td> 
                             </tr> 
-<?php } ?>
+                        <?php } ?>
                     </tbody>
                 </table>
             </div>
@@ -178,15 +187,15 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <input type="text" id="quoted_qty" />
-                        <input type="text" id="quoted_prod_id" />
+                        <input type="text" id="po_raw_qty" />
+                        <input type="text" id="po_raw_id" />
                         <!--<div class="col-sm-8">-->
                         <div class="form-group col-sm-6">
                             <select id="inv_location_id" class="form-control"> 
                                 <option> -- select location --</option>
                                 <?php foreach ($locations as $location) { ?>
                                     <option value="<?php echo $location['InvLocation']['id']; ?>"> <?php echo $location['InvLocation']['name']; ?></option>
-<?php } ?>
+                                <?php } ?>
                             </select>
                         </div> 
                         <div class="form-group col-sm-6">
@@ -231,12 +240,6 @@
         });
 
 
-//        $('.updatePOBtn').each(function (index) {
-//            $(this).click(function () {
-//                var id = $(this).data("id");
-//                window.open("/purchase_orders/po_products?id=" + id, '_blank');
-//            });
-//        });
     });
 
     $('.set_supplier').each(function (index) {
@@ -354,7 +357,7 @@
 
     $("#savesetSupplier").click(function () {
         $("#savesetSupplier").prop('disabled', true);
-        var quotation_product_id = $("#sup_pid").val();
+        var po_raw_request_id = $("#sup_pid").val();
         var supplier_id = $("#selected_supplier").val();
         var product_supplier_id = $("#selected_product_supplier").val();
 
@@ -382,12 +385,12 @@
 
         var counter = $('.psp_property').length;
         var ctr = counter - 1;
-        var additional = 0;
+//        var additional = 0;
 //        var po_prod_qty = $("#po_prod_qty").val();
 //        //process add po product
         var additional = 0;
         var data = {
-            "quotation_product_id": quotation_product_id,
+            "po_raw_request_id": po_raw_request_id,
             "supplier_id": supplier_id,
             "product_supplier_id": product_supplier_id,
             "property": property,
@@ -399,7 +402,7 @@
             "additional": additional
         }
         $.ajax({
-            url: "/purchase_orders/setPoProduct",
+            url: "/purchase_orders/setPoProductRaw",
             type: 'POST',
             data: {'data': data},
             dataType: 'json',
@@ -424,12 +427,11 @@
 
 
     $('.warehouse_product_btn').each(function (index) {
-        $(this).click(function () {
-
+        $(this).click(function () { 
             var quoted_qty = $(this).data("qprdctqty");
-            $("#quoted_qty").val(quoted_qty);
+            $("#po_raw_qty").val(quoted_qty);
             var quoted_prod_id = $(this).data("qprdctids");
-            $("#quoted_prod_id").val(quoted_prod_id);
+            $("#po_raw_id").val(quoted_prod_id);
 //            console.log('asdasd');
             $('#warehouse_product_modal').modal('show');
             $("#prod_inv_location_id").select2({
@@ -518,14 +520,16 @@
             total_inv_deduct = total_inv_deduct + inv_qty;
         });
 //    alert(total_inv_deduct);
-        var quoted_qty = parseFloat($("#quoted_qty").val());
+
+ 
+        var quoted_qty = parseFloat($("#po_raw_qty").val());
         if (total_inv_deduct > quoted_qty) {
             alert('Quantity should only be equal or less than' + quoted_qty);
         } else {
             var inv_location_id = $("#inv_location_id").val();
             var prod_inv_location_id = $("#prod_inv_location_id").val();
             var total_inv_deduct = total_inv_deduct;
-            var quoted_prod_id = $("#quoted_prod_id").val();
+            var po_raw_id = $("#po_raw_id").val();
             var inv_prop = $('.inv_prop').map(function () {
                 return $(this).val();
             }).get();
@@ -541,7 +545,7 @@
             var data = {
                 "inv_location_id": inv_location_id,
                 "prod_inv_location_id": prod_inv_location_id,
-                "quoted_prod_id": quoted_prod_id,
+                "po_raw_id": po_raw_id,
                 "inv_prop": inv_prop,
                 "inv_val": inv_val,
                 "inv_qty_deduct": inv_qty_deduct,
@@ -549,13 +553,13 @@
                 "counter": ctr
             }
             $.ajax({
-                url: "/quotation_products/quoted_product_warehouse_source",
+                url: "/quotation_products/Rawrequest_product_warehouse_source",
                 type: 'POST',
                 data: {'data': data},
                 dataType: 'json',
                 success: function (dd) {
-//                    location.reload();
-                    console.log(dd);
+                    location.reload();
+//                    console.log(dd);
                 },
                 error: function (dd) {
                     console.log('error' + dd);

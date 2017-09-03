@@ -127,6 +127,8 @@ class UsersController extends AppController {
                                 return $this->redirect('/users/dashboard_supply');
                             }else if($this->Auth->user('role') == 'raw_head'){
                                 return $this->redirect('/users/dashboard_raw');
+                            }else if($this->Auth->user('role') == 'warehouse_head'){
+                                return $this->redirect('/users/dashboard_warehouse');
                             }
                             
 		}
@@ -148,6 +150,8 @@ class UsersController extends AppController {
                                 return $this->redirect('/users/dashboard_supply');
                             }else if($this->Auth->user('role') == 'raw_head'){
                                 return $this->redirect('/users/dashboard_raw');
+                            }else if($this->Auth->user('role') == 'warehouse_head'){
+                                return $this->redirect('/users/dashboard_warehouse');
                             }
 		        } 
 	    	

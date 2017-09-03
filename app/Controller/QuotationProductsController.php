@@ -246,72 +246,158 @@ class QuotationProductsController extends AppController {
     }
 
     public function quoted_product_warehouse_source() {
-        $this->autoRender = false; 
+        $this->autoRender = false;
         header("Content-type:application/json");
         $data = $this->request->data;
- 
+
         $this->loadModel('ProductSource');
         $this->loadModel('ProductSourceProperty');
         $this->loadModel('QuotationProduct');
-        $this->loadModel('Quotation'); 
-            $inv_location_id = $data['inv_location_id'];
-            $prod_inv_location_id = $data['prod_inv_location_id'];
-            $quoted_prod_id = $data['quoted_prod_id'];
-            $inv_prop = $data['inv_prop'];
-            $inv_val = $data['inv_val'];
-            $inv_qty_deduct = $data['inv_qty_deduct'];
-            $total_inv_deduct = $data['total_inv_deduct'];
-            $counter = $data['counter'];
+        $this->loadModel('Quotation');
+        $this->loadModel('ProdInvLocation');
+        $this->loadModel('ProdInvLocationProperty');
 
-            $quote_prod = $this->QuotationProduct->findById($quoted_prod_id); 
-            $tt_qty = 0;
-            foreach($inv_qty_deduct as $inv_qty){
-                $tt_qty = $tt_qty + $inv_qty;
+        $inv_location_id = $data['inv_location_id'];
+        $prod_inv_location_id = $data['prod_inv_location_id'];
+        $quoted_prod_id = $data['quoted_prod_id'];
+        $inv_prop = $data['inv_prop'];
+        $inv_val = $data['inv_val'];
+        $inv_qty_deduct = $data['inv_qty_deduct'];
+        $total_inv_deduct = $data['total_inv_deduct'];
+        $counter = $data['counter'];
+
+        $quote_prod = $this->QuotationProduct->findById($quoted_prod_id);
+        $tt_qty = 0;
+        foreach ($inv_qty_deduct as $inv_qty) {
+            $tt_qty = $tt_qty + $inv_qty;
+        }
+
+        $processed_qty = floatval($quote_prod['QuotationProduct']['processed_qty']) + floatval($tt_qty);
+
+
+        $this->ProductSource->create();
+        $this->ProductSource->set(array(
+            "quotation_product_id" => $quoted_prod_id,
+            "product_id" => $quote_prod['Product']['id'],
+            "source" => 'inventory',
+            "quotation_id" => $quote_prod['Quotation']['id'],
+            "prod_inv_location_id" => $prod_inv_location_id,
+            "status" => "pending",
+            "qty" => $total_inv_deduct,
+            "type"=>'supply'
+        ));
+        if ($this->ProductSource->save()) {
+            $product_source_id = $this->ProductSource->getLastInsertID();
+
+            for ($i = 0; $i <= $counter; $i++) {
+                $this->ProductSourceProperty->create();
+                $this->ProductSourceProperty->set(array(
+                    'property' => $inv_prop[$i],
+                    'value' => $inv_val[$i],
+                    'qty' => $inv_qty_deduct[$i],
+                    'product_source_id' => $product_source_id
+                ));
+                $this->ProductSourceProperty->save();
             }
-            
-            $processed_qty = floatval($quote_prod['QuotationProduct']['processed_qty']) + floatval($tt_qty);
-            
-//             echo json_encode($processed_qty);exit;
-            $this->ProductSource->create();
-            $this->ProductSource->set(array(
-                "quotation_product_id" => $quoted_prod_id,
-                "product_id" => $quote_prod['Product']['id'],
-                "source" => 'inventory',
-                "quotation_id" => $quote_prod['Quotation']['id'],
-                "prod_inv_location_id" => $prod_inv_location_id,
-                "status" => "pending",
-                "qty" => $total_inv_deduct
+
+
+            $this->QuotationProduct->id = $quoted_prod_id;
+            $this->QuotationProduct->set(array(
+                'processed_qty' => $processed_qty
             ));
-            if ($this->ProductSource->save()) { 
-                $product_source_id = $this->ProductSource->getLastInsertID();
- 
-                 for($i=0; $i<=$counter; $i++){ 
-                     $this->ProductSourceProperty->create();
-                     $this->ProductSourceProperty->set(array(
-                        'property'=> $inv_prop[$i],
-                        'value'=> $inv_val[$i],
-                        'qty'=> $inv_qty_deduct[$i],
-                         'product_source_id'=>$product_source_id
-                     ));
-                     $this->ProductSourceProperty->save();
-                 }
-                 
-                 $this->QuotationProduct->id=$quoted_prod_id;
-                 $this->QuotationProduct->set(array(
-                     'processed_qty'=>$processed_qty
-                 ));
-                 $this->QuotationProduct->save();
-                 
-                        $dateToday = date("Y-m-d H:i:s");
-                        $this->Quotation->id = $quote_prod['Quotation']['id'];
-                        $this->Quotation->set(array(
-                            'status' => 'processed',
-                            'date_processed' => $dateToday
-                        ));
-                        $this->Quotation->save();
-                        
-                  echo json_encode($product_source_id);
-            } 
+            $this->QuotationProduct->save();
+
+            $dateToday = date("Y-m-d H:i:s");
+            $this->Quotation->id = $quote_prod['Quotation']['id'];
+            $this->Quotation->set(array(
+                'status' => 'processed',
+                'date_processed' => $dateToday
+            ));
+            $this->Quotation->save();
+
+
+            echo json_encode($product_source_id);
+        }
+    }
+
+    public function Rawrequest_product_warehouse_source() {
+        $this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+
+        $this->loadModel('PoRawRequest');
+        $this->loadModel('ProductSource');
+        $this->loadModel('ProductSourceProperty');
+
+        $inv_location_id = $data['inv_location_id'];
+        $prod_inv_location_id = $data['prod_inv_location_id'];
+        $po_raw_id = $data['po_raw_id'];
+        $inv_prop = $data['inv_prop'];
+        $inv_val = $data['inv_val'];
+        $inv_qty_deduct = $data['inv_qty_deduct'];
+        $total_inv_deduct = $data['total_inv_deduct'];
+        $counter = $data['counter'];
+
+        $po_raw = $this->PoRawRequest->findById($po_raw_id);
+        $quotation_product = $this->QuotationProduct->findById($po_raw['PoRawRequest']['quotation_product_id']);
+
+        $product_id = $po_raw['PoRawRequest']['product_id'];
+        if ($po_raw_id != 0) {
+            $quotation_product_id = $quotation_product['QuotationProduct']['id'];
+            $quotation_id = $quotation_product['QuotationProduct']['quotation_id'];
+        }
+
+
+        $tt_qty = 0;
+        foreach ($inv_qty_deduct as $inv_qty) {
+            $tt_qty = $tt_qty + $inv_qty;
+        }
+
+        $processed_qty = floatval($po_raw['PoRawRequest']['processed_qty']) + floatval($tt_qty);
+
+        if ($processed_qty >= $po_raw['PoRawRequest']['qty']) {
+            $stats = 'processed';
+        } else {
+            $stats = 'pending';
+        }
+
+        $this->ProductSource->create();
+        $this->ProductSource->set(array(
+            "quotation_product_id" => $quotation_product_id,
+            "product_id" => $product_id,
+            "source" => 'inventory',
+            "quotation_id" => $quotation_id,
+            "prod_inv_location_id" => $prod_inv_location_id,
+            "status" => "pending",
+            "qty" => $total_inv_deduct,
+            "type"=>'raw'
+        ));
+        if ($this->ProductSource->save()) {
+            $product_source_id = $this->ProductSource->getLastInsertID();
+
+            for ($i = 0; $i <= $counter; $i++) {
+                $this->ProductSourceProperty->create();
+                $this->ProductSourceProperty->set(array(
+                    'property' => $inv_prop[$i],
+                    'value' => $inv_val[$i],
+                    'qty' => $inv_qty_deduct[$i],
+                    'product_source_id' => $product_source_id
+                ));
+                $this->ProductSourceProperty->save();
+            }
+
+            $dateToday = date("Y-m-d H:i:s");
+
+            $this->PoRawRequest->id = $po_raw_id;
+            $this->PoRawRequest->set(array(
+                'status' => $stats,
+                'date_processed' => $dateToday,
+                'processed_qty' => $processed_qty
+            ));
+            $this->PoRawRequest->save();
+
+            echo json_encode($product_source_id);
+        }
     }
 
 }

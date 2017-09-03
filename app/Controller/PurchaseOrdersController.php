@@ -223,7 +223,8 @@ class PurchaseOrdersController extends AppController {
                             "quotation_id" => $quotation_id,
                             "purchase_order_id" => $po_id,
                             "status" => "pending",
-                            "qty" => $qty
+                            "qty" => $qty,
+                            "type" => 'supply'
                         ));
 
                         if ($this->ProductSource->save()) {
@@ -297,7 +298,8 @@ class PurchaseOrdersController extends AppController {
                         "quotation_id" => $quotation_id,
                         "purchase_order_id" => $check_po['PurchaseOrder']['id'],
                         "status" => "pending",
-                        "qty" => $qty
+                        "qty" => $qty,
+                        "type" => 'supply'
                     ));
 
                     if ($this->ProductSource->save()) {
@@ -475,10 +477,19 @@ class PurchaseOrdersController extends AppController {
         $po = $this->PurchaseOrder->findById($id);
         $this->set(compact('po'));
 
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        if ($user['User']['department_id'] == 6) {
+            $type = 'supply';
+        } else if ($user['User']['department_id'] == 7) {
+            $type = 'raw';
+        }
 
         $this->loadModel('Product');
         $products = $this->Product->find('all');
-        $this->set(compact('products'));
+        $this->set(compact('products', 'type'));
+        
+        
     }
 
     public function updatePoProductPrice() {
@@ -572,5 +583,225 @@ class PurchaseOrdersController extends AppController {
             echo json_encode($data);
         }
     }
+    
+    
+    public function setPoProductRaw(){
+        
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $po_raw_request_id = $data['po_raw_request_id'];
+        $supplier_id = $data['supplier_id'];
+        $product_supplier_id = $data['product_supplier_id'];
+        $qty = $data['total_qty'];
+        $price = $data['total_price'];
+        $property = $data['property'];
+        $value = $data['value'];
+        $counter = $data['counter'];
+        $per_qty = $data['qty'];
+        $additional = $data['additional'];
+        
+        $check_po = $this->PurchaseOrder->find('first', array(
+            'conditions' => array(
+                'PurchaseOrder.supplier_id' => $supplier_id,
+                'PurchaseOrder.status' => 'ongoing'
+        )));
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        $this->loadModel('PoProduct');
+        $this->loadModel('PoProductProperty');
+        $this->loadModel('QuotationProduct');
+//        $this->loadModel('Quotation');
+        $this->loadModel('PoRawRequest');
+        
+        
+        if($po_raw_request_id != 0) {
+            
+            $qprod = $this->PoRawRequest->findById($po_raw_request_id);
+            $qprdct = $this->QuotationProduct->findById($qprod['PoRawRequest']['quotation_product_id']);
+            $product_id = $qprod['PoRawRequest']['product_id'];
+            $quotation_id = $qprdct['QuotationProduct']['quotation_id'];
+            $quotation_product_id =  $qprdct['QuotationProduct']['id']; 
+            
+            
+            //get processed qty in quote product  
+            $processed_qty = $qprod['PoRawRequest']['processed_qty'];
+            $raw_qty = $qprod['PoRawRequest']['qty'];
+            $pro_qty = $processed_qty + $qty;
+            
+            if($pro_qty >= $raw_qty){
+                $stats='processed';
+            }else{
+                $stats='pending';
+            }
+        } else {
+            $po_raw_request_id = 0;
+            $quotation_id = 0;
+            $quotation_product_id = 0;
+        }
+
+        if (count($check_po) == 0) {
+            //create new purchase order
+            if ($user['User']['department_id'] == 6) {
+                $type = 'supply';
+            } else if ($user['User']['department_id'] == 7) {
+                $type = 'raw';
+            }
+
+            $dateToday = date("hmdsi");
+            $po_number = 'JEC-' . $dateToday;
+
+
+            $this->PurchaseOrder->create();
+            $this->PurchaseOrder->set(array(
+                'supplier_id' => $supplier_id,
+                'user_id' => $this->Auth->user('id'),
+                'po_number' => $po_number,
+                'status' => 'ongoing',
+                'type' => $type
+            ));
+            if ($this->PurchaseOrder->save()) {
+                
+                //add poProduct
+                $po_id = $this->PurchaseOrder->getLastInsertID();
+                //price of item should be from 
+                $this->PoProduct->create();
+                $this->PoProduct->set(array(
+                    'product_id' => $product_supplier_id,
+                    'purchase_order_id' => $check_po['PurchaseOrder']['id'],
+                    'qty' => $qty,
+                    'price' => $price,
+                    'quotation_product_id' =>$quotation_product_id,
+                    'user_id' => $this->Auth->user('id'),
+                    'quotation_id' => $quotation_id,
+                    'additional' => $additional
+                ));
+                if ($this->PoProduct->save()) {
+                    $po_product_id = $this->PoProduct->getLastInsertID();
+
+                    for ($i = 0; $i <= $counter; $i++) {
+                        $this->PoProductProperty->create();
+                        $this->PoProductProperty->set(array(
+                            'property' => $property[$i],
+                            'value' => $value[$i],
+                            'po_product_id' => $po_product_id
+                        ));
+                        $this->PoProductProperty->save();
+                    }
+                    
+                    
+
+                        $this->loadModel('ProductSource');
+                        $this->loadModel('ProductSourceProperty');
+                        $this->ProductSource->create();
+                        $this->ProductSource->set(array(
+                            "quotation_product_id" => $quotation_product_id,
+                            "product_id" => $product_supplier_id,
+                            "source" => 'po',
+                            "quotation_id" => $quotation_id,
+                            "purchase_order_id" => $po_id,
+                            "status" => "pending",
+                            "qty" => $qty,
+                            "type"=> 'raw'
+                        ));
+
+                        if($this->ProductSource->save()){
+                            $product_source_id = $this->ProductSource->getLastInsertID();
+
+                            for ($i = 0; $i <= $counter; $i++) {
+                                $this->ProductSourceProperty->create();
+                                $this->ProductSourceProperty->set(array(
+                                    'property' => $property[$i],
+                                    'value' => $value[$i],
+                                    'qty' => $per_qty[$i],
+                                    'product_source_id' => $product_source_id
+                                ));
+                                $this->ProductSourceProperty->save();
+                            }
+                        }
+ 
+                        $dateToday = date("Y-m-d H:i:s");
+                        $this->PoRawRequest->id = $po_raw_request_id;
+                        $this->PoRawRequest->set(array(
+                            'status' => $stats,
+                            'date_processed' => $dateToday, 
+                            'processed_qty' => $pro_qty
+                        ));
+                        $this->PoRawRequest->save(); 
+   
+                    echo json_encode($data);
+                }
+            }
+        } else {
+            //get purchase order number then add the po product
+            $this->PoProduct->create();
+            $this->PoProduct->set(array(
+                'product_id' => $product_supplier_id,
+                'purchase_order_id' => $check_po['PurchaseOrder']['id'],
+                'qty' => $qty,
+                'price' => $price,
+                'quotation_product_id' => $quotation_product_id,
+                'user_id' => $this->Auth->user('id'),
+                'quotation_id' => $quotation_id,
+                'additional' => $additional
+            ));
+            if ($this->PoProduct->save()) {
+
+                $po_product_id = $this->PoProduct->getLastInsertID();
+
+                for ($i = 0; $i <= $counter; $i++) {
+                    $this->PoProductProperty->create();
+                    $this->PoProductProperty->set(array(
+                        'property' => $property[$i],
+                        'value' => $value[$i],
+                        'po_product_id' => $po_product_id,
+                        'additional' => $additional
+                    ));
+                    $this->PoProductProperty->save();
+                }
+
+                        $this->loadModel('ProductSource');
+                        $this->loadModel('ProductSourceProperty');
+                        $this->ProductSource->create();
+                        $this->ProductSource->set(array(
+                            "quotation_product_id" => $quotation_product_id,
+                            "product_id" => $product_supplier_id,
+                            "source" => 'po',
+                            "quotation_id" => $quotation_id,
+                            "purchase_order_id" => $check_po['PurchaseOrder']['id'],
+                            "status" => "pending",
+                            "qty" => $qty,
+                            "type" => 'raw'
+                        ));
+
+                        if($this->ProductSource->save()){
+                            $product_source_id = $this->ProductSource->getLastInsertID();
+
+                            for ($i = 0; $i <= $counter; $i++) {
+                                $this->ProductSourceProperty->create();
+                                $this->ProductSourceProperty->set(array(
+                                    'property' => $property[$i],
+                                    'value' => $value[$i],
+                                    'qty' => $per_qty[$i],
+                                    'product_source_id' => $product_source_id
+                                ));
+                                $this->ProductSourceProperty->save();
+                            }
+                        }
+
+                        $dateToday = date("Y-m-d H:i:s");
+                        $this->PoRawRequest->id = $po_raw_request_id;
+                        $this->PoRawRequest->set(array(
+                            'status' => $stats,
+                            'date_processed' => $dateToday, 
+                            'processed_qty' => $pro_qty
+                        ));
+                        $this->PoRawRequest->save(); 
+
+                echo json_encode($data);
+            }
+        }
+
+    }
+    
 
 }

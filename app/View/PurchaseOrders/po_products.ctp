@@ -29,18 +29,18 @@
         <!-- Basic Data Tables -->
         <!--===================================================-->
         <?php
-       if($po['PurchaseOrder']['status'] == 'ongoing'){
-        ?>
-        <div class="panel">
-            <div class="panel-heading">
-                <h3 class="panel-title" align="center">
-                    <button class="btn btn-primary saveOngoingPO "  data-savestatus="pending">Save</button> 
-                </h3>
+        if ($po['PurchaseOrder']['status'] == 'ongoing') {
+            ?>
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title" align="center">
+                        <button class="btn btn-primary saveOngoingPO "  data-savestatus="pending">Save</button> 
+                    </h3>
+                </div>
             </div>
-        </div>
-       <?php } else if($po['PurchaseOrder']['status'] == 'pending'){?>
-           request payment
-     <?php   } ?>
+        <?php } else if ($po['PurchaseOrder']['status'] == 'pending') { ?>
+            request payment
+        <?php } ?>
         <div class="panel">
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
@@ -64,49 +64,48 @@
                             <th>Price</th>  
                             <th>Total</th>  
                         </tr>
-                    </thead>
-<!--                    <tfoot>
-                        <tr>
-                            <th>Date Created</th> 
-                            <th>Image</th>
-                            <th>Product Code</th>
-                            <th>Quantity</th>
-                            <th>Price</th>  
-                            <th>Total</th>  
-                        </tr>
-                    </tfoot>-->
+                    </thead> 
                     <tbody>
                         <?php
                         $ctrr = 1;
-                        $total_purchased = 0;
+                        $total_purchased = 0; 
                         foreach ($po['PoProduct'] as $po_products) {
                             ?>
                             <tr>
                                 <td>
-                                    <?php  
+                                    <?php
                                     echo date('F d, Y', strtotime($po_products['created']));
                                     echo '<br/><small>' . date('h:i a', strtotime($po_products['created'])) . '</small>';
                                     ?> 
                                 </td>
 
                                 <td>
-                                    <img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $po_products['Product']['image']; ?>" alt="Profile Picture">
+                                    <?php if(!is_null($po_products['Product']['image'])){ ?>
+                                    <img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $po_products['Product']['image']; ?>" alt="Product Picture">
+                                    <?php
+                                    }else{ 
+                                        echo 'no image';
+                                    }?>
                                 </td> 
                                 <td><?php
                                     echo $po_products['Product']['name'];
-                                    if ($po_products['additional'] == 0) {
-                                         if($po_products['PurchaseOrder']['status'] == 'ongoing'){
-                                        ?>
 
-                                        <button class="btn btn-sm btn-mint additional_po_product add-tooltip" data-toggle="tooltip"  data-original-title="Purchase Additional Product" data-qprdctid="<?php echo $po_products['QuotationProduct']['id']; ?>"  ><i class="fa fa-plus"></i></button>
-                                    <?php }
+                                    if ($type == 'supply') {
+                                        if ($po_products['additional'] == 0) {
+                                            if ($po_products['PurchaseOrder']['status'] == 'ongoing') {
+                                                ?>
+
+                                                <button class="btn btn-sm btn-mint additional_po_product add-tooltip" data-toggle="tooltip"  data-original-title="Purchase Additional Product" data-qprdctid="<?php echo $po_products['QuotationProduct']['id']; ?>"  ><i class="fa fa-plus"></i></button>
+                                            <?php
+                                            }
+                                        }
                                     }
                                     ?>
                                 </td>
                                 <td><?php echo abs($po_products['qty']); ?>
                                 <!--<input type="text" value="<?php echo abs($po_products['qty']); ?>" class="qty"/>-->
                                 </td> 
-                                <td><input type="number" step="any" value="<?php echo abs($po_products['price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>" <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>></td> 
+                                <td><input type="number" step="any" value="<?php echo abs($po_products['price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>" <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>></td> 
                                 <?php
                                 $total = $po_products['qty'] * $po_products['price'];
                                 ?>
@@ -120,11 +119,11 @@
                         ?>
 
                         <tr >
-                            <td colspan="4" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?> <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>>Without Discount</td>  
+                            <td colspan="4" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>>Without Discount</td>  
                             <td align="right"><div class="discountDiv"><b>Discount:</b></div></td>  
                             <td>
                                 <input type="hidden" step="any"  class="form-control" id="discount_val" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>"/>
-                                <div class="discountDiv"><input type="number" step="any"  class="form-control" id="discount" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>" <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>/></div></td>  
+                                <div class="discountDiv"><input type="number" step="any"  class="form-control" id="discount" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>" <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>/></div></td>  
 
                         </tr> 
                         <tr>
@@ -133,7 +132,7 @@
                                 <input type="text" id="total_purchased" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['total_purchased']); ?>"/></td>  
                         </tr>
                         <tr >
-                            <td colspan="4" align="right"><input id="nonvat" type="checkbox"  <?php if ($po['PurchaseOrder']['vat_amount'] != 0) echo 'checked'; ?> <?php if($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
+                            <td colspan="4" align="right"><input id="nonvat" type="checkbox"  <?php if ($po['PurchaseOrder']['vat_amount'] != 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
                             <td align="right"><div class="vatDiv"><b>ADD: 12% VAT:</b></div></td>  
                             <td><input type="hidden"  readonly class="form-control" id="vat_val" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/>
                                 <div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
@@ -158,16 +157,16 @@
             </div>
         </div>
         <?php
-       if($po['PurchaseOrder']['status'] == 'ongoing'){
-        ?>
-        <div class="panel">
-            <div class="panel-heading">
-                <h3 class="panel-title" align="center">
-                    <button class="btn btn-primary saveOngoingPO "  data-savestatus="pending">Save</button> 
-                </h3>
+        if ($po['PurchaseOrder']['status'] == 'ongoing') {
+            ?>
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title" align="center">
+                        <button class="btn btn-primary saveOngoingPO "  data-savestatus="pending">Save</button> 
+                    </h3>
+                </div>
             </div>
-        </div>
-       <?php } ?>
+<?php } ?>
     </div>
 </div>
 
