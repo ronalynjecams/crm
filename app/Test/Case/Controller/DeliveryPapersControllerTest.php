@@ -1,10 +1,10 @@
 <?php
-App::uses('ProductSourcesController', 'Controller');
+App::uses('DeliveryPapersController', 'Controller');
 
 /**
- * ProductSourcesController Test Case
+ * DeliveryPapersController Test Case
  */
-class ProductSourcesControllerTest extends ControllerTestCase {
+class DeliveryPapersControllerTest extends ControllerTestCase {
 
 /**
  * Fixtures
@@ -12,8 +12,8 @@ class ProductSourcesControllerTest extends ControllerTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.product_source',
-		'app.quotation_product',
+		'app.delivery_paper',
+		'app.delivery_schedule',
 		'app.quotation',
 		'app.client',
 		'app.user',
@@ -24,23 +24,15 @@ class ProductSourcesControllerTest extends ControllerTestCase {
 		'app.agent_status',
 		'app.job_request',
 		'app.jr_product',
-		'app.quotation_term',
+		'app.quotation_product',
 		'app.product',
 		'app.sub_category',
 		'app.category',
 		'app.product_property',
 		'app.product_value',
 		'app.quotation_product_property',
-		'app.purchase_order',
-		'app.supplier',
-		'app.supplier_tag',
-		'app.po_product',
-		'app.po_product_property',
-		'app.prod_inv_location',
-		'app.inv_location',
-		'app.inv_log',
-		'app.prod_inv_location_property',
-		'app.prod_inv_condition'
+		'app.delivery_sched_product',
+		'app.quotation_term'
 	);
 
 /**

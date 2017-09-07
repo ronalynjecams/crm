@@ -111,4 +111,26 @@ class ProductSourcesController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}
+        public function list_view(){
+            $selected_type = $this->params['url']['type'];
+            $selected_status = $this->params['url']['status'];
+            $selected_inventory = $this->params['url']['source'];
+            
+             $this->ProductSource->recursive = 2;
+            $requests = $this->ProductSource->find('all',['conditions'=>[
+                'ProductSource.type' => $selected_type,
+                'ProductSource.status' => $selected_status,
+                'ProductSource.source' => $selected_inventory,
+            ],
+                'order'=>'ProductSource.created ASC'
+                ]);
+            
+            $this->loadModel('User');
+             $this->User->recursive = -1;
+            $users = $this->User->find('all');
+            
+            $this->set(compact('requests','users'));
+            
+            
+        }
 }

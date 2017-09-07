@@ -15,28 +15,32 @@
                     <button class="btn btn-primary moveQuote" data-buttontype="save" >Move to purchasing</button> 
                     <button class="btn btn-danger cancelQuote">Cancel</button> 
                 </h3>
+                <input type="text" id="quotation_id" value="<?php echo $id; ?>">
             </div>
         </div>
         <div class="col-sm-8">
             <div class="panel">
                 <div class="panel-heading">
                     <div class="panel-control">  
-                        <input type="hidden"  id="quotation_id" value="<?php echo $quote_data['Quotation']['id']; ?>" class="form-control">
-                        <input type="hidden"  id="grand_total" value="<?php echo $quote_data['Quotation']['grand_total']; ?>" class="form-control">
                         <button class="btn btn-default" data-target="#move-panel-collapse" data-toggle="collapse"><i class="demo-pli-arrow-down"></i></button>
                     </div>
                     <h3 class="panel-title"> Quotation Details</h3>
                 </div>
                 <div id="move-panel-collapse" class="collapse in">
                     <div class="panel-body">
+                        
                         <div class="row">
                             <div class="col-sm-6"> 
                                 <div class="form-group  ">
+                                    
+                                    
+                                    
                                     <label class="control-label">Payment Mode</label>  
                                     <select id="payment_mode" class="form-control"> 
                                         <option value=""> select </option>
                                         <option value="cash"> cash </option>
                                         <option value="online"> online </option>
+                                        <option value="check"> check </option> 
                                         <option value="cod"> cod </option>
                                         <option value="terms"> terms </option> 
                                     </select>
@@ -95,7 +99,7 @@
                                 <div class="col-sm-4"> 
                                     <div class="form-group ">
                                         <label class="control-label">Check Date </label>  
-                                        <input type="number" span="any" id="check_date" class="form-control">
+                                        <input type="date" id="check_date" class="form-control">
                                     </div> 
                                 </div> 
                             </div> 
@@ -273,20 +277,22 @@
                     startDate: date,
                 });
 
-        $("#with_held, #amount_paid").keyup(function () {
-            $(".term_id_div").show();
-            var with_held = $("#with_held").val();
-            var amount_paid = $("#amount_paid").val();
-            var grand_total = $("#grand_total").val();
-            var total = parseFloat(amount_paid) + parseFloat(with_held);
-            if (total == parseFloat(grand_total)) {
-//                console.log('equal'); 
-                $(".term_id_div").hide();
-            } else {
-                console.log('not equal');
-            }
-//            alert("Handler for .keyup() called.");
-        });
+//        $("#with_held, #amount_paid").keyup(function () {
+//            $(".term_id_div").show();
+//            var with_held = $("#with_held").val();
+//            var amount_paid = $("#amount_paid").val();
+//            var grand_total = $("#grand_total").val();
+//            var total = parseFloat(amount_paid) + parseFloat(with_held);
+//            if (total == parseFloat(grand_total)) {
+////                console.log('equal'); 
+//                $(".term_id_div").hide();
+//            } else {
+//                console.log('not equal');
+//            }
+////            alert("Handler for .keyup() called.");
+//        });
+
+
     });
 
 
@@ -311,6 +317,10 @@
             $(".amount_div").hide();
             $(".check_mode_div").hide();
             $(".check_online_mode_div").hide();
+        } else if (payment_mode == 'check') {
+            $(".amount_div").show();
+            $(".check_mode_div").show();
+            $(".check_online_mode_div").show();
         }
     });
 
@@ -344,7 +354,7 @@
             "term_id": term_id,
             "delivery_mode": delivery_mode,
             "tin_number": tin_number,
-            "target_delivery": target_delivery
+            "target_delivery": target_delivery, 
         }
 
 
@@ -436,9 +446,42 @@
             } else {
                 document.getElementById('vat_type').style.borderColor = "red";
             }
-        } else {
-            if (payment_mode == "") {
-                document.getElementById('payment_mode').style.borderColor = "red";
+        } else if (payment_mode == 'check') {
+        
+            if (vat_type != "") {
+                if (amount_paid != "") {
+                    if (with_held != "") {
+                        if (bank_id != "") {
+                            if (term_id != "") {
+                                if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
+                                    if (check_number != "") {
+                                        if (check_date != "") {
+                                            ///process here
+                                            approve_quotation(data); 
+                                        }else{
+                                            document.getElementById('check_date').style.borderColor = "red";
+                                        }
+                                    }else{
+                                        document.getElementById('check_number').style.borderColor = "red";
+                                    }
+                                } else {
+                                    document.getElementById('tin_number').style.borderColor = "red";
+                                    $("#require_tin_div").append('<span class="text-danger" id="tin_error">Tin Number is required</span>')
+                                }
+                            } else {
+                                document.getElementById('term_id').style.borderColor = "red";
+                            }
+                        } else {
+                            document.getElementById('bank_id').style.borderColor = "red";
+                        }
+                    } else {
+                        document.getElementById('with_held').style.borderColor = "red";
+                    }
+                } else {
+                    document.getElementById('amount_paid').style.borderColor = "red";
+                }
+            } else {
+                document.getElementById('vat_type').style.borderColor = "red";
             }
         }
     });

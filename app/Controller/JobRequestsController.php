@@ -150,8 +150,12 @@ class JobRequestsController extends AppController {
         $this->loadModel('JrProduct');
         $quote_id = $this->params['url']['id'];
         $this->QuotationProduct->recursive = 3;
-        $quote_products = $this->QuotationProduct->find('all', array(
-            'conditions' => array('QuotationProduct.quotation_id' => $quote_id, 'Quotation.type !=' => 'supply')
+        $quote_products = $this->QuotationProduct->find('all', array( 
+            'conditions' => array(
+                'QuotationProduct.quotation_id' => $quote_id, 
+                'QuotationProduct.type !=' => 'supply',
+                'QuotationProduct.deleted' => NULL,
+                )
         ));
         ///add muna yung mga products na hindi supply sa jrproducts
         if (count($quote_products) != 0) {
@@ -319,7 +323,11 @@ class JobRequestsController extends AppController {
         $quote_id = $this->params['url']['id'];
         $this->QuotationProduct->recursive = 3;
         $quote_products = $this->QuotationProduct->find('all', array(
-            'conditions' => array('QuotationProduct.quotation_id' => $quote_id, 'Quotation.type !=' => 'supply')
+            'conditions' => array(
+                'QuotationProduct.quotation_id' => $quote_id, 
+                'QuotationProduct.type !=' => 'supply',
+                'QuotationProduct.deleted' => NULL,
+                )
         ));
         ///add muna yung mga products na hindi supply sa jrproducts
 

@@ -127,9 +127,17 @@ class UsersController extends AppController {
                                 return $this->redirect('/users/dashboard_supply');
                             }else if($this->Auth->user('role') == 'raw_head'){
                                 return $this->redirect('/users/dashboard_raw');
-                            }else if($this->Auth->user('role') == 'warehouse_head'){
-                                return $this->redirect('/users/dashboard_warehouse');
+                            }else if($this->Auth->user('role') == 'warehouse_head_raw'){
+                                return $this->redirect('/users/dashboard_warehouse_raw');
+                            }else if($this->Auth->user('role') == 'warehouse_head_supply'){
+                                return $this->redirect('/users/dashboard_warehouse_supply');
+                            }else if($this->Auth->user('role') == 'collection_officer'){
+                                return $this->redirect('/users/dashboard_collection_officer');
+                            }else if($this->Auth->user('role') == 'production_head'){
+                                return $this->redirect('/users/dashboard_production_head');
                             }
+                            
+                            
                             
 		}
 	    
@@ -150,9 +158,16 @@ class UsersController extends AppController {
                                 return $this->redirect('/users/dashboard_supply');
                             }else if($this->Auth->user('role') == 'raw_head'){
                                 return $this->redirect('/users/dashboard_raw');
-                            }else if($this->Auth->user('role') == 'warehouse_head'){
-                                return $this->redirect('/users/dashboard_warehouse');
+                            }else if($this->Auth->user('role') == 'warehouse_head_raw'){
+                                return $this->redirect('/users/dashboard_warehouse_raw');
+                            }else if($this->Auth->user('role') == 'warehouse_head_supply'){
+                                return $this->redirect('/users/dashboard_warehouse_supply');
+                            }else if($this->Auth->user('role') == 'collection_officer'){
+                                return $this->redirect('/users/dashboard_collection_officer');
+                            }else if($this->Auth->user('role') == 'production_head'){
+                                return $this->redirect('/users/dashboard_production_head');
                             }
+                            
 		        } 
 	    	
 	        $this->Session->setFlash(__('Invalid username or password, try again'));

@@ -85,12 +85,16 @@
                                         } else {
                                             echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="View Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="fa fa-eye"></i></a>';
                                         }
-                                        
                                     }
+                                    
+                                    
+                                        if ($pending['PurchaseOrder']['status'] != 'ongoing') {
                                     ?>
+                                    <button class="btn btn-primary btn-icon add-tooltip print_po" data-toggle="tooltip"  data-original-title="Print Purchase Order?" data-printpoid="<?php echo $pending['PurchaseOrder']['id']; ?>"><i class="fa fa-print"></i> </button>
+                                        <?php } ?>
                                 </td> 
                             </tr> 
-<?php } ?>
+                        <?php } ?>
                     </tbody>
                 </table>
             </div>
@@ -162,6 +166,14 @@
         });
 
     });
+
+
+        $('.print_po').each(function (index) {
+            $(this).click(function () {
+                var qid = $(this).data("printpoid");
+                window.open("/pdfs/print_po?id=" + qid, '_blank'); 
+            });
+        });
 
 
     $('.updatePOBtn').each(function (index) {

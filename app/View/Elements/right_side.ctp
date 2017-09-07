@@ -378,6 +378,139 @@
 						             
                                                             <?php } ?>
                                                             <!-- raw_staff -->
+                                                            <!-- warehouse supply-->
+                                                             <?php if($UserIn['User']['department_id'] == 9){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_warehouse"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>       
+						            <li>
+ 						                <a href="">  
+                                                                    <i class="fa fa-file-pdf-o"></i>
+						                    <span class="menu-title">
+									<strong>Quotation Requests</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">   
+                                                                    <li><a href="/product_sources/list_view?type=supply&&status=pending&&source=inventory">Pending</a></li>   
+                                                                    <li><a href="/product_sources/list_view?type=supply&&status=released&&source=inventory">Released</a></li>   	
+						                </ul>
+						            </li> 
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Purchase Orders</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/purchase_orders/po?status=ongoing">Pending</a></li>
+						                    <li><a href="/purchase_orders/po?status=ongoing">Received</a></li>
+                                                                </ul>
+						            </li> 
+						            <li>
+						                <a href=" "> 
+                                                                    <i class="fa fa-dropbox"></i>
+						                    <span class="menu-title">
+									<strong>Inventory</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
+						             
+                                                            <?php } ?>
+                                                            <!-- warehouse_head -->
+                                                            <!-- collection_officer-->
+                                                             <?php if($UserIn['User']['role'] == 'collection_officer'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_warehouse"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>       
+						            <li>
+ 						                <a href="">  
+                                                                    <i class="fa fa-file-pdf-o"></i>
+						                    <span class="menu-title">
+									<strong>Collection Requests</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">   
+                                                                    <li><a href="/collection_schedules/list_view?type=today">Collection For Today</a></li>   
+                                                                    <li><a href="/collection_schedules/list_view?status=for_collection">For Collection</a></li>   
+                                                                    <li><a href="/collection_schedules/list_view?tatus=collected">Collected</a></li>   	
+						                </ul>
+						            </li> 
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Collections</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/purchase_orders/po?status=ongoing">Unverified</a></li>
+						                    <li><a href="/purchase_orders/po?status=ongoing">Verified</a></li>
+						                    <li><a href="/purchase_orders/po?status=ongoing">Bounced Check</a></li> 
+						                    <li><a href="/purchase_orders/po?status=ongoing">Void</a></li>  
+                                                                </ul>
+						            </li> 
+						            <li>
+						                <a href=" "> 
+                                                                    <i class="fa fa-dropbox"></i>
+						                    <span class="menu-title">
+									<strong>Inventory</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
+						             
+                                                            <?php } ?>
+                                                            <!-- collection_officer -->
+                                                            
+                                                            <!-- production_head -->
+                                                             <?php if($UserIn['User']['role'] == 'production_head'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_production_head"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>        
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Job Requests</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/purchase_orders/po?status=ongoing">New</a></li>
+						                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li> 
+						                    <li><a href="/purchase_orders/po?status=ongoing">Finished</a></li>  
+                                                                </ul>
+						            </li> 
+						            <li>
+						                <a href=" "> 
+                                                                    <i class="fa fa-dropbox"></i>
+						                    <span class="menu-title">
+									<strong>Processes</strong>
+                                                                    </span>
+						                </a>
+						            </li>  
+						             
+                                                            <?php } ?>
+                                                            <!-- production_head -->
 						           
 						           
                                 <!--Widget-->

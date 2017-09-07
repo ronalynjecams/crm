@@ -147,7 +147,8 @@ class CollectionSchedulesController extends AppController {
            'created_by' =>$this->Auth->user('id'), 
            'agent_instruction' =>$data['agent_instruction'], 
            'collection_date' =>$collection_date, 
-            'status' => 'for_collection'
+            'status' => 'for_collection',
+            'quotation_id'=>$data['quotation_id'], 
         ));
         $this->CollectionSchedule->save();
              
@@ -202,10 +203,26 @@ class CollectionSchedulesController extends AppController {
            'created_by' =>$this->Auth->user('id'), 
            'agent_instruction' =>$data['agent_instruction'], 
            'collection_date' =>$collection_date, 
-            'status' => 'for_collection'
+            'status' => 'for_collection',
+            'quotation_id'=>$data['quotation_id'], 
+            
         ));
         $this->CollectionSchedule->save();
         
         echo json_encode($data['quotation_id']);
+        }
+        
+        public function list_view(){
+            $this->loadModel('Users');
+            
+            $this->CollectionSchedule->recursive = 2;
+            $status = $this->params['url']['status'];
+            $options = array('conditions' => array('CollectionSchedule.status' => $status ),
+                             'contain' => "");
+            $lists = $this->CollectionSchedule->find('all', $options );
+//            pr($lists); exit;
+            $collectors = $this->Users->find('all');
+//            pr($collectors); exit;
+            $this->set(compact('lists', 'collectors'));
         }
 }

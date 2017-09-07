@@ -105,4 +105,6 @@ class ProductSourcePropertiesController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}
+        
+        
 }

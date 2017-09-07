@@ -118,7 +118,7 @@ class QuotationProduct extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		)
+		),
 	);
 
 /**
@@ -139,7 +139,14 @@ class QuotationProduct extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => ''
-		)
+		),
+		'DeliverySchedProduct' => array(
+			'className' => 'DeliverySchedProduct',
+			'foreignKey' => 'quotation_product_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
 	);
 
 }

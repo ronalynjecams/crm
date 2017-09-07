@@ -25,7 +25,6 @@
             <div class="panel">
                 <div class="panel-heading">
                     <div class="panel-control">  
-                        <input type="hidden"  id="quotation_id" value="<?php echo $quote_data['Quotation']['id']; ?>" class="form-control">
                         
                         <button class="btn btn-default" data-target="#collection-panel-collapse" data-toggle="collapse"><i class="demo-pli-arrow-down"></i></button>
                     </div>
@@ -33,7 +32,8 @@
                 </div>
                 <div id="collection-panel-collapse" class="collapse in">
                     <div class="panel-body">
-                        <div class="row">
+                        <div class="row"><input type="text"  id="quotation_id" value="<?php echo $quote_data['Quotation']['id']; ?>" class="form-control">
+                        
                             <div class="col-sm-6">
                                 <div id="delivery_date_div_value">
                                     <label>Date of Collection</label>
@@ -176,6 +176,7 @@
 
     $(".moveQuote").click(function () { 
         var quotation_id = $("#quotation_id").val();
+        
         var collection_date = $("#collection_date").val();
         var collection_date_time = $("#collection_date_time").val();
         var agent_instruction = $("#agent_instruction").val();  
@@ -183,9 +184,9 @@
         var data = {"quotation_id": quotation_id,  
             "collection_date": collection_date,
             "collection_date_time": collection_date_time,
-            "agent_instruction": agent_instruction 
+            "agent_instruction": agent_instruction, 
         }
-
+console.log(data);
  
                 if (collection_date != "") {
                     if (collection_date_time != "") {

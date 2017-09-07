@@ -127,13 +127,13 @@ class PdfsController extends AppController {
         </tr>
     </table> ');
 
-        
-        $terms_info = '<p style="margin-top: -5px;"><font size="6">'.$quotation['Quotation']['terms_info'].'</font></p>';
-          
+
+        $terms_info = '<p style="margin-top: -5px;"><font size="6">' . $quotation['Quotation']['terms_info'] . '</font></p>';
+
         $terms = $terms_info;
-        
+
         $this->set(compact('terms'));
-        
+
         // get team for this quotation
         $this->loadModel('Team');
         $my_team = $this->Team->findById($quotation['Quotation']['team_id']);
@@ -160,7 +160,7 @@ class PdfsController extends AppController {
         $agent_signature = $quotation['User']['signature'];
         $this->set(compact('prepared_by'));
         $this->set(compact('agent_signature'));
-        
+
         $this->loadModel('User');
         $manager = $this->User->findById($my_team['Team']['team_manager']);
         $this->set(compact('manager'));
@@ -168,8 +168,8 @@ class PdfsController extends AppController {
         $this->set(compact('team_manager'));
         $team_signature = $manager['User']['signature'];
         $this->set(compact('team_signature'));
-        
-        
+
+
         $client_name = strtoupper($quotation['Client']['name']);
         $contact_person = strtoupper($quotation['Client']['contact_person']);
         $this->set(compact('contact_person'));
@@ -287,7 +287,7 @@ class PdfsController extends AppController {
 
         ////// PRODUCT DETAILS END //////
 
-        $this->Mpdf->WriteHTML('<div style="A_CSS_ATTRIBUTE:all;position: absolute;top: 35px; left:18px;  font-size:10px; ">
+        $this->Mpdf->WriteHTML(' <div style=" top: 35px; left:18px;  font-size:10px; ">
     <table style="width: 100%; border:1px ">
         <tr>
             <td style="text-align: left;width:25%; font-size:10px;">
@@ -371,8 +371,8 @@ class PdfsController extends AppController {
             </td> 
     </tr>
 </table> 
-</table>
-</div> 
+</table> 
+</div>
     ');
 
         $this->Mpdf->AddPage('P', // L - landscape, P - portrait 
@@ -435,6 +435,274 @@ class PdfsController extends AppController {
 //
 //
 //    }
+    }
 
-}
+//    
+//    
+    public function print_po() {
+
+
+        $this->Mpdf->init();
+
+
+
+
+        $this->loadModel('PurchaseOrder');
+        $po_id = $this->params['url']['id'];
+
+        $purchase_order = $this->PurchaseOrder->findById($po_id);
+        $this->Mpdf->SetHTMLHeader('<div style="padding-top:-15px; right:500px; font-size:10px; " align="right">' . date("F d, Y h:i A") . '</div>');
+
+        $dis = $purchase_order['PurchaseOrder']['discount'];
+        if ($dis == 0) {
+            $discount = "";
+        } else {
+            $discount = '
+                <tr  align="right">
+                    <td  align="right"><b>Discount:</b></td>
+                    <td style="text-align:right; padding-right:0px" >&#8369;  ' . number_format($dis, 2) . '<br/> <br/> 
+                 </td> 
+                 </tr>';
+        }
+
+        $v = $purchase_order['PurchaseOrder']['vat_amount'];
+        if ($v == 0) {
+            $vat = "";
+        } else {
+            $vat = '
+                <tr  align="right">
+                    <td  align="right"><b>12% Vat:</b></td>
+                    <td style="text-align:right; padding-right:0px" >&#8369;  ' . number_format($v, 2) . '<br/> <br/> 
+                 </td> 
+                 </tr>';
+        }
+
+        $e = $purchase_order['PurchaseOrder']['ewt_amount'];
+        if ($e == 0) {
+            $ewt = "";
+        } else {
+            $ewt = '
+                <tr  align="right">
+                    <td  align="right"><b>1% EWT:</b></td>
+                    <td style="text-align:right; padding-right:0px" >&#8369;  ' . number_format($e, 2) . '<br/> <br/> 
+                 </td> 
+                 </tr>';
+        }
+
+        $ewt = $purchase_order['PurchaseOrder']['ewt'];
+        $grand_total = $purchase_order['PurchaseOrder']['grand_total'];
+        $total_purchased = $purchase_order['PurchaseOrder']['total_purchased'];
+
+
+        ////// PRODUCT DETAILS START //////
+
+        $this->loadModel('PoProduct');
+        $this->PoProduct->recursive = 2;
+        $quote_products = $this->PoProduct->find('all', array(
+            'conditions' => array('PoProduct.purchase_order_id' => $po_id)
+        ));
+
+        $cnt = 1;
+        $sub_total = 0;
+        $product_details = [];
+//        foreach ($quote_products as $prod) {
+//            $total = $prod['PoProduct']['qty'] * $prod['PoProduct']['price'];
+//            $prod_prop = [];
+//            foreach ($prod['PoProductProperty'] as $desc) {
+////                if (is_null($desc['property'])) {
+////                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
+////                } else {
+//                $prod_prop[] = '<li class="list-group-item"> ' . $desc['property'] . ' : ' . $desc['value'] . '</li>';
+////                }
+//            }
+//            
+////            if($cnt == 10){
+////                $pp = '<pagebreak>';
+////            }else{
+////                $pp = '';
+////            }
+//
+//            $product_details[] = '<tr>
+//                <td width="15" align="left">' . $cnt . '</td>
+//                <td width="140" align="center"><b>' . $prod['Product']['name'] . '</b></td>
+//                <td width="120" align="center"><img class="img-responsive" src="../product_uploads/' . $prod['Product']['image'] . '" width="70" height="70"></td>
+//                <td width="200"> 
+//                      <ul class="list-group">' . implode($prod_prop) . '<li class="list-group-item"> '
+//                    . ' <p>&nbsp;<br/></p><br/></li>
+//                        </ul>
+//                        </td>
+//                <td width="20">' . abs($prod['PoProduct']['qty']) . '</td>
+//                <td width="100" align="right">&#8369;  ' . number_format($prod['PoProduct']['price'], 2) . '</td> 
+//                <td width="120" align="right">&#8369;  ' . number_format($total, 2) . '</td></tr>';
+//
+//
+//            $cnt++;
+////            $sub_total = $sub_total + $quote_prod['QuotationProduct']['edited_amount'];
+//        }
+
+
+
+//        $this->Mpdf->shrink_tables_to_fit = 3;
+//<table style="width: 100%; border:1px "  repeat_header="3">
+
+$this->Mpdf->autoPageBreak = true; 
+$mpdf->shrink_tables_to_fit = 1;
+$this->Mpdf->AddPage();
+        $html = ' <div style=" top: 35px; left:18px;  font-size:10px; ">
+    <table style="width: 100%; border:1px; page-break-inside: avoid " autosize=�1� >
+        <tr>
+            <td style="text-align: left;width:25%; font-size:10px;">
+                <img src="../img/jecams/po.JPG" width="170" height="35">  
+            </td>
+            <td style="text-align: right;width:40%; font-size:15px;padding-right:20px;">
+                PCAB Accredited Contractor
+            </td> 
+            <td style="text-align: right;width:35%; font-size:13px;padding-right:20px;">
+                <p style="margin-top: -5px;">www.jecams.com.ph</p>
+            </td> 
+        </tr>
+    </table>
+    <table border="0">
+    <tr>
+        <td width="320" align="left" style="padding-left:10px;padding-right:10px;padding-bottom:-50px;"> 
+            <font style="font-size:12px;">From:</font>
+            <font style="font-size:10px;"> 
+            <p class="marginedQuoteHeaderFirst"><b>JECAMS INC.</b></p>
+            <p style="margin-top: -5px;">3 Queen St.Forest Hills Novaliches Quezon City 1117</p>  
+            <p style="margin-top: -5px;">Tel: 358.8149 / 921.1033</p>   
+        </td>
+
+        <td width="240" align="left" style="padding-left:10px;padding-right:10px;padding-bottom:-50px;">
+            <font style="font-size:12px;">To:</font>
+            <font style="font-size:10px;">
+            <p style="margin-top: 2px;"><b>' . strtoupper($purchase_order['Supplier']['name']) . '</b></p> 
+            </font> 
+        </td> 
+        <td width="200" align="left" style="padding-left:5px;padding-right:10px;padding-bottom:-50px;">
+            <font style="font-size:11px;">
+            <p style="margin-top: -5px;"><b>Purchase Order:</b> ' . $purchase_order['PurchaseOrder']['po_number'] . '</p>  
+            <p><b>Date Created:</b> ' . date('F d, Y', strtotime($purchase_order['PurchaseOrder']['created'])) . '</p>
+            <p><b>Created By:</b> ' . $purchase_order['User']['first_name'] . '  ' . $purchase_order['User']['last_name'] . '</p>
+        
+             </font>  
+        </td>
+    </tr>   
+</table>
+<br/><br/><br/><br/> 
+<br/><br/><br/><br/>
+<table border="0" cellpadding="0" cellspacing="0"  style="border-collapse:collapse;font-size:12px; " align="center">
+    <tr>
+        <td align="left"  style="font-size:12px;"><b>#</b><br/><br/> <br/></td> 
+        <td align="center" style="font-size:12px;"><b>Code</b> <br/><br/><br/> </td>
+        <td align="center" style="font-size:12px;"><b>Product</b> <br/><br/><br/> </td>
+        <td align="left"  style="font-size:12px;"><b>Description</b><br/><br/><br/> </td>
+        <td align="center"  style="font-size:12px;"><b>Qty</b><br/> <br/><br/></td>
+        <td align="right"  style="font-size:12px;"><b>List Price</b><br/> <br/><br/></td>
+        <td   align="right"  style="font-size:12px; "> <b>Total</b><br/> <br/><br/></td>
+    </tr>
+    ' ;
+    $myCtr = 0;
+      foreach ($quote_products as $prod) {
+            $total = $prod['PoProduct']['qty'] * $prod['PoProduct']['price'];
+            $prod_prop = [];
+//            foreach ($prod['PoProductProperty'] as $desc) {
+////                if (is_null($desc['property'])) {
+////                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
+////                } else {
+//                $prod_prop[] = '<li class="list-group-item"> ' . $desc['property'] . ' : ' . $desc['value'] . '</li>';
+////                }
+//            }
+            
+//            if($cnt == 10){
+//                $pp = '<pagebreak>';
+//            }else{
+//                $pp = '';
+//            }
+
+            $html .= '<tr>
+                <td width="15" align="left">' . $cnt . '</td>
+                <td width="140" align="center"><b>' . $prod['Product']['name'] . '</b></td>
+                <td width="120" align="center"><img class="img-responsive" src="../product_uploads/' . $prod['Product']['image'] . '" width="70" height="70"></td>
+                <td width="200"> 
+                      <ul class="list-group">' ;
+                    foreach ($prod['PoProductProperty'] as $desc) {
+//                if (is_null($desc['property'])) {
+//                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
+//                } else {
+                $html .= '<li class="list-group-item"> ' . $desc['property'] . ' : ' . $desc['value'] . '</li>';
+//                }
+            }
+                    $html .= '<li class="list-group-item"> 
+                     <p>&nbsp;<br/></p><br/></li>
+                        </ul>
+                        </td>
+                <td width="20">' . abs($prod['PoProduct']['qty']) . '</td>
+                <td width="100" align="right">&#8369;  ' . number_format($prod['PoProduct']['price'], 2) . '</td> 
+                <td width="120" align="right">&#8369;  ' . number_format($total, 2) . '</td></tr>';
+
+
+//            $cnt++;
+//            $sub_total = $sub_total + $quote_prod['QuotationProduct']['edited_amount'];
+//            $myCtr++;
+//            if($myCtr >= 10) {
+//                $this->Mpdf->AddPage();
+//                $myCtr = 0;
+//            } 
+//            
+        }
+                
+    
+ $html .= '
+        
+ <tr>
+        <td colspan="3" >  </td> 
+        <td colspan="4" align="right">
+            <table style="font-size:12px;width:250" align="right">
+                  <tr>
+                    <td style="width:50%" align="right"><b>Total Purchased:</b><br/> <br/></td>
+                    <td  style="text-align:right">&#8369;  ' . number_format($purchase_order['PurchaseOrder']['total_purchased'], 2) . ' </td>
+                  </tr> 
+                ' . $discount . '
+                ' . $vat . ' 
+                ' . $ewt . ' 
+                  <tr>
+                    <td style="width:50%" align="right"><b>Grand Total:</b><br/> <br/></td>
+                    <td  style="text-align:right">&#8369;  ' . number_format($purchase_order['PurchaseOrder']['grand_total'], 2) . ' </td>
+                  </tr> 
+                </table>
+            </td> 
+    </tr>
+</table> 
+</table>
+</div>
+    ';
+ $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+//    pr($html); exit;
+    $this->Mpdf->WriteHTML($html);
+
+
+//        $this->set(compact('purchase_order', 'product_details', 'discount', 'vat', 'ewt'));
+
+
+//           $ctrProd = count($quote_productsc);
+//           $ctrPrd = $ctrProd/6;
+//           for($i=1; $i<=$ctrPrd; $i++){
+               
+//        $this->Mpdf->AddPage('P', // L - landscape, P - portrait 
+//                '', '', '', '', 5, // margin_left
+//                5, // margin right
+//                15, // margin top
+//                30, // margin bottom
+//                10, // margin header
+//                10);
+////           }
+
+//$this->Mpdf->Output();
+
+
+        $this->layout = 'pdf';
+        $this->render('print_po');
+        $this->Mpdf->setFilename('PurchaseOrder.pdf');
+    }
+
 }

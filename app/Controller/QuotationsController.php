@@ -39,16 +39,26 @@ class QuotationsController extends AppController {
 //
 //        $qprod = $this->QuotationProduct->findById(10);
 //        pr($qprod);
-        error_reporting(0);
+//        error_reporting(0);
         $id = $this->params['url']['id'];
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
+        
+//        pr($quote_data);
 
         $this->loadModel('Client');
         $clients = $this->Client->find('all', array(
             'conditions' => array('Client.user_id' => $this->Auth->user('id'), 'Client.lead' => 0)
         ));
+
+        $this->loadModel('DeliveryPaper');
+        $delivery_papers = $this->DeliveryPaper->findByQuotationId($id);
+        
+        
+        $this->loadModel('DrPaper');
+        $drpapers = $this->DrPaper->find('all');
+        $this->set(compact('drpapers','delivery_papers'));
 
 
         $this->set(compact('clients'));
@@ -81,8 +91,7 @@ class QuotationsController extends AppController {
                 'Collection.status' => 'verified')
         ));
         $this->set(compact('collections'));
-
-
+        
         $this->loadModel('PoProduct');
         $this->PoProduct->recursive = 2;
         $poprod = $this->PoProduct->find('all', array(
@@ -95,8 +104,7 @@ class QuotationsController extends AppController {
         $this->loadModel('InvLocation');
         $locations = $this->InvLocation->find('all');
         $this->set(compact('locations'));
-//            pr($poprod);
-//        $additional_products = $this->Product->find()
+        
     }
 
     /**
@@ -480,7 +488,7 @@ class QuotationsController extends AppController {
         $terms = $this->QuotationTerm->find('all', array(
             'conditions' => array('QuotationTerm.id >=' => 3)
         ));
-        $this->set(compact('clients', 'quote_number', 'banks', 'terms'));
+        $this->set(compact('clients', 'quote_number', 'banks', 'terms','id'));
     }
 
     public function move_to_purchasing() {
@@ -607,6 +615,7 @@ class QuotationsController extends AppController {
             'check_date' => $check_date,
             'type' => $type,
             'status' => 'unverified',
+            
         ));
         $this->Collection->save();
 
