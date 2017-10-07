@@ -60,7 +60,49 @@ class User extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => ''
-		)
+		),
+                'SocialProfile' => array(
+                    'className' => 'SocialProfile',
+                )
 	);
+        
+        public function createFromSocialProfile($incomingProfile){
+	    // check to ensure that we are not using an email that already exists
+	    $existingUser = $this->find('first', array(
+	        'conditions' => array('email' => $incomingProfile['SocialProfile']['email'])));
+	     
+	    if($existingUser){
+	        // this email address is already associated to a member
+	        return $existingUser;
+	    }
+	     
+	    // brand new user
+	    $socialUser['User']['email'] = $incomingProfile['SocialProfile']['email'];
+	    $socialUser['User']['username'] = strtolower(str_replace(' ', '_',$incomingProfile['SocialProfile']['display_name']));
+	    $socialUser['User']['first_name'] = $incomingProfile['SocialProfile']['first_name'];
+	    $socialUser['User']['last_name'] = $incomingProfile['SocialProfile']['last_name'];
+	    $socialUser['User']['role'] = 'new'; 
+	    $socialUser['User']['picture'] = $incomingProfile['SocialProfile']['picture'];
+	    // $socialUser['User']['role'] = 'bishop'; // by default all social logins will have a role of bishop
+                $socialUser['User']['password'] = "J3c@ms|nc"; // although it technically means nothing, we still need a password for social. setting it to something random like the current time..
+	    $socialUser['User']['created'] = date('Y-m-d h:i:s');
+	    $socialUser['User']['modified'] = date('Y-m-d h:i:s');
+	     
+	    // save and store our ID
+	    $this->save($socialUser);
+	    $socialUser['User']['id'] = $this->id;
+//	    
+//	    $hash = md5(rand(0,1000));
+//		$this->Verilink->create();
+//		$this->Verilink->set([
+//			'user_id'=>$this->id,
+//			'rand'=>$hash, 
+//			'type'=>'new'
+//		]);
+//			
+//		$this->Verilink->save();
+	     
+	    return $socialUser;
+	}
 
 }

@@ -53,7 +53,7 @@ class QuotationsController extends AppController {
         ));
 
         $this->loadModel('DeliveryPaper');
-        $delivery_papers = $this->DeliveryPaper->findByQuotationId($id);
+        $delivery_papers = $this->DeliveryPaper->findAllByQuotationId($id);
         
         
         $this->loadModel('DrPaper');
@@ -474,6 +474,7 @@ class QuotationsController extends AppController {
         $id = $this->params['url']['id'];
         $this->loadModel('Bank');
         $this->loadModel('QuotationTerm');
+        $this->loadModel('AgentStatus');
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
@@ -488,7 +489,12 @@ class QuotationsController extends AppController {
         $terms = $this->QuotationTerm->find('all', array(
             'conditions' => array('QuotationTerm.id >=' => 3)
         ));
-        $this->set(compact('clients', 'quote_number', 'banks', 'terms','id'));
+        
+        //get agent status where date_to is null kasi ibig sabihin yun yung current team nya
+        $this->AgentStatus->recursive = -1; 
+        $agent_status = $this->AgentStatus->find('first',['conditions'=>['AgentStatus.date_to'=>NULL]]);
+//        pr($agent_status);
+        $this->set(compact('clients', 'quote_number', 'banks', 'terms','id','agent_status'));
     }
 
     public function move_to_purchasing() {
@@ -629,12 +635,13 @@ class QuotationsController extends AppController {
         $quotation_id = $data['quotation_id'];
         $this->Quotation->id = $quotation_id;
         $this->Quotation->set(array(
-            'status' => 'approved',
+            'status' => 'moved',
             'vat_type' => $data['vat_type'],
             'quotation_term_id' => $term_id,
             'delivery_mode' => $data['delivery_mode'],
             'target_delivery' => $data['target_delivery'],
             'date_moved' => $dateToday,
+            'advance_invoice' => $data['advance_invoice'],
         ));
         $this->Quotation->save();
 
@@ -778,6 +785,55 @@ class QuotationsController extends AppController {
 //            pr($poprod);
 //        $additional_products = $this->Product->find()
          
+    }
+    
+    
+    public function proprietor() {
+        if ($this->Auth->user('role') == 'proprietor') {
+            
+        $quote_status = $this->params['url']['status'];
+            $this->Quotation->recursive = 2;
+            $options = array('conditions' => array( 
+                    'Quotation.status' => $quote_status),
+                'order' => 'Quotation.created DESC');
+            $this->set('quotations', $this->Quotation->find('all', $options));
+        }
+    }
+    
+    public function proprietor_approve(){
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $data = $this->request->data;
+            $id = $data['id']; 
+
+            $dateToday = date("Y-m-d H:i:s");
+            $this->Quotation->id = $id;
+            $this->Quotation->set(array(
+                'status' => 'approved',
+                'date_approved' => $dateToday,
+                'approved_by' => $this->Auth->user('id'),
+            ));
+            if ($this->Quotation->save()) {
+                return (json_encode($id));
+            } else {
+                echo json_encode('invalid data');
+            }
+            exit;
+        }
+        
+    }
+    
+    
+    public function sales_moved() {
+        if ($this->Auth->user('role') == 'sales_executive') {
+            $this->Quotation->recursive = 2;
+            $options = array('conditions' => array(
+                    'Quotation.user_id' => $this->Auth->user('id'),
+                    'Quotation.status' => 'moved'),
+                'order' => 'Quotation.created DESC');
+            $this->set('pending_quotations', $this->Quotation->find('all', $options));
+        }
     }
 
 }

@@ -128,23 +128,23 @@ class DeliverySchedulesController extends AppController {
 //        pr($check_sched);
         if (count($check_sched) != 0) {
             //add to delivery sched products only
-            
-                $this->DeliverySchedProduct->create();
-                $this->DeliverySchedProduct->set(array(
-                    'delivery_schedule_id' => $check_sched['DeliverySchedule']['id'],
-                    'quotation_product_id' => $quotation_product_id,
-                    'status' => 'pending',
-                    'requested_qty' => $requested_qty,
-                ));
-                if ($this->DeliverySchedProduct->save()) { 
+
+            $this->DeliverySchedProduct->create();
+            $this->DeliverySchedProduct->set(array(
+                'delivery_schedule_id' => $check_sched['DeliverySchedule']['id'],
+                'quotation_product_id' => $quotation_product_id,
+                'status' => 'pending',
+                'requested_qty' => $requested_qty,
+            ));
+            if ($this->DeliverySchedProduct->save()) {
                 $dsp_id = $this->DeliverySchedule->getLastInsertID();
-                    $this->QuotationProduct->id = $quotation_product_id;
-                    $this->QuotationProduct->set(array(
-                        'dr_requested' => 1
-                    ));
-                    $this->QuotationProduct->save();
-                    echo json_encode($dsp_id);
-                }
+                $this->QuotationProduct->id = $quotation_product_id;
+                $this->QuotationProduct->set(array(
+                    'dr_requested' => 1
+                ));
+                $this->QuotationProduct->save();
+                echo json_encode($dsp_id);
+            }
         } else {
             //create new dr
             $dateToday = date("Hymds");
@@ -183,9 +183,9 @@ class DeliverySchedulesController extends AppController {
                     'status' => 'pending',
                     'requested_qty' => $requested_qty,
                 ));
-                if ($this->DeliverySchedProduct->save()) { 
-                $dsp_id = $this->DeliverySchedule->getLastInsertID();
-                
+                if ($this->DeliverySchedProduct->save()) {
+                    $dsp_id = $this->DeliverySchedule->getLastInsertID();
+
                     $this->QuotationProduct->id = $quotation_product_id;
                     $this->QuotationProduct->set(array(
                         'dr_requested' => 1
@@ -195,6 +195,82 @@ class DeliverySchedulesController extends AppController {
                 }
             }
         }
+    }
+
+    public function requests() {
+        //pending, processed, delivered
+        $this->loadModel('DeliverySchedProduct');
+        $status = $this->params['url']['status'];
+        $this->DeliverySchedule->recursive=2;
+        if($status=='ongoing'){
+             $requests = $this->DeliverySchedule->find('all', ['conditions' => ['DeliverySchedule.status' => [$status,'pending']]]);
+        }else{
+             $requests = $this->DeliverySchedule->find('all', ['conditions' => ['DeliverySchedule.status' => $status]]);
+        }
+
+        $arr = [];
+        foreach ($requests as $req) {
+            $delProds = $this->DeliverySchedProduct->find('all', ['conditions' => [
+                    'DeliverySchedProduct.delivery_schedule_id' => $req['DeliverySchedule']['id'],
+                    'DeliverySchedProduct.status' => 'pending',
+            ]]);
+            if (!empty(count($delProds))){ 
+                array_push($arr, $req);
+            }
+        }
+        
+//        pr($arr);exit;
+        
+        $this->set(compact('arr','status'));
+        
+        
+    }
+    
+    public function changeStatus(){ 
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data; 
+        
+        $delivery_schedule_id = $data['delivery_schedule_id'];
+        $status = $data['status'];
+        
+        
+        $this->DeliverySchedule->id = $delivery_schedule_id;
+        $this->DeliverySchedule->set(array(
+            'status' => $status
+        ));
+        if ($this->DeliverySchedule->save()) {
+            echo json_encode($data);
+        }
+    }
+    
+    public function drs() {
+        //pending, processed, delivered
+        $this->loadModel('DeliverySchedProduct');
+        $status = $this->params['url']['status'];
+        $this->DeliverySchedule->recursive=2;
+        if($status=='ongoing'){
+             $requests = $this->DeliverySchedule->find('all', ['conditions' => ['DeliverySchedule.status' => [$status,'pending']]]);
+        }else{
+             $requests = $this->DeliverySchedule->find('all', ['conditions' => ['DeliverySchedule.status' => $status]]);
+        }
+
+        $arr = [];
+        foreach ($requests as $req) {
+            $delProds = $this->DeliverySchedProduct->find('all', ['conditions' => [
+                    'DeliverySchedProduct.delivery_schedule_id' => $req['DeliverySchedule']['id'],
+                    'DeliverySchedProduct.status' => 'pending',
+            ]]);
+            if (!empty(count($delProds))){ 
+                array_push($arr, $req);
+            }
+        }
+        
+//        pr($arr);exit;
+        
+        $this->set(compact('arr','status'));
+        
+        
     }
 
 }

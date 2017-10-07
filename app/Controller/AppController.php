@@ -2,6 +2,8 @@
 
 App::uses('Controller', 'Controller');
 
+//session_start();
+//ob_start();
 class AppController extends Controller {
 
     public $uses = ['User'];
@@ -10,13 +12,13 @@ class AppController extends Controller {
         'Session',
         'Auth' => array(
             'loginRedirect' => array(
-                'controller' => 'posts',
-                'action' => 'index'
+                'controller' => 'users',
+                'action' => 'complete_profile'
             ),
             'logoutRedirect' => array(
-                'controller' => 'pages',
-                'action' => 'display',
-                'home'
+                'controller' => 'users',
+                'action' => 'login'
+//                'home'
             ),
             'authenticate' => array(
                 'Form' => array(
@@ -29,7 +31,7 @@ class AppController extends Controller {
     public function beforeFilter() {
         parent::beforeFilter();
         $this->layout = 'bootstrap';
-        $this->Auth->allow('add', 'view', 'logout', 'login');
+        $this->Auth->allow('add', 'view', 'logout', 'login', 'social_login','social_endpoint');
 
         $this->set('authUser', $this->Auth->user());
         $this->set('userID', $this->Auth->user('id'));
@@ -46,6 +48,16 @@ class AppController extends Controller {
         'conditions' => array('JobRequest.status !=' => 'pending' 
             )));
         $this->set(compact('jr_head_count_left_side'));  
+        
+        $this->loadModel('Quotation');
+        $moved_quote_count_left_side = $this->Quotation->find('count', array(
+        'conditions' => array('Quotation.status' => 'moved' 
+            )));
+        $this->set(compact('moved_quote_count_left_side'));  
+        
+//        if($this->Auth->user('role') == 'new'){
+//            return $this->redirect('/users/login?profile=incomplete');
+//        }
     }
 
 }

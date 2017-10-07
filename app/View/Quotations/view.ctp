@@ -213,6 +213,7 @@
                                 ?>
                                 <button class="btn btn-mint btn-icon add-tooltip update_quote" data-toggle="tooltip"  data-original-title="Update Quotation?" id="update_quote" data-upquoteid="<?php echo $quote_data['Quotation']['id']; ?>"><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-warning btn-icon add-tooltip move_to_purchasing_btn" data-toggle="tooltip"  data-original-title="Move to Purchasing" id="move_to_purchasing" data-moveid="<?php echo $quote_data['Quotation']['id']; ?>">Move to Purchasing</button>
+                                <button class="btn btn-dark btn-icon add-tooltip advance_invoice_btn" data-toggle="tooltip"  data-original-title="Advance Invoice" id="advance_invoice_btn" data-advnceid="<?php echo $quote_data['Quotation']['id']; ?>">Advance Invoice</button>
                                 <?php
                             }
                         } else if ($quote_data['Quotation']['status'] == 'approved') {
@@ -298,8 +299,18 @@
                             <div class="panel-body">
                                 <?php
 //                                pr($delivery_papers);
-                                foreach($delivery_papers as $delivery_paper){ ?>
-                                    <div class="col-sm-6"><?php// echo $delivery_paper['DrPaper']['name']; ?><small>[<?php //echo $delivery_paper['DeliveryPaper']['date_needed']; ?>]</small></div>
+                                foreach($delivery_papers as $delivery_paper){ 
+                                    if($delivery_paper['DeliveryPaper']['date_acquired']!= NULL){
+                                        $del1 = '<del>';
+                                        $del2 = '</del>';
+                                    }else{
+                                        $del1 = '';
+                                        $del2 = '';
+                                    }
+                                    ?>
+<!--                                    echo date('F d, Y', strtotime($list['CollectionSchedule']['created']));
+                                    echo '<br/><small>' . date('h:i a', strtotime($list['CollectionSchedule']['created'])) . '</small>';-->
+                                    <div class="col-sm-6"><?php echo $del1.''.$delivery_paper['DrPaper']['name']; ?><small> [<?php echo date('M. d, Y', strtotime($delivery_paper['DeliveryPaper']['date_needed'])); ?>]</small><?php echo $del2; ?></div>
                                 <?php } ?>
 <!--                                <div class="col-sm-6">asdasd<small>[date]</small></div>
                                 <div class="col-sm-6">asdasd<small>[date]</small></div>

@@ -15,7 +15,7 @@
                     <button class="btn btn-primary moveQuote" data-buttontype="save" >Move to purchasing</button> 
                     <button class="btn btn-danger cancelQuote">Cancel</button> 
                 </h3>
-                <input type="text" id="quotation_id" value="<?php echo $id; ?>">
+                <input type="hidden" id="quotation_id" value="<?php echo $id; ?>">
             </div>
         </div>
         <div class="col-sm-8">
@@ -28,13 +28,13 @@
                 </div>
                 <div id="move-panel-collapse" class="collapse in">
                     <div class="panel-body">
-                        
+
                         <div class="row">
                             <div class="col-sm-6"> 
                                 <div class="form-group  ">
-                                    
-                                    
-                                    
+
+
+
                                     <label class="control-label">Payment Mode</label>  
                                     <select id="payment_mode" class="form-control"> 
                                         <option value=""> select </option>
@@ -167,21 +167,41 @@
                 </div>
                 <div id="qInfo-panel-collapse" class="collapse in">
                     <div class="panel-body">
+                        <div class="row"> 
+                            <div class="col-sm-6"> 
+                                <label class=" control-label"><b>Assigned TIN Number</b></label> 
+                            </div>
+                            <div class="col-sm-6"> 
+                                <input type="number" readonly id="my_tin" value="<?php echo $agent_status['AgentStatus']['tin_number']; ?>" class="form-control">
+                            </div>
+                        </div> 
                         <div class="row">
                             <input type="hidden" value="<?php echo $quote_data['Client']['id']; ?>" id="client_id">
                             <div class="col-sm-12"  > <br/><b>Client: </b> <?php echo $quote_data['Client']['name']; ?></div>
                         </div>
-
-                        <div class="row"><br/> 
+                        <div class="row">
                             <div class="col-sm-12"> 
                                 <label class=" control-label"><b>TIN Number</b></label> 
                                 <input type="number" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
                                 <div id="require_tin_div"></div>
                             </div>
-                        </div> 
+                        </div>
+                        <div class="row"> 
+                            <div class="col-sm-6"> 
+                                <label class=" control-label"><b>With Advance Invoice?</b></label> 
+                            </div>
+                            <div class="col-sm-6">  
+                                <select id="advance_invoice" class="form-control">
+                                    <option value="0">no</option>
+                                    <option value="1">yes</option>
+                                </select>
+                            </div>
+                        </div>  
+
                     </div>
                 </div>
-            </div><div class="panel">
+            </div>
+            <div class="panel">
                 <div class="panel-heading">
                     <div class="panel-control">  
                         <button class="btn btn-default" data-target="#delivery-panel-collapse" data-toggle="collapse"><i class="demo-pli-arrow-down"></i></button>
@@ -193,8 +213,8 @@
                         <div id="addresses"><br/>
                             <?php if ($quote_data['Quotation']['delivery_mode'] == 'deliver') { ?>  
                                 <?php if ($quote_data['Quotation']['bill_ship_address'] == 1) { ?> 
-                        <small class="text-danger">[Please make sure billing and shipping address are correct.
-                            If not, kindly update to avoid delays during delivery of items and collection of payments.]</small>
+                                    <small class="text-danger">[Please make sure billing and shipping address are correct.
+                                        If not, kindly update to avoid delays during delivery of items and collection of payments.]</small>
                                     <div id="bill_ship_div"> 
                                         <div class="col-sm-12">
                                             <b>Billing and Shipping Address</b>   <a class="btn btn-xs btn-pink" id="bill_ship_direction" href="http://maps.google.com/?q=<?php echo $quote_data['Quotation']['bill_latitude'] . ',' . $quote_data['Quotation']['bill_longitude']; ?>" target="_blank"> <i class="fa fa-external-link"></i> </a>
@@ -259,11 +279,11 @@
 <script>
     $(document).ready(function () {
 
-       $("#term_id").select2({
-           placeholder: "Select Term", 
-           width: '100%',
-           allowClear: false
-       }); 
+        $("#term_id").select2({
+            placeholder: "Select Term",
+            width: '100%',
+            allowClear: false
+        });
         $(".check_online_mode_div").hide();
         $(".check_mode_div").hide();
         $(".amount_div").hide();
@@ -339,8 +359,8 @@
         var tin_number = $("#tin_number").val();
         var target_delivery = $("#target_delivery").val();
         var quotation_id = $("#quotation_id").val();
-        var client_id = $("#client_id").val();
-
+        var client_id = $("#client_id").val(); 
+        var advance_invoice = $("#advance_invoice").val();
 
         var data = {"quotation_id": quotation_id,
             "client_id": client_id,
@@ -354,7 +374,8 @@
             "term_id": term_id,
             "delivery_mode": delivery_mode,
             "tin_number": tin_number,
-            "target_delivery": target_delivery, 
+            "target_delivery": target_delivery,
+            "advance_invoice": advance_invoice,
         }
 
 
@@ -447,21 +468,21 @@
                 document.getElementById('vat_type').style.borderColor = "red";
             }
         } else if (payment_mode == 'check') {
-        
+
             if (vat_type != "") {
                 if (amount_paid != "") {
                     if (with_held != "") {
                         if (bank_id != "") {
                             if (term_id != "") {
-                                if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
+                                if (tin_number != "" && tin_number != 00000000000000 && tin_number != 11111111111111 && tin_number >= 1000) {
                                     if (check_number != "") {
                                         if (check_date != "") {
                                             ///process here
-                                            approve_quotation(data); 
-                                        }else{
+                                            approve_quotation(data);
+                                        } else {
                                             document.getElementById('check_date').style.borderColor = "red";
                                         }
-                                    }else{
+                                    } else {
                                         document.getElementById('check_number').style.borderColor = "red";
                                     }
                                 } else {

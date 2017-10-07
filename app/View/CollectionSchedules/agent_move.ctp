@@ -112,7 +112,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-6"> 
-                                    <label>Time of Collection</label>  
+                                <label>Time of Collection</label>  
 
                                 <div class="input-group date">
                                     <input id="collection_date_time" type="text" readonly class="form-control">
@@ -143,19 +143,53 @@
                     <h3 class="panel-title"> Quote information</h3>
                 </div>
                 <div id="qInfo-panel-collapse" class="collapse in">
+                    <!--                    <div class="panel-body">
+                                            <div class="row">
+                                                <input type="hidden" value="<?php echo $quote_data['Client']['id']; ?>" id="client_id">
+                                                <div class="col-sm-12"  > <br/><b>Client: </b> <?php echo $quote_data['Client']['name']; ?></div>
+                                            </div>
+                    
+                                            <div class="row"><br/> 
+                                                <div class="col-sm-12"> 
+                                                    <label class=" control-label"><b>TIN Number</b></label> 
+                                                    <input type="number" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
+                                                    <div id="require_tin_div"></div>
+                                                </div>
+                                            </div> 
+                                        </div>-->
+
                     <div class="panel-body">
+                        <div class="row"> 
+                            <div class="col-sm-6"> 
+                                <label class=" control-label"><b>Assigned TIN Number</b></label> 
+                            </div>
+                            <div class="col-sm-6"> 
+                                <input type="number" readonly id="my_tin" value="<?php echo $agent_status['AgentStatus']['tin_number']; ?>" class="form-control">
+                            </div>
+                        </div> 
                         <div class="row">
                             <input type="hidden" value="<?php echo $quote_data['Client']['id']; ?>" id="client_id">
                             <div class="col-sm-12"  > <br/><b>Client: </b> <?php echo $quote_data['Client']['name']; ?></div>
                         </div>
-
-                        <div class="row"><br/> 
+                        <div class="row">
                             <div class="col-sm-12"> 
                                 <label class=" control-label"><b>TIN Number</b></label> 
                                 <input type="number" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
                                 <div id="require_tin_div"></div>
                             </div>
-                        </div> 
+                        </div>
+                        <div class="row"> 
+                            <div class="col-sm-6"> 
+                                <label class=" control-label"><b>With Advance Invoice?</b></label> 
+                            </div>
+                            <div class="col-sm-6">  
+                                <select id="advance_invoice" class="form-control">
+                                    <option value="0">no</option>
+                                    <option value="1">yes</option>
+                                </select>
+                            </div>
+                        </div>  
+
                     </div>
                 </div>
             </div>
@@ -276,6 +310,8 @@
         var collection_date_time = $("#collection_date_time").val();
         var agent_instruction = $("#agent_instruction").val();
         var client_id = $("#client_id").val();
+        var advance_invoice = $("#advance_invoice").val();
+        
         console.log(collection_date_time);
 
         var data = {"quotation_id": quotation_id,
@@ -287,7 +323,8 @@
             "collection_date": collection_date,
             "collection_date_time": collection_date_time,
             "agent_instruction": agent_instruction,
-            "target_delivery": target_delivery
+            "target_delivery": target_delivery,
+            "advance_invoice": advance_invoice
         }
 
 

@@ -1,5 +1,7 @@
 <?php
+
 App::uses('AppController', 'Controller');
+
 /**
  * CollectionSchedules Controller
  *
@@ -8,113 +10,114 @@ App::uses('AppController', 'Controller');
  */
 class CollectionSchedulesController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
-	public $components = array('Paginator');
+    /**
+     * Components
+     *
+     * @var array
+     */
+    public $components = array('Paginator');
 
-/**
- * index method
- *
- * @return void
- */
-	public function index() {
-		$this->CollectionSchedule->recursive = 0;
-		$this->set('collectionSchedules', $this->Paginator->paginate());
-	}
+    /**
+     * index method
+     *
+     * @return void
+     */
+    public function index() {
+        $this->CollectionSchedule->recursive = 0;
+        $this->set('collectionSchedules', $this->Paginator->paginate());
+    }
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
-		if (!$this->CollectionSchedule->exists($id)) {
-			throw new NotFoundException(__('Invalid collection schedule'));
-		}
-		$options = array('conditions' => array('CollectionSchedule.' . $this->CollectionSchedule->primaryKey => $id));
-		$this->set('collectionSchedule', $this->CollectionSchedule->find('first', $options));
-	}
+    /**
+     * view method
+     *
+     * @throws NotFoundException
+     * @param string $id
+     * @return void
+     */
+    public function view($id = null) {
+        if (!$this->CollectionSchedule->exists($id)) {
+            throw new NotFoundException(__('Invalid collection schedule'));
+        }
+        $options = array('conditions' => array('CollectionSchedule.' . $this->CollectionSchedule->primaryKey => $id));
+        $this->set('collectionSchedule', $this->CollectionSchedule->find('first', $options));
+    }
 
-/**
- * add method
- *
- * @return void
- */
-	public function add() {
-		if ($this->request->is('post')) {
-			$this->CollectionSchedule->create();
-			if ($this->CollectionSchedule->save($this->request->data)) {
-				$this->Session->setFlash(__('The collection schedule has been saved.'), 'default', array('class' => 'alert alert-success'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The collection schedule could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-			}
-		}
-		$quotations = $this->CollectionSchedule->Quotation->find('list');
-		$collections = $this->CollectionSchedule->Collection->find('list');
-		$users = $this->CollectionSchedule->User->find('list');
-		$this->set(compact('quotations', 'collections', 'users'));
-	}
+    /**
+     * add method
+     *
+     * @return void
+     */
+    public function add() {
+        if ($this->request->is('post')) {
+            $this->CollectionSchedule->create();
+            if ($this->CollectionSchedule->save($this->request->data)) {
+                $this->Session->setFlash(__('The collection schedule has been saved.'), 'default', array('class' => 'alert alert-success'));
+                return $this->redirect(array('action' => 'index'));
+            } else {
+                $this->Session->setFlash(__('The collection schedule could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
+            }
+        }
+        $quotations = $this->CollectionSchedule->Quotation->find('list');
+        $collections = $this->CollectionSchedule->Collection->find('list');
+        $users = $this->CollectionSchedule->User->find('list');
+        $this->set(compact('quotations', 'collections', 'users'));
+    }
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function edit($id = null) {
-		if (!$this->CollectionSchedule->exists($id)) {
-			throw new NotFoundException(__('Invalid collection schedule'));
-		}
-		if ($this->request->is(array('post', 'put'))) {
-			if ($this->CollectionSchedule->save($this->request->data)) {
-				$this->Session->setFlash(__('The collection schedule has been saved.'), 'default', array('class' => 'alert alert-success'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The collection schedule could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-			}
-		} else {
-			$options = array('conditions' => array('CollectionSchedule.' . $this->CollectionSchedule->primaryKey => $id));
-			$this->request->data = $this->CollectionSchedule->find('first', $options);
-		}
-		$quotations = $this->CollectionSchedule->Quotation->find('list');
-		$collections = $this->CollectionSchedule->Collection->find('list');
-		$users = $this->CollectionSchedule->User->find('list');
-		$this->set(compact('quotations', 'collections', 'users'));
-	}
+    /**
+     * edit method
+     *
+     * @throws NotFoundException
+     * @param string $id
+     * @return void
+     */
+    public function edit($id = null) {
+        if (!$this->CollectionSchedule->exists($id)) {
+            throw new NotFoundException(__('Invalid collection schedule'));
+        }
+        if ($this->request->is(array('post', 'put'))) {
+            if ($this->CollectionSchedule->save($this->request->data)) {
+                $this->Session->setFlash(__('The collection schedule has been saved.'), 'default', array('class' => 'alert alert-success'));
+                return $this->redirect(array('action' => 'index'));
+            } else {
+                $this->Session->setFlash(__('The collection schedule could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
+            }
+        } else {
+            $options = array('conditions' => array('CollectionSchedule.' . $this->CollectionSchedule->primaryKey => $id));
+            $this->request->data = $this->CollectionSchedule->find('first', $options);
+        }
+        $quotations = $this->CollectionSchedule->Quotation->find('list');
+        $collections = $this->CollectionSchedule->Collection->find('list');
+        $users = $this->CollectionSchedule->User->find('list');
+        $this->set(compact('quotations', 'collections', 'users'));
+    }
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function delete($id = null) {
-		$this->CollectionSchedule->id = $id;
-		if (!$this->CollectionSchedule->exists()) {
-			throw new NotFoundException(__('Invalid collection schedule'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->CollectionSchedule->delete()) {
-			$this->Session->setFlash(__('The collection schedule has been deleted.'), 'default', array('class' => 'alert alert-success'));
-		} else {
-			$this->Session->setFlash(__('The collection schedule could not be deleted. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
-        
-        public function agent_move(){
-             $id = $this->params['url']['id'];
+    /**
+     * delete method
+     *
+     * @throws NotFoundException
+     * @param string $id
+     * @return void
+     */
+    public function delete($id = null) {
+        $this->CollectionSchedule->id = $id;
+        if (!$this->CollectionSchedule->exists()) {
+            throw new NotFoundException(__('Invalid collection schedule'));
+        }
+        $this->request->onlyAllow('post', 'delete');
+        if ($this->CollectionSchedule->delete()) {
+            $this->Session->setFlash(__('The collection schedule has been deleted.'), 'default', array('class' => 'alert alert-success'));
+        } else {
+            $this->Session->setFlash(__('The collection schedule could not be deleted. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
+        }
+        return $this->redirect(array('action' => 'index'));
+    }
+
+    public function agent_move() {
+        $id = $this->params['url']['id'];
         $this->loadModel('Bank');
         $this->loadModel('QuotationTerm');
         $this->loadModel('Quotation');
+        $this->loadModel('AgentStatus');
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
@@ -126,55 +129,61 @@ class CollectionSchedulesController extends AppController {
 
 
         $banks = $this->Bank->find('all');
-        $terms = $this->QuotationTerm->find('all',array(
-            'conditions'=>array('QuotationTerm.id !='=>2)
+        $terms = $this->QuotationTerm->find('all', array(
+            'conditions' => array('QuotationTerm.id !=' => 2)
         ));
-        $this->set(compact('clients', 'quote_number', 'banks', 'terms'));
-        }
         
-        public function agent_move_process(){
-            
+        
+        //get agent status where date_to is null kasi ibig sabihin yun yung current team nya
+        $this->AgentStatus->recursive = -1; 
+        $agent_status = $this->AgentStatus->find('first',['conditions'=>['AgentStatus.date_to'=>NULL]]);
+        $this->set(compact('clients', 'quote_number', 'banks', 'terms','agent_status'));
+    }
+
+    public function agent_move_process() {
+
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
         $this->loadModel('Quotation');
         $this->loadModel('Client');
-        $time  = date("H:i:s", strtotime($data['collection_date_time']));
-        $collection_date = $data['collection_date'].' '.$time;
+        $time = date("H:i:s", strtotime($data['collection_date_time']));
+        $collection_date = $data['collection_date'] . ' ' . $time;
 
         $this->CollectionSchedule->create();
-        $this->CollectionSchedule->set(array( 
-           'created_by' =>$this->Auth->user('id'), 
-           'agent_instruction' =>$data['agent_instruction'], 
-           'collection_date' =>$collection_date, 
+        $this->CollectionSchedule->set(array(
+            'created_by' => $this->Auth->user('id'),
+            'agent_instruction' => $data['agent_instruction'],
+            'collection_date' => $collection_date,
             'status' => 'for_collection',
-            'quotation_id'=>$data['quotation_id'], 
+            'quotation_id' => $data['quotation_id'],
         ));
         $this->CollectionSchedule->save();
-             
+
         $this->Client->id = $data['client_id'];
         $this->Client->set(array(
             'tin_number' => $data['tin_number']
         ));
         $this->Client->save();
-        
+
         $dateToday = date("Y-m-d H:i:s");
         $quotation_id = $data['quotation_id'];
         $this->Quotation->id = $quotation_id;
         $this->Quotation->set(array(
-            'status' => 'approved',
+            'status' => 'moved',
             'vat_type' => $data['vat_type'],
             'quotation_term_id' => $data['term_id'],
             'delivery_mode' => $data['delivery_mode'],
             'target_delivery' => $data['target_delivery'],
             'date_moved' => $dateToday,
+            'advance_invoice' => $data['advance_invoice'],
         ));
         $this->Quotation->save();
         echo json_encode($data);
-        }
-        
-        public function agent(){
-             $id = $this->params['url']['id']; 
+    }
+
+    public function agent() {
+        $id = $this->params['url']['id'];
         $this->loadModel('Quotation');
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];
@@ -184,45 +193,86 @@ class CollectionSchedulesController extends AppController {
         $clients = $this->Client->find('all', array(
             'conditions' => array('Client.user_id' => $this->Auth->user('id'), 'Client.lead' => 0)
         ));
-  
+
         $this->set(compact('clients'));
-        }
-        
-        public function agent_process(){
-            
+    }
+
+    public function agent_process() {
+
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
         $this->loadModel('Quotation');
         $this->loadModel('Client');
-        $time  = date("H:i:s", strtotime($data['collection_date_time']));
-        $collection_date = $data['collection_date'].' '.$time;
+        $time = date("H:i:s", strtotime($data['collection_date_time']));
+        $collection_date = $data['collection_date'] . ' ' . $time;
 
         $this->CollectionSchedule->create();
-        $this->CollectionSchedule->set(array( 
-           'created_by' =>$this->Auth->user('id'), 
-           'agent_instruction' =>$data['agent_instruction'], 
-           'collection_date' =>$collection_date, 
+        $this->CollectionSchedule->set(array(
+            'created_by' => $this->Auth->user('id'),
+            'agent_instruction' => $data['agent_instruction'],
+            'collection_date' => $collection_date,
             'status' => 'for_collection',
-            'quotation_id'=>$data['quotation_id'], 
-            
+            'quotation_id' => $data['quotation_id'],
         ));
         $this->CollectionSchedule->save();
-        
+
         echo json_encode($data['quotation_id']);
+    }
+
+    public function list_view() {
+        $this->loadModel('Users');
+
+        $this->CollectionSchedule->recursive = 2;
+        $status = $this->params['url']['status'];
+        
+            $dateToday = date("Y-m-d");
+        if($status == 'for_collection'){
+            $options = array('conditions' => array('CollectionSchedule.status' => $status));
+        }else if($status == 'today'){
+            $options = array('conditions' => array(
+                'CollectionSchedule.collection_date LIKE' => '%'.$dateToday.'%'));
+        }else if($status == 'collected'){
+            $options = array('conditions' => array('CollectionSchedule.status' => $status));
+        }
+        $lists = $this->CollectionSchedule->find('all', $options); 
+        $collectors = $this->Users->find('all'); 
+        $this->set(compact('lists', 'collectors'));
+    }
+
+    public function updateCollector() {
+
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data; 
+        
+        $collector_id = $data['collector_id'];
+        $collector_schedule_id = $data['collector_schedule_id'];
+         
+        $this->CollectionSchedule->id = $collector_schedule_id;
+        $this->CollectionSchedule->set(array(
+            'user_id'=>$collector_id
+        ));
+        if($this->CollectionSchedule->save()){ 
+            echo json_encode($data);
+        }
+    }
+    
+    public function cancelSched(){
+
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        $id = $data['id'];
+         
+        $this->CollectionSchedule->id = $id;
+        $this->CollectionSchedule->set(array(
+            'status'=>'cancelled'
+        ));
+        if($this->CollectionSchedule->save()){ 
+            echo json_encode($data);
         }
         
-        public function list_view(){
-            $this->loadModel('Users');
-            
-            $this->CollectionSchedule->recursive = 2;
-            $status = $this->params['url']['status'];
-            $options = array('conditions' => array('CollectionSchedule.status' => $status ),
-                             'contain' => "");
-            $lists = $this->CollectionSchedule->find('all', $options );
-//            pr($lists); exit;
-            $collectors = $this->Users->find('all');
-//            pr($collectors); exit;
-            $this->set(compact('lists', 'collectors'));
-        }
+    }
+
 }

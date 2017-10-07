@@ -109,4 +109,67 @@ class CollectionsController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}
+        
+        
+    public function collect(){
+        
+        $id = $this->params['url']['id'];
+        $this->loadModel('Bank');
+        $this->loadModel('Quotation');
+        $this->loadModel('QuotationTerm');
+        $quote_data = $this->Quotation->findById($id);
+        $quote_number = $quote_data['Quotation']['quote_number'];
+        $this->set(compact('quote_data'));
+        
+//        pr($quote_data);
+        
+        
+        $collection_data = $this->Collection->findAllByQuotationId($id);
+        
+//        $collection_data = $this->Collection->find('all',['conditions'=>['Collection.status'=>'verified']]);
+        $this->set(compact('collection_data'));
+
+        $this->loadModel('Client');
+        $clients = $this->Client->find('all', array(
+            'conditions' => array('Client.user_id' => $this->Auth->user('id'), 'Client.lead' => 0)
+        ));
+
+
+        $banks = $this->Bank->find('all');
+        $terms = $this->QuotationTerm->find('all', array(
+            'conditions' => array('QuotationTerm.id >=' => 3)
+        ));
+        $this->set(compact('clients', 'quote_number', 'banks', 'terms','id'));
+    
+    }
+    
+    public function viodPayment(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data; 
+        $id = $data['id'];
+        $status = $data['status'];
+        
+        $this->Collection->id = $id;
+        $this->Collection->set(array(
+            'status' => $status
+        ));
+        if ($this->Collection->save()) {
+            echo json_encode($data);
+        }
+    }
+    
+    public function accounting(){
+        $status = $this->params['url']['status'];
+        
+        if($status == 'pending'){
+            
+        }else if($status == 'for_collection'){
+            
+        }else if($status == 'full'){
+            
+        }
+    }
+        
 }

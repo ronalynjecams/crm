@@ -32,7 +32,7 @@
                 </div>
                 <div id="collection-panel-collapse" class="collapse in">
                     <div class="panel-body">
-                        <div class="row"><input type="text"  id="quotation_id" value="<?php echo $quote_data['Quotation']['id']; ?>" class="form-control">
+                        <div class="row"><input type="hidden"  id="quotation_id" value="<?php echo $quote_data['Quotation']['id']; ?>" class="form-control">
                         
                             <div class="col-sm-6">
                                 <div id="delivery_date_div_value">

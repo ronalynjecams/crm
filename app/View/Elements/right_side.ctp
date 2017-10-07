@@ -106,6 +106,44 @@
 						                </ul>
 						            </li> 
                                                             <?php } ?>
+                                                            
+                                                            
+                                                            
+                                                                 <!-- proprietor -->
+						
+                                                            <?php if($UserIn['User']['role'] == 'proprietor'){ ?> 
+						            <li class="active-link">
+						                <a href="/users/dashboard_proprietor"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-pdf-o"></i>
+						                    <span class="menu-title">
+									<strong>Quotations</strong>
+                                                                         <?php if($moved_quote_count_left_side!=0){ ?>
+                                                                        <span class="label label-danger "><?php echo $moved_quote_count_left_side; ?></span>
+                                                                        <?php } ?>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">
+						                    <li><a href="/quotations/proprietor?status=pending">Pending</a></li>
+                                                                    <li><a href="/quotations/proprietor?status=moved">Moved
+                                                                         <?php if($moved_quote_count_left_side!=0){ ?>
+                                                                        <span class="label label-danger "><?php echo $moved_quote_count_left_side; ?></span>
+                                                                        <?php } ?></a></li>
+                                                                    <li><a href="/quotations/proprietor?status=approved">Approved</a></li>
+                                                                    <li><a href="/quotations/proprietor?status=processed">Processed</a></li>
+											 	
+						                </ul>
+						            </li> 
+                                                            <?php } ?>
+						            <!-- proprietor -->
 						            <!-- sales_executive -->
                                                             <?php if($UserIn['User']['role'] == 'sales_executive'){ ?>
 						            <li class="active-link">
@@ -144,9 +182,10 @@
 						                <ul class="collapse">
 						                    <li><a href="/quotations/create">Create</a></li>
 						                    <li><a href="/quotations/pending">Pending</a></li>
+						                    <li><a href="/quotations/sales_moved">Moved</a></li>
 						                    <li><a href="/quotations/approved">Approved</a></li>
-                                                                    <li><a href="/quotations/lost">Lost</a></li> 
-                                                                    <li><a href="/quotations/void">Void</a></li> 
+<!--                                                                    <li><a href="/quotations/lost">Lost</a></li> 
+                                                                    <li><a href="/quotations/void">Void</a></li> -->
 											 	
 						                </ul>
 						            </li> 
@@ -444,34 +483,47 @@
                                                                     <i class="arrow"></i>
 						                </a> 
 						                <ul class="collapse">   
-                                                                    <li><a href="/collection_schedules/list_view?type=today">Collection For Today</a></li>   
+                                                                    <li><a href="/collection_schedules/list_view?status=today">Collection For Today</a></li>   
                                                                     <li><a href="/collection_schedules/list_view?status=for_collection">For Collection</a></li>   
-                                                                    <li><a href="/collection_schedules/list_view?tatus=collected">Collected</a></li>   	
+                                                                    <li><a href="/collection_schedules/list_view?status=collected">Collected</a></li>   	
 						                </ul>
 						            </li> 
 						            <li>
  						                <a href=""> 
-                                                                    <i class="fa fa-file-powerpoint-o"></i>
+                                                                    <i class="fa fa-money"></i>
 						                    <span class="menu-title">
 									<strong>Collections</strong>
                                                                     </span>
                                                                     <i class="arrow"></i>
 						                </a> 
 						                <ul class="collapse">  
-						                    <li><a href="/purchase_orders/po?status=ongoing">Unverified</a></li>
-						                    <li><a href="/purchase_orders/po?status=ongoing">Verified</a></li>
-						                    <li><a href="/purchase_orders/po?status=ongoing">Bounced Check</a></li> 
-						                    <li><a href="/purchase_orders/po?status=ongoing">Void</a></li>  
+						                    <li><a href="/collections/accounting?status=pending">Pending</a></li>
+						                    <li><a href="/collections/accounting?status=for_collection">For Collection</a></li>
+						                    <li><a href="/collections/accounting?status=full">Fully Collected</a></li> 
+						                    
                                                                 </ul>
 						            </li> 
 						            <li>
-						                <a href=" "> 
-                                                                    <i class="fa fa-dropbox"></i>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-money"></i>
 						                    <span class="menu-title">
-									<strong>Inventory</strong>
+									<strong>For Advance Invoice</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/collection_papers/advance_invoice?status=pending">Pending</a></li>
+						                    <li><a href="/collection_papers/advance_invoice?status=served">Served</a></li>
+						                 </ul>
+						            </li> 
+<!--						            <li>
+						                <a href="/collection_papers/advance_invoice"> 
+                                                                    <i class="fa fa-file"></i>
+						                    <span class="menu-title">
+									<strong>For Advance Invoice</strong>
                                                                     </span>
 						                </a>
-						            </li>  
+						            </li>  -->
 						             
                                                             <?php } ?>
                                                             <!-- collection_officer -->
@@ -511,6 +563,65 @@
 						             
                                                             <?php } ?>
                                                             <!-- production_head -->
+                                                            
+                                                            <!-- logistics_head -->
+                                                             <?php if($UserIn['User']['role'] == 'logistics_head'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_production_head"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>        
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-clock-o"></i>
+						                    <span class="menu-title">
+									<strong>Schedule Requests</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+                                                                    <!--'ongoing','pending','approved','scheduled','delivered'-->
+						                    <li><a href="/delivery_schedules/requests?status=ongoing">Pending</a></li>
+						                    <li><a href="/delivery_schedules/requests?status=approved">Approved</a></li>  
+						                 
+                                                                </ul> 
+						            </li>  
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Delivery Receipts</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+                                                                    <!--pending; meaning d pa naischedule sa delivery itenerary--> 
+						                    <li><a href="/delivery_schedules/drs?status=ongoing">Pending</a></li>
+						                     <li><a href="/delivery_schedules/drs?status=scheduled">Scheduled</a></li>  
+                                                                    <li><a href="/delivery_schedules/drs?status=delivered">Delivered</a></li>  
+                                                                </ul> 
+						            </li>  
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Itenerary</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+                                                                    <!--pending; meaning d pa naischedule sa delivery itenerary--> 
+						                    <li><a href="/delivery_schedules/requests?status=ongoing">Pending</a></li>
+						                    <li><a href="/delivery_schedules/requests?status=scheduled">Scheduled</a></li>  
+                                                                    <li><a href="/delivery_schedules/requests?status=delivered">Delivered</a></li>  
+                                                                </ul> 
+						            </li>  
+						             
+                                                            <?php } ?> 
+                                                            <!-- logistics_head -->
 						           
 						           
                                 <!--Widget-->

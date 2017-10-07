@@ -120,7 +120,7 @@
 		            <a href="pages-register.html" class="btn-link mar-lft">Create a new account</a>-->
 
 		                <div class="pull-right"> 
-		                    <a href="#" class="pad-rgt"><i class="demo-psi-google-plus icon-lg text-danger"></i></a>
+		                    <a href="/users/social_login/Google" class="pad-rgt"><i class="demo-psi-google-plus icon-lg text-danger"></i></a>
 		                </div>
 		                <div class="media-body text-left">
 		                    Login with

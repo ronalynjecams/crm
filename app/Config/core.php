@@ -395,3 +395,46 @@ Cache::config('_cake_model_', array(
 	'serialize' => ($engine === 'File'),
 	'duration' => $duration
 ));
+
+Configure::write('Hybridauth', array(
+    // openid providers
+    "Google" => array(
+        "enabled" => true,
+        "keys" => array("id" => "219402364302-eru408oed3pn849pl761qj20e76h18ae.apps.googleusercontent.com","secret" => "WB3gHCgvzOVC-dm2f_VTjOK-"),
+        "redirect_uri" => "http://crm.jecams.com.ph/social_endpoint?hauth.done=Google"
+    ),
+    "Twitter" => array(
+        "enabled" => true,
+        "keys" => array("key" => "Your-Twitter-Key", "secret" => "Your-Twitter-Secret")
+    ),
+    "Facebook" => array(
+        "enabled" => true,
+        "keys" => array("id" => "155341065034735", "secret" => "3fb36fb9ff1f37bfddc61a0278785674"),
+    ),
+    "OpenID" => array(
+        "enabled" => false
+    ),
+    "Yahoo" => array(
+        "enabled" => false,
+        "keys" => array("id" => "", "secret" => ""),
+    ),
+    "AOL" => array(
+        "enabled" => false
+    ),
+    "Live" => array(
+        "enabled" => false,
+        "keys" => array("id" => "", "secret" => "")
+    ),
+    "MySpace" => array(
+        "enabled" => false,
+        "keys" => array("key" => "", "secret" => "")
+    ),
+    "LinkedIn" => array(
+        "enabled" => false,
+        "keys" => array("key" => "", "secret" => "")
+    ),
+    "Foursquare" => array(
+        "enabled" => false,
+        "keys" => array("id" => "", "secret" => "")
+    ),
+));
