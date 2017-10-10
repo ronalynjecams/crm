@@ -105,6 +105,31 @@ class QuotationsController extends AppController {
         $locations = $this->InvLocation->find('all');
         $this->set(compact('locations'));
         
+        
+        $this->loadModel('CollectionSchedule');
+        $CollectSched = $this->CollectionSchedule->find('first',['conditions'=>[
+            'CollectionSchedule.quotation_id'=>$this->params['url']['id'],
+            'CollectionSchedule.status'=>'for_collection'
+        ]]);
+        $this->set(compact('CollectSched'));
+        
+        $this->loadModel('CollectionPaper');
+        $CollectPapers = $this->CollectionPaper->find('all',['conditions'=>[
+            'CollectionPaper.quotation_id'=>$this->params['url']['id'],
+            'CollectionPaper.status'=>'onhand'
+        ]]);
+        $this->set(compact('CollectPapers'));
+        
+        $this->loadModel('DeliverySchedule');
+        $DelScheds = $this->DeliverySchedule->find('all',['conditions'=>[
+            'DeliverySchedule.quotation_id'=>$this->params['url']['id'] 
+        ]]);
+        $this->set(compact('DelScheds'));
+        
+        
+        
+        
+//        pr($CollectSched);
     }
 
     /**
@@ -519,7 +544,7 @@ class QuotationsController extends AppController {
             $check_date = NULL;
 
             $payment = $amount_paid + $with_held;
-            $half = $payment / 2;
+            $half = $grand_total / 2;
 
             if ($payment == $half) {
                 $type = 'partial';
@@ -545,7 +570,7 @@ class QuotationsController extends AppController {
             $check_date = $data['check_date'];
 
             $payment = $amount_paid + $with_held;
-            $half = $payment / 2;
+            $half = $grand_total / 2;
 
             if ($payment == $half) {
                 $type = 'partial';
@@ -572,7 +597,7 @@ class QuotationsController extends AppController {
             $check_date = NULL;
 
             $payment = $amount_paid + $with_held;
-            $half = $payment / 2;
+            $half = $grand_total / 2;
 
             if ($payment == $half) {
                 $type = 'partial';

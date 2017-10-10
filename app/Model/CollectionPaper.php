@@ -4,6 +4,10 @@ App::uses('AppModel', 'Model');
  * CollectionPaper Model
  *
  * @property AccountingPaper $AccountingPaper
+ * @property User $User
+ * @property Quotation $Quotation
+ * @property Collection $Collection
+ * @property Quotation $Quotation
  */
 class CollectionPaper extends AppModel {
 
@@ -13,26 +17,6 @@ class CollectionPaper extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'ref_number' => array(
-			'notBlank' => array(
-				'rule' => array('notBlank'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'ref_date' => array(
-			'datetime' => array(
-				'rule' => array('datetime'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
 		'amount' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
@@ -44,6 +28,36 @@ class CollectionPaper extends AppModel {
 			),
 		),
 		'accounting_paper_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'user_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'quotation_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'collection_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -69,6 +83,49 @@ class CollectionPaper extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Quotation' => array(
+			'className' => 'Quotation',
+			'foreignKey' => 'quotation_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Collection' => array(
+			'className' => 'Collection',
+			'foreignKey' => 'collection_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+		'Quotation' => array(
+			'className' => 'Quotation',
+			'foreignKey' => 'collection_paper_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
+
 }

@@ -86,27 +86,6 @@
 			&nbsp;
 		</td>
 </tr>
-<tr>
-		<th><?php echo __('User Id'); ?></th>
-		<td>
-			<?php echo h($collectionPaper['CollectionPaper']['user_id']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Quotation Id'); ?></th>
-		<td>
-			<?php echo h($collectionPaper['CollectionPaper']['quotation_id']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Collection Id'); ?></th>
-		<td>
-			<?php echo h($collectionPaper['CollectionPaper']['collection_id']); ?>
-			&nbsp;
-		</td>
-</tr>
 				</tbody>
 			</table>
 

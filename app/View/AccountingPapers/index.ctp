@@ -33,6 +33,7 @@
 					<tr>
 						<th><?php echo $this->Paginator->sort('id'); ?></th>
 						<th><?php echo $this->Paginator->sort('name'); ?></th>
+						<th><?php echo $this->Paginator->sort('type'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
 						<th class="actions"></th>
@@ -43,6 +44,7 @@
 					<tr>
 						<td><?php echo h($accountingPaper['AccountingPaper']['id']); ?>&nbsp;</td>
 						<td><?php echo h($accountingPaper['AccountingPaper']['name']); ?>&nbsp;</td>
+						<td><?php echo h($accountingPaper['AccountingPaper']['type']); ?>&nbsp;</td>
 						<td><?php echo h($accountingPaper['AccountingPaper']['created']); ?>&nbsp;</td>
 						<td><?php echo h($accountingPaper['AccountingPaper']['modified']); ?>&nbsp;</td>
 						<td class="actions">

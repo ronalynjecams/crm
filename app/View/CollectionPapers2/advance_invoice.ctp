@@ -20,7 +20,7 @@
     <!--Page Title-->
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <div id="page-title">
-        <h1 class="page-header text-overflow">For Advance Invoice <?php echo '(<small>'.ucwords($this->params['url']['status']).'</small>)'; ?></h1>
+        <h1 class="page-header text-overflow">For Advance Invoice</h1>
     </div>
 
     <!--Page content-->
@@ -67,10 +67,6 @@
                                     <?php
                                     if ($this->params['url']['status'] == 'pending') {
                                         //show button for modal
-                                        ?>
-                                        <button class="btn btn-info btn-icon add-tooltip view_quote" data-toggle="tooltip"  data-original-title="View Quotation?" data-viewquoteid="<?php echo $list['Quotation']['id']; ?>"><i class="fa fa-eye"></i> </button>
-                                
-                                    <?php
                                     }else{
                                        //show invoice ref number 
                                     }
@@ -179,12 +175,6 @@
         });
     });
 
-        $('.view_quote').each(function (index) {
-            $(this).click(function () {
-                var qid = $(this).data("viewquoteid");
-                window.open("/quotations/view?id=" + qid, '_blank'); 
-            });
-        });
     $(".addCollectorBtn").each(function (index) {
         $(this).on("click", function () {
             var id = $(this).data('id');
@@ -299,4 +289,3 @@
         document.onclick = reEnable
     }
 </script>
-

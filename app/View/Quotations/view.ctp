@@ -34,7 +34,7 @@
                             <b><?php if (!is_null($quote_data['Quotation']['quote_number'])) echo $quote_data['Quotation']['quote_number']; ?> </b>
                         </div>
                     </h3>
-                    <?php if (AuthComponent::user('role') == 'sales_executive') { ?>
+                    <?php //if (AuthComponent::user('role') == 'sales_executive') { ?>
 
                         <div class="panel">
                             <div class="panel-heading">
@@ -115,7 +115,7 @@
                                 </div>
                             </div>
                         </div> 
-                    <?php } ?>
+                    <?php //} ?>
 
 
 
@@ -134,8 +134,10 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div id="delivery_date_div_value">
+                                        <?php if($quote_data['Quotation']['delivery_mode']!= 'pickup'){ ?>
                                         <label><b>Tentative Delivery or Pickup Date: </b></label>
-                                        <?php echo date('F d, Y', strtotime($quote_data['Quotation']['target_delivery'])); ?>                                     
+                                        <?php echo date('F d, Y', strtotime($quote_data['Quotation']['target_delivery'])); 
+                                        }?>                                     
                                     </div>
                                 </div> 
                                 <?php if ($quote_data['Quotation']['delivery_mode'] != 'pickup') { ?>
@@ -195,6 +197,26 @@
                                             ?> 
                                         </div>
                                     </div>
+                                <?php }
+                                if(!empty($DelScheds)){
+                                ?>
+                                
+                                <!--//delivery schedules where status==delivered-->
+                                <div class="col-sm-12">
+                                    <hr style="border-top: dotted 1px;" />
+                                    <b>Delivery Schedules</b> 
+                                    <table class="table table-striped">
+                                    <?php 
+                                    foreach($DelScheds as $DelSched){
+                                        echo '<tr>';
+                                        echo '<td>'.$DelSched['DeliverySchedule']['dr_number'].'</td>';
+                                        echo '<td>'.date('F d, Y', strtotime($DelSched['DeliverySchedule']['delivery_date'])).' <small> ['.date('h:i a', strtotime($DelSched['DeliverySchedule']['delivery_time'])).'] </small></td>';
+                                        echo '<td>'.$DelSched['DeliverySchedule']['status'].'</td>';
+                                        echo '</tr>';
+                                    }
+                                    ?>
+                                        </table>
+                                </div>
                                 <?php } ?>
                             </div>
                         </div>
@@ -213,7 +235,7 @@
                                 ?>
                                 <button class="btn btn-mint btn-icon add-tooltip update_quote" data-toggle="tooltip"  data-original-title="Update Quotation?" id="update_quote" data-upquoteid="<?php echo $quote_data['Quotation']['id']; ?>"><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-warning btn-icon add-tooltip move_to_purchasing_btn" data-toggle="tooltip"  data-original-title="Move to Purchasing" id="move_to_purchasing" data-moveid="<?php echo $quote_data['Quotation']['id']; ?>">Move to Purchasing</button>
-                                <button class="btn btn-dark btn-icon add-tooltip advance_invoice_btn" data-toggle="tooltip"  data-original-title="Advance Invoice" id="advance_invoice_btn" data-advnceid="<?php echo $quote_data['Quotation']['id']; ?>">Advance Invoice</button>
+                                <!--<button class="btn btn-dark btn-icon add-tooltip advance_invoice_btn" data-toggle="tooltip"  data-original-title="Advance Invoice" id="advance_invoice_btn" data-advnceid="<?php echo $quote_data['Quotation']['id']; ?>">Advance Invoice</button>-->
                                 <?php
                             }
                         } else if ($quote_data['Quotation']['status'] == 'approved') {
@@ -226,16 +248,17 @@
                         ?>
                     </h3> 
 
-                    <?php if ($userRole == 'sales_executive') { ?>
+                    <?php if ($userRole == 'sales_executive' || $userRole == 'proprietor' || $userRole == 'collection_officer'  || $userRole == 'accounting_head' || $userRole == 'sales_manager') { ?>
                         <div class="panel">
                             <div class="panel-heading">
                                 <div class="panel-control">
                                     <button class="btn btn-default" data-target="#payment-panel-collapse" data-toggle="collapse"><i class="demo-pli-arrow-down"></i></button>
                                 </div>
-                                <h3 class="panel-title"> Payment Details </h3>
+                                <h3 class="panel-title"> Collection Details </h3>
                             </div>
                             <div id="payment-panel-collapse" class="collapse in">
-                                <div class="panel-body" align="right">
+                                <div class="panel-body">
+                                    <div class="col-sm-6" align="right">
                                     <?php
                                     echo '<b>Total Contract Price: </b> <br/>&#8369; ' . number_format($quote_data['Quotation']['grand_total'], 2);
                                     $total_collection = 0;
@@ -246,11 +269,15 @@
                                             $total_collection = $total_collection + $payment;
                                         }
                                         if ($total_collection != 0) {
-                                            echo '<br/><br/><b>Total Amount Paid: </b> <br/>&#8369; ' . number_format($total_collection, 2);
+                                            echo '<br/><br/><span class="text-success"><b>Total Amount Paid: </b> <br/>&#8369; ' . number_format($total_collection, 2).'</span>';
                                         }
 
                                         $balance = $quote_data['Quotation']['grand_total'] - $total_collection;
-                                        echo '<br/><br/><b>Balance: </b> <br/>&#8369; ' . number_format($balance, 2);
+                                        if($balance>=1){
+                                            echo '<br/><br/><span class="text-danger"><b>Balance: </b> <br/>&#8369; ' . number_format($balance, 2).'</span>';
+                                        }else{
+                                             
+                                        }
                                     }
 
                                     if ($total_collection != $quote_data['Quotation']['grand_total']) {
@@ -261,17 +288,40 @@
                                                 <button class="btn btn-sm btn-info btn-icon add-tooltip move_schedule_collection" data-toggle="tooltip"  data-original-title="Schedule Collection" id="move_schedule_collection" data-collectquoteid="<?php echo $quote_data['Quotation']['id']; ?>">Schedule Collection</button>
                                                 <?php
                                             } else {
+                                                //check if with for collection schedule
+                                                if(empty($CollectSched)){
                                                 ?>
                                                 <button class="btn btn-sm btn-info btn-icon add-tooltip schedule_collection" data-toggle="tooltip"  data-original-title="Schedule Collection" id="schedule_collection" data-schedquoteid="<?php echo $quote_data['Quotation']['id']; ?>">Schedule Collection</button>
 
                                                 <?php
+                                                }
                                             }
                                         }
                                     }
                                     ?>
 
 
-
+                                    </div>    
+                                    
+                                    <div class="col-sm-6">
+                                        <?php if(!is_null($CollectPapers)){ 
+                                            echo '<b>Documents:</b>  ';
+                                            
+                                            foreach($CollectPapers as $CollectPaper){
+                                                echo '<li>'.$CollectPaper['AccountingPaper']['name'].'     '.$CollectPaper['CollectionPaper']['ref_number'].'</li>';
+                                            }
+                                        }else{
+                                            echo 'No Documents Issued or Received.';
+                                        }
+                                        ?>
+                                    </div>
+                                    <div class="col-sm-12">
+                                    <?php  
+                                         if(!empty($CollectSched)){
+                                                    echo '<hr style="border-top: dotted 1px;" />For collection on '.date('F d, Y', strtotime($CollectSched['CollectionSchedule']['collection_date'])) . '<small> [' . date('h:i a', strtotime($CollectSched['CollectionSchedule']['collection_date'])) . ']</small>';
+                                                }
+                                    ?>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -464,7 +514,7 @@
                                                     ?> 
                                                     <tr>
                                                         <td colspan="4"></td>
-                                                        <td align="right"><b>Grand Total:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td>
+                                                        <td align=""><b>Grand Total:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td>
                                                         <td align="right">
                                                             <?php echo '&#8369; ' . number_format($quote_data['Quotation']['grand_total'], 2); ?>
                                                         </td> 

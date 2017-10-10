@@ -499,7 +499,7 @@
 						                <ul class="collapse">  
 						                    <li><a href="/collections/accounting?status=pending">Pending</a></li>
 						                    <li><a href="/collections/accounting?status=for_collection">For Collection</a></li>
-						                    <li><a href="/collections/accounting?status=full">Fully Collected</a></li> 
+						                    <li><a href="/collections/accounting?status=paid">Fully Collected</a></li> 
 						                    
                                                                 </ul>
 						            </li> 

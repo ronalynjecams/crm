@@ -37,6 +37,9 @@
 					<?php echo $this->Form->input('name', array('class' => 'form-control', 'placeholder' => 'Name'));?>
 				</div>
 				<div class="form-group">
+					<?php echo $this->Form->input('type', array('class' => 'form-control', 'placeholder' => 'Type'));?>
+				</div>
+				<div class="form-group">
 					<?php echo $this->Form->submit(__('Submit'), array('class' => 'btn btn-default')); ?>
 				</div>
 

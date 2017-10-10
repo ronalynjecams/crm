@@ -45,6 +45,15 @@
 					<?php echo $this->Form->input('status', array('class' => 'form-control', 'placeholder' => 'Status'));?>
 				</div>
 				<div class="form-group">
+					<?php echo $this->Form->input('user_id', array('class' => 'form-control', 'placeholder' => 'User Id'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('quotation_id', array('class' => 'form-control', 'placeholder' => 'Quotation Id'));?>
+				</div>
+				<div class="form-group">
+					<?php echo $this->Form->input('collection_id', array('class' => 'form-control', 'placeholder' => 'Collection Id'));?>
+				</div>
+				<div class="form-group">
 					<?php echo $this->Form->submit(__('Submit'), array('class' => 'btn btn-default')); ?>
 				</div>
 

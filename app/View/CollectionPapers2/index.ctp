@@ -39,9 +39,6 @@
 						<th><?php echo $this->Paginator->sort('status'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
-						<th><?php echo $this->Paginator->sort('user_id'); ?></th>
-						<th><?php echo $this->Paginator->sort('quotation_id'); ?></th>
-						<th><?php echo $this->Paginator->sort('collection_id'); ?></th>
 						<th class="actions"></th>
 					</tr>
 				</thead>
@@ -58,9 +55,6 @@
 						<td><?php echo h($collectionPaper['CollectionPaper']['status']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['created']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['modified']); ?>&nbsp;</td>
-						<td><?php echo h($collectionPaper['CollectionPaper']['user_id']); ?>&nbsp;</td>
-						<td><?php echo h($collectionPaper['CollectionPaper']['quotation_id']); ?>&nbsp;</td>
-						<td><?php echo h($collectionPaper['CollectionPaper']['collection_id']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $collectionPaper['CollectionPaper']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $collectionPaper['CollectionPaper']['id']), array('escape' => false)); ?>

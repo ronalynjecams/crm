@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-md-12">
 			<div class="page-header">
-				<h1><?php echo __('Edit Collection Paper'); ?></h1>
+				<h1><?php echo __('Add Collection Paper'); ?></h1>
 			</div>
 		</div>
 	</div>
@@ -18,7 +18,6 @@
 						<div class="panel-body">
 							<ul class="nav nav-pills nav-stacked">
 
-																<li><?php echo $this->Form->postLink(__('<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete'), array('action' => 'delete', $this->Form->value('CollectionPaper.id')), array('escape' => false), __('Are you sure you want to delete # %s?', $this->Form->value('CollectionPaper.id'))); ?></li>
 																<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Collection Papers'), array('action' => 'index'), array('escape' => false)); ?></li>
 									<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Accounting Papers'), array('controller' => 'accounting_papers', 'action' => 'index'), array('escape' => false)); ?> </li>
 		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Accounting Paper'), array('controller' => 'accounting_papers', 'action' => 'add'), array('escape' => false)); ?> </li>
@@ -30,9 +29,6 @@
 		<div class="col-md-9">
 			<?php echo $this->Form->create('CollectionPaper', array('role' => 'form')); ?>
 
-				<div class="form-group">
-					<?php echo $this->Form->input('id', array('class' => 'form-control', 'placeholder' => 'Id'));?>
-				</div>
 				<div class="form-group">
 					<?php echo $this->Form->input('ref_number', array('class' => 'form-control', 'placeholder' => 'Ref Number'));?>
 				</div>
@@ -47,15 +43,6 @@
 				</div>
 				<div class="form-group">
 					<?php echo $this->Form->input('status', array('class' => 'form-control', 'placeholder' => 'Status'));?>
-				</div>
-				<div class="form-group">
-					<?php echo $this->Form->input('user_id', array('class' => 'form-control', 'placeholder' => 'User Id'));?>
-				</div>
-				<div class="form-group">
-					<?php echo $this->Form->input('quotation_id', array('class' => 'form-control', 'placeholder' => 'Quotation Id'));?>
-				</div>
-				<div class="form-group">
-					<?php echo $this->Form->input('collection_id', array('class' => 'form-control', 'placeholder' => 'Collection Id'));?>
 				</div>
 				<div class="form-group">
 					<?php echo $this->Form->submit(__('Submit'), array('class' => 'btn btn-default')); ?>
