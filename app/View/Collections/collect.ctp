@@ -296,8 +296,8 @@
                                                 } else if ($collection['Collection']['status'] == 'void') {
                                                     echo '<p class="text-danger">Void</p>';
                                                 } else {
-                                                    echo ' <button class="btn btn-xs btn-danger add-tooltip updateStatus_collection" data-toggle="tooltip"  data-original-title="Delete Collection" data-collectionid="' . $collection['Collection']['id'] . '" data-stats="void"><i class="fa fa-close"></i></button>';
-                                                    echo '&nbsp; <button class="btn btn-xs btn-success add-tooltip updateStatus_collection"  data-toggle="tooltip"  data-original-title="Verify Collection" data-collectionid="' . $collection['Collection']['id'] . '" data-stats="verified"><i class="fa fa-check"></i></button>';
+                                                    echo ' <button class="btn btn-xs btn-danger add-tooltip updateStatus_collection" data-toggle="tooltip"  data-original-title="Delete Collection" data-collectionid="' . $collection['Collection']['id'] . '" data-quotecollectionid="' . $collection['Collection']['quotation_id'] . '" data-stats="void"><i class="fa fa-close"></i></button>';
+                                                    echo '&nbsp; <button class="btn btn-xs btn-success add-tooltip updateStatus_collection"  data-toggle="tooltip"  data-original-title="Verify Collection" data-collectionid="' . $collection['Collection']['id'] . '" data-quotecollectionid="' . $collection['Collection']['quotation_id'] . '"data-stats="verified"><i class="fa fa-check"></i></button>';
                                                 }
                                                 ?>
                                             </td>
@@ -723,6 +723,8 @@
     $(".updateStatus_collection").each(function (index) {
         $(this).on("click", function () {
             var id = $(this).data('collectionid');
+            var quotation_id = $(this).data('quotecollectionid');
+            
             var status = $(this).data('stats');
             if (status == 'void') {
                 var warn = "You will not be able to retrieve after this confirmation!";
@@ -747,7 +749,7 @@
                             $.ajax({
                                 url: "/collections/viodPayment",
                                 type: 'POST',
-                                data: {'id': id, 'status': status},
+                                data: {'id': id, 'status': status, 'quotation_id':quotation_id},
                                 dataType: 'json',
                                 success: function (dd) {
                                     location.reload();

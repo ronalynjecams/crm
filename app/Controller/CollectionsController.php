@@ -170,6 +170,21 @@ class CollectionsController extends AppController {
 //        ]);
 //        pr($mypeps);
         $this->set(compact('clients', 'quote_number', 'banks', 'terms', 'id', 'papers', 'collection_papers'));
+
+//        
+//            $collections = $this->Collection->findAllByQuotationId($id);
+//            $quote = $this->Quotation->findById($id);
+//
+//            $grand_total = $quote['Quotation']['grand_total'];
+//            $total_collection = 0;
+//            foreach ($collections as $collection) { 
+//                if ($collection['Collection']['status'] == 'verified') {
+//                    $total = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'];
+//                    $total_collection = $total_collection + $total;
+//                }
+//            }
+//            
+//            pr($total_collection);
     }
 
     public function process_collect() {
@@ -260,15 +275,15 @@ class CollectionsController extends AppController {
                 $check_number = 0;
                 $check_date = NULL;
             } else {
-                
-            $payment = $amount_paper + $with_held + $TotalPaidAmount;
-            if ($payment == $grand_total) {
-                $type = 'full';
-            }else{
-                $type = 'collection';
-            }
-                
-                
+
+                $payment = $amount_paper + $with_held + $TotalPaidAmount;
+                if ($payment == $grand_total) {
+                    $type = 'full';
+                } else {
+                    $type = 'collection';
+                }
+
+
                 $amount_paid = $amount_paper;
                 $bank_id = 0;
                 $with_held = 0;
@@ -325,7 +340,7 @@ class CollectionsController extends AppController {
 
 
 
-            // check if with pending collection schedule for this quotation to  if meron update to collected 
+// check if with pending collection schedule for this quotation to  if meron update to collected 
             $this->loadModel('CollectionSchedule');
             $collectionSched = $this->CollectionSchedule->find('first', ['conditions' => [
                     'CollectionSchedule.quotation_id' => $data['quotation_id'],
@@ -339,8 +354,8 @@ class CollectionsController extends AppController {
                 ));
                 $this->CollectionSchedule->save();
             }
-            
-            if($type == 'full'){
+
+            if ($type == 'full') {
 //                collection_status = paid
             }
             return (json_encode($data['payment_mode']));
@@ -397,14 +412,45 @@ class CollectionsController extends AppController {
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
+        $this->loadModel('Quotation');
         $id = $data['id'];
         $status = $data['status'];
+        $quotation_id = $data['quotation_id'];
 
         $this->Collection->id = $id;
         $this->Collection->set(array(
             'status' => $status
         ));
         if ($this->Collection->save()) {
+            if ($status == 'verified') {
+
+                $collections = $this->Collection->findAllByQuotationId($quotation_id);
+                $quote = $this->Quotation->findById($quotation_id);
+                $total_collection = 0;
+                $grand_total = $quote['Quotation']['grand_total'];
+
+                foreach ($collections as $collection) {
+                    if ($collection['Collection']['status'] == 'verified') {
+                        $total = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'];
+                        $total_collection = $total_collection + $total;
+                    }
+                }
+                $balance = $grand_total - $total_collection;
+                $this->Quotation->id = $quotation_id;
+                if ($balance >= 1) {
+                    $this->Quotation->set(array(
+                        'collection_status' => 'pending'
+                    ));
+                } else if ($balance <= 0) {
+                    $this->Quotation->set(array(
+                        'collection_status' => 'paid'
+                    ));
+                    
+                }
+                $this->Quotation->save();
+            }
+
+//            pr($total_collection);
             echo json_encode($data);
         }
     }
@@ -420,8 +466,8 @@ class CollectionsController extends AppController {
 //            
 //        }
         $this->loadModel('Quotation');
-        $collections = $this->Quotation->find('all',['conditions'=>[
-            'Quotation.collection_status'=>$status
+        $collections = $this->Quotation->find('all', ['conditions' => [
+                'Quotation.collection_status' => $status
         ]]);
         $this->set(compact('collections'));
     }
@@ -454,16 +500,16 @@ class CollectionsController extends AppController {
 
             $collection_paper_id = $this->CollectionPaper->getLastInsertID();
             if ($status == 'onhand' && $data['typepaper'] == 'invoice') {
-                //count     collection paper wherein type == invoice
-                //update collection_paper_id in quotations table 
+//count     collection paper wherein type == invoice
+//update collection_paper_id in quotations table 
                 if ($quote['Quotation']['advance_invoice'] == 1) {
 //                    if (empty($mypeps)) {
-                        $this->loadModel('Quotation');
-                        $this->Quotation->id = $data['quotation_id'];
-                        $this->Quotation->set(array(
-                            'collection_paper_id' => $collection_paper_id
-                        ));
-                        $this->Quotation->save();
+                    $this->loadModel('Quotation');
+                    $this->Quotation->id = $data['quotation_id'];
+                    $this->Quotation->set(array(
+                        'collection_paper_id' => $collection_paper_id
+                    ));
+                    $this->Quotation->save();
 //                    }
                 }
             }

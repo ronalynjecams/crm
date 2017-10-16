@@ -14,7 +14,7 @@
         <div class="panel">
             <div class="panel-heading">
                 <h3 class="panel-title" align="center">
-                    <button class="btn btn-primary moveQuote" data-buttontype="save" >Move to purchasing</button> 
+                    <button class="btn btn-primary moveQuote" data-buttontype="save" >Collect Payment</button> 
                     <button class="btn btn-danger cancelQuote">Cancel</button> 
                 </h3>
             </div>

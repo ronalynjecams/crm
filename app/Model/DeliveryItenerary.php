@@ -1,22 +1,22 @@
 <?php
 App::uses('AppModel', 'Model');
 /**
- * DeliverySchedule Model
+ * DeliveryItenerary Model
  *
- * @property Quotation $Quotation
- * @property DeliverySchedProduct $DeliverySchedProduct
+ * @property DeliverySchedule $DeliverySchedule
+ * @property Vehicle $Vehicle
+ * @property Client $Client
+ * @property DeliveryInstaller $DeliveryInstaller
  */
-class DeliverySchedule extends AppModel {
-	public $actsAs = array(
-    	'Containable'
-    );
+class DeliveryItenerary extends AppModel {
+
 /**
  * Validation rules
  *
  * @var array
  */
 	public $validate = array(
-		'requested_qty' => array(
+		'delivery_schedule_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -26,7 +26,7 @@ class DeliverySchedule extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'quotation_id' => array(
+		'vehicle_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -36,7 +36,27 @@ class DeliverySchedule extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'approved_by' => array(
+		'client_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'requested_by' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'processed_by' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -56,13 +76,27 @@ class DeliverySchedule extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Quotation' => array(
-			'className' => 'Quotation',
-			'foreignKey' => 'quotation_id',
+		'DeliverySchedule' => array(
+			'className' => 'DeliverySchedule',
+			'foreignKey' => 'delivery_schedule_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		) 
+		),
+		'Vehicle' => array(
+			'className' => 'Vehicle',
+			'foreignKey' => 'vehicle_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Client' => array(
+			'className' => 'Client',
+			'foreignKey' => 'client_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
 	);
 
 /**
@@ -71,9 +105,9 @@ class DeliverySchedule extends AppModel {
  * @var array
  */
 	public $hasMany = array(
-		'DeliverySchedProduct' => array(
-			'className' => 'DeliverySchedProduct',
-			'foreignKey' => 'delivery_schedule_id',
+		'DeliveryInstaller' => array(
+			'className' => 'DeliveryInstaller',
+			'foreignKey' => 'delivery_itenerary_id',
 			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',

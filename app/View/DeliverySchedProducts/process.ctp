@@ -124,13 +124,13 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="pci-cross pci-circle"></i>
                 </button>
-                <h4 class="modal-title">Add New Product</h4>
+                <h4 class="modal-title">Approved Quantity</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-12">
                         <input id="delivery_sched_product_id" type="hidden">
-                        <label>Approved Quantity</label>
+                        <!--<label>Approved Quantity</label>-->
                         <input type="number" id="actual_qty" class="form-control">
                     </div>
                 </div>

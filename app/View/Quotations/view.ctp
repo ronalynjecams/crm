@@ -211,7 +211,19 @@
                                         echo '<tr>';
                                         echo '<td>'.$DelSched['DeliverySchedule']['dr_number'].'</td>';
                                         echo '<td>'.date('F d, Y', strtotime($DelSched['DeliverySchedule']['delivery_date'])).' <small> ['.date('h:i a', strtotime($DelSched['DeliverySchedule']['delivery_time'])).'] </small></td>';
-                                        echo '<td>'.$DelSched['DeliverySchedule']['status'].'</td>';
+                                        echo '<td>';
+                                        if($DelSched['DeliverySchedule']['status'] == 'ongoing') echo 'Pending';  else echo ucwords($DelSched['DeliverySchedule']['status']);
+                                   
+                                        echo '</td>';
+                                        echo '<td>';
+//                                         if (AuthComponent::user('role') == 'sales_executive') {
+                                             echo '<button class="btn btn-dark btn-xs update_delivery_note" data-delscid="'.$DelSched['DeliverySchedule']['id'].'" data-delscnotes="'.$DelSched['DeliverySchedule']['agent_note'].'" data-delscstats="'.$DelSched['DeliverySchedule']['status'].'"><i class="fa fa-book"></i></button>';
+//                                         }else{
+//                                             echo '<button class="btn btn-dark btn-xs update_delivery_note" data-delscid="'.$DelSched['DeliverySchedule']['id'].'" data-delscnote="'.$DelSched['DeliverySchedule']['agent_note'].'"><i class="fa fa-book"></i></button>';
+//                                         } 
+                                        //if hindi agent lalabas lang to kapag my note
+                                        //pero kapag agent lagi andto to
+                                        echo '</td>';
                                         echo '</tr>';
                                     }
                                     ?>
@@ -654,6 +666,56 @@
     </div>
 </div>
 
+
+
+<div class="modal fade" id="update_delivery_note_modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content"> 
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Update Delivery Note</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row"> 
+                    <input type="hidden" id="delschedlID"/>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label" id="labelDeliveryNote">Delivery Note</label> 
+                            <textarea id="agent_note" class="form-control" ></textarea>
+                        </div>
+                    </div>   
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <?php if (AuthComponent::user('role') == 'sales_executive') { ?>
+                <button class="btn btn-primary" id="saveDrNote">Add</button>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    tinymce.init({
+        selector: 'textarea',
+        height: 500, 
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
 <script type="text/javascript">
 
 
@@ -733,7 +795,8 @@
                             "requested_qty": requested_qty,
                             "quotation_product_id": quotation_product_id,
                             "quotation_id": quotation_id,
-                            "delivery_time": delivery_time
+                            "delivery_time": delivery_time,
+                            "mode":type
                         }
                         $.ajax({
                             url: "/delivery_schedules/addSched",
@@ -797,6 +860,57 @@
         } else {
             document.getElementById('dr_paper_id').style.borderColor = "red";
         }
+    });
+    
+    
+    $('.update_delivery_note').each(function (index) {
+        $(this).click(function () {
+            $('#errorNote').remove();
+            var delivery_schedule_id = $(this).data("delscid");
+            var anote = $(this).data("delscnotes");
+            var status = $(this).data("delscstats");
+            
+            $('#delschedlID').val(delivery_schedule_id);
+//            $('#agent_note').val(anote); 
+            tinyMCE.activeEditor.setContent(anote);
+            if(status=='scheduled' || status=='delivered'){ 
+                tinymce.activeEditor.setMode('readonly');
+            }else{
+                tinymce.activeEditor.setMode('design'); 
+            }
+            //kapag scheduled na dapat d na pwede iupdate
+            
+            $('#update_delivery_note_modal').modal('show');
+        });
+    });
+
+    $('#saveDrNote').click(function () {
+            $('#errorNote').remove();
+//        alert('saveDrPaper');
+        var delivery_schedule_id = $('#delschedlID').val();
+        var agent_note = tinyMCE.activeEditor.getContent();
+         
+            if (agent_note != '') {
+                var data = {"delivery_schedule_id": delivery_schedule_id,
+                    "agent_note": agent_note 
+                }
+                $.ajax({
+                    url: "/delivery_schedules/updateDeliveryAgentNote",
+                    type: 'POST',
+                    data: {'data': data},
+                    dataType: 'json',
+                    success: function (dd) {
+                        location.reload();
+                    },
+                    error: function (dd) {
+                        console.log(dd);
+                    }
+                });
+            } else {
+                $('#labelDeliveryNote').append('<span id="errorNote" class="text-danger"><small> *delivery note is required </small></span>');
+//                document.getElementById('agent_note').style.borderColor = "red";
+            }
+        
     });
 
 

@@ -119,6 +119,7 @@ class DeliverySchedulesController extends AppController {
         $quotation_product_id = $data['quotation_product_id'];
         $quotation_id = $data['quotation_id'];
         $delivery_time = $data['delivery_time'];
+        $mode = $data['mode'];
 
         //check if there is an ongoing delivery schedule fot the quotation
         $check_sched = $this->DeliverySchedule->find('first', ['conditions' => [
@@ -171,7 +172,8 @@ class DeliverySchedulesController extends AppController {
                 'delivery_date' => $delivery_date,
                 'delivery_time' => $delivery_time,
                 'requested_qty' => $requested_qty,
-                'quotation_id' => $quotation_id
+                'quotation_id' => $quotation_id,
+                'mode'=>$mode
             ));
             if ($this->DeliverySchedule->save()) {
                 $ds_id = $this->DeliverySchedule->getLastInsertID();
@@ -202,6 +204,8 @@ class DeliverySchedulesController extends AppController {
         $this->loadModel('DeliverySchedProduct');
         $status = $this->params['url']['status'];
         $this->DeliverySchedule->recursive=2;
+        
+         
         if($status=='ongoing'){
              $requests = $this->DeliverySchedule->find('all', ['conditions' => ['DeliverySchedule.status' => [$status,'pending']]]);
         }else{
@@ -233,11 +237,17 @@ class DeliverySchedulesController extends AppController {
         
         $delivery_schedule_id = $data['delivery_schedule_id'];
         $status = $data['status'];
+        if($status == 'approved'){
+            $approved = $this->Auth->user('id');
+        }else{
+            $approved = 0;
+        }
         
         
         $this->DeliverySchedule->id = $delivery_schedule_id;
         $this->DeliverySchedule->set(array(
-            'status' => $status
+            'status' => $status,
+            'approved' => $approved
         ));
         if ($this->DeliverySchedule->save()) {
             echo json_encode($data);
@@ -271,6 +281,27 @@ class DeliverySchedulesController extends AppController {
         $this->set(compact('arr','status'));
         
         
+    }
+    
+    public function updateDeliveryAgentNote(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data; 
+        
+        $delivery_schedule_id = $data['delivery_schedule_id'];
+        $agent_note = $data['agent_note'];
+        
+        
+            $dateToday = date("Y-m-d H:i:s");
+        $this->DeliverySchedule->id = $delivery_schedule_id;
+        $this->DeliverySchedule->set(array(
+            'agent_note' => $agent_note,
+            'note_date' => $dateToday,
+        ));
+        if ($this->DeliverySchedule->save()) {
+            echo json_encode($data);
+        }
     }
 
 }

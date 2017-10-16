@@ -585,7 +585,9 @@
 						                <ul class="collapse">  
                                                                     <!--'ongoing','pending','approved','scheduled','delivered'-->
 						                    <li><a href="/delivery_schedules/requests?status=ongoing">Pending</a></li>
-						                    <li><a href="/delivery_schedules/requests?status=approved">Approved</a></li>  
+						                    <li><a href="/delivery_schedules/requests?status=approved">Approved</a></li> 
+						                    <li><a href="/delivery_schedules/requests?status=scheduled">Scheduled</a></li> 
+						                    <li><a href="/delivery_schedules/requests?status=delivered">Delivered</a></li>  
 						                 
                                                                 </ul> 
 						            </li>  
@@ -604,7 +606,7 @@
                                                                     <li><a href="/delivery_schedules/drs?status=delivered">Delivered</a></li>  
                                                                 </ul> 
 						            </li>  
-						            <li>
+						            <li>    
  						                <a href=""> 
                                                                     <i class="fa fa-file-powerpoint-o"></i>
 						                    <span class="menu-title">
@@ -614,9 +616,10 @@
 						                </a> 
 						                <ul class="collapse">  
                                                                     <!--pending; meaning d pa naischedule sa delivery itenerary--> 
-						                    <li><a href="/delivery_schedules/requests?status=ongoing">Pending</a></li>
-						                    <li><a href="/delivery_schedules/requests?status=scheduled">Scheduled</a></li>  
-                                                                    <li><a href="/delivery_schedules/requests?status=delivered">Delivered</a></li>  
+						                    <!--<li><a href="/delivery_iteneraries/new_itenerary">Add</a></li>-->
+						                    <li><a href="/delivery_iteneraries/list_view?status=pending">Pending</a></li>
+						                    <li><a href="/delivery_iteneraries/list_view?status=scheduled">Scheduled</a></li>  
+                                                                    <li><a href="/delivery_iteneraries/list_view?status=delivered">Delivered</a></li>  
                                                                 </ul> 
 						            </li>  
 						             

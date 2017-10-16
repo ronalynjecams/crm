@@ -21,7 +21,7 @@
     <!--Page Title-->
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <div id="page-title">
-        <h1 class="page-header text-overflow"><?php echo ucwords($status); ?> Delivery Schedules</h1>
+        <h1 class="page-header text-overflow"><?php if($status == 'ongoing') echo 'Pending';  else echo ucwords($status); ?> Delivery Schedules</h1>
     </div>
 
     <!--Page content-->
@@ -66,7 +66,28 @@
                                 </td>  
                                 <td><?php echo $data['Quotation']['Client']['name']; ?></td>
                                 <td><?php echo $data['Quotation']['User']['first_name'].'  '.$data['Quotation']['User']['last_name']; ?></td>
-                                <td><a href="/delivery_sched_products/process?id=<?php echo $data['DeliverySchedule']['id']; ?>" class="btn btn-primary"><i class="fa fa-eye"></i></a></td>  
+                                <td>
+                                    <?php 
+                                    if($data['DeliverySchedule']['type'] == 'dr'){
+                                         
+                                       echo '<a href="/delivery_sched_products/process?id='.$data['DeliverySchedule']['id'].'" class="btn btn-primary"><i class="fa fa-eye"></i></a>'; 
+                                    }
+                                    
+                                    if($data['DeliverySchedule']['status']== 'approved'){
+                                        echo '&nbsp; <a href="/delivery_iteneraries/new_itenerary?type='.$data['DeliverySchedule']['type'].'&&id='.$data['DeliverySchedule']['id'].'" class="btn btn-dark  add-tooltip "data-toggle="tooltip"  data-original-title="Schedule Itenerary" ><i class="fa fa-calendar"></i></a>'; 
+                                    }
+                                    
+                                    if($data['DeliverySchedule']['status']== 'scheduled'){
+//                                       
+                                        echo '&nbsp; <a href="/delivery_iteneraries/new_itenerary?type='.$data['DeliverySchedule']['type'].'&&id='.$data['DeliverySchedule']['id'].'" class="btn btn-dark  add-tooltip "data-toggle="tooltip"  data-original-title="Update Departure" ><i class="fa fa-edit"></i></a>'; 
+                                    }
+                                    ?>
+                                    
+<!--                                    if status == approved
+                                    pwede nya iset ang schedule-->
+                                    
+                                
+                                </td>  
                             </tr>
                         <?php } ?>
                     </tbody>
