@@ -149,9 +149,11 @@ class UsersController extends AppController {
             } else if ($this->Auth->user('role') == 'production_head') {
                 return $this->redirect('/users/dashboard_production_head');
             } else if ($this->Auth->user('role') == 'hr_head') {
-                return $this->redirect('/users/hr_head');
+                return $this->redirect('/users/dashboard_hr_head');
             } else if ($this->Auth->user('role') == 'logistics_head') {
-                return $this->redirect('/users/logistics_head');
+                return $this->redirect('/users/dashboard_logistics_head');
+            } else if ($this->Auth->user('role') == 'fitout_facilitator') {
+                return $this->redirect('/users/dashboard_fitout');
             }
         }
 
@@ -183,8 +185,10 @@ class UsersController extends AppController {
                 } else if ($this->Auth->user('role') == 'hr_head') {
                     return $this->redirect('/users/dashboard_hr_head');
                 } else if ($this->Auth->user('role') == 'logistics_head') {
-                return $this->redirect('/users/dashboard_logistics_head');
-            }
+                    return $this->redirect('/users/dashboard_logistics_head');
+                } else if ($this->Auth->user('role') == 'fitout_facilitator') {
+                    return $this->redirect('/users/dashboard_fitout');
+                }
             }
 
             $this->Session->setFlash(__('Invalid username or password, try again'));
@@ -321,30 +325,30 @@ class UsersController extends AppController {
         //if user role != new
 //            redirect to what page depending on dept
     }
- 
+
     public function login_error() {
         $status = $this->params['url']['status'];
         if ($status == 'incomplete') {
             $this->Session->setFlash(__('Please contact HR Department for profile completion'));
         }
     }
-    
-    public function incomplete_profile(){
+
+    public function incomplete_profile() {
         $this->loadModel('Position');
         $this->loadModel('Department');
         $this->loadModel('Role');
-        $users = $this->User->find('all',['conditions'=>['User.role'=>'new']]);
-        
-        
+        $users = $this->User->find('all', ['conditions' => ['User.role' => 'new']]);
+
+
         $roles = $this->Role->find('all');
 //        pr($roles);exit;
         $positions = $this->Position->find('all');
         $departments = $this->Department->find('all');
         $this->set(compact('users', 'positions', 'departments', 'roles'));
     }
-    
-    public function update_role(){
-        
+
+    public function update_role() {
+
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
@@ -353,7 +357,7 @@ class UsersController extends AppController {
         $position_id = $data['position_id'];
         $department_id = $data['department_id'];
 
-        
+
         $this->User->id = $user_id;
         $this->User->set(array(
             'role' => $role,
@@ -362,11 +366,66 @@ class UsersController extends AppController {
         ));
         if ($this->User->save()) {
             echo json_encode($data);
-        } else { 
+        } else {
             echo json_encode('invalid data');
         }
-        
+
         exit;
     }
 
+    public function dashboard_marketing() {
+        
+    }
+
+    public function dashboard_super_admin() {
+        
+    }
+
+    public function dashboard_it_staff() {
+        
+    }
+
+    public function dashboard_design_head() {
+        
+    }
+
+    public function dashboard_designer() {
+        
+    }
+
+    public function dashboard_supply() {
+        
+    }
+
+    public function dashboard_raw() {
+        
+    }
+
+    public function dashboard_warehouse_raw() {
+        
+    }
+
+    public function dashboard_warehouse_supply() {
+        
+    }
+
+    public function dashboard_collection_officer() {
+        
+    }
+
+    public function dashboard_production_head() {
+        
+    }
+
+    public function dashboard_hr_head() {
+        
+    }
+
+    public function dashboard_logistics_head() {
+        
+    }
+
+    public function dashboard_fitout() {
+        
+    }
 }

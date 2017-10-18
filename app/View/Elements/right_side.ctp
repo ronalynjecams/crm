@@ -454,7 +454,7 @@
                                                                 </ul>
 						            </li> 
 						            <li>
-						                <a href=" "> 
+						                <a href="/prod_inv_locations/"> 
                                                                     <i class="fa fa-dropbox"></i>
 						                    <span class="menu-title">
 									<strong>Inventory</strong>
@@ -567,7 +567,7 @@
                                                             <!-- logistics_head -->
                                                              <?php if($UserIn['User']['role'] == 'logistics_head'){ ?>
 						            <li class="active-link">
-						                <a href="/users/dashboard_production_head"> 
+						                <a href="/users/dashboard_logistics_head"> 
                                                                     <i class="ion-home"></i>
 						                    <span class="menu-title">
 									<strong>Dashboard</strong>
@@ -617,7 +617,7 @@
 						                <ul class="collapse">  
                                                                     <!--pending; meaning d pa naischedule sa delivery itenerary--> 
 						                    <!--<li><a href="/delivery_iteneraries/new_itenerary">Add</a></li>-->
-						                    <li><a href="/delivery_iteneraries/list_view?status=pending">Pending</a></li>
+						                    <!--<li><a href="/delivery_iteneraries/list_view?status=pending">Pending</a></li>-->
 						                    <li><a href="/delivery_iteneraries/list_view?status=scheduled">Scheduled</a></li>  
                                                                     <li><a href="/delivery_iteneraries/list_view?status=delivered">Delivered</a></li>  
                                                                 </ul> 
@@ -625,6 +625,34 @@
 						             
                                                             <?php } ?> 
                                                             <!-- logistics_head -->
+                                                            
+                                                            <!-- fitout_facilitator -->
+                                                             <?php if($UserIn['User']['role'] == 'fitout_facilitator'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_fitout"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>        
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Fitout Works</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/fitout_works/project?status=received">Received</a></li>
+						                    <li><a href="/fitout_works/project?status=ongoing">Ongoing</a></li>
+						                    <li><a href="/fitout_works/project?status=pending">Pending</a></li>   
+						                    <li><a href="/fitout_works/project?status=accomplished">Accomplished</a></li>  
+                                                                </ul>
+						            </li>  
+                                                            <?php } ?>
+                                                            <!-- fitout_facilitator -->
 						           
 						           
                                 <!--Widget-->

@@ -38,6 +38,7 @@
                 </h3>  
             </div>
             <div class="panel-body">
+ 
 
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
@@ -79,19 +80,23 @@
                                     ?>
                                 </td>
                                 <td>
-                                <?php 
+                                    <?php
                                     if ($data['DeliveryItenerary']['delivery_mode'] == 'jecams') {
-                                    if (!is_null($data['DeliveryItenerary']['departure'])) {
+                                        if (!is_null($data['DeliveryItenerary']['departure'])) {
                                             echo date('F d, Y', strtotime($data['DeliveryItenerary']['departure']));
                                             echo '<br/><small>' . date('h:i a', strtotime($data['DeliveryItenerary']['departure'])) . '</small>';
                                             //arrival here 
-                                    }else{
-                                        echo '<button class="btn btn-xs btn-primary add-tooltip" data-toggle="tooltip"  data-original-title="Update Departure" ><i class="fa fa-calendar"></i></button>';                                        
-                                    }
+                                        } else {
+                                            echo '<button class="btn btn-xs btn-primary add-tooltip update_departure" data-toggle="tooltip"  data-original-title="Update Departure" data-deptid="' . $data['DeliveryItenerary']['id'] . '" ><i class="fa fa-calendar"></i></button>';
+                                        }
                                     } else if ($data['DeliveryItenerary']['delivery_mode'] == 'transportify') {
-//                                        if(!is_null($data['DeliveryItenerary']['booling_code']))
+                                        if (!is_null($data['DeliveryItenerary']['booking_code'])) {
+                                            echo $data['DeliveryItenerary']['booking_code'];
+                                        } else {
+                                            echo '<button class="btn btn-xs btn-info add-tooltip update_booking_code" data-toggle="tooltip"  data-original-title="Update Booking Code" ><i class="fa fa-book"></i></button>';
+                                        }
                                     }
-                                ?>
+                                    ?>
                                 </td>
                                 <td>
                                     <?php
@@ -109,7 +114,7 @@
                                             }
                                         } else {
                                             //update actual
-                                                echo '<button class="btn btn-xs btn-primary"><i class="fa fa-calendar-plus-o"></i></button>';
+                                            echo '<button class="btn btn-xs btn-primary"><i class="fa fa-calendar-plus-o"></i></button>';
                                         }
                                     } else {
                                         echo '<small>Waiting to depart</small>';
@@ -127,6 +132,38 @@
     </div>
 </div>
 
+<div class="modal fade" id="updateDeparture-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Update Departure</h4>
+            </div>
+            <!--Modal body-->
+            <div class="modal-body">
+                <input type="hidden" class="form-control"  id="dep_itenerary_id">  
+                <p class="text-danger" id="error_agent"></p>
+                <div class="form-group"> 
+                    <div class="col-sm-6">
+                        <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="departure_date"> 
+                    </div>
+                    <div class="col-sm-6"> 
+                        <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="departure_time">
+                    </div>
+
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="updateDepartureBtn">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script>
@@ -137,5 +174,47 @@
             "stateSave": true
 
         });
+
+
+
+        $(".update_departure").each(function (index) {
+            $(this).on("click", function () {
+                var id = $(this).data('deptid');
+                $('#dep_itenerary_id').val(id);
+                $('#updateDeparture-modal').modal('show');
+
+            });
+        });
+
+
+        $('#updateDepartureBtn').on("click", function () {
+            var delivery_itenerary_id = $('#dep_itenerary_id').val();
+            var departure_date = $('#departure_date').val();
+            var departure_time = $('#departure_time').val();
+            
+            
+                            var data = {"delivery_itenerary_id": delivery_itenerary_id,
+                                "departure_date": departure_date,
+                                "departure_time": departure_time 
+                            }
+                            
+            $.ajax({
+                url: "/delivery_iteneraries/process_update_departure",
+                type: 'POST',
+                data: {'data': data},
+                dataType: 'json',
+                success: function (id) {
+                    location.reload();
+                },
+                erorr: function (id) {
+                    alert('error!');
+                }
+            });
+        });
+
+
+
     });
+
+
 </script>

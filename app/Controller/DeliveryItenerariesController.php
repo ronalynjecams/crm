@@ -146,8 +146,8 @@ class DeliveryItenerariesController extends AppController {
         $delivery_schedule_id = $data['delivery_schedule_id'];
         $del_type = $data['del_type'];
         ///merge expected start date and time 
-        
-         $combinedDT = date('Y-m-d H:i:s', strtotime("$expected_start_date $expected_start_time"));
+
+        $combinedDT = date('Y-m-d H:i:s', strtotime("$expected_start_date $expected_start_time"));
 //         pr($combinedDT);
         $this->DeliveryItenerary->create();
         $this->DeliveryItenerary->set(array(
@@ -164,35 +164,52 @@ class DeliveryItenerariesController extends AppController {
         if ($this->DeliveryItenerary->save()) {
             $delivery_itenerary_id = $this->DeliveryItenerary->getLastInsertID();
             $ctr = count($people);
-                for($i=0; $i<$ctr; $i++){
-                    $this->DeliveryInstaller->create();
-                    $this->DeliveryInstaller->set(array(
-                        'delivery_itenerary_id'=>$delivery_itenerary_id,
-                        'user_id'=>$people[$i]
-                    ));
-                    $this->DeliveryInstaller->save();
-                }
-                
+            for ($i = 0; $i < $ctr; $i++) {
+                $this->DeliveryInstaller->create();
+                $this->DeliveryInstaller->set(array(
+                    'delivery_itenerary_id' => $delivery_itenerary_id,
+                    'user_id' => $people[$i]
+                ));
+                $this->DeliveryInstaller->save();
+            }
+
 //            //also update delivery schedule
             $this->DeliverySchedule->id = $delivery_schedule_id;
             $this->DeliverySchedule->set(array(
                 'status' => 'scheduled'
             ));
-            if($this->DeliverySchedule->save()){
-                
+            if ($this->DeliverySchedule->save()) {
+
                 echo json_encode($delivery_schedule_id);
             }
         }
         exit;
     }
-    
-    public function list_view(){
+
+    public function list_view() {
         $status = $this->params['url']['status'];
-        $iteneraries = $this->DeliveryItenerary->find('all',['conditions'=>['DeliveryItenerary.status'=>$status]]);
-        
-        $this->set(compact('iteneraries','status'));
-//        pr($iteneraries);
-        
+        $iteneraries = $this->DeliveryItenerary->find('all', ['conditions' => ['DeliveryItenerary.status' => $status]]);
+
+        $this->set(compact('iteneraries', 'status'));
+    }
+
+    public function process_update_departure() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        $delivery_itenerary_id = $data['delivery_itenerary_id'];
+        $departure_date = $data['departure_date'];
+        $departure_time = $data['departure_time'];
+
+        $combinedDT = date('Y-m-d H:i:s', strtotime("$departure_date $departure_time"));
+//
+        $this->DeliveryItenerary->id = $delivery_itenerary_id;
+        $this->DeliveryItenerary->set(array(
+            'departure' => $combinedDT
+        ));
+        if($this->DeliveryItenerary->save()){
+                echo json_encode($delivery_itenerary_id);
+        }
     }
 
 }

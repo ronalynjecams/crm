@@ -84,9 +84,9 @@
                                 </td>  
                                 <td>
                                     <button class="btn btn-info btn-icon add-tooltip view_quote" data-toggle="tooltip"  data-original-title="View Quotation?" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa-eye"></i> </button>
-                                    <button class="btn btn-mint btn-icon add-tooltip print_soa" data-toggle="tooltip"  data-original-title="Print SOA" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa-print"></i> SOA </button>
-                                    <button class="btn btn-primary btn-icon add-tooltip print_dr" data-toggle="tooltip"  data-original-title="Print DR" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa-print"></i> DR </button>
-                                    <button class="btn btn-warning btn-icon add-tooltip download_si" data-toggle="tooltip"  data-original-title="Download SI" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa fa-cloud-download"></i> SI </button>
+                                    <!--<button class="btn btn-mint btn-icon add-tooltip print_soa" data-toggle="tooltip"  data-original-title="Print SOA" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa-print"></i> SOA </button>-->
+                                    <!--<button class="btn btn-primary btn-icon add-tooltip print_dr" data-toggle="tooltip"  data-original-title="Print DR" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa-print"></i> DR </button>-->
+                                    <!--<button class="btn btn-warning btn-icon add-tooltip download_si" data-toggle="tooltip"  data-original-title="Download SI" data-viewquoteid="<?php echo $processed_quote['Quotation']['id']; ?>"><i class="fa fa fa-cloud-download"></i> SI </button>-->
                                 </td>  
                             </tr>
                             <?php

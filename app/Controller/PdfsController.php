@@ -665,4 +665,205 @@ $this->Mpdf->AddPage();
         $this->Mpdf->setFilename('PurchaseOrder.pdf');
     }
 
+    
+    public function print_dr() {
+
+
+        $this->Mpdf->init();
+
+
+
+        
+        $this->loadModel('DeliverySchedule');
+        $dr_id = $this->params['url']['id'];
+        $this->DeliverySchedule->recursive = 2;
+        $delivery = $this->DeliverySchedule->findById($dr_id);
+        $this->Mpdf->SetHTMLHeader('<div style="padding-top:-15px; right:500px; font-size:10px; " align="right">' . date("F d, Y h:i A") . '</div>');
+
+       $approved_by = $delivery['DeliverySchedule']['approved_by'];
+       
+       if($approved_by == 0){
+           $approved_by = '<font style="font-size:10px;color:red">Unapproved</font>';
+       } else{
+           $user = $this->User->findById($approved_by);
+           $approved_by = '<font style="font-size:10px;">Approved By : '.$user['User']['first_name'].' '.$user['User']['last_name'].'</font>';
+       }
+//        pr($delivery); exit;
+        $cnt = 1;
+        $sub_total = 0;
+        $product_details = $delivery['DeliverySchedProduct'];
+
+$this->Mpdf->autoPageBreak = true; 
+$mpdf->shrink_tables_to_fit = 1;
+$this->Mpdf->AddPage();
+        $html = ' <div style=" top: 35px; left:18px;  font-size:10px; ">
+    <table style="width: 100%; border:1px; page-break-inside: avoid " autosize=�1� >
+        <tr>
+            <td style="text-align: left;width:25%; font-size:10px;">
+                <img src="../img/jecams/dr.png" width="170" height="35">  
+            </td>
+            <td style="text-align: right;width:40%; font-size:15px;padding-right:20px;">
+                PCAB Accredited Contractor
+            </td> 
+            <td style="text-align: right;width:35%; font-size:13px;padding-right:20px;">
+                <p style="margin-top: -5px;">www.jecams.com.ph</p>
+            </td> 
+        </tr>
+    </table>
+    <table border="0">
+    <tr>
+        <td width="300" align="left" style="padding-left:10px;padding-right:10px;padding-bottom:-50px;"> 
+            <font style="font-size:12px;">From:</font>
+            <font style="font-size:10px;"> 
+            <p class="marginedQuoteHeaderFirst"><b>JECAMS INC.</b></p>
+            <p style="margin-top: -5px;">3 Queen St.Forest Hills </p>
+            <p style="margin-top: -5px;">Novaliches Quezon City 1117</p>  
+            <p style="margin-top: -5px;">Tel: 358.8149 / 921.1033</p>   
+        </td>
+
+        <td width="260" align="left" style="padding-left:10px;padding-right:10px;padding-bottom:-50px;">
+            <font style="font-size:12px;">To:</font>
+            <font style="font-size:10px;"> 
+            <p class="marginedQuoteHeaderFirst"><b>' . strtoupper($delivery['Quotation']['Client']['name']) . '</b></p>
+            <p style="margin-top: -5px;">Contact Person: ' . strtoupper($delivery['Quotation']['Client']['contact_person']) . ' </p>
+            <p style="margin-top: -5px;">Phone: ' . strtoupper($delivery['Quotation']['Client']['contact_number']) . ' </p>  
+            <p style="margin-top: -5px;">Address: ' . strtoupper($delivery['Quotation']['Client']['address']) . '</p>
+        </td> 
+        <td width="200" align="left" style="padding-left:5px;padding-right:10px;padding-bottom:-50px;">
+            <font style="font-size:11px;">
+            <p style="margin-top: -5px;"><b>DR Number:</b> DR-' . $delivery['DeliverySchedule']['dr_number'] . '</p>  
+            <p>' .$approved_by. '</p>
+        
+             </font>  
+        </td>
+    </tr>   
+</table>
+<br/><br/><br/><br/> 
+<br/><br/><br/><br/>
+<table border="0" cellpadding="0" cellspacing="0"  style="border-collapse:collapse;font-size:12px; " align="center">
+    <tr>
+        <td align="center" style="font-size:12px;"><b>Code</b> <br/><br/><br/> </td>
+        <td align="center" style="font-size:12px;"><b>Product</b> <br/><br/><br/> </td>
+        <td align="left"  style="font-size:12px;"><b>Description</b><br/><br/><br/> </td>
+        <td align="center"  style="font-size:12px;"><b>Qty</b><br/> <br/><br/></td>
+        <td   align="right"  style="font-size:12px; "> <b>Staus</b><br/> <br/><br/></td>
+    </tr>
+    ' ;
+    $myCtr = 0;
+      foreach ($product_details as $prod) {
+        $product_id = $prod['QuotationProduct']['product_id'];
+        $quotation_product_id = $prod['QuotationProduct']['id'];
+        $this->loadModel('Product');
+        $this->Product->recursive = -1;
+        $product = $this->Product->find('first', array('conditions' => array('Product.id' => $product_id)));
+        
+        $this->loadModel('QuotationProductProperty');
+        $this->QuotationProductProperty->recursive = -1;
+        $quotation_product_properties = $this->QuotationProductProperty->find('all', array('conditions' => array('QuotationProductProperty.id' => $quotation_product_id)));
+        
+//            $total = $prod['PoProduct']['qty'] * $prod['PoProduct']['price'];
+            $prod_prop = [];
+//            foreach ($prod['PoProductProperty'] as $desc) {
+////                if (is_null($desc['property'])) {
+////                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
+////                } else {
+//                $prod_prop[] = '<li class="list-group-item"> ' . $desc['property'] . ' : ' . $desc['value'] . '</li>';
+////                }
+//            }
+            
+//            if($cnt == 10){
+//                $pp = '<pagebreak>';
+//            }else{
+//                $pp = '';
+//            }
+
+            $html .= '<tr>
+                <td width="120" align="left"><b>' . $product['Product']['name'] . '</b></td>
+                <td width="130" align="center"><img class="img-responsive" src="../product_uploads/' . $prod['QuotationProduct']['image'] . '" width="70" height="70"></td>
+                <td width="260"> 
+                      <ul class="list-group">' ;
+                    foreach ($quotation_product_properties as $desc) {
+//                if (is_null($desc['property'])) {
+//                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
+//                } else {
+                $html .= '<li class="list-group-item"> ' . $desc['QuotationProductProperty']['property'] . ' : ' . $desc['QuotationProductProperty']['value'] . '</li>';
+//                }
+            }
+                    $html .= '<li class="list-group-item"> 
+                     <p>&nbsp;<br/></p><br/></li>
+                        </ul>
+                        </td>
+                <td width="40">' . abs($prod['actual_qty']) . '</td>
+                <td width="100" align="right"> ' . $prod['status'] . '</td></tr>';
+
+//            $cnt++;
+//            $sub_total = $sub_total + $quote_prod['QuotationProduct']['edited_amount'];
+//            $myCtr++;
+//            if($myCtr >= 10) {
+//                $this->Mpdf->AddPage();
+//                $myCtr = 0;
+//            } 
+//            
+        }
+                
+    
+ $html .= '
+    
+        
+</table> 
+    <tr>
+        <td width="100%">
+            <br /><br />
+            <p>We are pleased that you chose Jecams Inc. for your furniture purchase. We greatly appreciate your business and the opportunity to assist you. At Jecams, we always strive for the best</p>
+            <br />
+            <p>We hope to be working with you again soon.</p>
+            <br />
+            <p><b>__________________________________________________</b></p>
+            <p><b>Approved by Accounting</b></p>
+            <br />
+            <p>Delivered By:__________________________________________________</p>
+            <p>Date/Time:__________________________________________________</p>
+            <br />
+            <p>Received in good condition</p>
+            <br />
+            <p>__________________________________________________</p>
+            <p><b>Signature over printed name</b></p>
+            <p>Date/Received:__________________________________________________</p>
+            <br />
+            <p><b>Receiving Time:</b> 9am-11am</p>
+            
+        </td>
+    </tr>
+    
+</table>
+</div>
+    ';
+ $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+//    pr($html); exit;
+    $this->Mpdf->WriteHTML($html);
+
+
+//        $this->set(compact('purchase_order', 'product_details', 'discount', 'vat', 'ewt'));
+
+
+//           $ctrProd = count($quote_productsc);
+//           $ctrPrd = $ctrProd/6;
+//           for($i=1; $i<=$ctrPrd; $i++){
+               
+//        $this->Mpdf->AddPage('P', // L - landscape, P - portrait 
+//                '', '', '', '', 5, // margin_left
+//                5, // margin right
+//                15, // margin top
+//                30, // margin bottom
+//                10, // margin header
+//                10);
+////           }
+
+//$this->Mpdf->Output();
+
+
+        $this->layout = 'pdf';
+        $this->render('print_po');
+        $this->Mpdf->setFilename('PurchaseOrder.pdf');
+    }
 }

@@ -54,12 +54,12 @@
                         </tr>
                     </tfoot>
                     <tbody>
-                        <?php foreach ($inventory as $inv) { ?>
+                        <?php foreach ($products_inv as $inv) { ?>
                             <tr>
-                                <td><?php '<img class="img-responsive" src="../product_uploads/' . $inv['Product']['image'] . '" width="70" height="70">'; ?></td>
+                                <td><?php echo '<img class="img-responsive" src="../product_uploads/' . $inv['Product']['image'] . '" width="70" height="70">'; ?></td>
                                 <td><?php echo $inv['Product']['name']; ?></td>
                                 <td><?php echo $inv['InvLocation']['name']; ?></td>
-                                <td><?php //echo $inv['Supplier']['contact_number']; ?></td> 
+                                <td><?php echo $inv['ProdInvLocation']['qty']; ?></td> 
                                 <td>
                                     <?php
 //                                    echo '<a class="btn btn-mint btn-icon add-tooltip updateSupplierBtn" data-toggle="tooltip" href="#" data-original-title="Update Supplier" data-id="' . $supplier['ProdInvLocation']['id'] . '" ><i class="fa fa-edit"></i></a>';
@@ -103,17 +103,21 @@
                                 <?php foreach ($products as $product) { ?>
                                     <option value="<?php echo $product['Product']['id']; ?>"> <?php echo $product['Product']['name']; ?></option>
                                 <?php } ?>
+
                             </select>
                         </div> 
                         <div class="form-group col-sm-6">
                             <select id="inv_location_id" class="form-control"> 
                                 <option>-- select location --</option>
+                                <?php foreach ($locations as $location) { ?>
+                                    <option value="<?php echo $location['InvLocation']['id']; ?>"> <?php echo $location['InvLocation']['name']; ?></option>
+                                <?php } ?>
                             </select>
                         </div>
                         <div class="form-group col-sm-6">
                         </div> 
                         <div class="form-group col-sm-6">
-                            <input type="text" class="form-control" placeholder="QTY">
+                            <input type="text" id="quantity" class="form-control" placeholder="QTY">
                         </div>
                         <div class="col-sm-12"><div id="prod_inv_location_prop"><h4 align="center">Product Properties</h4>
                                 <div class="col-sm-12">
@@ -137,7 +141,7 @@
             <!--Modal footer-->
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                <button class="btn btn-primary" id="saveInventorySourceBtn" disabled>Add</button>
+                <button class="btn btn-primary" id="saveInventoryBtn">Add</button>
             </div>
         </div>
     </div>
@@ -156,18 +160,32 @@
                 $(".prod_inv_location_prop_add").remove();
             });
             var product_id = $("#product_id").val();
-            $('#inv_location_id').empty().append('<option>-- select location --</option>');
-            $.get('/prod_inv_locations/get_location', {
-                id: product_id,
+            $.get('/prod_inv_locations/get_product_property', {
+                id: product_id
             }, function (data) {
-                    console.log(data);
+                console.log(data);
                 for (i = 0; i < data.length; i++) {
-                    $('#inv_location_id').append($('<option>', {
-                        value: data[i]['InvLocation']['id'],
-                        text: data[i]['InvLocation']['name']
-                    }))
+    //                console.log(data[i]['ProdInvLocationProperty']['property']);
+                    $('#prod_inv_location_prop').append('<div  class="col-sm-12 prod_inv_location_prop_add">' +
+                            '<div class="col-sm-1">' +
+                            '<button class="rm_prod_inv btn btn-danger btn-sm">x</button>' +
+                            '</div>' +
+                            '<div class="col-sm-5" align="center"> ' +
+                            '<input type="text" readonly class="form-control inv_prop" value="' + data[i]['ProductProperty']['name'] + '">' +
+                            ' </div>' +
+                            '<div class="col-sm-5" align="center"> ' +
+                            '<input type="text" readonly class="form-control inv_val" value="' + data[i]['ProductValue'][0]['value'] + '">' +
+                            ' </div>' +
+                            '<div class="col-sm-1">' +
+                            '</div>' +
+                            '</div>');
                 }
- 
+
+                $('.rm_prod_inv').each(function (index) {
+                    $(this).click(function () {
+                        $(this).closest(".prod_inv_location_prop_add").remove();
+                    });
+                });
             });
         });
         
@@ -177,62 +195,92 @@
                 '<button class="rm_prod_inv btn btn-danger btn-sm">x</button>' +
                 '</div>' +
                 '<div class="col-sm-5" align="center"> ' +
-                '<input type="text" readonly class="form-control inv_prop" value="">' +
+                '<input type="text" class="form-control inv_prop" value="">' +
                 ' </div>' +
                 '<div class="col-sm-5" align="center"> ' +
-                '<input type="text" readonly class="form-control inv_val" value="">' +
+                '<input type="text" class="form-control inv_val" value="">' +
                 ' </div>' +
                 '<div class="col-sm-1">' +
                 '</div>' +
                 '</div>');
+        
+            $('.rm_prod_inv').click(function () {
+                $(this).closest(".prod_inv_location_prop_add").remove();
+            });
         });
         
-        $("#inv_location_id").change(function () {
-        $('.prod_inv_location_prop_add').each(function (index) {
-            $(".prod_inv_location_prop_add").remove();
-        });
-        var product_id = $("#product_id").val();
-        $.get('/prod_inv_locations/get_product_property', {
-            id: product_id,
-        }, function (data) {
-            console.log(data);
-            for (i = 0; i < data.length; i++) {
-//                console.log(data[i]['ProdInvLocationProperty']['property']);
-                $('#prod_inv_location_prop').append('<div  class="col-sm-12 prod_inv_location_prop_add">' +
-                        '<div class="col-sm-1">' +
-                        '<button class="rm_prod_inv btn btn-danger btn-sm">x</button>' +
-                        '</div>' +
-                        '<div class="col-sm-5" align="center"> ' +
-                        '<input type="text" readonly class="form-control inv_prop" value="' + data[i]['ProductProperty']['name'] + '">' +
-                        ' </div>' +
-                        '<div class="col-sm-5" align="center"> ' +
-                        '<input type="text" readonly class="form-control inv_val" value="' + data[i]['ProductValue'][0]['value'] + '">' +
-                        ' </div>' +
-                        '<div class="col-sm-1">' +
-                        '</div>' +
-                        '</div>');
-            }
-
-            $('.rm_prod_inv').each(function (index) {
-                $(this).click(function () {
-                    $(this).closest(".prod_inv_location_prop_add").remove();
-                });
-            });
-            $('.inv_qty_deduct').each(function (index) {
-                $(this).keyup(function () {
-                    var qty = parseFloat($(this).val());
-                    var invprop = parseFloat($(this).data("invprop"));
-                    if (qty > invprop) {
-                        alert('Invalid Quantity');
-                        $('#saveInventorySourceBtn').prop("disabled", true);
-                    } else {
-                        $('#saveInventorySourceBtn').prop("disabled", false);
-                    }
-                });
-            });
-        });
-    });
+        
       
     });
     
+    $("#saveInventoryBtn").click(function () {
+//        $('#saveInventorySourceBtn').prop("disabled", true);
+        var check_inv_prop = 0;
+        var check_inv_val = 0;
+        $('.inv_val').each(function (index) {
+            var value = $(this).val();
+                if(value === ""){
+                    check_inv_val += 1;
+                }
+        });
+        
+        $('.inv_prop').each(function (index) {
+            var value = $(this).val();
+                if(value === ""){
+                    check_inv_prop += 1;
+                }
+        });
+//    alert(total_inv_deduct);
+        var quantity = $("#quantity").val();
+        if(quantity <= 0 || quantity === ""){
+            alert("quantity is required");
+        } else if(check_inv_prop !== 0){
+            alert("please fill up blank fields on item property");
+        } else if(check_inv_val !== 0){
+            alert("please fill up blank fields on property value");
+        } else {
+//            var quoted_qty = parseFloat($("#quoted_qty").val());
+//            if (total_inv_deduct > quoted_qty) {
+//                alert('Quantity should only be equal or less than' + quoted_qty);
+//            } else {
+                var inv_location_id = $("#inv_location_id").val();
+                var product_id = $("#product_id").val();
+//                var quoted_prod_id = $("#quoted_prod_id").val();
+                var inv_prop = $('.inv_prop').map(function () {
+                    return $(this).val();
+                }).get();
+                var inv_val = $('.inv_val').map(function () {
+                    return $(this).val();
+                }).get();
+                var counter = $('.inv_prop').length;
+                var ctr = counter;
+                console.log(ctr);
+                var data = {
+                    "location_id": inv_location_id,
+                    "product_id": product_id,
+                    "quantity": quantity,
+                    "inv_prop": inv_prop,
+                    "inv_val": inv_val,
+                    "counter": ctr
+                }
+                console.log(data);
+                $.ajax({
+                    url: "/prod_inv_locations/addInventory",
+                    type: 'POST',
+                    data: {'data': data},
+                    dataType: 'json',
+                    success: function (dd) {
+                        location.reload();
+    //                    console.log(dd);
+                    },
+                    error: function (dd) {
+                        console.log(dd);
+                    }
+                });
+//            }
+        }
+
+
+    });
+        
 </script>

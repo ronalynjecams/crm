@@ -119,7 +119,7 @@
                                     <?php
                                     if ($this->params['url']['source'] == 'inventory') {
                                         if ($this->params['url']['status'] == 'pending') {
-                                            echo '<button class="btn btn-primary btn-icon add-tooltip release_item" data-toggle="tooltip"  data-original-title="Release Item?" data-psid="' . $request['ProductSource']['id'] . '">Release </button>';
+                                            echo '<button class="btn btn-primary btn-icon add-tooltip release_item" data-toggle="tooltip"  data-original-title="Release Item?" data-psid="' . $request['ProductSource']['id'] . '" data-qid="' . $request['Quotation']['id'] . '">Release </button>';
                                         }
 //                                        echo 'request payment';
 //                                        echo 'print po';
@@ -207,6 +207,14 @@
     $('.release_item').each(function (index) { 
         $(this).click(function () {
             $('#release-item-modal').modal('show');
+            var qid = $(this).data("qid");
+            console.log(qid);
+            $.get('/product_sources/getDeliverySched', {
+                id: qid
+            }, function (data) {
+                $("#qty_released").val(data['DeliverySchedule']['id']);
+                console.log(data);
+            });
             //if processed_qty == qty {update product source status to processed
         });
     });

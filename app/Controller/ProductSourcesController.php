@@ -112,25 +112,78 @@ class ProductSourcesController extends AppController {
 		return $this->redirect(array('action' => 'index'));
 	}
         public function list_view(){
+
             $selected_type = $this->params['url']['type'];
+
             $selected_status = $this->params['url']['status'];
+
             $selected_inventory = $this->params['url']['source'];
+
             
+
              $this->ProductSource->recursive = 2;
+
             $requests = $this->ProductSource->find('all',['conditions'=>[
+
                 'ProductSource.type' => $selected_type,
+
                 'ProductSource.status' => $selected_status,
+
                 'ProductSource.source' => $selected_inventory,
+
             ],
-                'order'=>'ProductSource.created ASC'
+                'order'=>'ProductSource.created ASC',
+                'joins' => array( 
+                    array( 
+                        'table' => 'delivery_schedules',
+                        'alias' => 'DeliverySchedule',
+                        'type' => 'LEFT',
+                        'conditions' => array(
+                            'DeliverySchedule.quotation_id = Quotation.id'
+                        )
+                    )
+                )
+                
+
                 ]);
-            
+
+//            pr($requests); exit;
+
             $this->loadModel('User');
+
              $this->User->recursive = -1;
+
             $users = $this->User->find('all');
+
             
+
             $this->set(compact('requests','users'));
+
             
+
             
+
+        }
+        
+        
+        public function getDeliverySched() {
+            $this->autoRender = false;
+
+            $this->response->type('json');
+
+            if ($this->request->is('ajax')) {
+
+                $id = $this->request->query['id']; 
+                $this->loadModel('DeliverySchedule');   
+                        
+                $delivery_schedule = $this->DeliverySchedule->find('first',array(
+
+                    'conditions'=>array('DeliverySchedule.quotation_id'=>$id)));
+
+                return (json_encode($delivery_schedule));
+
+                exit;
+
+            }
         }
 }

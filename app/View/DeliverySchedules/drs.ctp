@@ -65,7 +65,7 @@
                                 <td><?php echo $data['Quotation']['User']['first_name'].'  '.$data['Quotation']['User']['last_name']; ?></td>
                                 <td>
                                     <!--<a href="/delivery_sched_products/process?id=<?php echo $data['DeliverySchedule']['id']; ?>" class="btn btn-primary"><i class="fa fa-eye"></i></a>-->
-                                    <a href="/pdfs/print_dr?dsid=<?php echo $data['DeliverySchedule']['id']; ?>" class="btn btn-primary">
+                                    <a href="/pdfs/print_dr?id=<?php echo $data['DeliverySchedule']['id']; ?>" target="_blank" class="btn btn-primary add-tooltip" data-toggle="tooltip"  data-original-title="Print DR" ><i class="fa fa-print"></i></a>
                                 </td>  
                             </tr>
                         <?php } ?>
