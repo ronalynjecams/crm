@@ -120,6 +120,10 @@ class FitoutWorksController extends AppController {
             
             //get quotations
             $quotations = $this->Quotation->find('all');
-            $this->set('quotes_data', $quotations);
+            $this->set(compact('quotations'));
+            
+            //get users
+            $users = $this->User->find('all');
+            $this->set(compact('users'));
         }
 }

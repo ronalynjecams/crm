@@ -93,11 +93,16 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Select Quotation <span class="text-danger">*</span></label>
-                    <?php echo $quotes_data; ?>
-                     <select>
-                        <option>Select Quotation
-                        </option>
-                     </select>
+                    
+                    <select id="qoutation_id" class="form-control">
+                        <option>Select Quotation</option>
+                    <?php foreach ($quotations as $q) {
+                         echo $q['Quotation']['subject']; 
+                        ?>
+                        <option value="<?php echo $q['Quotation']['id']; ?>"><?php echo $q['Quotation']['subject']; ?></option>
+                        <?php
+                    } ?>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Deadline Date <span class="text-danger">*</span></label>
