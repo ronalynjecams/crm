@@ -653,6 +653,35 @@
 						            </li>  
                                                             <?php } ?>
                                                             <!-- fitout_facilitator -->
+                                                            
+                                                            <!-- admin_staff -->
+                                                             <?php if($UserIn['User']['role'] == 'admin_staff'){ ?>
+						            <li class="active-link">
+						                <a href="/users/dashboard_admin_staff"> 
+                                                                    <i class="ion-home"></i>
+						                    <span class="menu-title">
+									<strong>Dashboard</strong>
+                                                                    </span>
+						                </a>
+						            </li>        
+						            <li>
+ 						                <a href=""> 
+                                                                    <i class="fa fa-file-powerpoint-o"></i>
+						                    <span class="menu-title">
+									<strong>Bills</strong>
+                                                                    </span>
+                                                                    <i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">  
+						                    <li><a href="/bill_accounts/view_account">Accounts</a></li>
+						                    <li><a href="/bills/view_bills">Billing</a></li>
+						                    <li><a href="/bill_monitorings/view_monitoring">Bills Monitoring</a></li>
+						                    <!--<li><a href="/fitout_works/project?status=pending">Pending</a></li>   -->
+						                    <!--<li><a href="/fitout_works/project?status=accomplished">Accomplished</a></li>  -->
+                                                                </ul>
+						            </li>  
+                                                            <?php } ?>
+                                                            <!-- admin_staff -->
 						           
 						           
                                 <!--Widget-->
