@@ -46,22 +46,20 @@
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>Name</th> 
+                            <th>Account Name</th> 
                             <th>Actions</th> 
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>Name</th>
+                            <th>Account Name</th>
                             <th>Actions</th> 
                         </tr>
                     </tfoot>
                     <tbody>
                         <?php foreach ($bill_accounts as $billAccount){ ?>
                             <tr>
-                                 <td><?php echo $billAccount['BillAccount']['id']; ?></td>
                                 <td><?php echo $billAccount['BillAccount']['name']; ?></td>
-    
                                 <td>
                             <?php 
                                 if($UserIn['User']['role'] == 'admin_staff'){ if($UserIn['User']['role'] == 'admin_staff'){ 
@@ -156,7 +154,14 @@
         $('#name').val($('#name').val().toUpperCase());
  
         });
-    });
+    
+    
+    $('#uname').on('keyup', function (e) {
+        var uname = $('#uname').val();
+        $('#uname').val($('#uname').val().toUpperCase());
+ 
+        });
+ 
     
     
     $('#addBillsBtn').on("click", function () {
@@ -201,7 +206,7 @@
                                 }
                             });
         } else {
-            document.getElementById('name').style.borderColor = "red";
+            document.getElementById('uname').style.borderColor = "red";
             swal({
                 type: 'warning',
                 text: 'message',
@@ -231,7 +236,6 @@
                                         type: 'error',
                                         text: 'message',
                                         title: 'Error',
-                                        showConfirmButton: false,
                                         timer: 1000
                                     })
                                 }
@@ -243,16 +247,13 @@
                 type: 'warning',
                 text: 'message',
                 title: 'Please enter bill name',
-                showConfirmButton: false,
                 timer: 1000
             })
         }
         
     });
 
-
-
-
+});
 
 
 </script>

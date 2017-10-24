@@ -193,7 +193,7 @@
                 <div class="form-group" id="name_validation">
                     <label>Billing status<span class="text-danger">*</span></label>
                     <select class="form-control" id="ubill_stat">
-                    <option>Select a billing status</option>
+                    <option value="none">Select a billing status</option>
                     <option value="monthly">monthly</option>
                     <option value="semi_monthly">semi monthly</option>
                     <option value="yearly">yearly</option>
@@ -262,11 +262,16 @@
         });
         
         ///// check if lead already exist on other sales executive who are also an active user /////
-     $('#accountnumber').on('keyup', function (e) {
+        $('#accountnumber').on('keyup', function (e) {
         var accountnumber = $('#accountnumber').val();
         $('#accountnumber').val($('#accountnumber').val().toUpperCase());
         });
-    });
+        
+        $('#uaccountnumber').on('keyup', function (e) {
+        var accountnumber = $('#uaccountnumber').val();
+        $('#uaccountnumber').val($('#uaccountnumber').val().toUpperCase());
+        });
+    
     
         $('#saveBills').on("click", function () {
         var accountnumber = $('#accountnumber').val();
@@ -276,7 +281,13 @@
         var billaccount = $('#billaccount').val();
         var location = $('#location').val();
         
-         if ((accountnumber != "" || bill_stat != "" || amount != "" || payment_method != "" || billaccount != "" || location != "" )) { 
+         if ((accountnumber != "" )){ 
+             if((bill_stat != "none" )){
+                 if((amount != "" )){
+                     if((payment_method != "none")){
+                        if((billaccount != 0)){
+                            if((location != 0)){
+                                
                             var data = {"accountnumber": accountnumber, "bill_stat": bill_stat, "amount": amount, "payment_method": payment_method, "billaccount": billaccount, "location": location }
                             $.ajax({
                                 url: "/bills/add_bills",
@@ -291,46 +302,38 @@
                                     swal({
                                         type: 'warning',
                                         text: 'message',
-                                        title: 'Please select  a payment method',
+                                        title: 'Something went wrong..',
                                         timer: 1000
                                     })
                                 }
                             });
+                            
+        } else {
+            document.getElementById('location').style.borderColor = "red";
+        }
+                            
+        } else {
+            document.getElementById('billaccount').style.borderColor = "red";
+        }
+                            
+        } else {
+            document.getElementById('payment_method').style.borderColor = "red";
+        }
+
+                            
+        } else {
+            document.getElementById('amount').style.borderColor = "red";
+
+        }
+                            
+             } else {
+            document.getElementById('bill_stat').style.borderColor = "red";
+
+        }
                
         } else {
-             swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please complete the form',
-                timer: 1000
-            })
-        }
-        
-        if(billaccount == 0){
-            swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please select a bill account',
-                timer: 1000
-            })
-        }
-        
-        if(location == 0){
-            swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please select a location',
-                timer: 1000
-            })
-        }
-        
-        if(payment_method == "none"){
-            swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please select  a payment method',
-                timer: 1000
-            })
+            document.getElementById('accountnumber').style.borderColor = "red";
+
         }
         
     });
@@ -374,7 +377,18 @@
         
       
         
-        if ((uaccountnumber != "" || ubill_stat != "" || uamount != "" || upayment_method != "" || ubillaccount != "" || ulocation != "" )) {
+        if ((uaccountnumber != "" )) {
+            
+            if((ubill_stat != "none" )){
+                
+                if((uamount != "" )){
+                    
+                    if((upayment_method != "none")){
+                        
+                        if((ubillaccount != 0 )){
+                            
+                            if((ulocation != 0)){
+                                
             var data = {"uaccountnumber": uaccountnumber, "ubill_stat": ubill_stat, "uamount": uamount, "upayment_method": upayment_method, "ubillaccount": ubillaccount, "ulocation": ulocation, "id": uaccountnum}
             
                 $.ajax({
@@ -388,14 +402,33 @@
                     });
                     
         } else {
-            swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please complete the form',
-                timer: 1000
-            })
+            document.getElementById('ulocation').style.borderColor = "red";
+        }          
+                    
+        } else {
+            document.getElementById('ubillaccount').style.borderColor = "red";
+        }          
+          
+        } else {
+            document.getElementById('upayment_method').style.borderColor = "red";
+        }          
+                    
+        } else {
+            document.getElementById('uamount').style.borderColor = "red";
         }
+                    
+        } else {
+            document.getElementById('ubill_stat').style.borderColor = "red";
+        }
+                    
+        } else {
+            document.getElementById('uaccountnumber').style.borderColor = "red";
+
+        }
+        
     });
+    
+});
     
 </script>
 <script>
