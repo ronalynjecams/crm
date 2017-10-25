@@ -116,6 +116,26 @@ class BillMonitoringsController extends AppController {
 		$this->loadModel('User');
 		$billaccounts = $this->BillAccount->find('all');
 		$users = $this->User->find('all');
+		
+			
+		
+		// foreach($monitorings as )
+		/** needs to use push array in order to show paid_by values.  
+		*////
+		
+		
+		/*
+		 $this->BillMonitoring->recursive = -1;
+		 $mons = $this->BillMonitoring->find('all', array(
+		 						'joins' => array(array(
+		 							'table' => 'users',
+                                   'alias' => 'PaidByUser',
+                                  'type' => 'INNER',
+                                   'conditions' => array('BillMonitoring.paid_by = PaidByUser.id')))));
+		pr($mons);
+		*/
+		
+		
 		$this->set(compact('monitorings', 'billaccounts', 'users'));
 	}
 	
@@ -148,7 +168,7 @@ class BillMonitoringsController extends AppController {
             ));
             
             if ($this->BillMonitoring->save()) {
-            
+            	/*
                 echo json_encode($bill_date_from);
                 echo json_encode($bill_date_to);
                 echo json_encode($user_id);
@@ -156,14 +176,54 @@ class BillMonitoringsController extends AppController {
                 echo json_encode($bill_amount);
                 echo json_encode($bill_ref_no);
                 echo json_encode($payment_mode);
+                echo json_encode($receipt_date);
+                */
                 
-                #echo json_encode($this->request->data);
+                echo json_encode($this->request->data);
             }
             
               exit;
             
         }
         
+	}
+	
+	
+	public function edit_payment(){
+		
+		$this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $id = $data['id'];
+        $ubill_ref_no = $data['ubill_ref_no'];
+        $upayment_method = $data['upayment_mode'];
+        $upaid_by = $data['upaid_by'];
+        $ureceipt_date = $data['ureceipt_date'];
+
+        
+        	$this->BillMonitoring->set(array(
+        		
+        		"id" => $data['id'],
+                "receipt_reference_num" => $ubill_ref_no,
+                "payment_mode" => $upayment_method,
+                "paid_by" => $upaid_by,
+                "paid" => 1,
+                "receipt_date" => $ureceipt_date
+            ));
+        
+        
+        if ($this->request->is(array('post', 'put'))) {
+
+            if ($this->BillMonitoring->save($this->request->data)) {
+                return (json_encode($this->request->data));
+            } else {
+                return (json_encode($this->request->data));
+            }
+            
+        } else {
+            return (json_encode());
+        }
 	}
 	
 	

@@ -15,7 +15,7 @@ class BillMonitoring extends AppModel {
  */
 	public $validate = array(
 		'billing_date_from' => array(
-			'datetime' => array(
+			'date' => array(
 				'rule' => array('date'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
@@ -25,7 +25,7 @@ class BillMonitoring extends AppModel {
 			),
 		),
 		'billing_date_to' => array(
-			'datetime' => array(
+			'date' => array(
 				'rule' => array('date'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,

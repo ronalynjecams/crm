@@ -99,11 +99,11 @@
                                 
                                         if($monitoring['BillMonitoring']['payment_mode'] == ""){                                         
                                             echo"<div class='col-sm-6'>";
-                                                echo'<a class="btn btn-default btn-icon add-tooltip editBillsBtn" data-toggle="tooltip" data-placement="left" href="#" data-original-title="Request payment" data-id="'.$monitoring['BillMonitoring']['id'].'"><i class="fa fa-money large"></i></a>';
+                                                echo'<a class="btn btn-default btn-icon add-tooltip requestBtn" data-toggle="tooltip" data-placement="top" href="#" data-original-title="Request payment" data-rid="'.$monitoring['BillMonitoring']['id'].'"><i class="fa fa-money large"></i></a>';
                                             echo"</div>"; 
                                         }else{
                                             echo"<div class='col-sm-6'>";
-                                                echo'<a class="btn btn-default btn-icon add-tooltip editBillsBtn" data-toggle="tooltip" data-placement="left" href="#" data-original-title="Edit payment" data-uid="'.$monitoring['BillMonitoring']['id'].'"><i class="glyphicon glyphicon-edit"></i></a>';
+                                                echo'<a class="btn btn-default btn-icon add-tooltip editBtn" data-toggle="tooltip" data-placement="top" href="#" data-original-title="Edit payment" data-id="'.$monitoring['BillMonitoring']['id'].'"><i class="glyphicon glyphicon-edit"></i></a>';
                                             echo"</div>"; 
                                         }
 
@@ -168,7 +168,7 @@
                 </div>
                 <div class='form-group' id="name_validation">
                     <label>Bill receipt reference number<span class="text-danger">*</span></label>
-                    <input type='text' class="form-control" id="bill_ref_no" />
+                    <input type='text' class="form-control" id="bill_ref_no" onkeyup="clean('bill_ref_no')" onkeydown="clean('bill_ref_no')"  />
                 </div>
                 <div class='form-group' id="name_validation">
                     <label>Payment mode<span class="text-danger">*</span></label>
@@ -179,7 +179,6 @@
                     <option value="online">online</option>
                     </select>
                 </div>
-                
                 
             </div>
             <!--Modal footer-->
@@ -193,7 +192,7 @@
 <!--===================================================-->
 <!--New Bill Accounts Modal End !-->
 <!--Modal edit bill start-->
-<div class="modal fade" id="edit-bills-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="edit-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -207,9 +206,9 @@
             <div class="modal-body">
                 
                 <div class="form-group" id="name_validation">
-                     <input type="hidden" class="form-control"  id="monitor_id">
+                     <input type="text" class="form-control"  id="uid">
                     <label>Bill receipt reference number<span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="ubill_ref_no">
+                    <input type="text" class="form-control" id="ubill_ref_no" onkeyup="validate('ubill_ref_no')" onkeydown="validate('ubill_ref_no')">
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Payment method<span class="text-danger">*</span></label>
@@ -220,7 +219,23 @@
                     <option value="online">online</option>
                     </select>
                 </div>
-              
+                <div class="form-group" id="name_validation">
+                    <label>Paid by: <span class="text-danger">*</span></label>
+                    <select class="form-control" id="upaid_by" >
+                        <option value="0">Select a name</option>
+                        <?php 
+                            foreach($users as $user){
+                        ?>
+                        <option value="<?php echo $user['User']['id']; ?>"><?php echo $user['User']['first_name']." ".$user['User']['last_name'];; ?></option>
+                        <?php 
+                            } 
+                        ?>
+                    </select>
+                </div>
+                <div class="form-group" id="name_validation">
+                    <label>Receipt date<span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="ureceipt_date">
+                </div>
             </div>
             <!--Modal footer-->
             <div class="modal-footer">
@@ -235,11 +250,17 @@
 
 <script>
         
-        $('#bill_ref_no').on('keyup', function (e) {
+    $('#bill_ref_no').on('keyup', function (e) {
         var name = $('#name').val();
         $('#bill_ref_no').val($('#bill_ref_no').val().toUpperCase());
  
-        });
+    });
+    
+    $('#ubill_ref_no').on('keyup', function (e) {
+        var name = $('#name').val();
+        $('#ubill_ref_no').val($('#ubill_ref_no').val().toUpperCase());
+ 
+    });
 
         
     $('#addBillsMonitoringBtn').on("click", function () {
@@ -250,10 +271,67 @@
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
-            "stateSave": true,
-            "scrollX": true
+            "stateSave": true
+            //"scrollX": true
         });
+        
+        
+       $(".editBtn").each(function (index) {
+        $(this).on("click", function () {
+           
+            var u_id = $(this).data('id'); //this line gets value of data-id from delete button
+            $('#uid').val(u_id); // this line passes the value from data id to modal, to be able to manipulate id of the selected row
+            $('#edit-modal').modal('show'); // this line shows modal, make sure to assign values first before showing modal
 
+        });
+    });
+    
+    
+        $('#editBills').on("click", function () {
+        var ubill_ref_no = $('#ubill_ref_no').val();
+        var upayment_mode = $('#upayment_mode').val();
+        var upaid_by = $('#upaid_by').val();
+        var ureceipt_date = $('#ureceipt_date').val();
+        var id = $('#uid').val();
+        
+        
+        if ((ubill_ref_no != "")) {
+            
+                 if ((upayment_mode != "none")) {
+                     
+                     if((upaid_by != 0)){
+                     
+                        if((ureceipt_date != "")){
+                         
+                        var data = {"ubill_ref_no": ubill_ref_no, "upayment_mode": upayment_mode, "upaid_by": upaid_by, "ureceipt_date": ureceipt_date, "id": id }
+                        
+                            $.ajax({
+                                url: "/bill_monitorings/edit_payment",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'json',
+                                success: function (id) {
+                                    location.reload();
+                                }
+                            });
+                            
+        } else {
+            document.getElementById('ureceipt_date').style.borderColor = "red";
+        }
+        
+        } else {
+            document.getElementById('upaid_by').style.borderColor = "red";
+        }
+                            
+        } else {
+            document.getElementById('upayment_mode').style.borderColor = "red";
+        }
+
+        } else {
+            document.getElementById('ubill_ref_no').style.borderColor = "red";
+        }
+        
+    });
   
      $('#saveMonitoring').on("click", function () {
         var datefrom = $('#datefrom').val();
@@ -262,7 +340,6 @@
         var billamount = $('#billamount').val();
         var bill_ref_no = $('#bill_ref_no').val();
         var payment_mode = $('#payment_mode').val();
-       
        
         
          if ((datefrom != "" )) {
@@ -342,70 +419,25 @@
         
      
     });
-
-    /*
-
-
-    
-    
-    $(".editBillsBtn").each(function (index) {
-        $(this).on("click", function () {
-             $('#nameExistDiv').remove();
-           $('#unameExistDiv').remove();
-           
-            var id = $(this).data('id'); //this line gets value of data-id from delete button
-            var uname = $(this).data('billname');
-            
-            // alert(uname);
-            
-            $('#ubill_account_id').val(id); // this line passes the value from data id to modal, to be able to manipulate id of the selected row
-            $('#uname').val(uname);
-            
-            $('#edit-bills-modal').modal('show'); // this line shows modal, make sure to assign values first before showing modal
-
-
-        });
-    });
-    
-
-    $('#updateBills').on("click", function () {
-        var uname = $('#uname').val();
-        var update_bill_id = $('#ubill_account_id').val();
-        
-        if ((uname != "")) {
-            var data = {"name": uname, "id":update_bill_id}
-                            $.ajax({
-                                url: "/bill_accounts/update_account",
-                                type: 'POST',
-                                data: {'data': data},
-                                dataType: 'json',
-                                success: function (id) {
-                                    location.reload();
-                                }
-                            });
-        } else {
-            document.getElementById('name').style.borderColor = "red";
-            swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please enter a bill name',
-                showConfirmButton: false,
-                timer: 1000
-            })
-        }
-    });
-    
-    */
-
 </script>
 <script>
 
-function clean(accountnumber){
-	var accountnumber = document.getElementById(accountnumber);
+function clean(bill_ref_no){
+	var bill_ref_no = document.getElementById(bill_ref_no);
 	var act_regex = /[^A-Z 0-9,-]/gi;
 	
-	if(accountnumber.value.search(act_regex) > -1) {
-		accountnumber.value = accountnumber.value.replace(act_regex, "");
+	if(bill_ref_no.value.search(act_regex) > -1) {
+		bill_ref_no.value = bill_ref_no.value.replace(act_regex, "");
+    }
+
+}
+
+function validate(ubill_ref_no){
+	var ubill_ref_no = document.getElementById(ubill_ref_no);
+	var uact_regex = /[^A-Z 0-9,-]/gi;
+	
+	if(ubill_ref_no.value.search(uact_regex) > -1) {
+		ubill_ref_no.value = ubill_ref_no.value.replace(uact_regex, "");
     }
 
 }

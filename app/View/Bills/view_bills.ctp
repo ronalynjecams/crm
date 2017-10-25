@@ -188,7 +188,7 @@
                 <div class="form-group" id="name_validation">
                      <input type="hidden" class="form-control"  id="uaccountnum">
                     <label>Account Number <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="uaccountnumber">
+                    <input type="text" class="form-control" id="uaccountnumber" onkeyup="validate('uaccountnumber')" onkeydown="validate('uaccountnumber')">
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Billing status<span class="text-danger">*</span></label>
@@ -438,6 +438,16 @@ function clean(accountnumber){
 	
 	if(accountnumber.value.search(act_regex) > -1) {
 		accountnumber.value = accountnumber.value.replace(act_regex, "");
+    }
+
+}
+
+function validate(uaccountnumber){
+	var uaccountnumber = document.getElementById(uaccountnumber);
+	var uact_regex = /[^A-Z 0-9,-]/gi;
+	
+	if(uaccountnumber.value.search(uact_regex) > -1) {
+		uaccountnumber.value = uaccountnumber.value.replace(uact_regex, "");
     }
 
 }
