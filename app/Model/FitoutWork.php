@@ -18,8 +18,8 @@ class FitoutWork extends AppModel {
  */
 	public $validate = array(
 		'expected_start' => array(
-			'datetime' => array(
-				'rule' => array('datetime'),
+			'date' => array(
+				'rule' => array('date'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -28,8 +28,8 @@ class FitoutWork extends AppModel {
 			),
 		),
 		'deadline' => array(
-			'datetime' => array(
-				'rule' => array('datetime'),
+			'date' => array(
+				'rule' => array('date'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
