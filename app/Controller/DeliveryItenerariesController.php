@@ -211,5 +211,59 @@ class DeliveryItenerariesController extends AppController {
                 echo json_encode($delivery_itenerary_id);
         }
     }
+    
+        public function process_update_start() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $actual_id = $data['actual_id'];
+        $actual_date = $data['actual_date'];
+        $actual_time = $data['actual_time'];
+        $status = "ongoing";
+        
+
+        $combined_DT = date('Y-m-d H:i:s', strtotime("$actual_date $actual_time"));
+        
+        $this->DeliveryItenerary->id = $actual_id;
+        
+        $this->DeliveryItenerary->set(array(
+            "actual_start" => $combined_DT,
+            "status" => $status
+        ));
+        if($this->DeliveryItenerary->save()){
+                echo json_encode($actual_id);
+        }
+        exit;
+    }
+    
+        public function process_update_end() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $end_id = $data['end_id'];
+        $end_date = $data['end_date'];
+        $end_time = $data['end_time'];
+        $status = $data['status'];
+        $remarks = $data['remarks'];
+        
+
+        $combined_EDT = date('Y-m-d H:i:s', strtotime("$end_date $end_time"));
+        
+        $this->DeliveryItenerary->id = $end_id;
+        
+        $this->DeliveryItenerary->set(array(
+            "end_work" => $combined_EDT,
+            "status" => $status,
+            "remarks" => $remarks
+        ));
+        
+        if($this->DeliveryItenerary->save()){
+                echo json_encode($end_id);
+        }
+        exit;
+    }
+
 
 }
