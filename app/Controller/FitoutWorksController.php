@@ -470,4 +470,34 @@ class FitoutWorksController extends AppController {
             exit;
         }
     }
+
+	public function view_works() {
+		
+		$this->loadModel('FitoutWork');
+    	$this->loadModel('Client');
+    	$this->loadModel('User');
+    	$this->loadModel('DeliverySchedule');
+   
+    
+    	$deliviries = $this->DeliverySchedule->find('all');
+    	$fitout_work_id = $this->params['url']['id'];
+    	$works = $this->FitoutWork->findById($fitout_work_id);
+    	$this->set(compact('works', 'deliviries'));
+    	
+    	#$employees = $this->Client->find('all'); 
+    	#$this->set(compact('employees'));
+    	
+    	//pr($all_clients);
+		$clients = $this->Client->find('all', ['conditions'=>['Client.lead'=>0]]);
+		$this->set(compact('clients'));
+	
+		$this->User->recursive = -1;
+		$users = $this->User->find('all');
+		$this->set(compact('users'));
+
+    }
+    
+    
+    
+    
 }
