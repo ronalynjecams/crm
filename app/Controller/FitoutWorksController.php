@@ -477,27 +477,89 @@ class FitoutWorksController extends AppController {
     	$this->loadModel('Client');
     	$this->loadModel('User');
     	$this->loadModel('DeliverySchedule');
+    	$this->loadModel('FitoutPerson');
+    	$this->loadModel('FitoutTodo');
+    	$this->loadModel('JrProduct');
    
-    
     	$deliviries = $this->DeliverySchedule->find('all');
     	$fitout_work_id = $this->params['url']['id'];
     	$works = $this->FitoutWork->findById($fitout_work_id);
-    	$this->set(compact('works', 'deliviries'));
-    	
-    	#$employees = $this->Client->find('all'); 
-    	#$this->set(compact('employees'));
-    	
-    	//pr($all_clients);
 		$clients = $this->Client->find('all', ['conditions'=>['Client.lead'=>0]]);
-		$this->set(compact('clients'));
-	
 		$this->User->recursive = -1;
 		$users = $this->User->find('all');
-		$this->set(compact('users'));
+		$peoples = $this->FitoutPerson->find('all');
+		$fitout_works = $this->FitoutTodo->find('all');
+		
+		$designers = $this->JrProduct->find('all', ['fields' => ['DISTINCT (JrProduct.user_id)']]);
+		// exit;
+		
+		$this->set(compact('works', 'deliviries', 'clients', 'users', 'peoples', 'fitout_works', 'designers'));
 
     }
     
     
-    
+     public function add_people(){
+     	
+		$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+            
+        $this->loadModel('FitoutPerson');
+        
+        $employee = $data['employee'];
+        $fit_out_id = $data['add_fitout_work_id'];
+        
+		if($this->request->is('post')){
+			$this->FitoutPerson->create();
+			$this->FitoutPerson->set(array(
+				'user_id' => $employee,
+				'fitout_work_id' => $fit_out_id
+            ));
+            
+			if($this->FitoutPerson->save()){
+				echo json_encode($this->request->data); 
+			}
+
+		}
+     }
+     
+     public function add_work(){
+     	
+     	$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+            
+        $this->loadModel('FitoutTodo');
+        
+        $work_details = $data['work_details'];
+        $user_id = $this->Auth->user('id');
+        $deadline_date = $data['deadline_date'];
+        $exp_start_date = $data['exp_start_date'];
+
+        
+		if($this->request->is('post')){
+			
+			$this->FitoutTodo->create();
+			
+			$this->FitoutTodo->set(array(
+				'work' => $work_details,
+				'user_id' => $user_id,
+				'deadline' => $deadline_date,
+				'expected_start' => $exp_start_date
+            ));
+            
+			if($this->FitoutTodo->save()){
+				echo json_encode($this->request->data); 
+			}
+
+		}
+		
+     }
+     
+     
+     //public function edit_datestart(){
+     //	$this->autoRender = false;
+     //   header("Content-type:application/json");
+     //}
     
 }

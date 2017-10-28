@@ -82,7 +82,7 @@
                             <tr>
                                 <td><?php echo $monitoring['BillMonitoring']['billing_date_from']; ?></td>
                                 <td><?php echo $monitoring['BillMonitoring']['billing_date_to']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['user_id']; ?></td>
+                                <td><?php echo $monitoring['User']['username']; ?></td>
                                 <td><?php echo $monitoring['BillMonitoring']['bill_id']; ?></td>
                                 <td><?php echo $monitoring['BillMonitoring']['bill_amount']; ?></td>
                                 <td><?php echo $monitoring['BillMonitoring']['receipt_reference_num']; ?></td>
@@ -206,7 +206,7 @@
             <div class="modal-body">
                 
                 <div class="form-group" id="name_validation">
-                     <input type="text" class="form-control"  id="uid">
+                     <input type="hidden" class="form-control"  id="uid">
                     <label>Bill receipt reference number<span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="ubill_ref_no" onkeyup="validate('ubill_ref_no')" onkeydown="validate('ubill_ref_no')">
                 </div>

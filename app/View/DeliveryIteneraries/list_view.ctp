@@ -203,7 +203,7 @@
             <!--Modal body-->
             <div class="modal-body">
                 
-                <input type="text" class="form-control"  id="end_id">  
+                <input type="hidden" class="form-control"  id="end_id">  
                 <p class="text-danger" id="error_agent"></p>
                 <div class="form-group"> 
                     <div class="col-sm-6">
