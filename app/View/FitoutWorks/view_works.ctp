@@ -64,14 +64,14 @@
                         
                         <label>Client <span class="text-danger">*</span></label>
                         <select id="client_id" class="form-control" disabled >
-                            <option value="<?php echo $works['FitoutWork']['client_id'] ?>">
-                                <?php echo $works['Client']['name']; ?>
+                            <option value="<?php echo h($works['FitoutWork']['client_id']); ?>">
+                                <?php echo h($works['Client']['name']); ?>
                             </option>
                             
                             <?php foreach ($clients as $client) {
                                 ?>
-                                <option value="<?php echo $client['Client']['id']; ?>" >
-                                    <?php echo $client['Client']['name']; ?>
+                                <option value="<?php echo h($client['Client']['id']); ?>" >
+                                    <?php echo h($client['Client']['name']); ?>
                                 </option>
                                 <?php
                             } ?>
@@ -80,7 +80,7 @@
                     
                     <div class="form-group">
                         <label>Sales Executive</label>
-                        <input type="text" id="sales_exec" class="form-control" value="<?php echo $works['User']['id']; ?>" disabled/>
+                        <input type="text" id="sales_exec" class="form-control" value="<?php echo h($works['User']['id']); ?>" disabled/>
                     </div>
                     
                    <div class="form-group">
@@ -88,7 +88,7 @@
                         <select id="designers" class="form-control">
                         <option value="0">Please select a designer</option>
                         <?php foreach($designers as $designer){ ?>
-                        <option value="<?php echo $designer['JrProduct']['user_id']; ?>"><?php echo  $designer['JrProduct']['user_id']; ?></option>
+                        <option value="<?php echo h($designer['JrProduct']['user_id']); ?>"><?php echo  h($designer['JrProduct']['user_id']); ?></option>
                         <?php } ?>
                         </select>
                     </div>
@@ -102,21 +102,21 @@
                     
                     <div class="form-group">
                         <label>Deadline</label>
-                        <input type="date" id="deadline" class="form-control" value="<?php echo $works['FitoutWork']['deadline']; ?>" disabled/>
+                        <input type="date" id="deadline" class="form-control" value="<?php echo h($works['FitoutWork']['deadline']); ?>" disabled/>
                     </div>
                     
                    <div class="form-group">
                         <label>Project Head <span class="text-danger">*</span></label>
                         
                         <select id="project_head_id" class="form-control" disabled>
-                            <option value="<?php echo $works['User']['id'] ?>">
-                                <?php echo $works['User']['first_name'].' '.$works['User']['last_name']; ?>
+                            <option value="<?php echo h($works['User']['id']); ?>">
+                                <?php echo h($works['User']['first_name']).' '.h($works['User']['last_name']); ?>
                             </option>
                             
                             <?php foreach ($users as $user) {
                                 ?>
-                                <option value="<?php echo $user['User']['id']; ?>" >
-                                    <?php echo $user['User']['first_name'].' '.$user['User']['last_name']; ?>
+                                <option value="<?php echo h($user['User']['id']); ?>" >
+                                    <?php echo h($user['User']['first_name']).' '.h($user['User']['last_name']); ?>
                                 </option>
                                 <?php
                             } ?>
@@ -148,9 +148,9 @@
                     <tbody>
                         <?php foreach($deliviries as $delivery){ ?>
                         <tr>
-                            <td><?php echo $delivery['DeliverySchedule']['delivery_date']; ?></td>
-                            <td><?php echo $delivery['DeliverySchedule']['type']; ?></td>
-                            <td><?php echo $delivery['DeliverySchedule']['status']; ?></td>
+                            <td><?php echo h($delivery['DeliverySchedule']['delivery_date']); ?></td>
+                            <td><?php echo h($delivery['DeliverySchedule']['type']); ?></td>
+                            <td><?php echo h($delivery['DeliverySchedule']['status']); ?></td>
                         </tr>
                         <?php } ?>
                     </tbody>
@@ -196,14 +196,14 @@
                     <tbody>
                         <?php foreach($peoples as $people){ ?>
                         <tr>
-                            <td><?php echo $people['User']['first_name']; ?></td>
-                            <td><?php echo $people['User']['last_name']; ?></td>
+                            <td><?php echo h($people['User']['first_name']); ?></td>
+                            <td><?php echo h($people['User']['last_name']); ?></td>
                             <td>
                              <?php 
                                 if(( $UserIn['User']['role'] == 'fitout_facilitator' )){
                                     echo"<div class='row'>";
                                         echo"<div class='col-sm-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip removeBtn" data-toggle="tooltip" href="#" data-original-title="remove" data-id="'.$works['FitoutWork']['id'].'"><i class="fa fa-remove"></i></a>';
+                                            echo '<a class="btn btn-default btn-icon add-tooltip removeBtn" data-toggle="tooltip" href="#" data-original-title="remove" data-id="'.h($works['FitoutWork']['id']).'"><i class="fa fa-remove"></i></a>';
                                          echo"</div>"; 
                                     echo"</div";
                                 } 
@@ -253,16 +253,26 @@
                     <tbody>
                         <?php foreach($fitout_works as $fitout_work){ ?>
                         <tr>
-                            <td><?php echo $fitout_work['FitoutTodo']['work'] ?></td>
-                            <td><?php echo $fitout_work['FitoutTodo']['deadline'] ?></td>
-                            <td><?php echo $fitout_work['FitoutTodo']['expected_start'] ?></td>
+                            <td><?php echo h($fitout_work['FitoutTodo']['work']); ?></td>
+                            <td><?php echo h($fitout_work['FitoutTodo']['deadline']); ?></td>
+                            <td><?php echo h($fitout_work['FitoutTodo']['expected_start']); ?></td>
                             <td>
                                <?php if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
+                                   if(($fitout_work['FitoutTodo']['date_started'] == "" )){
                                     echo"<div class='row'>";
-                                        echo"<div class='col-sm-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip editstartBtn" data-toggle="tooltip" href="#" data-original-title="Update date started" data-sid="'.$fitout_work['FitoutTodo']['id'].'"><i class="demo-psi-pen-5 icon-lg"></i></a>';
+                                        echo"<div class='col-xs-1'>";
+                                            echo '<a class="btn btn-default btn-icon add-tooltip editstartBtn" data-toggle="tooltip" href="#" data-original-title="Update date started" data-sid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar icon-lg btn-primary"></i></a>';
                                          echo"</div>"; 
                                     echo"</div";
+                                    
+                                   }else{
+                                       echo h($fitout_work['FitoutTodo']['date_started']);
+                                     echo"<div class='row'>";
+                                        echo"<div class='col-xs-1'>";
+                                            echo '<a class="btn btn-default btn-icon add-tooltip editstartBtn" data-toggle="tooltip" href="#" data-original-title="Update date started" data-sid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar icon-lg btn-primary"></i></a>';
+                                         echo"</div>"; 
+                                     echo"</div";
+                                   }
                                 } ?>
                             </td>
                             <td>
@@ -270,13 +280,20 @@
                                     if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
                                     
                                         if(( $fitout_work['FitoutTodo']['date_started'] != "" )){
+                                                 
+                                            echo h($fitout_work['FitoutTodo']['end_date']);
+
                                             echo"<div class='row'>";
-                                                echo"<div class='col-sm-1'>";
-                                                    echo '<a class="btn btn-default btn-icon add-tooltip editendBtn" data-toggle="tooltip" href="#" data-original-title="Update date ended" data-eid="'.$fitout_work['FitoutTodo']['id'].'"><i class="demo-psi-pen-5 icon-lg"></i></a>';
+                                                echo"<div class='col-xs-1'>";
+                                                    echo '<a class="btn btn-default btn-icon add-tooltip editendBtn" data-toggle="tooltip" href="#" data-original-title="Update date ended" data-eid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar icon-lg btn-danger"></i></a>';
                                                 echo"</div>"; 
-                                            echo"</div";
+                                            echo"</div>";
+                                        }else{
+                                               echo"<p>not available</p>";
                                         }
+              
                                     }
+                                    
                                 ?>
                             </td>
                         </tr>
@@ -304,12 +321,12 @@
             <!--Modal body-->
             <div class="modal-body">
                 <div class="form-group" id="name_validation">
-                    <input type="hidden" id="add_fitout_work_id" value="<?php echo $works['FitoutWork']['id']; ?>" readonly />
+                    <input type="hidden" id="add_fitout_work_id" value="<?php echo h($works['FitoutWork']['id']); ?>" readonly />
                     <label>Employee<span class="text-danger">*</span></label>
                     <select class="form-control" id="employee">
                         <option value="0">Select an Employee</option>
                             <?php foreach($users as $user) { ?>
-                                <option value="<?php echo $user['User']['id']; ?>"><?php echo $user['User']['first_name']." ".$user['User']['last_name']; ?></option>
+                                <option value="<?php echo h($user['User']['id']); ?>"><?php echo h($user['User']['first_name'])." ".h($user['User']['last_name']); ?></option>
                             <?php } ?>
                     </select>
                 </div>
@@ -370,7 +387,7 @@
 
 <!-- Edit date_start Modal Start-->
 <!--===================================================-->
-<div class="modal fade" id="edit-date-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="edit-datestart-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -405,9 +422,50 @@
         </div>
     </div>
 </div>
+</div>
 <!--===================================================-->
 <!-- Edit date_start Modal End->
 
+<!-- Edit date_end Modal Start-->
+<!--===================================================-->
+<div class="modal fade" id="edit-dateend-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Edit end date</h4>
+            </div>
+            <!--Modal body-->
+             <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        
+                        <div class="col-sm-6">
+                             <input type="hidden" class="form-control"  id="e_id">  
+                            <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="date_end"> 
+                        </div>
+                       
+                        <div class="col-sm-6"> 
+                            <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="time_end">
+                        </div>
+                        
+                    </div>
+                </div>
+
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="editEnd">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--===================================================-->
+<!-- Edit date_end Modal End->
 
 <!---JAVASCRIPT FUNCTIONS--->
 <script>
@@ -509,10 +567,92 @@
               var id = $(this).data('sid');
                 
                 $('#s_id').val(id);
-                $('#edit-date-modal').modal('show');
+                $('#edit-datestart-modal').modal('show');
 
         });
         
+    });
+    
+         $('#editStart').on("click", function () {
+            var s_id = $('#s_id').val();
+            var date_start = $('#date_start').val();
+            var time_start = $('#time_start').val();
+
+            if(( date_start != "")){
+                if(( time_start != "" )){
+                
+                            var data = { "s_id": s_id, "date_start": date_start, "time_start": time_start }
+                            
+                    $.ajax({
+                        url: "/fitout_works/edit_datestart",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        
+                        success: function (id) {
+                            location.reload();
+                        },
+                        erorr: function (id) {
+                            alert('error!');
+                        }
+                    });
+            
+            }else{
+               document.getElementById('date_start').style.borderColor = "red";
+            }
+            
+            }else{
+                document.getElementById('time_start').style.borderColor = "red";
+            }
+            
+            
+        });
+        
+        
+        $(".editendBtn").each(function (index) {
+        $(this).on("click", function () {
+              var id = $(this).data('eid');
+                
+                $('#e_id').val(id);
+                $('#edit-dateend-modal').modal('show');
+
+        });
+        
+    });
+    
+         $('#editEnd').on("click", function () {
+            var e_id = $('#e_id').val();
+            var date_end = $('#date_end').val();
+            var time_end = $('#time_end').val();
+
+            if(( date_end != "")){
+                if(( time_end != "" )){
+                
+                            var data = { "e_id": e_id, "date_end": date_end, "time_end": time_end }
+                            
+                    $.ajax({
+                        url: "/fitout_works/edit_dateend",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        
+                        success: function (id) {
+                            location.reload();
+                        },
+                        erorr: function (id) {
+                            alert('error!');
+                        }
+                    });
+            
+            }else{
+               document.getElementById('time_end').style.borderColor = "red";
+            }
+            
+            }else{
+                document.getElementById('date_end').style.borderColor = "red";
+            }
+            
+            
         });
 
 /*

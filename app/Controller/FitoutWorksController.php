@@ -14,6 +14,8 @@ class FitoutWorksController extends AppController {
  * @var array
  */
 	public $components = array('Paginator');
+	#'Security' => array('csrfExpires' => '+1 hour' )
+
 
 /**
  * index method
@@ -510,14 +512,22 @@ class FitoutWorksController extends AppController {
         $fit_out_id = $data['add_fitout_work_id'];
         
 		if($this->request->is('post')){
+			
+			$people_TS = $this->FitoutPerson->getDataSource();
+			$people_TS->begin();
+			
 			$this->FitoutPerson->create();
 			$this->FitoutPerson->set(array(
 				'user_id' => $employee,
 				'fitout_work_id' => $fit_out_id
             ));
             
-			if($this->FitoutPerson->save()){
+            $save_people = $this->FitoutPerson->save();
+			if($save_people){
+				$people_TS->commit();
 				echo json_encode($this->request->data); 
+			}else{
+				$people_TS->rollback();
 			}
 
 		}
@@ -539,6 +549,9 @@ class FitoutWorksController extends AppController {
         
 		if($this->request->is('post')){
 			
+			$work_TS = $this->FitoutTodo->getDataSource();
+			$work_TS->begin();
+			
 			$this->FitoutTodo->create();
 			
 			$this->FitoutTodo->set(array(
@@ -548,8 +561,13 @@ class FitoutWorksController extends AppController {
 				'expected_start' => $exp_start_date
             ));
             
-			if($this->FitoutTodo->save()){
+            $save_work = $this->FitoutTodo->save();
+            
+			if($save_work){
+				$work_TS->commit();
 				echo json_encode($this->request->data); 
+			}else{
+				$work_TS->rollback();
 			}
 
 		}
@@ -557,9 +575,57 @@ class FitoutWorksController extends AppController {
      }
      
      
-     //public function edit_datestart(){
-     //	$this->autoRender = false;
-     //   header("Content-type:application/json");
-     //}
+     public function edit_datestart(){
+     	$this->loadModel('FitoutTodo');
+     	
+     	$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $fitout_id = $data['s_id'];
+        $date_start = $data['date_start'];
+        $time_start = $data['time_start'];
+        
+
+        $combined_SDT = date('Y-m-d H:i:s', strtotime("$date_start $time_start"));
+        
+        $this->FitoutTodo->id = $fitout_id;
+        
+        $this->FitoutTodo->set(array(
+            "date_started" => $combined_SDT
+        ));
+        if($this->FitoutTodo->save()){
+                echo json_encode($fitout_id);
+        }
+        exit;
+        
+     }
+     
+     public function edit_dateend(){
+     	$this->loadModel('FitoutTodo');
+     	
+     	$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $fitout_id = $data['e_id'];
+        $date_end = $data['date_end'];
+        $time_end = $data['time_end'];
+        
+
+        $combined_EDT = date('Y-m-d H:i:s', strtotime("$date_end $time_end"));
+        
+        $this->FitoutTodo->id = $fitout_id;
+        
+        $this->FitoutTodo->set(array(
+            "end_date" => $combined_EDT
+        ));
+        
+        if($this->FitoutTodo->save()){
+                echo json_encode($fitout_id);
+        }
+        exit;
+        
+     }
     
 }
