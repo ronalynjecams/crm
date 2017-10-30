@@ -37,7 +37,6 @@
     }
     
     #add_people{
-        width: 100%;
         margin-top: 10px;
     }
 </style>
@@ -139,17 +138,17 @@
        <div class="panel">
 
          <div class="panel-heading" align="left">
- 
-                <div class="col-sm-1">
+             <div class="row">
+                <div class="col-sm-10">
                     <div class="panel-title">Team</div>
                 </div>
 
                 <?php if(( $UserIn['User']['role'] == 'fitout_facilitator')){ ?>
                 
-                <div class="col-sm-1">
+                <div class="col-sm-2">
                     <button class="btn btn-success add-tooltip" data-toggle="tooltip" data-placement="right" data-original-title="Add new people involve" id="add_people" tooltip="Add new people involve"><i class="fa fa-plus"></i></button>
                 </div>
-                
+            </div>
                 <?php } ?>
                 
        
@@ -196,16 +195,16 @@
        
     <div class="panel">
          <div class="panel-heading" align="left">
-
-             <div class="col-sm-2">
+            <div class="row">
+             <div class="col-xs-10">
                 <h3 class="panel-title">Scope of work</h3>
             </div>
-            <div class="col-sm-1">
+            <div class="col-xs-2">
                 <?php if(( $UserIn['User']['role'] == 'fitout_facilitator')){ ?>
                     <button class="btn btn-success add-tooltip" data-toggle="tooltip" data-placement="right" data-original-title="Add new scope of work" id="add_work" tooltip="Add new scope of work"><i class="fa fa-plus"></i></button>
                 <?php } ?>
             </div>
-
+            </div>
             </div>
             
             <div class="panel-body">
@@ -635,7 +634,7 @@
                             location.reload();
                         },
                         erorr: function (id) {
-                            alert('error!');
+                            swal('Oops...', 'Something went wrong!', 'error')
                         }
                     });
             
@@ -647,68 +646,62 @@
                 document.getElementById('date_end').style.borderColor = "red";
             }
             
-            
         });
-
-
-
 
     $(".removeBtn").each(function (index) {
         $(this).on("click", function () {
            
             var id = $(this).data('id'); //this line gets value of data-id from delete button
-            //alert(id)
-            
-
-            swal({
-                title: "Confirmation message?",
-                text: "Are you sure to delete this record?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },
-
-    //         function(isConfirm) {
-    //             if (isConfirm) {
-                    
-    //                  var id = $(this).data('id'); 
-                     
-    //                 var data = {"id":id}
-    //                 alert(data)
-
-    //                     $.ajax({
-    //                         url: "/fitout_works/delete_people",
-    //                         type: 'POST',
-    //                         data: {'data': data},
-    //                         dataType: 'json',
-    //                             success: function (id) {
-    //                                 //location.reload();
-    //                                 alert(id)
-    //                         }
-    //                     });
-    //     } else {
-    //         swal("Cancelled", " Action has been cancelled ", "error");
-    //     }
         
-    // });
-    
+            /* simple javascript confirmation dialog
+             var result = confirm("Are you sure to delete this record?")
+             if (result) {
+                         var data = { "id":id }
+
+                        $.ajax({
+                            url: "/fitout_works/delete_people",
+                            type: 'POST',
+                            data: {'data': data},
+                            dataType: 'json',
+                                success: function (id) {
+                                    location.reload();
+                                    
+                            }
+                        });    
+                        
+             }
+             */
+ 
+                swal({
+                    title: 'Are you sure to delete this record?',
+                    text: "This cannot be action revert!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                    
+                }).then(function () {
+                    var data = { "id":id }
+
+                        $.ajax({
+                            url: "/fitout_works/delete_people",
+                            type: 'POST',
+                            data: {'data': data},
+                            dataType: 'json',
+                                success: function (id) {
+                                    location.reload();
+                                    
+                            }
+                        });    
+                })
+                    
+        });
     });
-    });
     
-
-
-
-
-
-
 
 });
         
-
 </script>
 <script> 
     function killCopy(e) {

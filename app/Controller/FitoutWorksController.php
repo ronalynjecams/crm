@@ -526,6 +526,11 @@ class FitoutWorksController extends AppController {
         $employee = $data['employee'];
         $fit_out_id = $data['add_fitout_work_id'];
         
+		// if($this->FitoutPerson->exists($fit_out_id)){
+		// 	echo "record exist";
+		// }
+		
+
 		if($this->request->is('post')){
 			
 			$people_TS = $this->FitoutPerson->getDataSource();
@@ -590,7 +595,7 @@ class FitoutWorksController extends AppController {
      }
      
      
-     public function edit_datestart(){
+     public function edit_datestart($id = null){
      	$this->loadModel('FitoutTodo');
      	
      	$this->autoRender = false;
@@ -623,7 +628,7 @@ class FitoutWorksController extends AppController {
         
      }
      
-     public function edit_dateend(){
+     public function edit_dateend($id = null){
      	$this->loadModel('FitoutTodo');
      	
      	$this->autoRender = false;
@@ -657,20 +662,32 @@ class FitoutWorksController extends AppController {
         
      }
      
-     public function delete_people(){
+     public function delete_people($id = null){
      	$this->autoRender = false;
         header("Content-type:application/json");
         $this->loadModel('FitoutPerson');
         
-        //$this->FitoutPerson->id = $id;
-		$this->request->onlyAllow('post', 'delete');
-
-		if ($this->FitoutPerson->delete()) {
-			echo json_encode($id);
-		} 
-
-		pr($this->FitoutPerson->delete());
+        $deletepeople_TS = $this->FitoutPerson->getDataSource();
+        $deletepeople_TS->begin();
+        
+        $data = $this->request->data;
+         
+        $id = $data['id'];
+        
+		if($this->request->is('post', 'put')){
+			$this->FitoutPerson->id = $id;
+			     
+			$del_people = $this->FitoutPerson->delete();   
+			if ($del_people) {
+				$deletepeople_TS->commit();
+				echo json_encode($id);
+			}else{
+				$deletepeople_TS->rollback();
+			} 
+	
+		}
 
      }
+     
     
 }
