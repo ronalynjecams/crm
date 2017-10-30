@@ -482,8 +482,11 @@ class FitoutWorksController extends AppController {
     	$this->loadModel('FitoutPerson');
     	$this->loadModel('FitoutTodo');
     	$this->loadModel('JrProduct');
+    	$this->loadModel('Quotation');
    
-    	$deliviries = $this->DeliverySchedule->find('all');
+    	$deliviries = $this->DeliverySchedule->find('all', [
+    		'conditions' => ['Quotation.id']
+    		]);
     	$fitout_work_id = $this->params['url']['id'];
     	$works = $this->FitoutWork->findById($fitout_work_id);
 		$clients = $this->Client->find('all', ['conditions'=>['Client.lead'=>0]]);
@@ -492,10 +495,22 @@ class FitoutWorksController extends AppController {
 		$peoples = $this->FitoutPerson->find('all');
 		$fitout_works = $this->FitoutTodo->find('all');
 		
-		$designers = $this->JrProduct->find('all', ['fields' => ['DISTINCT (JrProduct.user_id)']]);
-		// exit;
+		$this->JrProduct->recursive = 1;
+		$designers = $this->JrProduct->find('all', [
+			'conditions' => ['User.id'],
+			'fields' => ['DISTINCT JrProduct.user_id, User.first_name, User.last_name']
+			]);
+			
+			#	pr($designers);
 		
-		$this->set(compact('works', 'deliviries', 'clients', 'users', 'peoples', 'fitout_works', 'designers'));
+		$fitout_work_object = $this->FitoutWork->findById($fitout_work_id);
+		
+		$this->Quotation->recursive = -1;
+		$quotations = $this->Quotation->find('all', ['conditions'=>
+			['Quotation.client_id'=>$fitout_work_object['FitoutWork']['client_id']]]);
+			
+		
+		$this->set(compact('works', 'deliviries', 'clients', 'users', 'peoples', 'fitout_works', 'designers', 'quotations'));
 
     }
     
@@ -585,17 +600,24 @@ class FitoutWorksController extends AppController {
         $fitout_id = $data['s_id'];
         $date_start = $data['date_start'];
         $time_start = $data['time_start'];
-        
-
+		
         $combined_SDT = date('Y-m-d H:i:s', strtotime("$date_start $time_start"));
+        
+        $editds_TS = $this->FitoutTodo->getDataSource();
+        $editds_TS->begin();
         
         $this->FitoutTodo->id = $fitout_id;
         
         $this->FitoutTodo->set(array(
             "date_started" => $combined_SDT
         ));
-        if($this->FitoutTodo->save()){
-                echo json_encode($fitout_id);
+        
+        $edit_start = $this->FitoutTodo->save();
+        if($edit_start){
+        	$editds_TS->commit();
+            echo json_encode($fitout_id);
+        }else{
+        	$editds_TS->rollback();
         }
         exit;
         
@@ -612,8 +634,10 @@ class FitoutWorksController extends AppController {
         $date_end = $data['date_end'];
         $time_end = $data['time_end'];
         
-
         $combined_EDT = date('Y-m-d H:i:s', strtotime("$date_end $time_end"));
+        
+        $edited_TS = $this->FitoutTodo->getDataSource();
+        $edited_TS->begin();
         
         $this->FitoutTodo->id = $fitout_id;
         
@@ -621,11 +645,32 @@ class FitoutWorksController extends AppController {
             "end_date" => $combined_EDT
         ));
         
-        if($this->FitoutTodo->save()){
-                echo json_encode($fitout_id);
+        $edit_end = $this->FitoutTodo->save();
+        
+        if($edit_end){
+        	$edited_TS->commit();
+            echo json_encode($fitout_id);
+        }else{
+        	$edited_TS->rollback();
         }
         exit;
         
+     }
+     
+     public function delete_people(){
+     	$this->autoRender = false;
+        header("Content-type:application/json");
+        $this->loadModel('FitoutPerson');
+        
+        //$this->FitoutPerson->id = $id;
+		$this->request->onlyAllow('post', 'delete');
+
+		if ($this->FitoutPerson->delete()) {
+			echo json_encode($id);
+		} 
+
+		pr($this->FitoutPerson->delete());
+
      }
     
 }

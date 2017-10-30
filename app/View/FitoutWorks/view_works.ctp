@@ -1,11 +1,12 @@
 <!--Select2 [ OPTIONAL ]-->
 <link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
 <script>
     tinymce.init({
         selector: 'textarea',
@@ -36,6 +37,7 @@
     }
     
     #add_people{
+        width: 100%;
         margin-top: 10px;
     }
 </style>
@@ -61,68 +63,41 @@
                     <div class="form-group">
                         <input type="hidden" id="fitout_work_id" value="<?php echo $works['FitoutWork']['id']; ?>" readonly />
                         <br/>
-                        
-                        <label>Client <span class="text-danger">*</span></label>
-                        <select id="client_id" class="form-control" disabled >
-                            <option value="<?php echo h($works['FitoutWork']['client_id']); ?>">
-                                <?php echo h($works['Client']['name']); ?>
-                            </option>
-                            
-                            <?php foreach ($clients as $client) {
-                                ?>
-                                <option value="<?php echo h($client['Client']['id']); ?>" >
-                                    <?php echo h($client['Client']['name']); ?>
-                                </option>
-                                <?php
-                            } ?>
-                        </select>
+                        <label><b>Client</b></label>
+                        <p><?php echo h($works['Client']['name']); ?></p>
                     </div>
                     
                     <div class="form-group">
-                        <label>Sales Executive</label>
-                        <input type="text" id="sales_exec" class="form-control" value="<?php echo h($works['User']['id']); ?>" disabled/>
+                        <label><b>Sales Executive</b></label>
+                         <p><?php echo h($works['User']['id']); ?></p>
                     </div>
                     
                    <div class="form-group">
-                        <label>Designers</label>
-                        <select id="designers" class="form-control">
-                        <option value="0">Please select a designer</option>
+                        <label><b>Designers</b></label>
                         <?php foreach($designers as $designer){ ?>
-                        <option value="<?php echo h($designer['JrProduct']['user_id']); ?>"><?php echo  h($designer['JrProduct']['user_id']); ?></option>
+                          <p><?php echo h($designer['User']['first_name'])." ". h($designer['User']['last_name']); ?></p>
                         <?php } ?>
-                        </select>
                     </div>
+                    
+                    <div class="form-group">
+                        <label><b>Deadline</b></label>
+                       <p><?php echo h($works['FitoutWork']['deadline']); ?></p>
+                    </div>
+                    
+                   <div class="form-group">
+                        <label><b>Project Head</b></label>
+                            <p><?php echo h($works['User']['first_name']).' '.h($works['User']['last_name']); ?></p>
+                    </div> 
                     
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label>Deliviries</label>
-                        <input type="text" id="deliveries" class="form-control"/>
+                        <label><b>Deliviries</b></label>
+                            <?php foreach($quotations as $quotation){ ?>
+                                    <p><li><?php echo $quotation['Quotation']['subject']; ?></li></p>
+                            <?php } ?>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Deadline</label>
-                        <input type="date" id="deadline" class="form-control" value="<?php echo h($works['FitoutWork']['deadline']); ?>" disabled/>
-                    </div>
-                    
-                   <div class="form-group">
-                        <label>Project Head <span class="text-danger">*</span></label>
-                        
-                        <select id="project_head_id" class="form-control" disabled>
-                            <option value="<?php echo h($works['User']['id']); ?>">
-                                <?php echo h($works['User']['first_name']).' '.h($works['User']['last_name']); ?>
-                            </option>
-                            
-                            <?php foreach ($users as $user) {
-                                ?>
-                                <option value="<?php echo h($user['User']['id']); ?>" >
-                                    <?php echo h($user['User']['first_name']).' '.h($user['User']['last_name']); ?>
-                                </option>
-                                <?php
-                            } ?>
-                        </select>
-                    </div> 
- 
+                
                 </div>
             </div>
         </div>
@@ -133,6 +108,7 @@
                 <table id="example1" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
+                            <th>Quotation number</th>
                             <th>Delivery date</th>
                             <th>Type</th>
                             <th>Status</th>
@@ -140,6 +116,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>Quotation number</th>
                             <th>Delivery date</th>
                             <th>Type</th>
                             <th>Status</th>
@@ -148,7 +125,8 @@
                     <tbody>
                         <?php foreach($deliviries as $delivery){ ?>
                         <tr>
-                            <td><?php echo h($delivery['DeliverySchedule']['delivery_date']); ?></td>
+                            <td><?php echo h($delivery['Quotation']['quote_number']); ?></td>
+                            <td><?php echo h(date('F d, Y h:i:a', strtotime($delivery['DeliverySchedule']['delivery_date']))); ?></td>
                             <td><?php echo h($delivery['DeliverySchedule']['type']); ?></td>
                             <td><?php echo h($delivery['DeliverySchedule']['status']); ?></td>
                         </tr>
@@ -203,7 +181,7 @@
                                 if(( $UserIn['User']['role'] == 'fitout_facilitator' )){
                                     echo"<div class='row'>";
                                         echo"<div class='col-sm-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip removeBtn" data-toggle="tooltip" href="#" data-original-title="remove" data-id="'.h($works['FitoutWork']['id']).'"><i class="fa fa-remove"></i></a>';
+                                            echo '<a class="btn btn-default btn-icon add-tooltip removeBtn" data-toggle="tooltip" href="#" data-original-title="remove" data-id="'.h($people['FitoutPerson']['id']).'"><i class="fa fa-remove"></i></a>';
                                          echo"</div>"; 
                                     echo"</div";
                                 } 
@@ -253,9 +231,9 @@
                     <tbody>
                         <?php foreach($fitout_works as $fitout_work){ ?>
                         <tr>
-                            <td><?php echo h($fitout_work['FitoutTodo']['work']); ?></td>
-                            <td><?php echo h($fitout_work['FitoutTodo']['deadline']); ?></td>
-                            <td><?php echo h($fitout_work['FitoutTodo']['expected_start']); ?></td>
+                            <td><?php echo $fitout_work['FitoutTodo']['work']; ?></td>
+                            <td><?php echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['deadline']))); ?></td>
+                            <td><?php echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['expected_start']))); ?></td>
                             <td>
                                <?php if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
                                    if(($fitout_work['FitoutTodo']['date_started'] == "" )){
@@ -266,32 +244,49 @@
                                     echo"</div";
                                     
                                    }else{
-                                       echo h($fitout_work['FitoutTodo']['date_started']);
-                                     echo"<div class='row'>";
-                                        echo"<div class='col-xs-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip editstartBtn" data-toggle="tooltip" href="#" data-original-title="Update date started" data-sid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar icon-lg btn-primary"></i></a>';
-                                         echo"</div>"; 
-                                     echo"</div";
+                                        echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['date_started'])));
                                    }
-                                } ?>
+                                }else{
+                                    if($fitout_work['FitoutTodo']['date_started'] != ""){
+                                        echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['date_started'])));
+
+                                    }else{
+                                        echo"<p>not available</p>";
+                                    }
+                                }
+                                
+                                ?>
                             </td>
                             <td>
                                 <?php 
                                     if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
                                     
-                                        if(( $fitout_work['FitoutTodo']['date_started'] != "" )){
-                                                 
-                                            echo h($fitout_work['FitoutTodo']['end_date']);
+                                        // if(( $fitout_work['FitoutTodo']['date_started'] != "" )){
+                                        //     // echo"<div class='col-md-6'>";     
+                                        //     //     echo h($fitout_work['FitoutTodo']['end_date']);
+                                        //     // echo"</div>";
 
-                                            echo"<div class='row'>";
-                                                echo"<div class='col-xs-1'>";
-                                                    echo '<a class="btn btn-default btn-icon add-tooltip editendBtn" data-toggle="tooltip" href="#" data-original-title="Update date ended" data-eid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar icon-lg btn-danger"></i></a>';
-                                                echo"</div>"; 
+                                        // }
+                                        
+                                        if($fitout_work['FitoutTodo']['end_date'] == ""){
+                                            echo"<div class='col-md-6'>";    
+                                                echo"<div class='row'>";
+                                                    echo"<div class='col-xs-1'>";
+                                                        echo '<a class="btn btn-default btn-icon btn-sm add-tooltip editendBtn" data-toggle="tooltip" href="#" data-original-title="Update date ended" data-eid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar btn-danger"></i></a>';
+                                                    echo"</div>"; 
+                                                echo"</div>";
                                             echo"</div>";
                                         }else{
-                                               echo"<p>not available</p>";
+                                            echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['end_date'])));
                                         }
               
+                                    }else{
+                                        if($fitout_work['FitoutTodo']['end_date'] != ""){
+                                                echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['end_date'])));
+                                           
+                                        }else{
+                                            echo"<p>not available</p>";
+                                        }
                                     }
                                     
                                 ?>
@@ -655,14 +650,62 @@
             
         });
 
-/*
+
+
+
     $(".removeBtn").each(function (index) {
         $(this).on("click", function () {
+           
+            var id = $(this).data('id'); //this line gets value of data-id from delete button
+            //alert(id)
+            
 
-          //AJAX CALL TO DELETE RECORDS FROM DATABASE
+            swal({
+                title: "Confirmation message?",
+                text: "Are you sure to delete this record?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+
+    //         function(isConfirm) {
+    //             if (isConfirm) {
+                    
+    //                  var id = $(this).data('id'); 
+                     
+    //                 var data = {"id":id}
+    //                 alert(data)
+
+    //                     $.ajax({
+    //                         url: "/fitout_works/delete_people",
+    //                         type: 'POST',
+    //                         data: {'data': data},
+    //                         dataType: 'json',
+    //                             success: function (id) {
+    //                                 //location.reload();
+    //                                 alert(id)
+    //                         }
+    //                     });
+    //     } else {
+    //         swal("Cancelled", " Action has been cancelled ", "error");
+    //     }
+        
+    // });
+    
+    });
+    });
+    
 
 
-        });*/
+
+
+
+
+
 });
         
 
