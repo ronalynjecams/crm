@@ -120,7 +120,7 @@ class UsersController extends AppController {
     }
 
     public function login() {
-
+// pr(phpinfo());
 
         if ($this->Auth->user('id')) {
 //			$this->redirect('/users/dashboard'); 
@@ -130,8 +130,6 @@ class UsersController extends AppController {
                 return $this->redirect('/users/dashboard_marketing');
             } else if ($this->Auth->user('role') == 'super_admin') {
                 return $this->redirect('/users/dashboard_super_admin');
-            } else if ($this->Auth->user('role') == 'it_staff') {
-                return $this->redirect('/users/dashboard_it_staff');
             } else if ($this->Auth->user('role') == 'design_head') {
                 return $this->redirect('/users/dashboard_design_head');
             } else if ($this->Auth->user('role') == 'designer') {
@@ -154,7 +152,13 @@ class UsersController extends AppController {
                 return $this->redirect('/users/dashboard_logistics_head');
             } else if ($this->Auth->user('role') == 'fitout_facilitator') {
                 return $this->redirect('/users/dashboard_fitout');
-            }
+            } else if ($this->Auth->user('role') == 'it_staff') {
+                return $this->redirect('/users/dashboard_it_staff');
+            } //////////////////new admin staff dashboard
+               else if ($this->Auth->user('role') == 'admin_staff') {
+                return $this->redirect('/users/dashboard_admin_staff');
+            } 
+            
         }
 
         if ($this->request->is('post')) {
@@ -188,7 +192,13 @@ class UsersController extends AppController {
                     return $this->redirect('/users/dashboard_logistics_head');
                 } else if ($this->Auth->user('role') == 'fitout_facilitator') {
                     return $this->redirect('/users/dashboard_fitout');
-                }
+                } else if ($this->Auth->user('role') == 'it_staff') {
+                    return $this->redirect('/users/dashboard_it_staff');
+                } //////////////////new admin staff dashboard
+                else if ($this->Auth->user('role') == 'admin_staff') {
+                return $this->redirect('/users/dashboard_admin_staff');
+                } 
+            
             }
 
             $this->Session->setFlash(__('Invalid username or password, try again'));
@@ -319,7 +329,10 @@ class UsersController extends AppController {
                 return $this->redirect('/users/dashboard_production_head');
             } else if ($this->Auth->user('role') == 'hr_head') {
                 return $this->redirect('/users/hr_head');
-            }
+            }  //////////////////new admin staff dashboard
+              else if ($this->Auth->user('role') == 'admin_staff') {
+                return $this->redirect('/users/dashboard_admin_staff');
+            } 
         }
 // 
         //if user role != new
@@ -428,4 +441,13 @@ class UsersController extends AppController {
     public function dashboard_fitout() {
         
     }
+    
+    public function it_staff() {
+        
+    }
+    
+    public function dashboard_admin_staff(){
+        
+    }
+    
 }

@@ -69,9 +69,10 @@
                             <td><?php echo $fitoutwork['User']['last_name'].' '.$fitoutwork['User']['first_name']; ?></td>
                             <td><?php echo ucwords($fitoutwork['FitoutWork']['status']); ?></td>
                             <td class='text-center'>
-                                <button class="btn btn-primary btn-sm" id="viewFitoutWork" >
+                                <a style="color:white;font-weight:bold;" href="/fitout_works/view_works?id=<?php echo $fitoutwork['FitoutWork']['id']; ?>"
+                                    class="btn btn-primary btn-sm">
                                     <i class="fa fa-eye"></i>
-                                </button>
+                                </a>
                                
                                 <a style="color:white;font-weight:bold;" href="/fitout_works/edit_fitout_works?id=<?php echo $fitoutwork['FitoutWork']['id']; ?>"
                                     class="btn btn-warning btn-sm">
