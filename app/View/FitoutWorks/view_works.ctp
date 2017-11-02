@@ -7,6 +7,8 @@
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script> 
 <script>
     tinymce.init({
         selector: 'textarea',
@@ -58,45 +60,55 @@
         <!--===================================================-->
         <div class = "panel">
             <div class="panel-body">
+                <h3><strong>Fitout Project Information</strong></h3>
+                <hr>
                 <div class="col-lg-6">
                     <div class="form-group">
                         <input type="hidden" id="fitout_work_id" value="<?php echo $works['FitoutWork']['id']; ?>" readonly />
                         <br/>
-                        <label><b>Client</b></label>
-                        <p><?php echo h($works['Client']['name']); ?></p>
+                        <label><b>Client: </b></label>
+                        <?php echo h($works['Client']['name']); ?>
                     </div>
                     
                     <div class="form-group">
-                        <label><b>Sales Executive</b></label>
-                         <p><?php echo h($works['User']['id']); ?></p>
+                        <label><b>Sales Executive: </b></label>
+                         <?php echo h($works['User']['first_name'])." ".h($works['User']['last_name']); ?>
                     </div>
                     
                    <div class="form-group">
-                        <label><b>Designers</b></label>
+                        <label><b>Designers: </b></label>
                         <?php foreach($designers as $designer){ ?>
-                          <p><?php echo h($designer['User']['first_name'])." ". h($designer['User']['last_name']); ?></p>
+                         <?php echo h($designer['User']['first_name'])." ". h($designer['User']['last_name']); ?>
                         <?php } ?>
                     </div>
                     
                     <div class="form-group">
-                        <label><b>Deadline</b></label>
-                       <p><?php echo h($works['FitoutWork']['deadline']); ?></p>
+                        <label><b>Deadline: </b></label>
+                       <?php echo h($works['FitoutWork']['deadline']); ?>
                     </div>
                     
                    <div class="form-group">
-                        <label><b>Project Head</b></label>
-                            <p><?php echo h($works['User']['first_name']).' '.h($works['User']['last_name']); ?></p>
+                        <label><b>Project Head: </b></label>
+                        <?php echo h($works['User']['first_name']).' '.h($works['User']['last_name']); ?>
                     </div> 
                     
                 </div>
+                <br/>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label><b>Deliviries</b></label>
+                        <label><b>Deliviries: </b></label>
+                        <select class="form-control">
                             <?php foreach($quotations as $quotation){ ?>
-                                    <p><li><?php echo $quotation['Quotation']['subject']; ?></li></p>
+                                    <option><?php echo $quotation['Quotation']['subject']; ?></option>
                             <?php } ?>
+                        </select>
                     </div>
-                
+                    <div class="form-group">
+                         <label><strong>Required Documents: </strong></label>
+                                <?php if ($UserIn['User']['role'] == 'fitout_facilitator') { ?>
+                                    <button class="btn btn-primary btn-sm add-tooltip" id="addReqdoc" data-toggle="tooltip" data-placement="right" data-original-title="Add required documents"><i class="fa fa-plus"></i></button>
+                                <?php } ?> </h3>
+                    </div>
                 </div>
             </div>
         </div>
@@ -139,19 +151,15 @@
 
          <div class="panel-heading" align="left">
              <div class="row">
-                <div class="col-sm-10">
+                <div class="col-xs-10">
                     <div class="panel-title">Team</div>
                 </div>
-
-                <?php if(( $UserIn['User']['role'] == 'fitout_facilitator')){ ?>
-                
                 <div class="col-sm-2">
+                <?php if(( $UserIn['User']['role'] == 'fitout_facilitator')){ ?>
                     <button class="btn btn-success add-tooltip" data-toggle="tooltip" data-placement="right" data-original-title="Add new people involve" id="add_people" tooltip="Add new people involve"><i class="fa fa-plus"></i></button>
-                </div>
-            </div>
                 <?php } ?>
-                
-       
+                </div>
+               </div>
             </div>
 
                 <div class="panel-body">
@@ -260,32 +268,33 @@
                                 <?php 
                                     if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
                                     
-                                        // if(( $fitout_work['FitoutTodo']['date_started'] != "" )){
-                                        //     // echo"<div class='col-md-6'>";     
-                                        //     //     echo h($fitout_work['FitoutTodo']['end_date']);
-                                        //     // echo"</div>";
-
-                                        // }
+                                        if(( $fitout_work['FitoutTodo']['date_started'] != "" )){
                                         
-                                        if($fitout_work['FitoutTodo']['end_date'] == ""){
-                                            echo"<div class='col-md-6'>";    
-                                                echo"<div class='row'>";
-                                                    echo"<div class='col-xs-1'>";
-                                                        echo '<a class="btn btn-default btn-icon btn-sm add-tooltip editendBtn" data-toggle="tooltip" href="#" data-original-title="Update date ended" data-eid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar btn-danger"></i></a>';
-                                                    echo"</div>"; 
+                                            if($fitout_work['FitoutTodo']['end_date'] == ""){
+                                                echo"<div class='col-md-6'>";    
+                                                    echo"<div class='row'>";
+                                                        echo"<div class='col-xs-1'>";
+                                                            echo '<a class="btn btn-default btn-icon btn-sm add-tooltip editendBtn" data-toggle="tooltip" href="#" data-original-title="Update date ended" data-eid="'.h($fitout_work['FitoutTodo']['id']).'"><i class="fa fa-calendar btn-danger"></i></a>';
+                                                        echo"</div>"; 
+                                                    echo"</div>";
                                                 echo"</div>";
-                                            echo"</div>";
+                                            }else{
+                                                echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['end_date'])));
+                                            }
+                                        
                                         }else{
-                                            echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['end_date'])));
+                                          echo"<p>not available</p>";
                                         }
               
                                     }else{
+                                        
                                         if($fitout_work['FitoutTodo']['end_date'] != ""){
                                                 echo h(date('F d, Y h:i:a', strtotime($fitout_work['FitoutTodo']['end_date'])));
                                            
                                         }else{
                                             echo"<p>not available</p>";
                                         }
+                                        
                                     }
                                     
                                 ?>
@@ -296,6 +305,116 @@
                 </table>
             </div>
             </div>
+        
+           <div class="panel">
+
+         <div class="panel-heading" align="left">
+             <div class="row">
+                <div class="col-xs-10">
+                    <div class="panel-title">Documents required</div>
+                </div>
+               </div>
+            </div>
+
+                <div class="panel-body">
+                <table id="example2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Document title</th>
+                            <th>Quotation number</th>
+                            <th>Date needed</th>
+                            <th>Date acquired</th>
+                            <th>Date processed</th>
+                            <th>Status</th>
+                            <th>created by</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Document title</th>
+                            <th>Quotation number</th>
+                            <th>Date needed</th>
+                            <th>Date acquired</th>
+                            <th>Date processed</th>
+                            <th>Status</th>
+                            <th>created by</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <?php foreach($docs as $doc){ ?>
+                        <tr>
+                            <td><?php echo h($doc['DrPaper']['name']); ?></td>
+                            <td><?php echo h($doc['Quotation']['quote_number']); ?></td>
+                            <td><?php echo h(date('F d, Y h:i:a', strtotime($doc['DeliveryPaper']['date_needed']))); ?></td>
+                            <td>
+                               <?php 
+                                if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
+                                   if(($doc['DeliveryPaper']['date_acquired'] == "" )){
+                                    echo"<div class='row'>";
+                                        echo"<div class='col-xs-1'>";
+                                            echo '<a class="btn btn-default btn-icon add-tooltip editdaBtn" data-toggle="tooltip" href="#" data-original-title="Update date acquired" data-daid="'.h($doc['DeliveryPaper']['id']).'"><i class="fa fa-calendar icon-lg btn-primary"></i></a>';
+                                         echo"</div>"; 
+                                    echo"</div";
+                                    
+                                   }else{
+                                        echo h(date('F d, Y h:i:a', strtotime($doc['DeliveryPaper']['date_acquired'])));
+                                   }
+                                }else{
+                                    if($doc['DeliveryPaper']['date_acquired'] != ""){
+                                        echo h(date('F d, Y h:i:a', strtotime($doc['DeliveryPaper']['date_acquired'])));
+
+                                    }else{
+                                        echo"<p>not available</p>";
+                                    }
+                                }
+                                
+                                ?>
+                                
+                            </td>
+                            <td>
+                                <?php 
+                                    if(( $UserIn['User']['role'] == 'fitout_facilitator' )){ 
+                                    
+                                        if(( $doc['DeliveryPaper']['date_acquired'] != "" )){
+                                        
+                                            if($doc['DeliveryPaper']['date_processed'] == ""){
+                                                echo"<div class='col-md-6'>";    
+                                                    echo"<div class='row'>";
+                                                        echo"<div class='col-xs-1'>";
+                                                            echo '<a class="btn btn-default btn-icon btn-sm add-tooltip editdpBtn" data-toggle="tooltip" href="#" data-original-title="Update date processed" data-dpid="'.h($doc['DeliveryPaper']['id']).'"><i class="fa fa-calendar btn-danger"></i></a>';
+                                                        echo"</div>"; 
+                                                    echo"</div>";
+                                                echo"</div>";
+                                            }else{
+                                                echo h(date('F d, Y h:i:a', strtotime($doc['DeliveryPaper']['date_processed'])));
+                                            }
+                                        
+                                        }else{
+                                          echo"<p>not available</p>";
+                                        }
+              
+                                    }else{
+                                        
+                                        if($doc['DeliveryPaper']['date_processed'] != ""){
+                                                echo h(date('F d, Y h:i:a', strtotime($doc['DeliveryPaper']['date_processed'])));
+                                           
+                                        }else{
+                                            echo"<p>not available</p>";
+                                        }
+                                        
+                                    }
+                                    
+                                ?>
+                            </td>
+                            <td><?php echo h($doc['DeliveryPaper']['status']); ?></td>
+                            <td><?php echo h($doc['DeliveryPaper']['user_id']); ?></td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        
         
     </div>
 </div>
@@ -315,6 +434,7 @@
             <!--Modal body-->
             <div class="modal-body">
                 <div class="form-group" id="name_validation">
+                    <form id="add_p">
                     <input type="hidden" id="add_fitout_work_id" value="<?php echo h($works['FitoutWork']['id']); ?>" readonly />
                     <label>Employee<span class="text-danger">*</span></label>
                     <select class="form-control" id="employee">
@@ -323,6 +443,7 @@
                                 <option value="<?php echo h($user['User']['id']); ?>"><?php echo h($user['User']['first_name'])." ".h($user['User']['last_name']); ?></option>
                             <?php } ?>
                     </select>
+                  </form>
                 </div>
             </div>
             <!--Modal footer-->
@@ -459,9 +580,106 @@
 </div>
 </div>
 <!--===================================================-->
-<!-- Edit date_end Modal End->
+<!-- Edit date_end Modal End!-->
 
-<!---JAVASCRIPT FUNCTIONS--->
+<!-- doc required modal start !-->
+<div class="modal fade" id="add-docrequirement-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content"> 
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Add required documents</h4>
+            </div>
+            <div class="modal-body">
+             <div class="row"> 
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Document</label> 
+                            <select class="form-control" id="dr_paper_id">
+                                <option value="0">Please select a document</option>
+                                <?php foreach ($documents as $document) {
+                                    echo '<option value="' . h($document['DrPaper']['id']) . '">' . h($document['DrPaper']['name']) . '</option>';
+                                }?>
+                            </select>
+                        </div>
+                    </div> 
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Quotation</label> 
+                                <select class="form-control" id="quotation_id">
+                                    <option value="0">Please select a quotation number</option>
+                                    <?php foreach ($quotations as $quotation) {
+                                        echo '<option value="' . h($quotation['Quotation']['id']) . '">' . h($quotation['Quotation']['quote_number']) . '</option>';
+                                    }?>
+                                </select>
+                        </div>
+                    </div>   
+                    
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="control-label" id="labelSupplier">Date Needed</label> 
+                        <input type="text" readonly=""  id="date_need" class="form-control" >
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="saveDrPaper">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--doc required modal end !-->
+
+
+<!-- Edit date_acquired Modal Start-->
+<!--===================================================-->
+<div class="modal fade" id="edit-datestart-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Edit acquired date</h4>
+            </div>
+            <!--Modal body-->
+             <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        
+                        <div class="col-sm-6">
+                             <input type="hidden" class="form-control"  id="da_id">  
+                            <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="date_acquired"> 
+                        </div>
+                       
+                        <div class="col-sm-6"> 
+                            <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="time_acquired">
+                        </div>
+                        
+                    </div>
+                </div>
+
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="editdateAcquired">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--===================================================-->
+<!-- Edit date_acquired Modal End!-->
+
 <script>
     $('#add_people').on("click", function () {
         $('#add-people-modal').modal('show');
@@ -471,7 +689,20 @@
         $('#add-work-modal').modal('show');
     });
     
+    $('#addReqdoc').on("click", function() {
+        $('#add-docrequirement-modal').modal('show');
+    });
+    
     $(document).ready(function () {
+         var date = new Date();
+        date.setDate(date.getDate() - 1);
+        
+        $('#date_need')
+            .datepicker({
+                format: 'yyyy-mm-dd',
+                startDate: date,
+        });
+                
         $('#example1').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
@@ -490,6 +721,11 @@
             "stateSave": true
         });
         
+        $('#example4').DataTable({
+            "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
+            "order": [[0, "asc"]],
+            "stateSave": true
+        });
         
     $('#addPeople').on("click", function () {
         var employee = $('#employee').val();
@@ -508,17 +744,15 @@
 
                                 },
                                 error: function() {
-                                    alert('error!')
+                                    alert('name already exist')
                                 }
                             });
                             
         } else {
             document.getElementById('employee').style.borderColor = "red";
         }
-        
     });
-    
-    
+
      $('#addWork').on("click", function () {
         var work_details = tinymce.get('work_details').getContent();
         var deadline_date = $('#deadline_date').val();
@@ -648,6 +882,7 @@
             
         });
 
+
     $(".removeBtn").each(function (index) {
         $(this).on("click", function () {
            
@@ -674,7 +909,7 @@
  
                 swal({
                     title: 'Are you sure to delete this record?',
-                    text: "This cannot be action revert!",
+                    text: "This action cannot be revert!",
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -692,13 +927,125 @@
                                 success: function (id) {
                                     location.reload();
                                     
-                            }
-                        });    
-                })
-                    
+                        }
+                    });    
+            })
         });
     });
     
+    
+       $('#saveDrPaper').on("click", function () {
+     
+            var dr_paper_id= $('#dr_paper_id').val();
+            var quotation_id = $('#quotation_id').val();
+            var date_need = $('#date_need').val();
+
+            if(( dr_paper_id != 0 )){
+                
+                if(( quotation_id != 0 )){
+                    
+                    if(( date_need != "" )){
+                
+                        var data = { "dr_paper_id": dr_paper_id, "quotation_id": quotation_id, "date_need": date_need }
+                            
+                    $.ajax({
+                        url: "/fitout_works/add_document",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        
+                        success: function (id) {
+                            location.reload();
+                        },
+                        erorr: function (id) {
+                            swal('Oops...', 'Something went wrong!', 'error')
+                        }
+                    });
+            
+            }else{
+               document.getElementById('date_need').style.borderColor = "red";
+            }
+            
+            }else{
+                document.getElementById('quotation_id').style.borderColor = "red";
+            }
+            
+            }else{
+                document.getElementById('dr_paper_id').style.borderColor = "red";
+            }
+            
+        });
+        
+   ////
+   
+   
+   
+   
+   
+   eDIT KO PLEASE WAG GALAWIN
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   /////
+        $(".editdaBtn").each(function (index) {
+        $(this).on("click", function () {
+              var id = $(this).data('daid');
+                
+                $('#da_id').val(id);
+                //$('#edit-datestart-modal').modal('show');
+
+        });
+        
+    });
+    
+         $('#editdateAcquired').on("click", function () {
+            var da_id = $('#da_id').val();
+            var date_acquired = $('#date_acquired').val();
+            var time_acquired = $('#time_acquired').val();
+
+            if(( date_acquired != "")){
+                if(( time_acquired != "" )){
+                
+                            var data = { "da_id": da_id, "date_acquired": date_acquired, "time_acquired": time_acquired }
+                            
+                    $.ajax({
+                        url: "/fitout_works/edit_datestart",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        
+                        success: function (id) {
+                            location.reload();
+                        },
+                        erorr: function (id) {
+                            alert('error!');
+                        }
+                    });
+            
+            }else{
+               document.getElementById('date_start').style.borderColor = "red";
+            }
+            
+            }else{
+                document.getElementById('time_start').style.borderColor = "red";
+            }
+            
+            
+        });
+        
+        
+        
+        
+        
+        
+        
+        
 
 });
         

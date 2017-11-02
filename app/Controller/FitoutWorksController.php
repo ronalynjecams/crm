@@ -483,10 +483,13 @@ class FitoutWorksController extends AppController {
     	$this->loadModel('FitoutTodo');
     	$this->loadModel('JrProduct');
     	$this->loadModel('Quotation');
-   
+		$this->loadModel('DrPaper');   
+		$this->loadModel('DeliveryPaper');   
+		
     	$deliviries = $this->DeliverySchedule->find('all', [
     		'conditions' => ['Quotation.id']
     		]);
+    		
     	$fitout_work_id = $this->params['url']['id'];
     	$works = $this->FitoutWork->findById($fitout_work_id);
 		$clients = $this->Client->find('all', ['conditions'=>['Client.lead'=>0]]);
@@ -500,17 +503,24 @@ class FitoutWorksController extends AppController {
 			'conditions' => ['User.id'],
 			'fields' => ['DISTINCT JrProduct.user_id, User.first_name, User.last_name']
 			]);
-			
-			#	pr($designers);
 		
 		$fitout_work_object = $this->FitoutWork->findById($fitout_work_id);
+		
 		
 		$this->Quotation->recursive = -1;
 		$quotations = $this->Quotation->find('all', ['conditions'=>
 			['Quotation.client_id'=>$fitout_work_object['FitoutWork']['client_id']]]);
 			
+		#$this->loadModel('DeliveryPaper');   
+		// $documents = $this->DeliveryPaper->find('all', 
+		// ['conditions'=>
+		// 	['Quotation.client_id'=>$fitout_work_object['FitoutWork']['client_id']]]
+		// );
 		
-		$this->set(compact('works', 'deliviries', 'clients', 'users', 'peoples', 'fitout_works', 'designers', 'quotations'));
+		$documents = $this->DrPaper->find('all');
+		$this->DeliveryPaper->recursive = 1;
+		$docs = $this->DeliveryPaper->find('all');
+		$this->set(compact('works', 'deliviries', 'clients', 'users', 'peoples', 'fitout_works', 'designers', 'quotations', 'documents', 'docs'));
 
     }
     
@@ -525,11 +535,6 @@ class FitoutWorksController extends AppController {
         
         $employee = $data['employee'];
         $fit_out_id = $data['add_fitout_work_id'];
-        
-		// if($this->FitoutPerson->exists($fit_out_id)){
-		// 	echo "record exist";
-		// }
-		
 
 		if($this->request->is('post')){
 			
@@ -542,17 +547,30 @@ class FitoutWorksController extends AppController {
 				'fitout_work_id' => $fit_out_id
             ));
             
+            $check_duplicates = $this->FitoutPerson->find('first', array(
+            	'conditions' => array(
+            		'FitoutPerson.user_id' => $employee
+            		)
+            	));
+
+			if(!$check_duplicates){
+            
             $save_people = $this->FitoutPerson->save();
 			if($save_people){
 				$people_TS->commit();
 				echo json_encode($this->request->data); 
+			
 			}else{
 				$people_TS->rollback();
+			}
+			
+			}else{
+				//echo name already exist
 			}
 
 		}
      }
-     
+  
      public function add_work(){
      	
      	$this->autoRender = false;
@@ -595,17 +613,17 @@ class FitoutWorksController extends AppController {
      }
      
      
-     public function edit_datestart($id = null){
-     	$this->loadModel('FitoutTodo');
-     	
-     	$this->autoRender = false;
+	public function edit_datestart($id = null){
+        $this->loadModel('FitoutTodo');
+        
+        $this->autoRender = false;
         header("Content-type:application/json");
         $data = $this->request->data;
         
         $fitout_id = $data['s_id'];
         $date_start = $data['date_start'];
         $time_start = $data['time_start'];
-		
+        
         $combined_SDT = date('Y-m-d H:i:s', strtotime("$date_start $time_start"));
         
         $editds_TS = $this->FitoutTodo->getDataSource();
@@ -619,10 +637,10 @@ class FitoutWorksController extends AppController {
         
         $edit_start = $this->FitoutTodo->save();
         if($edit_start){
-        	$editds_TS->commit();
+            $editds_TS->commit();
             echo json_encode($fitout_id);
         }else{
-        	$editds_TS->rollback();
+            $editds_TS->rollback();
         }
         exit;
         
@@ -687,6 +705,46 @@ class FitoutWorksController extends AppController {
 	
 		}
 
+     }
+     
+     public function add_document(){
+     	
+     	$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+            
+        $this->loadModel('DeliveryPaper');
+        
+        $dr_paper_id = $data['dr_paper_id'];
+        $quotation_id = $data['quotation_id'];
+        $date_need = $data['date_need'];
+        $user_id = $this->Auth->user('id');
+        
+		if($this->request->is('post')){
+			
+			$work_TS = $this->DeliveryPaper->getDataSource();
+			$work_TS->begin();
+			
+			$this->DeliveryPaper->create();
+			
+			$this->DeliveryPaper->set(array(
+				'dr_paper_id' => $dr_paper_id,
+				'quotation_id' => $quotation_id,
+				'date_needed' => $date_need,
+				'user_id' => $user_id,
+            ));
+            
+            $save_work = $this->DeliveryPaper->save();
+            
+			if($save_work){
+				$work_TS->commit();
+				echo json_encode($this->request->data); 
+			}else{
+				$work_TS->rollback();
+			}
+
+		}
+		
      }
      
     
