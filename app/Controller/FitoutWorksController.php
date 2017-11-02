@@ -747,5 +747,70 @@ class FitoutWorksController extends AppController {
 		
      }
      
+    public function edit_dateacquired($id = null){
+        $this->loadModel('DeliveryPaper');
+        
+        $this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $da_id = $data['da_id'];
+        $date_acquired = $data['date_acquired'];
+        $time_acquired = $data['time_acquired'];
+        
+        $combined_SDT = date('Y-m-d H:i:s', strtotime("$date_acquired $time_acquired"));
+        
+        $editds_TS = $this->DeliveryPaper->getDataSource();
+        $editds_TS->begin();
+        
+        $this->DeliveryPaper->id = $da_id;
+        
+        $this->DeliveryPaper->set(array(
+            "date_acquired" => $combined_SDT
+        ));
+        
+        $edit_acquired = $this->DeliveryPaper->save();
+        if($edit_acquired){
+            $editds_TS->commit();
+            echo json_encode($da_id);
+        }else{
+            $editds_TS->rollback();
+        }
+        exit;
+        
+     }
+     
+     public function edit_dateprocessed($id = null){
+     	$this->loadModel('DeliveryPaper');
+        
+        $this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $dp_id = $data['dp_id'];
+        $date_processed = $data['date_processed'];
+        $time_processed = $data['time_processed'];
+        
+        $combined_SDT = date('Y-m-d H:i:s', strtotime("$date_processed $time_processed"));
+        
+        $editds_TS = $this->DeliveryPaper->getDataSource();
+        $editds_TS->begin();
+        
+        $this->DeliveryPaper->id = $dp_id;
+        
+        $this->DeliveryPaper->set(array(
+            "date_processed" => $combined_SDT
+        ));
+        
+        $edit_processed = $this->DeliveryPaper->save();
+        if($edit_processed){
+            $editds_TS->commit();
+            echo json_encode($dp_id);
+        }else{
+            $editds_TS->rollback();
+        }
+        exit;
+        
+     }
     
 }

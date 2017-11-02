@@ -55,17 +55,15 @@
         
     <!--Page content-->
     <!--===================================================-->
-    <div id="page-content">
-        <!-- Basic Data Tables -->
-        <!--===================================================-->
-        <div class = "panel">
-            <div class="panel-body">
-                <h3><strong>Fitout Project Information</strong></h3>
-                <hr>
-                <div class="col-lg-6">
+<div id="page-content">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class = "panel">
+                <div class="panel-body">
+                    <h3><strong>Project Information</strong></h3>
+                    <hr>
                     <div class="form-group">
                         <input type="hidden" id="fitout_work_id" value="<?php echo $works['FitoutWork']['id']; ?>" readonly />
-                        <br/>
                         <label><b>Client: </b></label>
                         <?php echo h($works['Client']['name']); ?>
                     </div>
@@ -92,9 +90,6 @@
                         <?php echo h($works['User']['first_name']).' '.h($works['User']['last_name']); ?>
                     </div> 
                     
-                </div>
-                <br/>
-                <div class="col-lg-6">
                     <div class="form-group">
                         <label><b>Deliviries: </b></label>
                         <select class="form-control">
@@ -103,20 +98,38 @@
                             <?php } ?>
                         </select>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class = "panel">
+                
+                <div class="panel-body">
+                    <h3><strong>Required Documents</strong></h3>
+                    <hr>
+                    
                     <div class="form-group">
-                         <label><strong>Required Documents: </strong></label>
-                                <?php if ($UserIn['User']['role'] == 'fitout_facilitator') { ?>
-                                    <button class="btn btn-primary btn-sm add-tooltip" id="addReqdoc" data-toggle="tooltip" data-placement="right" data-original-title="Add required documents"><i class="fa fa-plus"></i></button>
-                                <?php } ?> </h3>
+                    <label><strong>Add documents: </strong></label>
+                        <?php if ($UserIn['User']['role'] == 'fitout_facilitator') { ?>
+                            <button class="btn btn-primary btn-sm add-tooltip" id="addReqdoc" data-toggle="tooltip" data-placement="right" data-original-title="Add required documents"><i class="fa fa-plus"></i></button>
+                        <?php } ?> </h3>
                     </div>
                 </div>
             </div>
         </div>
-            
-            
-        <div class = "panel">
-            <div class="panel-body">
-                <table id="example1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel">
+                
+                <div class="panel-heading" align="left">
+                    <div class="row">
+                        <div class="panel-title">Delivery details</div>
+                    </div>
+                </div>
+                
+                <div class="panel-body">
+                    <table id="example1" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Quotation number</th>
@@ -143,14 +156,14 @@
                         </tr>
                         <?php } ?>
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
         </div>
-        
-       <div class="panel">
-
-         <div class="panel-heading" align="left">
-             <div class="row">
+        <div class="col-sm-6">
+            <div class="panel">
+             <div class="panel-heading" align="left">
+                 <div class="row">
                 <div class="col-xs-10">
                     <div class="panel-title">Team</div>
                 </div>
@@ -162,7 +175,7 @@
                </div>
             </div>
 
-                <div class="panel-body">
+            <div class="panel-body">
                 <table id="example2" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -197,26 +210,29 @@
                         </tr>
                         <?php } ?>
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
-            </div>
-       
-    <div class="panel">
-         <div class="panel-heading" align="left">
-            <div class="row">
-             <div class="col-xs-10">
-                <h3 class="panel-title">Scope of work</h3>
-            </div>
-            <div class="col-xs-2">
-                <?php if(( $UserIn['User']['role'] == 'fitout_facilitator')){ ?>
-                    <button class="btn btn-success add-tooltip" data-toggle="tooltip" data-placement="right" data-original-title="Add new scope of work" id="add_work" tooltip="Add new scope of work"><i class="fa fa-plus"></i></button>
-                <?php } ?>
-            </div>
-            </div>
-            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-heading" align="left">
+                    <div class="row">
+                        <div class="col-xs-10">
+                            <h3 class="panel-title">Scope of work</h3>
+                        </div>
+                        <div class="col-xs-2">
+                            <?php if(( $UserIn['User']['role'] == 'fitout_facilitator')){ ?>
+                                <button class="btn btn-success add-tooltip" data-toggle="tooltip" data-placement="right" data-original-title="Add new scope of work" id="add_work" tooltip="Add new scope of work"><i class="fa fa-plus"></i></button>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
             
-            <div class="panel-body">
-                <table id="example3" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <div class="panel-body">
+                    <table id="example3" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Work</th>
@@ -302,22 +318,26 @@
                         </tr>
                         <?php } ?>
                     </tbody>
-                </table>
-            </div>
-            </div>
-        
-           <div class="panel">
-
-         <div class="panel-heading" align="left">
-             <div class="row">
-                <div class="col-xs-10">
-                    <div class="panel-title">Documents required</div>
+                    </table>
                 </div>
-               </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+
+             <div class="panel-heading" align="left">
+                 
+                <div class="row">
+                    <div class="col-xs-10">
+                        <div class="panel-title">Documents required</div>
+                    </div>
+                </div>
             </div>
 
-                <div class="panel-body">
-                <table id="example2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <div class="panel-body">
+                <table id="example4" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Document title</th>
@@ -413,8 +433,9 @@
                     </tbody>
                 </table>
             </div>
-            </div>
-        
+        </div>
+    </div>
+</div>
         
     </div>
 </div>
@@ -540,7 +561,6 @@
 </div>
 <!--===================================================-->
 <!-- Edit date_start Modal End->
-
 <!-- Edit date_end Modal Start-->
 <!--===================================================-->
 <div class="modal fade" id="edit-dateend-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
@@ -581,7 +601,6 @@
 </div>
 <!--===================================================-->
 <!-- Edit date_end Modal End!-->
-
 <!-- doc required modal start !-->
 <div class="modal fade" id="add-docrequirement-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
@@ -637,11 +656,9 @@
     </div>
 </div>
 <!--doc required modal end !-->
-
-
 <!-- Edit date_acquired Modal Start-->
 <!--===================================================-->
-<div class="modal fade" id="edit-datestart-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="edit-dateacquired-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -679,7 +696,46 @@
 </div>
 <!--===================================================-->
 <!-- Edit date_acquired Modal End!-->
+<!-- Edit date_acquired Modal Start-->
+<!--===================================================-->
+<div class="modal fade" id="edit-processed-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Edit processed date</h4>
+            </div>
+            <!--Modal body-->
+             <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        
+                        <div class="col-sm-6">
+                             <input type="hidden" class="form-control"  id="dp_id">  
+                            <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="date_processed"> 
+                        </div>
+                       
+                        <div class="col-sm-6"> 
+                            <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="time_processed">
+                        </div>
+                        
+                    </div>
+                </div>
 
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="editdateProcessed">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--===================================================-->
+<!-- Edit date_processed Modal End!-->
 <script>
     $('#add_people').on("click", function () {
         $('#add-people-modal').modal('show');
@@ -976,30 +1032,13 @@
             
         });
         
-   ////
    
-   
-   
-   
-   
-   eDIT KO PLEASE WAG GALAWIN
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   /////
         $(".editdaBtn").each(function (index) {
         $(this).on("click", function () {
               var id = $(this).data('daid');
                 
                 $('#da_id').val(id);
-                //$('#edit-datestart-modal').modal('show');
-
+                $('#edit-dateacquired-modal').modal('show');
         });
         
     });
@@ -1015,7 +1054,7 @@
                             var data = { "da_id": da_id, "date_acquired": date_acquired, "time_acquired": time_acquired }
                             
                     $.ajax({
-                        url: "/fitout_works/edit_datestart",
+                        url: "/fitout_works/edit_dateacquired",
                         type: 'POST',
                         data: {'data': data},
                         dataType: 'json',
@@ -1029,24 +1068,58 @@
                     });
             
             }else{
-               document.getElementById('date_start').style.borderColor = "red";
+               document.getElementById('time_acquired').style.borderColor = "red";
             }
             
             }else{
-                document.getElementById('time_start').style.borderColor = "red";
+                document.getElementById('date_acquired').style.borderColor = "red";
             }
             
             
         });
         
+    $(".editdpBtn").each(function (index) {
+        $(this).on("click", function () {
+              var id = $(this).data('dpid');
+                $('#dp_id').val(id);
+                $('#edit-processed-modal').modal('show');
+        });
         
-        
-        
-        
-        
-        
-        
+    });
+    
+        $('#editdateProcessed').on("click", function () {
+            var dp_id = $('#dp_id').val();
+            var date_processed = $('#date_processed').val();
+            var time_processed = $('#time_processed').val();
 
+            if(( date_processed != "")){
+                if(( time_processed != "" )){
+                
+                    var data = { "dp_id": dp_id, "date_processed": date_processed, "time_processed": time_processed }
+                            
+                    $.ajax({
+                        url: "/fitout_works/edit_dateprocessed",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        
+                        success: function (id) {
+                            location.reload();
+                        },
+                        erorr: function (id) {
+                            alert('error!');
+                        }
+                    });
+            
+            }else{
+               document.getElementById('time_processed').style.borderColor = "red";
+            }
+            
+            }else{
+                document.getElementById('date_processed').style.borderColor = "red";
+            }
+            
+        });
 });
         
 </script>
