@@ -117,17 +117,23 @@ class SupplierProductsController extends AppController {
 
         $supplier = $this->Supplier->findById($id); 
 
-        $this->SupplierProduct->recursive=2;
+        $this->SupplierProduct->recursive=4;
         $products = $this->SupplierProduct->find('all', array(
             'conditions'=>array('SupplierProduct.supplier_id' => $id)
         ));
           
-        $this->Product->recursive=-1;
+        $this->Product->recursive=4;
         $prods = $this->Product->find('all', array(
             'conditions' => array('Product.type' => array('supply', 'combi', 'chopped')),
             'fields'=>array('Product.id','Product.name')
         )); 
+        
+        
         $this->set(compact('supplier','products', 'prods'));
+        
+    		
+    		
+    		
     }
     
     public function get_product_combination(){ 
@@ -193,7 +199,7 @@ class SupplierProductsController extends AppController {
         $price = $data['price'];
         $product_id = $data['product_id'];
         $product_combo_id = $data['product_combo_id'];
-        $code = $data['code']; 
+        $code = $data['code'];  
         $note = $data['note']; 
         $supplier_id = $data['supplier_id']; 
         $this->SupplierProduct->create();
@@ -208,4 +214,79 @@ class SupplierProductsController extends AppController {
             echo json_encode('ok');
         }
     }
+    
+    
+    public function edit_supplier($id = null){
+        
+        $this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $u_id = $data['u_id'];
+        $usupplier_code = $data['usupplier_code'];
+        $usupplier_price = $data['usupplier_price'];
+        $unote = $data['unote'];
+        
+        
+        $editds_TS = $this->SupplierProduct->getDataSource();
+        $editds_TS->begin();
+        
+        $this->SupplierProduct->id = $u_id;
+        
+        $this->SupplierProduct->set(array(
+            "supplier_code" => $usupplier_code,
+            "supplier_price" => $usupplier_price,
+            "note" => $unote
+        ));
+        
+        $edit_supplier = $this->SupplierProduct->save();
+        if($edit_supplier){
+            $editds_TS->commit();
+            echo json_encode($u_id);
+            
+        }else{
+            $editds_TS->rollback();
+        }
+        exit;
+    }
+    
+    public function delete_supplier($id = null){
+        $this->loadModel('PurchaseOrderProduct');
+     	$this->autoRender = false;
+        header("Content-type:application/json");
+        
+        $deletepeople_TS = $this->SupplierProduct->getDataSource();
+        $deletepeople_TS->begin();
+        
+        $data = $this->request->data;
+         
+        $id = $data['id'];
+        $combiid = $data['combiid'];
+        
+        $chk_productid= $this->PurchaseOrderProduct->find('first', 
+        [
+            "conditions" => ['PurchaseOrderProduct.product_combo_id'=>$combiid]
+        ]
+        );
+        
+		if($this->request->is('post', 'put')){
+		    
+		  if(!$chk_productid){
+		    
+			$this->SupplierProduct->id = $id;
+			     
+			$del_supplier = $this->SupplierProduct->delete();   
+			if ($del_supplier) {
+				$deletepeople_TS->commit();
+				echo json_encode($id);
+			}else{
+				$deletepeople_TS->rollback();
+			} 
+	        
+		    }else{
+		        //echo record exist
+		    }
+		}
+    }
+    
 }

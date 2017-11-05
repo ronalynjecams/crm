@@ -481,46 +481,117 @@ class FitoutWorksController extends AppController {
     	$this->loadModel('DeliverySchedule');
     	$this->loadModel('FitoutPerson');
     	$this->loadModel('FitoutTodo');
+    	$this->loadModel('FitoutQoute');
     	$this->loadModel('JrProduct');
+    	$this->loadModel('JobRequest');
     	$this->loadModel('Quotation');
 		$this->loadModel('DrPaper');   
 		$this->loadModel('DeliveryPaper');   
-		
-    	$deliviries = $this->DeliverySchedule->find('all', [
-    		'conditions' => ['Quotation.id']
-    		]);
     		
     	$fitout_work_id = $this->params['url']['id'];
+    	$this->FitoutWork->recursive=4;
     	$works = $this->FitoutWork->findById($fitout_work_id);
-		$clients = $this->Client->find('all', ['conditions'=>['Client.lead'=>0]]);
-		$this->User->recursive = -1;
-		$users = $this->User->find('all');
-		$peoples = $this->FitoutPerson->find('all');
-		$fitout_works = $this->FitoutTodo->find('all');
-		
-		$this->JrProduct->recursive = 1;
-		$designers = $this->JrProduct->find('all', [
-			'conditions' => ['User.id'],
-			'fields' => ['DISTINCT JrProduct.user_id, User.first_name, User.last_name']
-			]);
-		
-		$fitout_work_object = $this->FitoutWork->findById($fitout_work_id);
-		
-		
-		$this->Quotation->recursive = -1;
-		$quotations = $this->Quotation->find('all', ['conditions'=>
-			['Quotation.client_id'=>$fitout_work_object['FitoutWork']['client_id']]]);
-			
-		#$this->loadModel('DeliveryPaper');   
-		// $documents = $this->DeliveryPaper->find('all', 
-		// ['conditions'=>
-		// 	['Quotation.client_id'=>$fitout_work_object['FitoutWork']['client_id']]]
-		// );
-		
-		$documents = $this->DrPaper->find('all');
-		$this->DeliveryPaper->recursive = 1;
-		$docs = $this->DeliveryPaper->find('all');
-		$this->set(compact('works', 'deliviries', 'clients', 'users', 'peoples', 'fitout_works', 'designers', 'quotations', 'documents', 'docs'));
+    	
+    	//now get all quotation on fitout quote to get all quotations na selected for this fitout work
+    	// $arr =['Quotation.id'];//bat my laman na initialization ?
+    	// foreach($works['FitoutQuote'] as $selected_quotation){
+    	// 	 array_push($arr, $selected_quotation);
+    	// } 
+    	
+    	  //  foreach($works as $work){
+    		 //array_push($arr, $work);
+    		 //} 
+    	
+    	$arr = [];
+    	foreach($works['FitoutQoute'] as $work){
+    		array_push($arr, $work['quotation_id']);
+    		// pr($arr);
+    	}
+
+    	
+    	$this->Quotation->recursive=4; 
+    	$selected_quotations = $this->JobRequest->Quotation->find('all',[
+    		'conditions'=>['Quotation.id'=>$arr]]);
+    		//based sa query ng $selected_quotations makukuha mo na designers and name ng sales agent
+    		
+    		//since hirap  na tayo na kuhanin ang jrproduct and mabagal kapag deep recursive na pwede natin gawin na ganito
+    		
+    	$jr_arr = [];
+    	foreach($selected_quotations as $sel_quote){ 
+    		if(!in_array($sel_quote['JobRequest']['id'], $jr_arr)){
+    		array_push($jr_arr, $sel_quote['JobRequest']['id']); 
+    		#pr($jr_arr);
+    		}
+    	} //eto kinuha natin lahat ng jobrequest id at nilagay sa array;now we can query sa j
+    	//call ako carl
+    	
+    	$designers = $this->JrProduct->find('all', [
+    		'conditions'=>['JrProduct.job_request_id'=>$jr_arr],
+    		'fields' => ['DISTINCT User.first_name, User.last_name']
+    		
+    	]);//eto na yun carl idistinct mo nalang
+    
+    	
+    
+    // associations in linking models 
+    	
+    	//eto yung delivery schedules
+    	
+        $delivery_schedules = $this->DeliverySchedule->find('all',['conditions'=>[
+            'DeliverySchedule.quotation_id'=>$arr
+        ]]);
+        
+    	$peoples = $works['FitoutPerson'];
+    	
+    	
+    	// $todo = $works['FitoutTodo'];
+    	
+    	// foreach($people as $team_person){
+    	// 	pr($team_person['FitoutWork']['User']);
+    	// 	//eto yung sa fitout team pag dating sa view 
+    	// }
+    	
+    	// pr($works['FitoutWork']);
+    	
+    	$client = $works['Client'];
+    	$project_head = $works['User'];
+    	$fitout_quotations = $works['FitoutQoute'];
+    	$fitout_todos = $works['FitoutTodo'];
+
+
+    	// foreach($fitout_todos as $fitout_todo){
+    	// 	pr($fitout_todo['FitoutWork']['FitoutTodo']);
+    	// }
+    	// pr($fitout_todo);
+    	 
+    	 //carl add ka nga ng data kasi walang laman ang array
+    	// pr($designers);//n
+    	
+    	//kapag my ganyan need iforeach yan, nilagyan ko lang ng 0 para maidebug ko kasi nakaarray yan kinuha ko lang yung unan
+    	
+    	//hmmm bumagal ata
+    	
+    	// //based on the query above makukuha mo na client detail then yung agent.
+    
+    	
+    	//wait lang try ko dito sakin, basta yung pag kuha ng user,fitout person tsaka fitout todo dyan na sa works
+    	// for example
+
+    	//yung agent name makukuha mo under ng quotation,adjust mo nalng recursive; 
+    	// meanwhile gawin ko muna yung sa crm then after idebug ko kung bakit hindi nagana ang fitout work.then mukang mneed mo magrevise kasi yung queries mo mali?
+    	
+    	//iadjust mo lang yung recursive para makuha mo yung deep queriesor connected tables pa sa kanya
+
+		// $documents = $this->DrPaper->find('all');
+		// $this->DeliveryPaper->recursive = 1;
+		// $docs = $this->DeliveryPaper->find('all');  //pakicondition ito based sa $arr, kasi dapat yung sa selected quotation lang yung lalabas
+		$required_docs = $this->DeliveryPaper->find('all',
+        	['conditions'=>['DeliveryPaper.quotation_id'=>$arr]]
+        );
+        
+        // pr($required_docs);
+
+		$this->set(compact('works', 'delivery_schedules', 'peoples', 'designers', 'selected_quotations', 'required_docs', 'fitout_todos'));
 
     }
     
@@ -766,7 +837,8 @@ class FitoutWorksController extends AppController {
         $this->DeliveryPaper->id = $da_id;
         
         $this->DeliveryPaper->set(array(
-            "date_acquired" => $combined_SDT
+            "date_acquired" => $combined_SDT,
+            "status" => "acquired"
         ));
         
         $edit_acquired = $this->DeliveryPaper->save();
@@ -799,7 +871,8 @@ class FitoutWorksController extends AppController {
         $this->DeliveryPaper->id = $dp_id;
         
         $this->DeliveryPaper->set(array(
-            "date_processed" => $combined_SDT
+            "date_processed" => $combined_SDT,
+            "status" => "processed"
         ));
         
         $edit_processed = $this->DeliveryPaper->save();
