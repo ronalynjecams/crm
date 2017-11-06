@@ -61,7 +61,7 @@
 <div id="page-content">
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
             <div class = "panel">
                 <div class="panel-body">
                     <h3><strong>Project Information</strong></h3>
@@ -196,7 +196,7 @@
                                 if(( $UserIn['User']['role'] == 'fitout_facilitator' )){
                                     echo"<div class='row'>";
                                         echo"<div class='col-sm-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip removeBtn btn-xs" data-toggle="tooltip" href="#" data-original-title="remove" data-id="'.h($people['User']['id']).'"><i class="fa fa-remove"></i></a>';
+                                            echo '<a class="btn btn-default btn-icon add-tooltip removeBtn btn-xs" data-toggle="tooltip" href="#" data-original-title="remove" data-id="' .h($people['FitoutPerson']['id']). '"><i class="fa fa-remove"></i></a>';
                                          echo"</div>";
                                     echo"</div";
                                 }
@@ -364,7 +364,7 @@
                         <tr>
                             <td><?php echo h($required_doc['DrPaper']['name']); ?></td>
                             <td><?php echo h($required_doc['Quotation']['quote_number']); ?></td>
-                            <td><?php echo h(date('F d, Y h:i:a', strtotime($required_doc['DeliveryPaper']['date_needed']))); ?></td>
+                            <td><?php echo h(date('F d, Y', strtotime($required_doc['DeliveryPaper']['date_needed']))); ?></td>
                             <td>
                                <?php
                                 if(( $UserIn['User']['role'] == 'fitout_facilitator' )){
@@ -458,7 +458,11 @@
                     <label>Employee<span class="text-danger">*</span></label>
                     <select class="form-control" id="employee">
                         <option value="0">Select an Employee</option>
-
+                        <?php 
+                            foreach($users as $user){
+                        ?>
+                            <option value="<?php echo h($user['User']['id']); ?>"><?php echo h($user['User']['first_name'])." ".h($user['User']['last_name']); ?></option>
+                        <?php } ?>
                     </select>
                   </form>
                 </div>
@@ -615,8 +619,8 @@
                             <label class="control-label" id="labelSupplier">Document</label>
                             <select class="form-control" id="dr_paper_id">
                                 <option value="0">Please select a document</option>
-                                <?php foreach ($documents as $document) {
-                                    echo '<option value="' . h($document['DrPaper']['id']) . '">' . h($document['DrPaper']['name']) . '</option>';
+                                <?php foreach ($papers as $paper) {
+                                    echo '<option value="' . h($paper['DrPaper']['id']) . '">' . h($paper['DrPaper']['name']) . '</option>';
                                 }?>
                             </select>
                         </div>
@@ -626,8 +630,8 @@
                             <label class="control-label" id="labelSupplier">Quotation</label>
                                 <select class="form-control" id="quotation_id">
                                     <option value="0">Please select a quotation number</option>
-                                    <?php foreach ($quotations as $quotation) {
-                                        echo '<option value="' . h($quotation['Quotation']['id']) . '">' . h($quotation['Quotation']['quote_number']) . '</option>';
+                                    <?php foreach ($selected_quotations as $selected_quotation) {
+                                        echo '<option value="' . h($selected_quotation['Quotation']['id']) . '">' . h($selected_quotation['Quotation']['quote_number']) . '</option>';
                                     }?>
                                 </select>
                         </div>
@@ -787,9 +791,59 @@
             document.getElementById('employee').style.borderColor = "red";
         }
     });
+    
+            $(".removeBtn").each(function (index) {
+        $(this).on("click", function () {
+
+            var id = $(this).data('id'); //this line gets value of data-id from delete button
+
+            //  var result = confirm("Are you sure to delete this record?")
+            //  if (result) {
+            //              var data = { "id":id }
+
+            //             $.ajax({
+            //                 url: "/fitout_works/delete_people",
+            //                 type: 'POST',
+            //                 data: {'data': data},
+            //                 dataType: 'json',
+            //                     success: function (id) {
+            //                         location.reload();
+
+            //                 }
+            //             });
+
+            //  }
+            
+ 
+                swal({
+                    title: 'Are you sure to delete this record?',
+                    text: "This action cannot be revert!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+
+                }).then(function () {
+                    var data = { "id":id }
+
+                        $.ajax({
+                            url: "/fitout_works/delete_people",
+                            type: 'POST',
+                            data: {'data': data},
+                            dataType: 'json',
+                                success: function (id) {
+                                    location.reload();
+
+                            }
+                    });
+                })
+        });
+    });
 
      $('#addWork').on("click", function () {
         var work_details = tinymce.get('work_details').getContent();
+        var fitout_work_id = $('#fitout_work_id').val();
         var deadline_date = $('#deadline_date').val();
         var exp_start_date = $('#exp_start_date').val();
 
@@ -797,7 +851,7 @@
             if((work_details != '' )){
                  if((deadline_date != '' )){
                       if((exp_start_date != '' )){
-                        var data = {"work_details": work_details, "deadline_date": deadline_date, "exp_start_date": exp_start_date }
+                        var data = {"work_details": work_details, "fitout_work_id": fitout_work_id, "deadline_date": deadline_date, "exp_start_date": exp_start_date }
 
                             $.ajax({
                                 url: "/fitout_works/add_work",
@@ -918,55 +972,7 @@
         });
 
 
-    $(".removeBtn").each(function (index) {
-        $(this).on("click", function () {
 
-            var id = $(this).data('id'); //this line gets value of data-id from delete button
-
-            /* simple javascript confirmation dialog
-             var result = confirm("Are you sure to delete this record?")
-             if (result) {
-                         var data = { "id":id }
-
-                        $.ajax({
-                            url: "/fitout_works/delete_people",
-                            type: 'POST',
-                            data: {'data': data},
-                            dataType: 'json',
-                                success: function (id) {
-                                    location.reload();
-
-                            }
-                        });
-
-             }
-             */
-
-                swal({
-                    title: 'Are you sure to delete this record?',
-                    text: "This action cannot be revert!",
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-
-                }).then(function () {
-                    var data = { "id":id }
-
-                        $.ajax({
-                            url: "/fitout_works/delete_people",
-                            type: 'POST',
-                            data: {'data': data},
-                            dataType: 'json',
-                                success: function (id) {
-                                    location.reload();
-
-                        }
-                    });
-            })
-        });
-    });
 
 
        $('#saveDrPaper').on("click", function () {
@@ -1100,6 +1106,8 @@
 
         });
 });
+
+
 
 </script>
 <script>

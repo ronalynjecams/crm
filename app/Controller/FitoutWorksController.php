@@ -541,7 +541,14 @@ class FitoutWorksController extends AppController {
             'DeliverySchedule.quotation_id'=>$arr
         ]]);
         
-    	$peoples = $works['FitoutPerson'];
+    	//$peoples = $works['FitoutPerson'];
+    	
+    	 $prr = [];
+    	foreach($works['FitoutPerson'] as $sel_fitout_id){
+    		array_push($prr , $sel_fitout_id['fitout_work_id']);
+    	}
+    	$this->FitoutPerson->recursive=4;
+    	$peoples = $this->FitoutPerson->find('all', ['conditions'=>['FitoutPerson.fitout_work_id'=>$prr]]);
     	
     	
     	// $todo = $works['FitoutTodo'];
@@ -587,17 +594,17 @@ class FitoutWorksController extends AppController {
     	// meanwhile gawin ko muna yung sa crm then after idebug ko kung bakit hindi nagana ang fitout work.then mukang mneed mo magrevise kasi yung queries mo mali?
     	
     	//iadjust mo lang yung recursive para makuha mo yung deep queriesor connected tables pa sa kanya
+        
+        $users = $this->User->find('all');  // add team, list all users
+        $papers = $this->DrPaper->find('all'); // add documents required, list all documents name
+        #$quotations = $this->Quotation->find('all'); //add documents required, list all quotation number
 
-		// $documents = $this->DrPaper->find('all');
-		// $this->DeliveryPaper->recursive = 1;
-		// $docs = $this->DeliveryPaper->find('all');  //pakicondition ito based sa $arr, kasi dapat yung sa selected quotation lang yung lalabas
 		$required_docs = $this->DeliveryPaper->find('all',
         	['conditions'=>['DeliveryPaper.quotation_id'=>$arr]]
         );
         
-        // pr($required_docs);
 
-		$this->set(compact('works', 'delivery_schedules', 'peoples', 'designers', 'selected_quotations', 'required_docs', 'fitout_todos'));
+		$this->set(compact('works', 'delivery_schedules', 'peoples', 'designers', 'selected_quotations', 'required_docs', 'fitout_todos', 'users', 'papers'));
 
     }
     
@@ -653,11 +660,12 @@ class FitoutWorksController extends AppController {
      	$this->autoRender = false;
         header("Content-type:application/json");
         $data = $this->request->data;
-            
+    
         $this->loadModel('FitoutTodo');
         
         $work_details = $data['work_details'];
         $user_id = $this->Auth->user('id');
+        $fitout_work_id = $data['fitout_work_id'];
         $deadline_date = $data['deadline_date'];
         $exp_start_date = $data['exp_start_date'];
 
@@ -672,6 +680,7 @@ class FitoutWorksController extends AppController {
 			$this->FitoutTodo->set(array(
 				'work' => $work_details,
 				'user_id' => $user_id,
+				'fitout_work_id' => $fitout_work_id,
 				'deadline' => $deadline_date,
 				'expected_start' => $exp_start_date
             ));
@@ -758,10 +767,11 @@ class FitoutWorksController extends AppController {
      }
      
      public function delete_people($id = null){
+        
+        $this->loadModel('FitoutPerson');
      	$this->autoRender = false;
         header("Content-type:application/json");
-        $this->loadModel('FitoutPerson');
-        
+
         $deletepeople_TS = $this->FitoutPerson->getDataSource();
         $deletepeople_TS->begin();
         
@@ -779,7 +789,6 @@ class FitoutWorksController extends AppController {
 			}else{
 				$deletepeople_TS->rollback();
 			} 
-	
 		}
 
      }
