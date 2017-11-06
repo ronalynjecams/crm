@@ -44,6 +44,7 @@
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+                <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -70,12 +71,12 @@
                     <tbody>
                         <?php foreach ($bills as $bill){ ?>
                             <tr>
-                                <td><?php echo $bill['Bill']['account_number']; ?></td>
-                                <td><?php echo $bill['Bill']['billing_status']; ?></td>
-                                <td><?php echo $bill['Bill']['jecams_amount']; ?></td>
-                                <td><?php echo $bill['Bill']['payment_type']; ?></td>
-                                <td><?php echo $bill['Bill']['bill_account_id']; ?></td>
-                                <td><?php echo $bill['Bill']['inv_location_id']; ?></td>
+                                <td><?php echo h($bill['Bill']['account_number']); ?></td>
+                                <td><?php echo h($bill['Bill']['billing_status']); ?></td>
+                                <td><?php echo '&#8369; ' . number_format($bill['Bill']['jecams_amount']),2; ?></td>
+                                <td><?php echo h($bill['Bill']['payment_type']); ?></td>
+                                <td><?php echo h($bill['BillAccount']['name']); ?></td>
+                                <td><?php echo h($bill['InvLocation']['name']); ?></td>
                                 <td>
                             <?php 
                                 #if($UserIn['User']['role'] == 'admin_staff'){ if($UserIn['User']['role'] == 'admin_staff'){ 
@@ -91,6 +92,7 @@
                         <?php } ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -141,7 +143,7 @@
                         <?php
                              foreach($billaccounts as $billaccount){
                         ?>
-                        <option value="<?php echo $billaccount['BillAccount']['id']; ?>"><?php echo $billaccount['BillAccount']['name'];  ?></option>
+                        <option value="<?php echo h($billaccount['BillAccount']['id']); ?>"><?php echo h($billaccount['BillAccount']['name']);  ?></option>
                         <?php
                             }
                         ?>
@@ -154,7 +156,7 @@
                         <?php
                              foreach($invs as $inv){
                         ?>
-                        <option value="<?php echo $inv['InvLocation']['id']; ?>"><?php echo $inv['InvLocation']['name']; ?></option>
+                        <option value="<?php echo h($inv['InvLocation']['id']); ?>"><?php echo h($inv['InvLocation']['name']); ?></option>
                         <?php
                             }
                         ?>
@@ -219,7 +221,7 @@
                         <?php
                              foreach($billaccounts as $billaccount){
                         ?>
-                        <option value="<?php echo $billaccount['BillAccount']['id']; ?>"><?php echo $billaccount['BillAccount']['name'];  ?></option>
+                        <option value="<?php echo h($billaccount['BillAccount']['id']); ?>"><?php echo h($billaccount['BillAccount']['name']);  ?></option>
                         <?php
                             }
                         ?>
@@ -232,7 +234,7 @@
                         <?php
                              foreach($invs as $inv){
                         ?>
-                        <option value="<?php echo $inv['InvLocation']['id']; ?>"><?php echo $inv['InvLocation']['name']; ?></option>
+                        <option value="<?php echo h($inv['InvLocation']['id']); ?>"><?php echo h($inv['InvLocation']['name']); ?></option>
                         <?php
                             }
                         ?>

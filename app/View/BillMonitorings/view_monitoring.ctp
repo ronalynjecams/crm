@@ -46,6 +46,7 @@
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+                <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -80,16 +81,25 @@
                     <tbody>
                         <?php foreach($monitorings as $monitoring){ ?>
                             <tr>
-                                <td><?php echo $monitoring['BillMonitoring']['billing_date_from']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['billing_date_to']; ?></td>
-                                <td><?php echo $monitoring['User']['username']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['bill_id']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['bill_amount']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['receipt_reference_num']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['payment_mode']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['paid_by']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['paid']; ?></td>
-                                <td><?php echo $monitoring['BillMonitoring']['receipt_date']; ?></td>
+                                <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['billing_date_from']))); ?></td>
+                                <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['billing_date_to']))); ?></td>
+                                <td><?php echo h($monitoring['User']['first_name'])." ".h($monitoring['User']['last_name']); ?></td>
+                                <td><?php echo h($monitoring['BillMonitoring']['bill_id']); ?></td>
+                                <td><?php echo '&#8369; ' . number_format($monitoring['BillMonitoring']['bill_amount'],2); ?></td>
+                                <td><?php echo h($monitoring['BillMonitoring']['receipt_reference_num']); ?></td>
+                                <td><?php echo h($monitoring['BillMonitoring']['payment_mode']); ?></td>
+                                <td><?php echo h($monitoring['BillMonitoring']['paid_by']); ?></td>
+                                <td>
+                                    <?php 
+                                        if($monitoring['BillMonitoring']['paid'] == 1){
+                                            echo "yes";
+                                        }else{
+                                            echo "no";
+                                        }
+                                        
+                                    ?>
+                                </td>
+                                <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['receipt_date']))); ?></td>
                                 
                                 <td>
                                 <?php 
@@ -118,6 +128,7 @@
                             <?php } ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -156,7 +167,7 @@
                         <?php 
                             foreach($billaccounts as $billaccount){
                         ?>
-                        <option value="<?php echo $billaccount['BillAccount']['id']; ?>"><?php echo $billaccount['BillAccount']['name']; ?></option>
+                        <option value="<?php echo h($billaccount['BillAccount']['id']); ?>"><?php echo h($billaccount['BillAccount']['name']); ?></option>
                         <?php 
                             } 
                         ?>
@@ -226,7 +237,7 @@
                         <?php 
                             foreach($users as $user){
                         ?>
-                        <option value="<?php echo $user['User']['id']; ?>"><?php echo $user['User']['first_name']." ".$user['User']['last_name'];; ?></option>
+                        <option value="<?php echo h($user['User']['id']); ?>"><?php echo h($user['User']['first_name'])." ".h($user['User']['last_name']); ?></option>
                         <?php 
                             } 
                         ?>

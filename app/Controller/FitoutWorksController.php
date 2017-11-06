@@ -556,14 +556,20 @@ class FitoutWorksController extends AppController {
     	$client = $works['Client'];
     	$project_head = $works['User'];
     	$fitout_quotations = $works['FitoutQoute'];
-    	$fitout_todos = $works['FitoutTodo'];
+    	
+    	//$fitout_todos = $works['FitoutTodo'];
+    	
+    	$wrr = [];
+    	foreach($works['FitoutTodo'] as $selected_fitout_work){
+    		array_push($wrr , $selected_fitout_work['fitout_work_id']);
+    	}
+    	
+    	$this->FitoutTodo->recursive=4;
+    	$fitout_todos = $this->FitoutTodo->find('all', 
+    	['conditions'=> ['FitoutTodo.fitout_work_id'=>$wrr] ]
+    	);
+    	
 
-
-    	// foreach($fitout_todos as $fitout_todo){
-    	// 	pr($fitout_todo['FitoutWork']['FitoutTodo']);
-    	// }
-    	// pr($fitout_todo);
-    	 
     	 //carl add ka nga ng data kasi walang laman ang array
     	// pr($designers);//n
     	

@@ -111,9 +111,12 @@ class BillMonitoringsController extends AppController {
 	
 	public function view_monitoring(){
 
-		$monitorings = $this->BillMonitoring->find('all');
 		$this->loadModel('BillAccount');
 		$this->loadModel('User');
+		
+		$this->BillMonitoring->recursive=1;
+		$monitorings = $this->BillMonitoring->find('all');
+
 		$billaccounts = $this->BillAccount->find('all');
 		$users = $this->User->find('all');
 		
