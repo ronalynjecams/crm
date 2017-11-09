@@ -255,8 +255,8 @@ class SupplierProductsController extends AppController {
      	$this->autoRender = false;
         header("Content-type:application/json");
         
-        $deletepeople_TS = $this->SupplierProduct->getDataSource();
-        $deletepeople_TS->begin();
+        $delete_TS = $this->SupplierProduct->getDataSource();
+        $delete_TS->begin();
         
         $data = $this->request->data;
          
@@ -277,10 +277,10 @@ class SupplierProductsController extends AppController {
 			     
 			$del_supplier = $this->SupplierProduct->delete();   
 			if ($del_supplier) {
-				$deletepeople_TS->commit();
+				$delete_TS->commit();
 				echo json_encode($id);
 			}else{
-				$deletepeople_TS->rollback();
+				$delete_TS->rollback();
 			} 
 	        
 		    }else{

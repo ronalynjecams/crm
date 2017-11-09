@@ -298,89 +298,9 @@ class FitoutWorksController extends AppController {
     								'user_id'=>$user_id]);
 
             if ($this->FitoutWork->save()) {
-            	//-----------------------> PSEUDOCODE
-            	// get fitoutquote from db with fitout work id == fitoutworkid
-            	// get if old_quotation_id != 0 
-            		// compare difference of old_quotation from existing quotation
-            		// update
-            	//else
-            		//if new_quotation_id != 0
-            			// compare difference of old_quotation from existing quotation
-            			// update
-            	
-            	//----------------------> IMPLEMENTATION
             	$this->FitoutQoute->recursive = -1;
             	$fitout_quotes = $this->FitoutQoute->find('all', ['conditions'=>['FitoutQoute.fitout_work_id'=>$id]]);
  
-				// $count_fitout_qoutes = count($fitout_quotes);
-				
-				// $DS_FitoutQuote = $this->FitoutQoute->getDataSource();
-				// $DS_FitoutQuote->begin();
-				
-      //      	foreach ($fitout_quotes as $fitout_quote) {
-      //      		if (!empty($data['new_quotation_id'])) {
-      //      			echo json_encode($data['new_quotation_id']);
-						// $count_new_qoutes = count($data['new_quotation_id']);
-            			
-      //      			foreach($data['new_quotation_id'] as $new_quote) {
-      //      				if ($fitout_quote != $new_quote) {
-      //      					if ($count_fitout_qoutes > $count_new_qoutes) {
-      //      						$this->FitoutQoute->create();
-      //      						$this->FitoutQoute->set(['quotation_id'=>$new_quote, 'fitout_work_id'=>$id]);
-      //      						$this->FitoutQoute->save();
-      //      					}
-      //      					else if ($count_fitout_qoutes < $count_new_qoutes) {
-      //      						$this->FitoutQoute->delete($fitout_quote['FitoutQoute']['id']);
-      //      					}
-      //      					else {
-      //      						return json_encode($data);
-      //      						exit;
-      //      					}
-      //      				}
-      //      			}
-      //      		}
-      //      		else if (!empty($data['old_quotation_id'])) {
-      //  				echo json_encode($data['old_quotation_id']);
-						// $count_old_qoutes = count($data['old_quotation_id']);
-        				
-      //  				foreach($data['old_quotation_id'] as $old_quote) {
-      //      				if ($fitout_quote != $old_quote) {
-      //      					if ($count_fitout_qoutes > $count_old_qoutes) {
-	     //       					$this->FitoutQoute->create();
-      //      						$this->FitoutQoute->set(['quotation_id'=>$old_quote, 'fitout_work_id'=>$id]);
-      //      						$this->FitoutQoute->save();
-      //      					}
-      //      					else if ($count_fitout_qoutes < $count_old_qoutes) {
-						// 			$this->FitoutQoute->delete($fitout_quote['FitoutQoute']['id']);
-      //      					}
-      //      					else {
-      //      						return json_encode($data);
-      //      						exit;
-      //      					}
-      //      				}
-      //      			}
-      //  			}
-      //  			else {
-      //  				echo json_encode('Both old and new consists empty array');
-      //  				$DS_FitoutWork->rollback();
-      //  				$this->Session->setFlash('No Quotation was selected. Please try again.');
-      //  				return
-      //  				exit;
-      //  			}
-      //      	}
-            	
-      //      	if ($DS_FitoutQuote->commit()) {
-      //      		$DS_FitoutWork->commit();
-      //      	}
-      //      	else {
-      //      		$DS_FitoutWork->rollback();
-      //      	}
-            	
-            	//----------------------> Replace this code with new process
-            	// get all qoutes with fitoutwork_id
-        		// $this->FitoutQoute->recursive = -1;
-          //  	$fitout_quotes = $this->FitoutQoute->find('all', ['conditions'=>['FitoutQoute.fitout_work_id'=>$id]]);
-        		
     			$DS_FitoutQuote = $this->FitoutQoute->getDataSource();
     			$DS_FitoutQuote->begin();
             	
@@ -388,20 +308,9 @@ class FitoutWorksController extends AppController {
             		$this->FitoutQoute->delete($fitout_quote['FitoutQoute']['id']);
             	}
             	
-            	// save only after confirm_is done or true
-            	// if ($confirm_del) {
         			if (!empty($data['new_quotation_id'])) {
             			echo json_encode($data['new_quotation_id']);
             			
-            			// $confirm_del = '';
-            	
-		            	// foreach($fitout_quotes as $fitout_quote) {
-		            	// 	if ($this->FitoutQoute->delete($fitout_quote['FitoutQoute']['id'])) {
-		            	// 		$confirm_del .= 'true';
-		            	// 	}
-		            	// }
-		            	// echo json_encode($confirm_del);
-		            	// if ($confirm_del) {
 	            			foreach($data['new_quotation_id'] as $new_quote) {
 	    						$this->FitoutQoute->create();
 	    						$this->FitoutQoute->set(['quotation_id'=>$new_quote, 'fitout_work_id'=>$id]);
@@ -414,32 +323,11 @@ class FitoutWorksController extends AppController {
 	            				$DS_FitoutQuote->rollback();
 	            				
 	            			}
-		            	// }
-		            	// else {
-		            	// 	$DS_FitoutQuote->rollback();
-		            	// 	$DS_FitoutWork->rollback();
-		            		
-		            	// 	echo json_encode("Something went wrong with processing qoutes");
-		            	// }
             		}
             		else {
             			if (!empty($data['old_quotation_id'])) {
             				echo json_encode($data['old_quotation_id']);
-            				// $confirm_del = '';
-            	
-		            	// foreach($fitout_quotes as $fitout_quote) {
-		            	// 	if ($this->FitoutQoute->delete($fitout_quote['FitoutQoute']['id'])) {
-		            	// 		$confirm_del .= 'true';
-		            	// 	}
-		            	// }
-		            	// echo json_encode($confirm_del);
-	        				// $ex_qoute_id = [];
-	        				// foreach ($fitout_quotes as $fitout_quote) {
-	        				// 	$ex_qoute_id[] = $fitout_quote['FitoutQoute']['quotation_id'];
-	        				// }
-	        				
-	        				// $old_quote_diff = Set::diff ($data['old_quotation_id'], $ex_qoute_id);
-	        				
+            
 	        				foreach($data['old_quotation_id'] as $old_quote) {
 	        					$this->FitoutQoute->create();
 	    						$this->FitoutQoute->set(['quotation_id'=>$old_quote, 'fitout_work_id'=>$id]);
@@ -464,12 +352,10 @@ class FitoutWorksController extends AppController {
 	        			
 	    			if ($DS_FitoutQuote->commit()) { $DS_FitoutWork->commit(); }
 	    			else { $DS_FitoutWork->rollback(); $DS_FitoutWork->rollback(); }
-            	// }
             }
             $DS_FitoutWork->commit();
             
             return json_encode($data);
-            exit;
         }
     }
 
@@ -493,14 +379,7 @@ class FitoutWorksController extends AppController {
     	$works = $this->FitoutWork->findById($fitout_work_id);
     	
     	//now get all quotation on fitout quote to get all quotations na selected for this fitout work
-    	// $arr =['Quotation.id'];//bat my laman na initialization ?
-    	// foreach($works['FitoutQuote'] as $selected_quotation){
-    	// 	 array_push($arr, $selected_quotation);
-    	// } 
-    	
-    	  //  foreach($works as $work){
-    		 //array_push($arr, $work);
-    		 //} 
+    
     	
     	$arr = [];
     	foreach($works['FitoutQoute'] as $work){

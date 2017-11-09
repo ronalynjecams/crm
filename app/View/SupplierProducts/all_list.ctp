@@ -81,10 +81,10 @@
                                 <td>
                                     <?php
 //                                if($UserIn['User']['role'] == 'supply_head'){ 
-                                        echo '<a class="btn btn-mint btn-icon add-tooltip updateSupplierBtn" data-toggle="tooltip" href="#" data-original-title="Update Suppliers\' Product" data-uid="' . h($product['SupplierProduct']['id']) . '"  data-uspcode="' . h($product['SupplierProduct']['supplier_code']) . '" data-upprice="' .  h($product['SupplierProduct']['supplier_price']) . '" data-upnote="' .  h($product['SupplierProduct']['note']) . '"><i class="fa fa-edit"></i></a> ';
+                                        echo '<a class="btn btn-mint btn-icon add-tooltip updateSupplierBtn" data-toggle="tooltip" href="#" data-original-title="Update Suppliers\' Product" data-uid="' . h($product['SupplierProduct']['id']) . '"  data-uspcode="' . h($product['SupplierProduct']['supplier_code']) . '" data-upprice="' .  h($product['SupplierProduct']['supplier_price']) . '" data-upnote="' .  h($product['SupplierProduct']['note']) . '" data-prop="'.h($prod['property']).'" data-val="'.h($prod['value']).'"><i class="fa fa-edit"></i></a> ';
                                      
                                        
-                                            echo '<a class="btn btn-danger btn-icon add-tooltip removeSupplierBtn" data-toggle="tooltip" href="#" data-original-title="Remove Suppliers\' Product" data-id="' . h($product['SupplierProduct']['id']) . '" data-combiid="'. h($product['ProductCombo']['id']) .'"><i class="fa fa-window-close"></i></a>';
+                                            echo '<a class="btn btn-danger btn-icon add-tooltip removeSupplierBtn" data-toggle="tooltip" href="#" data-original-title="Remove Suppliers\' Product" data-id="' . h($product['SupplierProduct']['id']) . '" data-combiid="'. h($product['ProductCombo']['id']) .'" ><i class="fa fa-window-close"></i></a>';
                                         
 //                                } 
                                     ?>
@@ -152,6 +152,7 @@
                             <div id="product_combo_property_div"><h4 align="center">Product Description</h4> 
                                     <div class="col-sm-6" align="center"><b> Property </b></div>
                                     <div class="col-sm-6" align="center"><b> Value </b></div>  
+                                    
                             </div> 
                         </div> 
                     
@@ -188,34 +189,52 @@
                         
                         <div class="col-sm-6">
                             <div class="form-group">
+
+                                <div><?php echo h($product['ProductCombo']['Product']['name']); ?></div>
                                 <input type="hidden" id="supId" value="<?php echo $this->params['url']['id']; ?>">
                                 <input type="hidden" id="u_id" class="form-control" >
-                                <input type="text" class="form-control" id="u_productcode" value="<?php echo h($product['ProductCombo']['Product']['name']); ?>" disabled>
                             </div> 
                         </div> 
-                        <div class="col-sm-6"> 
-                            <div class="form-group"> 
-                              <input type="text" class="form-control" id="u_productcode" value="<?php echo h($product['ProductCombo']['id']); ?>" disabled>
-                            </div>
-                            </div>
                         
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                
+                                    <?php foreach ($products as $product) { ?>
+                                        <div><?php echo h($product['ProductCombo']['Product']['name'])." "."[".h($product['ProductCombo']['ordering'])."]"; ?></div>
+                                    <?php } ?>
+                               
+                            </div> 
+                        </div>
                         
                         <div class="col-sm-6"> 
                             <div class="form-group">
+                                <label>Suppliers Product Code</label>
                                 <input type="text" class="form-control" placeholder="Suppliers Product Code" id="usupplier_code"/>
                             </div>
                         </div>
                         <div class="col-sm-6"> 
                             <div class="form-group">
+                                <label>Supplier Price</label>
                                 <input type="number" span="any" class="form-control" placeholder="Suppliers Price" id="usupplier_price"/>
                             </div>
                         </div>
                         
                         <div class="col-sm-12"> 
                             <div class="form-group">
+                                <label>Notes</label>
                                 <textarea class="form-control" placeholder="Notes" id="unote"></textarea> 
                             </div>
                         </div>
+                        
+                        <div class="col-sm-12">
+                            <div><h4 align="center">Product Description</h4> 
+                                    <div class="col-sm-6" align="center"><b> Property </b> <p id="uprop"></p> </div>
+                                    <!--<input type="text" id="uprop">-->
+                                    
+                                    <div class="col-sm-6" align="center"><b> Value </b> <p id="uval"></p> </div>  
+                                    <!--<input type="text" id="uval">-->
+                            </div> 
+                        </div> 
                     
                 </div> 
 
@@ -397,6 +416,8 @@
               var scode = $(this).data('uspcode');
               var sprice = $(this).data('upprice');
               var snote = $(this).data('upnote');
+              var prop = $(this).data('prop');
+              var val = $(this).data('val');
               
               
                 $('#u_id').val(id);
@@ -404,6 +425,32 @@
                 $('#usupplier_code').val(scode);
                 $('#usupplier_price').val(sprice);
                 $('#unote').val(snote);
+                
+                $('#uprop').html(prop);
+                $('#uval').html(val);
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 $('#edit-supplier-modal').modal('show');
 
         });
@@ -460,7 +507,7 @@
             /* simple javascript confirmation dialog
              var result = confirm("Are you sure to delete this record?")
              if (result) {
-                         var data = { "id":id }
+                         var data = { "id":id, 'combiid': combiid}
 
                         $.ajax({
                             url: "/fitout_works/delete_people",

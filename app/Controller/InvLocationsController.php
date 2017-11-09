@@ -101,4 +101,58 @@ class InvLocationsController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}
+	
+	
+	public function all_list(){
+		$this->loadModel('InvLocation');
+		
+		$locations = $this->InvLocation->find('all');
+		
+		$this->set(compact('locations'));
+	}
+	
+	public function add_location(){
+		$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+            
+	        $this->loadModel('InvLocation');
+        
+        $location = ucwords($data['location']);
+
+		if($this->request->is('post')){
+			
+			$location_TS = $this->InvLocation->getDataSource();
+			$location_TS->begin();
+			
+			$this->InvLocation->create();
+			$this->InvLocation->set(array(
+				'name' => $location
+            ));
+            
+            $check_duplicates = $this->InvLocation->find('first', array(
+            	'conditions' => array(
+            		'InvLocation.name' => $location
+            		)
+            	));
+
+			if(!$check_duplicates){
+            
+            $save_location = $this->InvLocation->save();
+			if($save_location){
+				$location_TS->commit();
+				echo json_encode($this->request->data); 
+			
+			}else{
+				$location_TS->rollback();
+			}
+			
+			}else{
+				//echo location already exist
+			}
+
+		}
+	}
+	
 }
+
