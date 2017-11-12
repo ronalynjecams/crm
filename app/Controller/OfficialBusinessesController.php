@@ -150,87 +150,62 @@ class OfficialBusinessesController extends AppController {
         header("Content-type:application/json");
         $data = $this->request->data;
         
-        $u_id = $data['uid'];
-        $a_id = $data['aid'];
+        $ob_id = $data['id'];
     	$user_id = $this->Auth->user('id');
     	$datetime = date('Y-m-d H:i:s');
-    	$ustatus = $data['ustatus'];
-        $astatus = $data['astatus'];
         
         $edit_TS = $this->OfficialBusiness->getDataSource();
         $edit_TS->begin();
         
-        if($ustatus == "pending"){
-        	$this->OfficialBusiness->id = $u_id;
-        	$this->OfficialBusiness->set(array(
+        $this->OfficialBusiness->id = $ob_id;
+        
+        $this->OfficialBusiness->set(array(
 				'status' => "approved",
 				'approved_by' => $user_id,
 				'approved_date' => $datetime
-        	));
-        	
-        	$edit_processed = $this->OfficialBusiness->save();
-        	
-        	if($edit_processed){
-            	$edit_TS->commit();
-            	echo json_encode($u_id);
-        	}else{
-            	$edit_TS->rollback();
-        	}
-        	
+        ));
         
-        }else if($astatus == "approved"){
-        	$this->OfficialBusiness->id = $a_id;
-        	$this->OfficialBusiness->set(array(
+        $edit_processed = $this->OfficialBusiness->save();
+        if($edit_processed){
+            $edit_TS->commit();
+            echo json_encode($ob_id);
+        }else{
+            $edit_TS->rollback();
+        }
+        exit;
+	}
+
+	public function approve($id=null){
+		$this->loadModel('OfficialBusiness');
+		$this->loadModel('User');
+		
+		$this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $ob_id = $data['id'];
+    	$user_id = $this->Auth->user('id');
+    	$datetime = date('Y-m-d H:i:s');
+        
+        $edit_TS = $this->OfficialBusiness->getDataSource();
+        $edit_TS->begin();
+        
+        $this->OfficialBusiness->id = $ob_id;
+        
+        $this->OfficialBusiness->set(array(
 				'status' => "hr_approved",
 				'hr_approved_by' => $user_id,
 				'hr_approved_date' => $datetime
-        	));
-        	
-        	$edit_processed = $this->OfficialBusiness->save();
-        	
-        	if($edit_processed){
-            	$edit_TS->commit();
-            	echo json_encode($a_id);
-        	}else{
-            	$edit_TS->rollback();
-        	}
-        	
+        ));
+        
+        $edit_processed = $this->OfficialBusiness->save();
+        if($edit_processed){
+            $edit_TS->commit();
+            echo json_encode($ob_id);
+        }else{
+            $edit_TS->rollback();
         }
         exit;
-       
+        
 	}
-
-	// public function approve($id=null){
-	// 	$this->loadModel('OfficialBusiness');
-	// 	$this->loadModel('User');
-		
-	// 	$this->autoRender = false;
- //       header("Content-type:application/json");
- //       $data = $this->request->data;
-        
- //       $ob_id = $data['id'];
- //   	$user_id = $this->Auth->user('id');
- //   	$datetime = date('Y-m-d H:i:s');
-        
- //       $edit_TS = $this->OfficialBusiness->getDataSource();
- //       $edit_TS->begin();
-        
- //       $this->OfficialBusiness->id = $ob_id;
-        
- //       $this->OfficialBusiness->set(array(
-	// 			'status' => "hr_approved",
-	// 			'hr_approved_by' => $user_id,
-	// 			'hr_approved_date' => $datetime
- //       ));
-        
- //       $edit_processed = $this->OfficialBusiness->save();
- //       if($edit_processed){
- //           $edit_TS->commit();
- //           echo json_encode($ob_id);
- //       }else{
- //           $edit_TS->rollback();
- //       }
- //       exit;
-        
-	// }
 }

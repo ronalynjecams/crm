@@ -72,7 +72,7 @@
                         <tr>
                             <td><?php echo h(date('F d, Y h:i:a', strtotime($all_official_business_list['OfficialBusiness']['created']))); ?></td>
                             <td>
-                            
+                            <?php echo h($all_official_business_list['OfficialBusiness']['User']['first_name'])." ".h($all_official_business_list['OfficialBusiness']['User']['last_name']) ?>
                             </td>
                             <td>
                             <?php
@@ -85,12 +85,12 @@
                                 <?php  
                                     if($all_official_business_list['OfficialBusiness']['status'] == "pending"){
                                 ?>
-                                        <button class="btn btn-sm btn-primary info add-tooltip updateBtn" data-toggle="tooltip"  data-original-title="Update" data-uid="<?php echo h($all_official_business_list['OfficialBusiness']['id']); ?>" data-ustatus="pending"><i class="fa fa-edit"></i>&nbsp;</button>
+                                        <button class="btn btn-sm btn-primary info add-tooltip updateBtn" data-toggle="tooltip"  data-original-title="Update" data-uid="<?php echo h($all_official_business_list['OfficialBusiness']['id']); ?>"><i class="fa fa-edit"></i>&nbsp;</button>
                                         <button class="btn btn-sm btn-danger info add-tooltip rejectBtn" data-toggle="tooltip"  data-original-title="reject" data-rid="<?php echo h($all_official_business_list['OfficialBusiness']['id']); ?>"><i class="fa fa-remove"></i>&nbsp;</button>
                                 <?php   
                                     }else if($all_official_business_list['OfficialBusiness']['status'] == "approved"){
                                 ?>
-                                        <button class="btn btn-sm btn-primary info add-tooltip approveBtn" data-toggle="tooltip"  data-original-title="Approved" data-aid="<?php echo h($all_official_business_list['OfficialBusiness']['id']); ?>" data-astatus="approved"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                                        <button class="btn btn-sm btn-primary info add-tooltip approveBtn" data-toggle="tooltip"  data-original-title="Approved" data-aid="<?php echo h($all_official_business_list['OfficialBusiness']['id']); ?>"><i class="fa fa-check"></i>&nbsp;Approve</button>
                                 <?php 
                                     }else{
                                         echo"Not available";
@@ -157,10 +157,9 @@
 
         $(".updateBtn").each(function (index) {
         $(this).on("click", function () {
-                var uid = $(this).data('uid');
-                var ustatus = $(this).data('ustatus');
+                var id = $(this).data('uid');
 
-                    var data = { "uid":uid, "ustatus": ustatus } 
+                    var data = { "id":id } 
 
                         $.ajax({
                             url: "/OfficialBusinesses/update_status",
@@ -177,13 +176,12 @@
     
     $(".approveBtn").each(function (index) {
         $(this).on("click", function () {
-                var aid = $(this).data('aid');
-                var astatus = $(this).data('astatus');
+                var id = $(this).data('aid');
 
-                    var data = { "aid":aid, "astatus": astatus } 
+                    var data = { "id":id } 
 
                         $.ajax({
-                            url: "/OfficialBusinesses/update_status",
+                            url: "/OfficialBusinesses/approve",
                             type: 'POST',
                             data: {'data': data},
                             dataType: 'json',
