@@ -72,7 +72,10 @@
                                         <button class="btn btn-info btn-icon add-tooltip view_quote" data-toggle="tooltip"  data-original-title="View Quotation?" data-viewquoteid="<?php echo $list['Quotation']['id']; ?>"><i class="fa fa-eye"></i> </button>
                                 
                                     <?php
+                                     echo '<button class="btn btn-primary btn-icon add-tooltip issue_invoice_btn" data-toggle="tooltip"  data-original-title="Issue Advance Invoice?" data-apquoteid="'.$list['Quotation']['id'].'"  >Issue Invoice</button>';
+                                         
                                     }else{
+                                        
                                        //show invoice ref number 
                                     }
                                         ?>
@@ -88,89 +91,51 @@
     </div>  
 
     <!--===================================================--> 
-    <div class="modal fade" id="add-collector" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal fade" id="advance_invoice_modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <!--Modal header-->
-                <input type="hidden" id="collector_schedule_id" />
+                <input type="hidden" id="quota_id" />
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
                         <i class="pci-cross pci-circle"></i>
                     </button>
-                    <h4 class="modal-title">Select Collector</h4>
+                    <h4 class="modal-title">Issue Advance Invoice</h4>
                 </div>
                 <!--Modal body-->
                 <div class="modal-body">
-                    <div class="form-group" id="collector_validation">
-                        <label>List of Collectors <span class="text-danger">*</span></label>
-                        <select class="form-control" id="collector_id" >
-                            <option></option>
-                            <?php foreach ($collectors as $collector) { ?>
-                                <option value="<?php echo $collector['Users']['id']; ?>"><?php echo $collector['Users']['first_name'] . ' ' . $collector['Users']['last_name']; ?></option>
-                            <?php } ?>
-                        </select> 
+                    <div class="row">
+                        <div class="col-sm-6"> 
+                            <div class="form-group ">  
+                                <label class="control-label">Invoice Number</label> 
+                                <input type="text" id="ai_ref_nem" class="form-control">
+                            </div> 
+                        </div>
+                        <div class="col-sm-6"> 
+                            <div class="form-group ">  
+                                <label class="control-label">Invoice Amount</label> 
+                                <input type="number" step="any" id="ai_ref_amount" class="form-control">
+                            </div> 
+                        </div>
+                        <div class="col-sm-12"> 
+                            <div class="form-group ">  
+                                <label class="control-label">Invoice Date</label> 
+                                <input type="date" id="ai_ref_date" class="form-control">
+                            </div> 
+                        </div>
                     </div>
                 </div>
                 <!--Modal footer-->
                 <div class="modal-footer">
                     <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                    <button class="btn btn-primary" id="saveCollectorBtn">Update</button>
+                    <button class="btn btn-primary" id="saveAdvanceInvoiceBtn">Issue</button>
                 </div>
             </div>
         </div>
     </div>
     <!--===================================================-->
     <!--===================================================--> 
-    <div class="modal fade" id="resched-collection" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!--Modal header-->
-                <input type="text" id="cllector_sched_id" />
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <i class="pci-cross pci-circle"></i>
-                    </button>
-                    <h4 class="modal-title">Change Collection Schedule</h4>
-                </div>
-                <!--Modal body-->
-                <div class="modal-body">
-
-                    <div class="col-sm-6">
-                        <div id="delivery_date_div_value">
-                            <label>Date of Collection</label>
-                            <div class="input-group input-append date" id="datePicker-collection">
-                                <input type="text" class="form-control" name="date" readonly id="new_collection_date" />
-                                <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6"> 
-                        <label>Time of Collection</label>  
-
-                        <div class="input-group date">
-                            <input id="new_collection_date_time" type="text" readonly class="form-control">
-                            <span class="input-group-addon"  ><i class="demo-pli-clock"></i></span>
-                        </div>
-                    </div>
-                    <!--                 <div class="form-group" id="collector_validation">
-                                        <label>List of Collectors <span class="text-danger">*</span></label>
-                                        <select class="form-control" id="collector_id" >
-                                            <option></option>
-                    <?php foreach ($collectors as $collector) { ?>
-                                                    <option value="<?php echo $collector['Users']['id']; ?>"><?php echo $collector['Users']['first_name'] . ' ' . $collector['Users']['last_name']; ?></option>
-                    <?php } ?>
-                                    </select> 
-                                </div>-->
-            </div>
-            <!--Modal footer-->
-            <div class="modal-footer">
-                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                <button class="btn btn-primary" id="saveCollectorBtn">Update</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+ 
 
 <script>
     $(document).ready(function () {
@@ -187,104 +152,56 @@
                 window.open("/quotations/view?id=" + qid, '_blank'); 
             });
         });
-    $(".addCollectorBtn").each(function (index) {
+    $(".issue_invoice_btn").each(function (index) {
         $(this).on("click", function () {
-            var id = $(this).data('id');
-            $('#collector_schedule_id').val(id);
-            $('#add-collector').modal('show');
+            var id = $(this).data('apquoteid');
+            $('#quota_id').val(id);
+            $('#advance_invoice_modal').modal('show');
 
         });
     });
+ 
+    $('#saveAdvanceInvoiceBtn').on("click", function () {
+        var quotation_id = $('#quota_id').val();
+        var ai_ref_nem = $('#ai_ref_nem').val();
+        var ai_ref_amount = $('#ai_ref_amount').val();
+        var ai_ref_date = $('#ai_ref_date').val();
 
-
-    $(".addCollection").each(function (index) {
-        $(this).on("click", function () {
-            var id = $(this).data('idaddcollection');
-//            $('#collector_schedule_id').val(id);
-//            $('#add-collector').modal('show');
-            window.location.replace("/collections/collect?id=" + id);
-
-
-        });
-    });
-
-
-    $(".cancelCollectorBtn").each(function (index) {
-        $(this).on("click", function () {
-            var id = $(this).data('idcancel');
-
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this process once cancelled.",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },
-                    function (isConfirm) {
-                        if (isConfirm) {
-
-                            $.ajax({
-                                url: "/collection_schedules/cancelSched",
-                                type: 'POST',
-                                data: {'id': id},
-                                dataType: 'json',
-                                success: function (dd) {
-                                    //redirect to edit of products 
-                                    location.reload();
-//                                        window.location.replace("/job_requests/joupdate?id=" + quotation_id);
-//                                    console.log(dd);
-                                },
-                                error: function (dd) {
-                                }
-                            });
-                        } else {
-                            swal("Cancelled", "", "error");
+        if (ai_ref_nem != "") {
+            if (ai_ref_amount != "") {
+                if (ai_ref_date != "") { 
+                    var data = {
+                        "quotation_id": quotation_id,
+                        "ref_num": ai_ref_nem,
+                        "ref_amount": ai_ref_amount,
+                        "ref_date": ai_ref_date
+                    }
+                    
+                    $.ajax({
+                        url: "/collection_papers/process_advance_invoice",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        success: function (datareturn) {
+                            location.reload(); 
+                            // console.log(datareturn);
                         }
                     });
-
-        });
-    });
-
-
-    $('#saveCollectorBtn').on("click", function () {
-        var collector_id = $('#collector_id').val();
-        var collector_schedule_id = $('#collector_schedule_id').val();
-
-        if ((collector_id != "")) {
-            $("#saveCollectorBtn").prop("disabled", true);
-            var data = {"collector_id": collector_id,
-                "collector_schedule_id": collector_schedule_id,
+                } else {
+                    document.getElementById('ai_ref_date').style.borderColor = "red";
+                } 
+            } else {
+                document.getElementById('ai_ref_amount').style.borderColor = "red";
             }
-//            console.log(data);
-            $.ajax({
-                url: "/collection_schedules/updateCollector",
-                type: 'POST',
-                data: {'data': data},
-                dataType: 'json',
-                success: function (id) {
-                    location.reload();
-                }
-            });
-
         } else {
-            document.getElementById('collector_id').style.borderColor = "red";
+            document.getElementById('ai_ref_nem').style.borderColor = "red";
         }
     });
+    
+    
 
 
-    $(".reschedCollectorBtn").each(function (index) {
-        $(this).on("click", function () {
-            var id = $(this).data('idresched');
-            $('#cllector_sched_id').val(id);
-            $('#resched-collection').modal('show');
-
-        });
-    });
-
+ 
 </script>
 
 

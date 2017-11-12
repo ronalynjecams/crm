@@ -126,7 +126,9 @@
         $('.view_quote').each(function (index) {
             $(this).click(function () {
                 var qid = $(this).data("viewquoteid");
-                window.open("/quotations/view_supply?id=" + qid, '_blank');
+                // window.open("/quotations/view_supply?id=" + qid, '_blank');
+                
+                    window.open("/purchase_orders/quotation_view_supply?id=" + qid, '_blank'); 
             });
         });
     });

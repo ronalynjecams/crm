@@ -45,7 +45,7 @@ class QuotationsController extends AppController {
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
         
-//        pr($quote_data);
+        // pr($quote_data);
 
         $this->loadModel('Client');
         $clients = $this->Client->find('all', array(
@@ -822,6 +822,7 @@ class QuotationsController extends AppController {
                     'Quotation.status' => $quote_status),
                 'order' => 'Quotation.created DESC');
             $this->set('quotations', $this->Quotation->find('all', $options));
+            // pr($this->Quotation->find('all', $options));
         } 
     }
     

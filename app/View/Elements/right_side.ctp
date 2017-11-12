@@ -461,40 +461,72 @@
                                     </span>
                                 </a>
                             </li>       
+                            <!--<li>-->
+                            <!--    <a href="">  -->
+                            <!--        <i class="fa fa-file-pdf-o"></i>-->
+                            <!--        <span class="menu-title">-->
+                            <!--            <strong>Quotation Requests</strong>-->
+                            <!--        </span>-->
+                            <!--        <i class="arrow"></i>-->
+                            <!--    </a> -->
+                            <!--    <ul class="collapse">   -->
+                            <!--        <li><a href="/product_sources/list_view?type=supply&&status=pending&&source=inventory">Pending</a></li>   -->
+                            <!--        <li><a href="/product_sources/list_view?type=supply&&status=released&&source=inventory">Released</a></li>   	-->
+                            <!--    </ul>-->
+                            <!--</li> -->
                             <li>
-                                <a href="">  
-                                    <i class="fa fa-file-pdf-o"></i>
-                                    <span class="menu-title">
-                                        <strong>Quotation Requests</strong>
-                                    </span>
-                                    <i class="arrow"></i>
-                                </a> 
-                                <ul class="collapse">   
-                                    <li><a href="/product_sources/list_view?type=supply&&status=pending&&source=inventory">Pending</a></li>   
-                                    <li><a href="/product_sources/list_view?type=supply&&status=released&&source=inventory">Released</a></li>   	
-                                </ul>
-                            </li> 
-                            <li>
-                                <a href=""> 
-                                    <i class="fa fa-file-powerpoint-o"></i>
-                                    <span class="menu-title">
-                                        <strong>Purchase Orders</strong>
-                                    </span>
-                                    <i class="arrow"></i>
-                                </a> 
-                                <ul class="collapse">  
-                                    <li><a href="/purchase_orders/po?status=ongoing">Pending</a></li>
-                                    <li><a href="/purchase_orders/po?status=ongoing">Received</a></li>
-                                </ul>
-                            </li> 
-                            <li>
-                                <a href="/prod_inv_locations/"> 
+                                <a href="/inv_locations/all_list"> 
                                     <i class="fa fa-dropbox"></i>
                                     <span class="menu-title">
-                                        <strong>Inventory</strong>
+                                        <strong>Inventory Locations</strong>
                                     </span>
                                 </a>
                             </li>  
+                            <!--<li>-->
+                            <!--    <a href=""> -->
+                            <!--        <i class="fa fa-file-powerpoint-o"></i>-->
+                            <!--        <span class="menu-title">-->
+                            <!--            <strong>Inventory Job Order</strong>-->
+                            <!--        </span>-->
+                            <!--        <i class="arrow"></i>-->
+                            <!--    </a> -->
+                            <!--    <li>-->
+                            <!--        <a href="#">Third Level<i class="arrow"></i></a> -->
+                            <!--        <ul class="collapse">-->
+                            <!--            <li><a href="#">Third Level Item</a></li>-->
+                            <!--            <li><a href="#">Third Level Item</a></li>-->
+                            <!--        </ul>-->
+                            <!--    </li>-->
+                            <!--</li> -->
+                             <li>
+                                        <a href="#">
+                                            <i class="demo-psi-tactic"></i>
+                                            <span class="menu-title">Inventory Job Orders</span>
+                                            <i class="arrow"></i>
+                                        </a>
+
+                                        <!--Submenu-->
+                                        <ul class="collapse">  
+                                            <li>
+                                                <a href="#">Receive<i class="arrow"></i></a> 
+                                                <!--Submenu-->
+                                                <ul class="collapse">
+                                                    <li><a href="/inventory_job_orders/all_list?mode=receive&&status=newest">Pending</a></li> 
+                                                    <li><a href="/inventory_job_orders/all_list?mode=receive&&status=partial">Partial</a></li> 
+                                                    <li><a href="/inventory_job_orders/all_list?mode=receive&&status=accomplished">Accomplished</a></li> 
+                                                </ul>
+                                            </li> 
+                                            <li>
+                                                <a href="#">Release<i class="arrow"></i></a> 
+                                                <!--Submenu-->
+                                                <ul class="collapse">
+                                                    <li><a href="/inventory_job_orders/all_list?mode=release&&status=newest">Pending</a></li> 
+                                                    <li><a href="/inventory_job_orders/all_list?mode=release&&status=partial">Partial</a></li> 
+                                                    <li><a href="/inventory_job_orders/all_list?mode=release&&status=accomplished">Accomplished</a></li> 
+                                                </ul>
+                                            </li> 
+                                        </ul>
+                                    </li>
 
                         <?php } ?>
                         <!-- warehouse_head -->
@@ -752,6 +784,48 @@
                                     <li><a href="/quotations/proprietor?status=approved">Approved</a></li>
                                     <li><a href="/quotations/proprietor?status=processed">Processed</a></li>
 
+                                </ul>
+                            </li> 
+                            <li>
+                                <a href="">  
+                                    <i class="fa fa-file-pdf-o"></i>
+                                    <span class="menu-title">
+                                        <strong>Collection Requests</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">   
+                                    <li><a href="/collection_schedules/list_view?status=today">Collection For Today</a></li>   
+                                    <li><a href="/collection_schedules/list_view?status=for_collection">For Collection</a></li>   
+                                    <li><a href="/collection_schedules/list_view?status=collected">Collected</a></li>   	
+                                </ul>
+                            </li> 
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Collections</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/collections/accounting?status=pending">Pending</a></li>
+                                    <li><a href="/collections/accounting?status=for_collection">For Collection</a></li>
+                                    <li><a href="/collections/accounting?status=paid">Fully Collected</a></li> 
+
+                                </ul>
+                            </li> 
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>For Advance Invoice</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/collection_papers/advance_invoice?status=pending">Pending</a></li>
+                                    <li><a href="/collection_papers/advance_invoice?status=served">Served</a></li>
                                 </ul>
                             </li> 
                         <?php } ?>

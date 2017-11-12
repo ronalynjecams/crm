@@ -211,8 +211,17 @@ class InventoryProductsController extends AppController {
         $quantity_chop = $data1['quantity_chop'];
         $min_stock_level = $data1['min_stock_level'];
         
+        $check_duplicates = $this->InventoryProduct->find('first', array(
+            	'conditions' => array(
+            		'InventoryProduct.product_combo_id' => $selected_product_combo,
+            		'InventoryProduct.inv_location_id' => $inv_location_id
+            		)
+         ));
+        
         if($this->request->is('post')){
 			
+			if(!$check_duplicates){
+				
 			$product_TS = $this->InventoryProduct->getDataSource();
 			$product_TS->begin();
 			
@@ -236,11 +245,14 @@ class InventoryProductsController extends AppController {
 			}else{
 				$product_TS->rollback();
 			}
+			
+			}else{
+				//echo record exist
+			}
 
 		}
 		
-	}
-    //codes as of 11-06-2017
+	} 
 
     public function get_inventory_products() {
         $this->autoRender = false;
@@ -261,21 +273,37 @@ class InventoryProductsController extends AppController {
             $this->loadModel('ProductCombo');
             $prods = $this->ProductCombo->find('all',[
                 'conditions'=>['ProductCombo.id'=>$arr],
-                'fields'=>['Distinct(Product.id)']
+                // 'fields'=>['Distinct(Product.id)']
+                'fields' => ['DISTINCT Product.id, Product.name','ProductCombo.id','ProductCombo.ordering']
             ]);
             
-            $arr_product = [];
-            $this->loadModel('Product');
-            $prds = $this->Product->find('all',[
-                'conditions'=>['Product.id'=>1]]);
+            // $arr_product = [];
+            // $this->loadModel('Product');
+            // $prds = $this->Product->find('all',[
+            //     'conditions'=>['Product.id'=>1]]);
             
-            return json_encode($prds);
-            
-            
+            return json_encode($prods);
             
             exit;
         }
     }
+    public function get_inventory_product_count() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $prod_combo_id = $this->request->query['id']; 
+            $this->InventoryProduct->recursive = -1;
+            $inv_products = $this->InventoryProduct->find('first', [
+                'conditions' => ['InventoryProduct.product_combo_id' => $prod_combo_id] ,
+                'fields' => ['InventoryProduct.qty']
+            ]);
+             
+            return json_encode(array('inv_qty'=>array($inv_products['InventoryProduct']['qty'])));
+            
+            exit;
+        }
+    }
+    
 
 	
 }

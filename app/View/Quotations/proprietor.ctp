@@ -46,7 +46,7 @@
                                 </th> 
                             <th align="center">Type</th> 
                             <th align="center">Client</th>
-                            <th align="center">Contract Amount</th> 
+                            <th align="center">Contract Amount [Collection Status]</th> 
                             <th align="center">Job Request</th> 
                             <th align="center"> </th> 
                         </tr>
@@ -83,12 +83,36 @@
                                 <td>
                                     <?php
                                     echo $pending_quotation['Client']['name'];
-                                    echo '<br/><small>[' . $pending_quotation['Quotation']['quote_number'] . ']</small>';
+                                    echo ' <small>[' . $pending_quotation['Quotation']['quote_number'] . ']</small>';
                                     ?> 
                                 </td> 
-                                <td align="right">
+                                <td >
                                     <?php
                                     echo '&#8369; ' . number_format($pending_quotation['Quotation']['grand_total'], 2);
+                                    $total_collection = 0;
+                                    foreach ($pending_quotation['Collection'] as $collection) {
+                                        
+                                        if ($collection['status'] == 'verified') {
+                                            $payment = $collection['amount_paid'] + $collection['with_held'] + $collection['other_amount'];
+                                            $total_collection = $total_collection + $payment;
+                                        }
+                                    }
+                                        // echo $total_collection;
+                                        // if ($total_collection != 0) {
+                                        //     echo '<span class="text-success"> <small> [ <b> Fully Paid </b> ] </small></span>';
+                                        // }
+
+                                        $balance = $pending_quotation['Quotation']['grand_total'] - $total_collection;
+                                        if($balance>=1){
+                                            if($balance == $pending_quotation['Quotation']['grand_total']){
+                                                echo '<span class="text-danger"> <small> [ <b> Unsettled </b> ] </small></span>';
+                                            }else{
+                                                echo '<span class="text-danger"><small> [ <b>Balance: </b>  &#8369; ' . number_format($balance, 2).'] </small></span>';
+                                            }
+                                        }else{
+                                             echo '<span class="text-success"> <small> [ <b> Fully Paid </b> ] </small></span>';
+                                        }
+                                    // echo '&#8369; ' . number_format($pending_quotation['Quotation']['grand_total'], 2);
                                     ?>
                                 </td> 
                                 <td>

@@ -120,5 +120,86 @@ class CollectionPapersController extends AppController {
             ]]);
         }
         $this->set(compact('quotations'));
+        // pr($quotations);
+    }
+    
+    public function process_advance_invoice() {
+
+        $this->autoRender = false;
+        $this->response->type('json');
+        $this->loadModel('Collection');
+        $this->loadModel('Quotation');
+        $data = $this->request->data;
+        $quotation_id = $data['quotation_id'];
+        $ref_num = $data['ref_num'];
+        $ref_amount = $data['ref_amount'];
+        $ref_date = $data['ref_date'];
+        
+        $dateToday = date("Y-m-d H:i:s");
+        
+        
+
+        $cols = $this->Collection->getDataSource();
+        $cols->begin();
+        
+        $this->Collection->create();
+        $this->Collection->set(array(
+            'quotation_id' => $quotation_id,
+            'user_id' => $this->Auth->user('id'),
+            'payment_mode' => 'documents',
+            'bank_id' => 0,
+            'amount_paid' => 0,
+            'with_held' => 0,
+            'other_amount' => 0,
+            'check_number' => 0,
+            'check_date' => NULL,
+            'type' => 'none',
+            'status' => 'verified',
+        ));
+        if ($this->Collection->save()) {
+        	
+            $cols->commit();
+            $collection_id = $this->Collection->getLastInsertID();  
+
+    		$colpapers = $this->CollectionPaper->getDataSource();
+                $this->CollectionPaper->create();
+                $this->CollectionPaper->set(array(
+                    'ref_number' => $ref_num,
+                    'ref_date' => $ref_date,
+                    'amount' => $ref_amount,
+                    'accounting_paper_id' => 6,
+                    'status' => 'onhand',
+                    'quotation_id' => $quotation_id,
+                    'user_id' => $this->Auth->user('id'),
+                    'collection_id' => $collection_id,
+                ));
+                if($this->CollectionPaper->save()){
+            		$colpapers->commit();
+    				$quotats = $this->CollectionPaper->getDataSource();
+            		$collection_paper_id = $this->CollectionPaper->getLastInsertID();  
+                	$this->Quotation->id=$quotation_id;
+                	$this->Quotation->set(array(
+                		'collection_paper_id' => $collection_paper_id
+                		));
+                	if($this->Quotation->save()){
+            			$quotats->commit();
+            			return (json_encode('ok'));
+                	}else{
+            			return (json_encode('notok'));
+		            	$cols->rollback();
+	            		$colpapers->rollback();
+            			$quotats->rollback(); 
+                	} 
+                }else{ 
+		            $cols->rollback();
+	            	$colpapers->rollback();
+                }
+                
+        } else {
+        	
+            $cols->rollback();
+        }
+
+        
     }
 }

@@ -96,19 +96,41 @@
                                             </div> 
                                         </div>
                                     <?php } ?>
+                                    <?php if ($userRole == 'sales_executive' || $userRole == 'proprietor' || $userRole == 'collection_officer'  || $userRole == 'accounting_head' || $userRole == 'sales_manager') { ?>
+                                     <div class="row">
+                                            <div class="col-sm-6">
+                                            <label class="control-label"><b>Team:</b></label>
+                                             <?php echo ucwords($quote_data['Team']['display_name']); ?>
+                                            </div>
+                                        <?php if(!is_null($quote_data['Quotation']['vat_type'])){ ?>
+                                            <div class="col-sm-6">
+                                            <label class="control-label"><b>Vat Type:</b></label>
+                                             <?php echo $quote_data['Quotation']['vat_type']; ?>
+                                            </div>
+                                        <?php } ?>
+                                        <?php if(!is_null($quote_data['QuotationTerm']['name'])){ ?>
+                                            <div class="col-sm-12">
+                                            <label class="control-label"><b>Payment Term:</b></label>
+                                             <?php echo $quote_data['QuotationTerm']['name']; ?>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <?php } ?>
+                                    
+                                    
                                     <div class="row">
                                         <div class="col-sm-12"  > <br/><b>Client </b> </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-4"> 
+                                        <div class="col-sm-12"> 
                                             <label class="control-label"><b>Contact Person: </b> </label>
                                             <?php echo $quote_data['Client']['contact_person']; ?>
                                         </div> 
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-6">
                                             <label class="control-label"><b>Contact Number: </b> </label>
                                             <?php echo $quote_data['Client']['contact_number']; ?>
                                         </div>
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-6">
                                             <label class="control-label"><b>Email Address:  </b> </label>
                                             <?php echo $quote_data['Client']['email']; ?>
                                         </div> 
@@ -278,8 +300,11 @@
                                     if ($quote_data['Quotation']['status'] != 'pending') {
 
                                         foreach ($collections as $collection) {
-                                            $payment = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'];
+                                            
+                                                if ($collection['Collection']['status'] == 'verified') {
+                                            $payment = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'] + $collection['Collection']['other_amount'];
                                             $total_collection = $total_collection + $payment;
+                                                }
                                         }
                                         if ($total_collection != 0) {
                                             echo '<br/><br/><span class="text-success"><b>Total Amount Paid: </b> <br/>&#8369; ' . number_format($total_collection, 2).'</span>';

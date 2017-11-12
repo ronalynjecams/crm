@@ -55,7 +55,13 @@
                             <div class="col-sm-12"> 
                                 <div class="form-group ">
                                     <label class="control-label">With Held Amount</label>  
-                                    <input type="number" span="any" id="with_held" class="form-control">
+                                    <input type="number" span="any" id="with_held" class="form-control" value="0">
+                                </div> 
+                            </div> 
+                            <div class="col-sm-12"> 
+                                <div class="form-group ">
+                                    <label class="control-label">Other Amount</label>  
+                                    <input type="number" span="any" id="other_amount" class="form-control" value="0">
                                 </div> 
                             </div> 
                         </div>   
@@ -112,7 +118,7 @@
                                             <input type="number" span="any" id="amount_paper" class="form-control">
                                         </div> 
                                     </div> 
-                                </div> 
+                                </div>  
                                 <div class="document_data_div_ref">
                                     <div class="col-sm-12"> 
                                         <div class="form-group ">  
@@ -222,6 +228,7 @@
                                     <th>Date Created</th>
                                     <th>Collected Amount</th>
                                     <th>With Held Amount</th>
+                                    <th>Other Amount</th>
                                     <th>Bank</th>
                                     <th>Check Number</th>
                                     <th>Check Date</th>
@@ -250,6 +257,15 @@
                                                 <?php
                                                 if ($collection['Collection']['with_held'] != 0) {
                                                     echo '&#8369; ' . number_format($collection['Collection']['with_held'], 2);
+                                                } else {
+                                                    echo '-';
+                                                }
+                                                ?>  
+                                            </td>
+                                            <td align="right">
+                                                <?php
+                                                if ($collection['Collection']['other_amount'] != 0) {
+                                                    echo '&#8369; ' . number_format($collection['Collection']['other_amount'], 2);
                                                 } else {
                                                     echo '-';
                                                 }
@@ -286,7 +302,7 @@
                                             <td>
                                                 <?php
                                                 if ($collection['Collection']['status'] == 'verified') {
-                                                    $total = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'];
+                                                    $total = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'] + $collection['Collection']['other_amount'];
                                                     $grand_total = $grand_total + $total;
                                                     echo '<p class="text-success">Verified</p>';
 //                                                    if ($collection['Collection']['type']
@@ -311,7 +327,7 @@
                                 ?>
                                 <tr>
                                     <td><b>Grand Total:</b></td> 
-                                    <td colspan="2" align="right"><b><?php echo '&#8369; ' . number_format($grand_total); ?></b></td>
+                                    <td colspan="3" align="right"><b><?php echo '&#8369; ' . number_format($grand_total); ?></b></td>
                                     <td colspan="4"></td>
                                 </tr>
                             </table> 
@@ -487,6 +503,7 @@
         var payment_mode = $("#payment_mode").val();
         var amount_paid = $("#amount_paid").val();
         var with_held = $("#with_held").val();
+        var other_amount = $("#other_amount").val();
         var bank_id = $("#bank_id").val();
         var check_number = $("#check_number").val();
         var check_date = $("#check_date").val();
@@ -506,6 +523,7 @@
             "payment_mode": payment_mode,
             "amount_paid": amount_paid,
             "with_held": with_held,
+            "other_amount": other_amount,
             "bank_id": bank_id,
             "check_number": check_number,
             "check_date": check_date,
@@ -523,9 +541,12 @@
 
         if (payment_mode == 'cash') {
             if (amount_paid != "") {
-                if (with_held != "") {
-                    ///process here
-                    approve_quotation(data);
+                if (with_held != "") { 
+                    if (other_amount != "") { 
+                        approve_quotation(data);
+                    } else {
+                        document.getElementById('other_amount').style.borderColor = "red";
+                    }
                 } else {
                     document.getElementById('with_held').style.borderColor = "red";
                 }
@@ -537,8 +558,11 @@
             if (amount_paid != "") {
                 if (with_held != "") {
                     if (bank_id != "") {
-                        ///process here
-                        approve_quotation(data);
+                        if (other_amount != "") { 
+                            approve_quotation(data);
+                        } else {
+                            document.getElementById('other_amount').style.borderColor = "red";
+                        }
                     } else {
                         document.getElementById('bank_id').style.borderColor = "red";
                     }
@@ -556,7 +580,13 @@
                         if (check_number != "") {
                             if (check_date != "") {
                                 ///process here
-                                approve_quotation(data);
+                                // approve_quotation(data);
+                                
+                                if (other_amount != "") { 
+                                    approve_quotation(data);
+                                } else {
+                                    document.getElementById('other_amount').style.borderColor = "red";
+                                }
                             } else {
                                 document.getElementById('check_date').style.borderColor = "red";
                             }

@@ -63,7 +63,7 @@
                             <th>Quantity</th>
                             <th>Quantity for repair</th>
                             <th>Quantity chopped</th>
-                            <th>Min stock level</th>
+                            <th>Minimum stock level</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -74,7 +74,7 @@
                             <th>Quantity</th>
                             <th>Quantity for repair</th>
                             <th>Quantity chopped</th>
-                            <th>Min stock level</th>
+                            <th>Minimum stock level</th>
                             <th>Actions</th>
                         </tr>
                     </tfoot>
@@ -156,7 +156,7 @@
                         <select class="form-control" id="product">
                             <option value="0">Please select a product name</option>
                             <?php foreach($lists_products as $lists_product){ ?>
-                                    <option value="<?php echo h($lists_product['Product']['id']); ?>"><?php echo h($lists_product['Product']['name']); ?></option>
+                                    <option value="<?php echo $lists_product['Product']['id']; ?>"><?php echo $lists_product['Product']['name']; ?></option>
                             <?php } ?>
                             ?>
                         </select>
@@ -184,7 +184,7 @@
                     </div>
                      <div class="row">
                          <div class="col-sm-12">
-                         <label>Min stock level</label>
+                         <label>Minimum stock level</label>
                              <input type="number" class="form-control" id="min_stock_level">
                          </div>
                      </div>
@@ -282,6 +282,13 @@
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
             "stateSave": true
+        });
+        
+
+        $("#product").select2({
+            placeholder: "Select Product",
+            width: '100%',
+            allowClear: false
         });
 
 
@@ -388,9 +395,6 @@
         if((product != 0)){
             if((selected_product_combo != 0)){
                 if((quantity != 0)){
-                    if((quantity_repair != 0)){
-                        if((quantity_chop != 0)){
-                            if((min_stock_level != 0)){
                                 
                                  var data = {"inv_location_id": inv_location_id, "selected_product_combo": selected_product_combo, "quantity": quantity, "quantity_repair": quantity_repair, "quantity_chop": quantity_chop, "min_stock_level": min_stock_level }
                                  
@@ -404,21 +408,9 @@
 
                                 },
                                 error: function() {
-                                    swal({title:'Something went wrong', text:'Error!', type:'error', timer:'2000'})
+                                    swal({title:'Record already exist', text:'duplicate record', type:'warning', timer:'2000'})
                                 }
                             });
-
-        } else {
-            document.getElementById('min_stock_level').style.borderColor = "red";
-        }
-        
-        } else {
-            document.getElementById('quantity_chop').style.borderColor = "red";
-        }
-        
-        } else {
-            document.getElementById('quantity_repair').style.borderColor = "red";
-        }
         
         } else {
             document.getElementById('quantity').style.borderColor = "red";

@@ -195,6 +195,8 @@ class CollectionsController extends AppController {
         $amount_paid = $data['amount_paid'];
         $payment_mode = $data['payment_mode'];
         $with_held = $data['with_held'];
+        $other_amount = $data['other_amount'];
+        $other_amount = $data['other_amount'];
         $bank_id = $data['bank_id'];
         $check_number = $data['check_number'];
         $check_date = $data['check_date'];
@@ -212,10 +214,11 @@ class CollectionsController extends AppController {
             $bank_id = 0;
             $amount_paid = $data['amount_paid'];
             $with_held = $data['with_held'];
+            $other_amount = $data['other_amount'];
             $check_number = 0;
             $check_date = NULL;
 
-            $payment = $amount_paid + $with_held + $TotalPaidAmount;
+            $payment = $amount_paid + $with_held + $other_amount + $TotalPaidAmount;
             $half = $grand_total / 2;
 
             if ($payment == $half) {
@@ -231,10 +234,11 @@ class CollectionsController extends AppController {
             $bank_id = $data['bank_id'];
             $amount_paid = $data['amount_paid'];
             $with_held = $data['with_held'];
+            $other_amount = $data['other_amount'];
             $check_number = $data['check_number'];
             $check_date = $data['check_date'];
 
-            $payment = $amount_paid + $with_held + $TotalPaidAmount;
+            $payment = $amount_paid + $with_held + $other_amount + $TotalPaidAmount;
             $half = $grand_total / 2;
 
             if ($payment == $half) {
@@ -250,10 +254,11 @@ class CollectionsController extends AppController {
             $amount_paid = $data['amount_paid'];
             $bank_id = $data['bank_id'];
             $with_held = $data['with_held'];
+            $other_amount = $data['other_amount'];
             $check_number = 0;
             $check_date = NULL;
 
-            $payment = $amount_paid + $with_held + $TotalPaidAmount;
+            $payment = $amount_paid + $with_held + $other_amount + $TotalPaidAmount;
             $half = $grand_total / 2;
 
             if ($payment == $half) {
@@ -301,6 +306,7 @@ class CollectionsController extends AppController {
             'bank_id' => $bank_id,
             'amount_paid' => $amount_paid,
             'with_held' => $with_held,
+            'other_amount' => $other_amount,
             'check_number' => $check_number,
             'check_date' => $check_date,
             'type' => $type,
