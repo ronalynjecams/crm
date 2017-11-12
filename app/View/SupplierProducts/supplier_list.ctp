@@ -34,6 +34,7 @@
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+                <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -73,6 +74,7 @@
                         <?php } ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

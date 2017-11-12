@@ -150,9 +150,7 @@
                     <input type="time" id="expected_start_time" class="form-control">
 
                 </div>
-
             </div>
-
         </div>
     </div>
 

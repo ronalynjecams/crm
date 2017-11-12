@@ -10,7 +10,6 @@
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
 
-
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
@@ -36,6 +35,7 @@
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+                <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -97,6 +97,7 @@
                         <?php } ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -118,20 +119,20 @@
                     <input type="hidden" id="sup_pid"/>    
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label class="control-label" id="labelSupplier">Select Supplier</label> 
-                            <select id="selected_supplier" class="form-control" style="width: 100%;"> 
-                                <option>Select Supplier</option>
-                            </select>
-                        </div>
-                    </div> 
-                    <div class="col-sm-6">
-                        <div class="form-group">
                             <label class="control-label" id="labelSupplier">Select Product Supplier</label> 
                             <select id="selected_product_supplier" class="form-control" style="width: 100%;"> 
                                 <option>Select Product Supplier</option>
                             </select>
                         </div>
-                    </div> 
+                    </div>  
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Select Supplier</label> 
+                            <select id="selected_supplier" class="form-control" style="width: 100%;"> 
+                                <option>Select Supplier</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="col-sm-12">
                         <div id="product_supplier_properties_div">
                             <h4 align="center">Available product</h4>

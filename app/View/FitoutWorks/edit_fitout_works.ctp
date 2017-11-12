@@ -37,7 +37,6 @@
             <div class="panel-body">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <input type="hidden" id="status" value="<?php echo $fitout_work_object['FitoutWork']['status']; ?>" readonly />
                         <input type="hidden" id="fitout_work_id" value="<?php echo $fitout_work_object['FitoutWork']['id']; ?>" readonly />
                         <br/>
                         
@@ -195,7 +194,7 @@
                                     data: {'data': data},
                                     dataType: 'json',
                                     success: function (id) {
-                                        // window.location = "/fitout_works/project?status="+status;
+                                        window.location = "/fitout_works/project?status="+status;
                                     },
                                     erorr: function (id) {
                                         alert('error!');
@@ -218,17 +217,9 @@
             } else {
                 document.getElementById('client_id').style.borderColor = "red";
             }
-        });
-        
+        });           
+ 
         //---- this section is required in client and quotation selection ----/
-         $('#deadline_date').on('change', function (e) {
-            var value = $("#deadline_date").val();
-        });
-        
-        // expected_start
-        $('#expected_start').on('change', function (e) {
-            var value = $("#expected_start").val();
-        });
         
         // client
         $("#client_id").change(function () {
@@ -254,7 +245,7 @@
                 }
             });
         });
-    })
+    });
 </script>
 
 <script> 

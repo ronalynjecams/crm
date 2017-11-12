@@ -102,6 +102,19 @@ class FitoutWork extends AppModel {
 			'finderQuery' => '',
 			'counterQuery' => ''
 		),
+		'FitoutTodo' => array(
+			'className' => 'FitoutTodo',
+			'foreignKey' => 'fitout_work_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		),
 		'FitoutQoute' => array(
 			'className' => 'FitoutQoute',
 			'foreignKey' => 'fitout_work_id',

@@ -132,22 +132,12 @@ class ProductSourcesController extends AppController {
                 'ProductSource.source' => $selected_inventory,
 
             ],
-                'order'=>'ProductSource.created ASC',
-                'joins' => array( 
-                    array( 
-                        'table' => 'delivery_schedules',
-                        'alias' => 'DeliverySchedule',
-                        'type' => 'LEFT',
-                        'conditions' => array(
-                            'DeliverySchedule.quotation_id = Quotation.id'
-                        )
-                    )
-                )
+                'order'=>'ProductSource.created ASC'
                 
 
                 ]);
 
-//            pr($requests); exit;
+            // pr($requests); exit;
 
             $this->loadModel('User');
 

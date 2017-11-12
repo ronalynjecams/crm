@@ -77,6 +77,7 @@
 	<div class="col-md-12">
 	<h3><?php echo __('Related Collection Papers'); ?></h3>
 	<?php if (!empty($accountingPaper['CollectionPaper'])): ?>
+	<div class="table-responsive">
 	<table cellpadding = "0" cellspacing = "0" class="table table-striped">
 	<thead>
 	<tr>
@@ -111,6 +112,7 @@
 	<?php endforeach; ?>
 	</tbody>
 	</table>
+	</div>
 <?php endif; ?>
 
 	<div class="actions">

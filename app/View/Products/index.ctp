@@ -1,6 +1,3 @@
-<!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
@@ -10,6 +7,7 @@
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
+<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
 <script src="../plugins/select2/js/select2.min.js"></script>
 <script src="../js/erp_js/erp_scripts.js"></script>
 
@@ -18,29 +16,8 @@
 <div id="content-container">
 	<div class="products index">
 		<div id="page-title">
-		    <h1 class="page-header text-overflow">Fitout Work Projects</h1>
+		    <h1 class="page-header text-overflow">List of Products</h1>
 		</div>
-
-	<!--<div class="row">-->
-
-		<!--<div class="col-md-3">-->
-		<!--	<div class="actions">-->
-		<!--		<div class="panel panel-default">-->
-		<!--			<div class="panel-heading">Actions</div>-->
-		<!--				<div class="panel-body">-->
-		<!--					<ul class="nav nav-pills nav-stacked">-->
-		<!--						<li><?php //echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Product'), array('action' => 'add'), array('escape' => false)); ?></li>-->
-		<!--						<li><?php //echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Sub Categories'), array('controller' => 'sub_categories', 'action' => 'index'), array('escape' => false)); ?> </li>-->
-		<!--<li><?php //echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Sub Category'), array('controller' => 'sub_categories', 'action' => 'add'), array('escape' => false)); ?> </li>-->
-		<!--<li><?php //echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Product Properties'), array('controller' => 'product_properties', 'action' => 'index'), array('escape' => false)); ?> </li>-->
-		<!--<li><?php //echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Product Property'), array('controller' => 'product_properties', 'action' => 'add'), array('escape' => false)); ?> </li>-->
-		<!--					</ul>-->
-		<!--				</div><!-- end body -->
-		<!--		</div><!-- end panel -->
-		<!--	</div><!-- end actions -->
-		<!--</div><!-- end col md 3 -->
-
-		<!--<div class="col-md-9">-->
 		
 		 <div id="page-content">
 	        <!-- Basic Data Tables -->
@@ -58,6 +35,7 @@
 	                </h3>
 	            </div>
 	            <div class="panel-body">
+	            	<div class="table-responsive">
 					<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
 						<thead>
 							<tr>
@@ -66,7 +44,7 @@
 								<th><?php echo $this->Paginator->sort('image'); ?></th>
 								<th><?php echo $this->Paginator->sort('sub_category_id'); ?></th>
 								<th><?php echo $this->Paginator->sort('other_info'); ?></th>
-								<th class="actions"></th>
+								<th class="actions">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -79,15 +57,19 @@
 					<?php echo $this->Html->link($product['SubCategory']['name'], array('controller' => 'sub_categories', 'action' => 'view', $product['SubCategory']['id'])); ?>
 				</td>
 								<td><?php echo h($product['Product']['other_info']); ?>&nbsp;</td>
-								<td class="actions">
-									<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $product['Product']['id']), array('escape' => false)); ?>
-									<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $product['Product']['id']), array('escape' => false)); ?>
-									<?php echo $this->Form->postLink('<span class="glyphicon glyphicon-remove"></span>', array('action' => 'delete', $product['Product']['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $product['Product']['id'])); ?>
+								<td class="actions" align="center">
+									<a class="btn btn-sm btn-info"
+										data-toggle="tooltip"
+										data-placement="top" title="Product Combo"
+										href="/product_combos/view?id=<?php echo $product['Product']['id']; ?>">
+										<span class="fa fa-book"></span>
+									</a>
 								</td>
 							</tr>
 						<?php endforeach; ?>
 						</tbody>
 					</table>
+					</div>
 				</div>
 		<!--</div> <!-- end col md 9 -->
 	<!--</div><!-- end row -->
@@ -97,6 +79,7 @@
 <!---JAVASCRIPT FUNCTIONS--->
 <script>
     $(document).ready(function () {
+    	$('[data-toggle="tooltip"]').tooltip();
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],

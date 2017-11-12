@@ -751,7 +751,7 @@ class QuotationsController extends AppController {
 //
 //        $qprod = $this->QuotationProduct->findById(10);
 //        pr($qprod);
-        error_reporting(0);
+        // error_reporting(0);
         $id = $this->params['url']['id'];
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];

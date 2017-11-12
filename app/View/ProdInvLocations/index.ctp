@@ -34,12 +34,12 @@
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+                <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Image</th>
                             <th>Product Code</th>
-                            <th>Location</th>
                             <th>Total Qty</th>
                             <th> </th> 
                         </tr>
@@ -48,7 +48,6 @@
                         <tr>
                             <th>Image  </th>
                             <th>Product Code</th>
-                            <th>Location</th>
                             <th>Total Qty</th>
                             <th> </th> 
                         </tr>
@@ -58,18 +57,26 @@
                             <tr>
                                 <td><?php echo '<img class="img-responsive" src="../product_uploads/' . $inv['Product']['image'] . '" width="70" height="70">'; ?></td>
                                 <td><?php echo $inv['Product']['name']; ?></td>
-                                <td><?php echo $inv['InvLocation']['name']; ?></td>
-                                <td><?php echo $inv['ProdInvLocation']['qty']; ?></td> 
+                                <td><?php
+                                    $total_qty = 0;
+                                    foreach ($products_combo[$inv['Product']['id']] as $combo) {
+                                        $total_qty += $combo['qty'];
+                                        // echo $inv['ProdInvLocation']['qty']; 
+                                    }
+                                    
+                                    echo $total_qty; 
+                                ?></td> 
                                 <td>
                                     <?php
 //                                    echo '<a class="btn btn-mint btn-icon add-tooltip updateSupplierBtn" data-toggle="tooltip" href="#" data-original-title="Update Supplier" data-id="' . $supplier['ProdInvLocation']['id'] . '" ><i class="fa fa-edit"></i></a>';
-                                    echo '&nbsp;<a class="btn btn-info btn-icon add-tooltip productSupplierBtn" data-toggle="tooltip" href="#" data-original-title="View Products" data-ids="' . $inv['ProdInvLocation']['id'] . '" ><i class="fa fa-eye"></i> </a>';
+                                    echo '&nbsp;<a class="btn btn-info btn-icon add-tooltip productSupplierBtn" data-toggle="tooltip" href="/prod_inv_locations/view_combo?id='. $inv['Product']['id'] .'&prod='. $inv['Product']['name'] .'" data-original-title="View Combinations"><i class="fa fa-eye"></i> </a>';
                                     ?>
                                 </td> 
                             </tr>
                         <?php } ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -149,6 +156,14 @@
 
 <script>
     $(document).ready(function () {
+    
+
+        $('#example').DataTable({
+            "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
+            "order": [[0, "asc"]],
+            "stateSave": true
+        });
+
         
         $('#addInventoryBtn').on("click", function () {
             console.log("hey open up");
@@ -270,8 +285,12 @@
                     data: {'data': data},
                     dataType: 'json',
                     success: function (dd) {
-                        location.reload();
-    //                    console.log(dd);
+                        
+                        if(dd == "already saved"){
+                            alert("Combination already exist");
+                        } else {
+                            location.reload();
+                        }
                     },
                     error: function (dd) {
                         console.log(dd);

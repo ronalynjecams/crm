@@ -188,7 +188,39 @@
                                                                     <li><a href="/quotations/void">Void</a></li> -->
 											 	
 						                </ul>
-						            </li> 
+						            </li>
+						            <li>
+ 						                <a href=""> 
+											<i class="fa fa-send-o"></i>
+											<span class="menu-title">
+												<strong>Demo</strong>
+											</span>
+											<i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">
+						                    <li><a href="/client_services/all_lists?type=demo&&status=newest">New</a></li>
+						                    <li><a href="/client_services/all_lists?type=demo&&status=pending">Pending</a></li>
+						                    <li><a href="/client_services/all_lists?type=demo&&status=processed">Processed</a></li>
+						                    <li><a href="/client_services/all_lists?type=demo&&status=delivered">Delivered</a></li>
+						                    <li><a href="/client_services/all_lists?type=demo&&status=pullout">Pullout</a></li>
+						                </ul>
+						            </li>
+						            <li>
+ 						                <a href=""> 
+											<i class="fa fa-taxi"></i>
+											<span class="menu-title">
+												<strong>Service Unit</strong>
+											</span>
+											<i class="arrow"></i>
+						                </a> 
+						                <ul class="collapse">
+						                    <li><a href="/client_services/all_lists?type=service_unit&&status=newest">New</a></li>
+						                    <li><a href="/client_services/all_lists?type=service_unit&&status=pending">Pending</a></li>
+						                    <li><a href="/client_services/all_lists?type=service_unit&&status=processed">Processed</a></li>
+						                    <li><a href="/client_services/all_lists?type=service_unit&&status=delivered">Delivered</a></li>
+						                    <li><a href="/client_services/all_lists?type=service_unit&&status=pullout">Pullout</a></li>
+						                </ul>
+						            </li>
                                                             <?php } ?>
                                                             <!-- marketing_staff -->
                                                              <?php if($UserIn['User']['role'] == 'marketing_staff'){ ?>
@@ -337,9 +369,10 @@
                                                                     <i class="arrow"></i>
 						                </a> 
 						                <ul class="collapse">  
+						                    <li><a href="/purchase_order_products/top_purchased?limit=0&&dept=<?php echo $UserIn['User']['department_id']; ?>">Top Purchased</a></li>
 						                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li>
-                                                                    <li><a href="/purchase_orders/po?status=pending">Pending</a></li>   
-                                                                    <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
+                                            <li><a href="/purchase_orders/po?status=pending">Pending</a></li>   
+                                            <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
 						                </ul>
 						            </li> 
 						            <li >
@@ -638,19 +671,20 @@
 						            </li>        
 						            <li>
  						                <a href=""> 
-                                                                    <i class="fa fa-file-powerpoint-o"></i>
-						                    <span class="menu-title">
-									<strong>Fitout Works</strong>
-                                                                    </span>
-                                                                    <i class="arrow"></i>
+                                    <i class="fa fa-file-powerpoint-o"></i>
+						                <span class="menu-title">
+											<strong>Fitout Works</strong>
+                                         </span>
+                                         <i class="arrow"></i>
 						                </a> 
 						                <ul class="collapse">  
 						                    <li><a href="/fitout_works/project?status=received">Received</a></li>
 						                    <li><a href="/fitout_works/project?status=ongoing">Ongoing</a></li>
 						                    <li><a href="/fitout_works/project?status=pending">Pending</a></li>   
-						                    <li><a href="/fitout_works/project?status=accomplished">Accomplished</a></li>  
-                                                                </ul>
-						            </li>  
+						                    <li><a href="/fitout_works/project?status=accomplished">Accomplished</a></li>
+                                        </ul>
+						         	</li>
+						            
                                                             <?php } ?>
                                                             <!-- fitout_facilitator -->
                                                             

@@ -289,7 +289,6 @@ $(document).ready(function(){
 		 //Append files infos
 		 jQuery.each($('input:file')[0].files, function(i, file) {
 		     data.append('Image', file);
-		     data.append("name", "maeiscool");
 		 });
 		
 		 $.ajax({  

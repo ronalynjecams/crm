@@ -41,6 +41,7 @@
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+                <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -63,11 +64,11 @@
                     <tbody>
                         <?php foreach ($leads as $lead) { ?>
                             <tr>
-                                <th><?php echo $lead['Client']['name'] . '<small class="text-info"><br/>[' . $lead['Client']['tin_number'] . ']</small>'; ?></th>
-                                <th><?php echo $lead['Client']['contact_person'] . '<small><br/>' . $lead['Client']['position'] . '</small>'; ?></th>
-                                <th><?php echo $lead['Client']['contact_number']; ?></th>
-                                <th><?php echo $lead['Client']['email']; ?></th> 
-                                <th>
+                                <td><?php echo $lead['Client']['name'] . '<small class="text-info"><br/>[' . $lead['Client']['tin_number'] . ']</small>'; ?></td>
+                                <td><?php echo $lead['Client']['contact_person'] . '<small><br/>' . $lead['Client']['position'] . '</small>'; ?></td>
+                                <td><?php echo $lead['Client']['contact_number']; ?></td>
+                                <td><?php echo $lead['Client']['email']; ?></td> 
+                                <td>
                                     <?php
                                     if (($UserIn['User']['role'] == 'sales_executive') || ($UserIn['User']['role'] == 'marketing_staff')) {
                                         echo '<a class="btn btn-default btn-icon add-tooltip updateLeadBtn" data-toggle="tooltip" href="#" data-original-title="Update Lead" data-id="' . $lead['Client']['id'] . '" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
@@ -76,11 +77,12 @@
                                         echo '&nbsp;<a class="btn btn-danger btn-icon add-tooltip transferLead" data-toggle="tooltip" href="#" data-original-title="Transfer Lead" data-trid="' . $lead['Client']['id'] . '" ><i class="ion-arrow-return-left icon-lg"></i></a>';
                                     }
                                     ?>
-                                </th> 
+                                </td> 
                             </tr>
                         <?php } ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -326,9 +328,9 @@
         $(this).on("click", function () {
             $('#nameExistDiv').remove();
             $('#unameExistDiv').remove();
-            var id = $(this).data('id');
-            $('#update_lead_id').val(id);
-            $('#update-modal').modal('show');
+            var id = $(this).data('id'); //this line gets value of data-id from delete button
+            $('#update_lead_id').val(id); // this line passes the value from data id to modal, to be able to manipulate id of the selected row
+            $('#update-modal').modal('show'); // this line shows modal, make sure to assign values first before showing modal
 
 
             $.get('/clients/get_lead_info', {

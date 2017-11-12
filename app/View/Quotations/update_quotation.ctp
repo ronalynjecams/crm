@@ -360,6 +360,7 @@
 
                             <div class="col-sm-7"></div>
                             <div class="col-sm-5" align="right">
+                                <div class="table-responsive">
                                 <table>
                                     <tr>
                                         <td><b>Sub Total:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td>
@@ -401,6 +402,7 @@
                                         </td>
                                     </tr>
                                 </table> 
+                                </div>
                             </div>
 
 

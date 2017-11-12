@@ -193,6 +193,7 @@
     <div id="content">
          
         <div id="invoice_body">
+            <div class="table-responsive">
             <table>
             <tr style="background:#eee;">
                 <td style="width:8%;"><b>Sl. No.</b></td>
@@ -202,7 +203,8 @@
                 <td style="width:15%;"><b>Total</b></td>
             </tr>
             </table>
-             
+             </div>
+             <div class="table-responsive">
             <table>
             <tr>
                 <td style="width:8%;">1</td>
@@ -222,6 +224,7 @@
                 <td class="mono">157.00</td>
             </tr>
         </table>
+        </div>
         </div>
         <div id="invoice_total">
             Total Amount :

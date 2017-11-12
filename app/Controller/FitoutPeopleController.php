@@ -107,4 +107,7 @@ class FitoutPeopleController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}
+	
+	
 }
+

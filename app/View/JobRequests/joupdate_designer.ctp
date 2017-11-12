@@ -29,6 +29,7 @@
                     <div class="panel-body">
                         <?php if (count($jr_products) != 0) { ?>
                             <div class="table-responsive">
+                                <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                     <th>Date Assigned</th>
@@ -110,6 +111,7 @@
                                         ?>
                                     </tbody>
                                 </table>
+                                </div>
                             </div> 
                         <?php } ?>
                     </div>

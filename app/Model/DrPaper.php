@@ -23,4 +23,5 @@ class DrPaper extends AppModel {
 			),
 		),
 	);
+	
 }

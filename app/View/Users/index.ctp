@@ -28,6 +28,7 @@
 		</div> end col md 3 
 
 		<div class="col-md-9">-->
+		<div class="table-responsive">
 			<table cellpadding="0" cellspacing="0" class="table table-striped table-responsive">
 				<thead>
 					<tr>
@@ -64,7 +65,7 @@
 				<?php endforeach; ?>
 				</tbody>
 			</table>
-
+			</div>
 			<p>
 				<small><?php echo $this->Paginator->counter(array('format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')));?></small>
 			</p>

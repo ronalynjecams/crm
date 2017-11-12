@@ -312,6 +312,7 @@
                     <div class="panel-body">
                         <?php if (count($quote_products) != 0) { ?>
                             <div class="table-responsive">
+                                <div class="table-responsive">
                                 <table class="table table-striped">
                                     <!--<thead>-->
                                     <th>#</th>
@@ -360,6 +361,7 @@
                                         ?>
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
 
 

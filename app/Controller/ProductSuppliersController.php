@@ -186,6 +186,7 @@ class ProductSuppliersController extends AppController {
         $id = $this->params['url']['id'];
         $this->loadModel('Supplier');
         $this->loadModel('Product');
+        $this->loadModel('ProductComboProperties');
 
         $supplier = $this->Supplier->findById($id);
         $this->set(compact('supplier'));
@@ -332,6 +333,26 @@ class ProductSuppliersController extends AppController {
                 echo json_encode('exist');
             }
             
+        }
+    }
+    
+    public function get_prod_suppliers(){
+        
+
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $product_id = $this->request->query['id'];
+
+
+            $prod_supplier = $this->ProductSupplier->find("all", array(
+                'conditions' => array(
+                    'ProductSupplier.product_id' => $product_id
+//                    'Quotation.status' => array('approved', 'processed'))
+            )));
+            // $prod_supplier = $this->ProductSupplier->findAllByProductId($product_id);
+            return json_encode($prod_supplier);
+            exit;
         }
     }
 

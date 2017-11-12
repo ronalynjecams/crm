@@ -8,7 +8,8 @@
 
 
 <link href="../css/sweetalert.css" rel="stylesheet"> 
-<script src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false&amp;key=AIzaSyCkob67AYCZcbn189xLtuZMt8OLNbsvYZQ&amp;callback=loadmap" defer></script>
+<!--MAE: I had to comment,causing errors-->
+<!--<script src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false&amp;key=AIzaSyCkob67AYCZcbn189xLtuZMt8OLNbsvYZQ&amp;callback=loadmap" defer></script>-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script> 
 <script src="../js/erp_js/erp_scripts.js"></script>  
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
@@ -439,38 +440,63 @@
                                                                 <td  align="right">&#8369; <?php echo number_format($quote_prod['QuotationProduct']['edited_amount'], 2); ?></td> 
                                                                 <td align="right">&#8369; <?php echo number_format($quote_prod['QuotationProduct']['total'], 2); ?></td>
                                                             <?php } ?>
-                                                            <td align="right">
+                                                            <td align="center" class="td_row">
                                                                 <?php
-                                                                if (count($quote_prod['Quotation']['JobRequest']) != 0) {
-                                                                    foreach ($quote_prod['Quotation']['JobRequest']['JrProduct'] as $jrprod) {
-                                                                        if ($jrprod['quotation_product_id'] == $quote_prod['QuotationProduct']['id']) {
-                                                                            echo '<button class=" btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="With Job Request"  type="button" ><i class="fa fa-check"></i></button>';
+                                                                if($quote_prod['QuotationProduct']['demo']==0) {
+                                                                    if (count($quote_prod['Quotation']['JobRequest']) != 0) {
+                                                                        foreach ($quote_prod['Quotation']['JobRequest']['JrProduct'] as $jrprod) {
+                                                                            if ($jrprod['quotation_product_id'] == $quote_prod['QuotationProduct']['id']) {
+                                                                                echo '<button class=" btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="With Job Request"  type="button" ><i class="fa fa-check"></i></button>';
+                                                                            }
                                                                         }
+                                                                    } else {
+                                                                        echo '-';
                                                                     }
-                                                                } else {
-                                                                    echo '-';
+                                                                }
+                                                                else {
+                                                                    $name_tmp = $quote_prod['Product']['name'];
+                                                                    $id_tmp = $quote_prod['Product']['id'];
+                                                                    $client_id = $quote_data['Client']['id'];
+                                                                    
+                                    				                $today=date("myd");
+                                    				                $service_code="JECDEMO-".$today;
+                                    				                ?>
+                                                                    <input type="hidden" id="service_code" value="<?php echo $service_code; ?>" />
+                                                                    <input type="hidden" id="client_id" value="<?php echo $client_id; ?>" />
+                                                                    
+                                                                    <a ng-href=""
+                                                                        data-target="#add-demo-modal"
+                                                                        data-toggle="modal"
+                                                                        class="btn btn-info"
+                                                                        style="color:white;font-weight:bold;"
+                                                                        data-id="<?php echo $id_tmp; ?>"
+                                                                        data-name="<?php echo $name_tmp; ?>">
+                                                                        <span class="fa fa-plus"></span>
+                                                                        Demo Product
+                                                                    </a>
+                                                                    <?php
                                                                 }
                                                                 ?>
                                                             </td > 
-                                                            <td align="right">
+                                                            <td align="center">
                                                                 <?php
-                                                                if ($quote_prod['Quotation']['status'] == 'approved' || $quote_prod['Quotation']['status'] == 'processed') {
-                                                                    if ($quote_prod['QuotationProduct']['qty'] == $quote_prod['QuotationProduct']['delivered_qty']) {
-                                                                        echo abs($quote_prod['QuotationProduct']['delivered_qty']) . ' / ' . abs($quote_prod['QuotationProduct']['qty']);
-                                                                    } else {
-                                                                        if ($quote_prod['QuotationProduct']['dr_requested'] == 0) {
-                                                                            if ($userRole == 'sales_executive') {
-                                                                                ?>
-                                                                                <button class=" btn btn-mint  btn-icon  add-tooltip delivery_sched" data-toggle="tooltip"  data-original-title="Schedule Delivery"  data-dspquoteid="<?php echo $quote_prod['QuotationProduct']['id']; ?>" data-dspquoteqty="<?php echo $quote_prod['QuotationProduct']['qty']; ?>"><i class="fa fa-calendar"></i></button>
-                                                                                <?php
-                                                                            }
+                                                                    if ($quote_prod['Quotation']['status'] == 'approved' || $quote_prod['Quotation']['status'] == 'processed') {
+                                                                        if ($quote_prod['QuotationProduct']['qty'] == $quote_prod['QuotationProduct']['delivered_qty']) {
+                                                                            echo abs($quote_prod['QuotationProduct']['delivered_qty']) . ' / ' . abs($quote_prod['QuotationProduct']['qty']);
                                                                         } else {
-                                                                            echo '<small>Requested</small>';
+                                                                            if ($quote_prod['QuotationProduct']['dr_requested'] == 0) {
+                                                                                if ($userRole == 'sales_executive') {
+                                                                                    ?>
+                                                                                    <button class=" btn btn-mint  btn-icon  add-tooltip delivery_sched" data-toggle="tooltip"  data-original-title="Schedule Delivery"  data-dspquoteid="<?php echo $quote_prod['QuotationProduct']['id']; ?>" data-dspquoteqty="<?php echo $quote_prod['QuotationProduct']['qty']; ?>"><i class="fa fa-calendar"></i></button>
+                                                                                    <?php
+                                                                                }
+                                                                            } else {
+                                                                                echo '<small>Requested</small>';
+                                                                            }
                                                                         }
+                                                                    } else {
+                                                                        echo '-';
                                                                     }
-                                                                } else {
-                                                                    echo '-';
-                                                                }
                                                                 ?>
                                                             </td>
                                                         </tr> 
@@ -536,22 +562,12 @@
                                             </tbody>
                                         </table>
                                     </div>
-
-
-
-
                                 <?php } ?>
                             </div>
                         </div>
                     </div>
-
-
-
-
                 </div> 
-
             </div>
-
             <!--===================================================-->
             <!--END CONTENT CONTAINER-->  
         </div> 
@@ -699,8 +715,74 @@
     </div>
 </div>
 
-<script>
 
+<!--Add New Demo Modal Start-->
+<!--===================================================-->
+<div class="modal fade" id="add-demo-modal" role="dialog" tabindex="-1"
+     aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+		<div class="modal-content">
+			<!--Modal header-->
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal">
+			    <i class="pci-cross pci-circle"></i>
+			  </button>
+			  <h4 class="modal-title">
+		          Add Demo 
+	          </h4>
+			</div>
+			<!--Modal body-->
+			<div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <label id="product_name" style="font-weight:bold;"></label>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control"
+                            placeholder="Quantity" id="qty" />
+                        </div>
+                        <div class="col-sm-6">
+                            <select class="form-control" id="select_product_combo">
+                                <option>Select Product Combination</option>
+                                <option style="font-size: 0.5pt; background-color: grey;"
+    					    			disabled >&nbsp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br/>
+				    <div class="form-group row">
+				        <div class="col-sm-6">
+				            <label>Expected Delivery Date <span class="text-danger"> *</span></label>
+		                    <input type="date" class="form-control"
+        				        placeholder="Expected Delivery Date"
+        				        id="expected_delivery_date"/>
+				        </div>
+				        <div class="col-sm-6">
+				            <label>Expected Pull Out Date <span class="text-danger"> *</span></label>
+				             <input type="date" class="form-control"
+        				        value="<?php echo Date('m:d:y', strtotime("+3 days")); ?>"
+        				        placeholder="Expected Pull Out Date"
+        				        id="expected_pull_out_date"/>
+				        </div>
+				    </div>
+				    <br/>
+                    <div class="form-group row" id="label_here"></div>
+                </div>
+			</div>
+			<!--Modal footer-->
+			<div class="modal-footer">
+			  <button data-dismiss="modal" class="btn btn-default"
+			    type="button">Close</button>
+			  <button class="btn btn-primary" id="btn_add">Add</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--===================================================-->
+<!--Add New Demo Modal End-->
+
+<script>
     tinymce.init({
         selector: 'textarea',
         height: 500, 
@@ -717,9 +799,137 @@
     });
 </script>
 <script type="text/javascript">
-
-
     $(document).ready(function () {
+        // ===================================================> jQuery for Add Demo
+        AllAddDemoMethod();
+        
+        var id_quotation;
+        var type = "Demo";
+        var status = "newest";
+        var service_code = $("#service_code").val();
+        var client = $("#client_id").val();
+        
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        $('#add-demo-modal').on('shown.bs.modal', function (event) {
+            $(":input").val('');
+            $("select").change();
+            var button = $(event.relatedTarget);
+    
+            id_quotation = button.data('id');
+            var name = button.data('name');
+    
+            var modal = $(this);
+            modal.find("#product_name").text(name);
+            
+            prop_tmp = [];
+            value_tmp = [];
+            $("#label_here").empty();
+            $.get('/client_services/get_prod_combo', {id: id_quotation}, function(data) {
+                if(data.length!=0) {
+                    $("#select_product_combo").empty().append($('<option>',
+                                        {text: "Select Product Combination"}));
+                    for(i=0;i<data.length;i++) {
+                        $("#select_product_combo").removeAttr('readonly').
+                            append($('<option>', {
+                                value: data[i]['ProductCombo']['id'],
+                                text: data[i]['ProductCombo']['id']
+                            }));
+                    }
+                }
+                else {
+                    $("#select_product_combo").empty().attr('readonly',true)
+                    .append($('<option>', {text: "No Product Combination"}));
+                }
+            });
+        });
+        
+        function AllAddDemoMethod() {
+            $("#select_product_combo").change(function() {
+                var id = $(this).val();
+                
+                prop_tmp = [];
+                value_tmp = [];
+                $("#label_here").empty();
+                $.get('/client_services/get_prod_combo_prop', {id: id}, function(data) {
+                    for(i=0;i<data.length;i++) {
+                        prop_tmp.push(data[i]['ProductComboProperty']['property']);
+                        value_tmp.push(data[i]['ProductComboProperty']['value']);
+                        $("#label_here").append('<div class="col-lg-6">'+
+    				    '<label class="label_property" id="label_property">'+data[i]['ProductComboProperty']['property']+'</label>'+
+                        '</div>'+
+                        '<div class="col-lg-6">'+
+    				    '<label class="label_value" id="label_value">'+data[i]['ProductComboProperty']['value']+'</label>'+
+                        '</div>');
+                    }
+                });
+            });
+            
+            $("#btn_add").on('click', function(){
+                qty = $("#qty").val();
+                product = $("#select_product").val();
+                product_combo = $("#select_product_combo").val();
+                expected_delivery_date = $("#expected_delivery_date").val();
+                expected_pull_out_date = $("#expected_pull_out_date").val();
+                
+                if(qty!="" && parseInt(qty)) {
+                    if(product_combo!="Select Product Combination") {
+                        if(product_combo!="No Product Combination") {
+                            if(expected_delivery_date!="") {
+                                if(expected_pull_out_date!="") {
+                                    var data = {
+                                        'client_id':client,
+                                        'qty':qty,
+                                        'product_id':id_quotation,
+                                        'product_combo_id':product_combo,
+                                        'expected_delivery_date':expected_delivery_date,
+                                        'expected_pull_out_date':expected_pull_out_date,
+                                        'service_code':service_code,
+                                        'type':type,
+                                        'status':status,
+                                        'property':prop_tmp,
+                                        'value':value_tmp,
+                                        'quotation_product_id':id_quotation
+                                    };
+                                    $.ajax({
+            							url: "/client_services/add_demo_or_su",
+            							type: 'Post',
+            							data: {'data': data},
+            							dataType: 'text',
+            							success: function(id) {
+            								console.log(id);
+            								// location.reload();
+            							},
+            							error: function(err) {
+            								console.log("AJAX error in add_demo_or_su: " + JSON.stringify(err, null, 2));
+            								console.log("error in ajax add_demo_or_su");
+            							}
+            						});
+                                    console.log(data);
+                                }
+                                else {
+                                    $("#expected_pull_out_date").css({'border-color':'red'});
+                                }
+                            }
+                            else {
+                                $("#expected_delivery_date").css({'border-color':'red'});
+                            }
+                        }
+                        else {
+                            $("#select_product_combo").css({'border-color':'red'});
+                        }
+                    }
+                    else {
+                        $("#select_product_combo").css({'border-color':'red'});
+                    }
+                }
+                else {
+                    $("#qty").css({'border-color':'red'});
+                }
+            });
+        }
+        // ===================================================> End of Add Demo
+        
         var date = new Date();
         date.setDate(date.getDate() - 1);
         $('#delivery_date')
@@ -734,185 +944,185 @@
                     startDate: date,
                 });
 
-        $('#delivery_time').timepicker();
-    });
-    $('.print_quote').each(function (index) {
-        $(this).click(function () {
-            var qid = $(this).data("printquoteid");
-            window.open("/pdfs/print_quote?id=" + qid, '_blank');
+        // MAE: I had to uncomment, causing errors
+        // $('#delivery_time').timepicker();
+        
+        $('.print_quote').each(function (index) {
+            $(this).click(function () {
+                var qid = $(this).data("printquoteid");
+                window.open("/pdfs/print_quote?id=" + qid, '_blank');
+            });
         });
-    });
-    $('.update_quote').each(function (index) {
-        $(this).click(function () {
-            var qid = $(this).data("upquoteid");
-            window.location.replace("/quotations/update_quotation?id=" + qid);
+        $('.update_quote').each(function (index) {
+            $(this).click(function () {
+                var qid = $(this).data("upquoteid");
+                window.location.replace("/quotations/update_quotation?id=" + qid);
+            });
         });
-    });
-    $('.move_to_purchasing_btn').each(function (index) {
-        $(this).click(function () {
-            var qid = $(this).data("moveid");
-            window.location.replace("/quotations/move?id=" + qid);
+        $('.move_to_purchasing_btn').each(function (index) {
+            $(this).click(function () {
+                var qid = $(this).data("moveid");
+                window.location.replace("/quotations/move?id=" + qid);
+            });
         });
-    });
-    $('.move_schedule_collection').each(function (index) {
-        $(this).click(function () {
-            var qid = $(this).data("collectquoteid");
-            window.location.replace("/collection_schedules/agent_move?id=" + qid);
+        $('.move_schedule_collection').each(function (index) {
+            $(this).click(function () {
+                var qid = $(this).data("collectquoteid");
+                window.location.replace("/collection_schedules/agent_move?id=" + qid);
+            });
         });
-    });
-    $('.schedule_collection').each(function (index) {
-        $(this).click(function () {
-            var qid = $(this).data("schedquoteid");
-            window.location.replace("/collection_schedules/agent?id=" + qid);
+        $('.schedule_collection').each(function (index) {
+            $(this).click(function () {
+                var qid = $(this).data("schedquoteid");
+                window.location.replace("/collection_schedules/agent?id=" + qid);
+            });
         });
-    });
-
-    $('.delivery_sched').each(function (index) {
-        $(this).click(function () {
-            var pqid = $(this).data("dspquoteid");
-            var pqqty = Math.abs($(this).data("dspquoteqty"));
-            $('#delivery-sched-modal').modal('show');
-            $('#quotation_product_id').val(pqid);
-            $('#requested_qty').val(pqqty);
+    
+        $('.delivery_sched').each(function (index) {
+            $(this).click(function () {
+                var pqid = $(this).data("dspquoteid");
+                var pqqty = Math.abs($(this).data("dspquoteqty"));
+                $('#delivery-sched-modal').modal('show');
+                $('#quotation_product_id').val(pqid);
+                $('#requested_qty').val(pqqty);
+            });
         });
-    });
-
-
-
-    $('#saveDeliverySched').click(function () {
-        var delivery_date = $('#delivery_date').val();
-        var delivery_time = $('#delivery_time').val();
-        var requested_qty = $('#requested_qty').val();
-        var quotation_product_id = $('#quotation_product_id').val();
-        var quotation_id = $('#quotation_id').val();
-        var type = $('#type').val();
-
-        if (delivery_date != '') {
-            if (requested_qty != '') {
-                if (delivery_time != '') {
-                    if (type != '') {
-                        var data = {"delivery_date": delivery_date,
-                            "requested_qty": requested_qty,
-                            "quotation_product_id": quotation_product_id,
-                            "quotation_id": quotation_id,
-                            "delivery_time": delivery_time,
-                            "mode":type
-                        }
-                        $.ajax({
-                            url: "/delivery_schedules/addSched",
-                            type: 'POST',
-                            data: {'data': data},
-                            dataType: 'json',
-                            success: function (dd) {
-                                location.reload();
-                            },
-                            error: function (dd) {
-                                console.log(dd);
+    
+    
+    
+        $('#saveDeliverySched').click(function () {
+            var delivery_date = $('#delivery_date').val();
+            var delivery_time = $('#delivery_time').val();
+            var requested_qty = $('#requested_qty').val();
+            var quotation_product_id = $('#quotation_product_id').val();
+            var quotation_id = $('#quotation_id').val();
+            var type = $('#type').val();
+    
+            if (delivery_date != '') {
+                if (requested_qty != '') {
+                    if (delivery_time != '') {
+                        if (type != '') {
+                            var data = {"delivery_date": delivery_date,
+                                "requested_qty": requested_qty,
+                                "quotation_product_id": quotation_product_id,
+                                "quotation_id": quotation_id,
+                                "delivery_time": delivery_time,
+                                "mode":type
                             }
-                        });
+                            $.ajax({
+                                url: "/delivery_schedules/addSched",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'json',
+                                success: function (dd) {
+                                    location.reload();
+                                },
+                                error: function (dd) {
+                                    console.log(dd);
+                                }
+                            });
+                        } else {
+                            document.getElementById('type').style.borderColor = "red";
+                        }
                     } else {
-                        document.getElementById('type').style.borderColor = "red";
+                        document.getElementById('delivery_time').style.borderColor = "red";
                     }
                 } else {
-                    document.getElementById('delivery_time').style.borderColor = "red";
+                    document.getElementById('requested_qty').style.borderColor = "red";
                 }
             } else {
-                document.getElementById('requested_qty').style.borderColor = "red";
+                document.getElementById('delivery_date').style.borderColor = "red";
             }
-        } else {
-            document.getElementById('delivery_date').style.borderColor = "red";
-        }
-    });
-
-
-    $('#addRequirement').click(function () {
-        $('#add-requirement-modal').modal('show');
-    });
-
-    $('#saveDrPaper').click(function () {
-//        alert('saveDrPaper');
-        var dr_paper_id = $('#dr_paper_id').val();
-        var date_needed = $('#date_needed').val();
-        var quotation_id = $('#qteidd').val();
-
-
-        if (dr_paper_id != '') {
-            if (date_needed != '') {
-                var data = {"dr_paper_id": dr_paper_id,
-                    "date_needed": date_needed,
-                    "quotation_id": quotation_id
-                }
-                $.ajax({
-                    url: "/delivery_papers/addPaper",
-                    type: 'POST',
-                    data: {'data': data},
-                    dataType: 'json',
-                    success: function (dd) {
-                        location.reload();
-                    },
-                    error: function (dd) {
-                        console.log(dd);
+        });
+    
+    
+        $('#addRequirement').click(function () {
+            $('#add-requirement-modal').modal('show');
+        });
+    
+        $('#saveDrPaper').click(function () {
+    //        alert('saveDrPaper');
+            var dr_paper_id = $('#dr_paper_id').val();
+            var date_needed = $('#date_needed').val();
+            var quotation_id = $('#qteidd').val();
+    
+    
+            if (dr_paper_id != '') {
+                if (date_needed != '') {
+                    var data = {"dr_paper_id": dr_paper_id,
+                        "date_needed": date_needed,
+                        "quotation_id": quotation_id
                     }
-                });
+                    $.ajax({
+                        url: "/delivery_papers/addPaper",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        success: function (dd) {
+                            location.reload();
+                        },
+                        error: function (dd) {
+                            console.log(dd);
+                        }
+                    });
+                } else {
+                    document.getElementById('date_needed').style.borderColor = "red";
+                }
             } else {
-                document.getElementById('date_needed').style.borderColor = "red";
+                document.getElementById('dr_paper_id').style.borderColor = "red";
             }
-        } else {
-            document.getElementById('dr_paper_id').style.borderColor = "red";
-        }
-    });
+        });
+        
+        
+        $('.update_delivery_note').each(function (index) {
+            $(this).click(function () {
+                $('#errorNote').remove();
+                var delivery_schedule_id = $(this).data("delscid");
+                var anote = $(this).data("delscnotes");
+                var status = $(this).data("delscstats");
+                
+                $('#delschedlID').val(delivery_schedule_id);
+    //            $('#agent_note').val(anote); 
+                tinyMCE.activeEditor.setContent(anote);
+                if(status=='scheduled' || status=='delivered'){ 
+                    tinymce.activeEditor.setMode('readonly');
+                }else{
+                    tinymce.activeEditor.setMode('design'); 
+                }
+                //kapag scheduled na dapat d na pwede iupdate
+                
+                $('#update_delivery_note_modal').modal('show');
+            });
+        });
     
-    
-    $('.update_delivery_note').each(function (index) {
-        $(this).click(function () {
-            $('#errorNote').remove();
-            var delivery_schedule_id = $(this).data("delscid");
-            var anote = $(this).data("delscnotes");
-            var status = $(this).data("delscstats");
+        $('#saveDrNote').click(function () {
+                $('#errorNote').remove();
+    //        alert('saveDrPaper');
+            var delivery_schedule_id = $('#delschedlID').val();
+            var agent_note = tinyMCE.activeEditor.getContent();
+             
+                if (agent_note != '') {
+                    var data = {"delivery_schedule_id": delivery_schedule_id,
+                        "agent_note": agent_note 
+                    }
+                    $.ajax({
+                        url: "/delivery_schedules/updateDeliveryAgentNote",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        success: function (dd) {
+                            location.reload();
+                        },
+                        error: function (dd) {
+                            console.log(dd);
+                        }
+                    });
+                } else {
+                    $('#labelDeliveryNote').append('<span id="errorNote" class="text-danger"><small> *delivery note is required </small></span>');
+    //                document.getElementById('agent_note').style.borderColor = "red";
+                }
             
-            $('#delschedlID').val(delivery_schedule_id);
-//            $('#agent_note').val(anote); 
-            tinyMCE.activeEditor.setContent(anote);
-            if(status=='scheduled' || status=='delivered'){ 
-                tinymce.activeEditor.setMode('readonly');
-            }else{
-                tinymce.activeEditor.setMode('design'); 
-            }
-            //kapag scheduled na dapat d na pwede iupdate
-            
-            $('#update_delivery_note_modal').modal('show');
         });
     });
-
-    $('#saveDrNote').click(function () {
-            $('#errorNote').remove();
-//        alert('saveDrPaper');
-        var delivery_schedule_id = $('#delschedlID').val();
-        var agent_note = tinyMCE.activeEditor.getContent();
-         
-            if (agent_note != '') {
-                var data = {"delivery_schedule_id": delivery_schedule_id,
-                    "agent_note": agent_note 
-                }
-                $.ajax({
-                    url: "/delivery_schedules/updateDeliveryAgentNote",
-                    type: 'POST',
-                    data: {'data': data},
-                    dataType: 'json',
-                    success: function (dd) {
-                        location.reload();
-                    },
-                    error: function (dd) {
-                        console.log(dd);
-                    }
-                });
-            } else {
-                $('#labelDeliveryNote').append('<span id="errorNote" class="text-danger"><small> *delivery note is required </small></span>');
-//                document.getElementById('agent_note').style.borderColor = "red";
-            }
-        
-    });
-
-
 
 </script>  

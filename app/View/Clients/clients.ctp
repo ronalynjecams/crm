@@ -34,6 +34,7 @@
               <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
             <div class="panel-body">
+            <div class="table-responsive">
               <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                 <thead>
                   <tr>
@@ -56,21 +57,22 @@
                 <tbody>
                     <?php  foreach ($clients as $client){ ?>
                         <tr>
-                          <th><?php echo $client['Client']['name'].'<small class="text-info"><br/>['.$client['Client']['tin_number'].']</small>'; ?></th>
-                          <th><?php echo $client['Client']['contact_person'].'<small><br/>'.$client['Client']['position'].'</small>'; ?></th>
-                          <th><?php echo $client['Client']['contact_number']; ?></th>
-                          <th><?php echo $client['Client']['email']; ?></th> 
-                          <th>
+                          <td><?php echo $client['Client']['name'].'<small class="text-info"><br/>['.$client['Client']['tin_number'].']</small>'; ?></td>
+                          <td><?php echo $client['Client']['contact_person'].'<small><br/>'.$client['Client']['position'].'</small>'; ?></td>
+                          <td><?php echo $client['Client']['contact_number']; ?></td>
+                          <td><?php echo $client['Client']['email']; ?></td> 
+                          <td>
                             <?php 
                                 if($UserIn['User']['role'] == 'sales_executive'){ 
                                     echo '<a class="btn btn-mint btn-icon add-tooltip updateLeadBtn" data-toggle="tooltip" href="#" data-original-title="Update Client" data-id="'.$client['Client']['id'].'" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
                                 } 
                             ?>
-                          </th> 
+                          </td> 
                         </tr>
                     <?php  } ?>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         </div>
@@ -316,3 +318,4 @@
         document.onclick = reEnable
     }
 </script>
+ 

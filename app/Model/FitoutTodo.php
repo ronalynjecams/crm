@@ -33,6 +33,16 @@ class FitoutTodo extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'fitout_work_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'deadline' => array(
 			'date' => array(
 				'rule' => array('date'),
@@ -66,6 +76,13 @@ class FitoutTodo extends AppModel {
 		'User' => array(
 			'className' => 'User',
 			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		), 
+		'FitoutWork' => array(
+			'className' => 'FitoutWork',
+			'foreignKey' => 'fitout_work_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

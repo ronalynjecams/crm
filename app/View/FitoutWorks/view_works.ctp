@@ -120,7 +120,7 @@
                     <table id="example1" class="table table-striped table-bordered table-hover table-condensed" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>Quotation id</th>
+                            
                             <th>Quotation number</th>
                             <th>Delivery date</th>
                             <th>Type</th>
@@ -129,7 +129,7 @@
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>Quotation id</th>
+                            
                             <th>Quotation number</th>
                             <th>Delivery date</th>
                             <th>Type</th>
@@ -139,7 +139,6 @@
                     <tbody>
                         <?php foreach($delivery_schedules as $delivery_schedule){ ?>
                         <tr>
-                            <td><?php echo h($delivery_schedule['Quotation']['id']); ?></td>
                             <td><?php echo h($delivery_schedule['Quotation']['quote_number']); ?></td>
                             <td><?php echo h(date('F d, Y h:i:a', strtotime($delivery_schedule['DeliverySchedule']['delivery_date']))); ?></td>
                             <td><?php echo h($delivery_schedule['DeliverySchedule']['type']); ?></td>
@@ -267,7 +266,7 @@
                                         echo h(date('F d, Y h:i:a', strtotime($fitout_todo['FitoutTodo']['date_started'])));
                                    }
                                 }else{
-                                    if($fitout_todo['FitoutWork']['date_started'] != ""){
+                                    if($fitout_todo['FitoutTodo']['date_started'] != ""){
                                         echo h(date('F d, Y h:i:a', strtotime($fitout_todo['FitoutTodo']['date_started'])));
 
                                     }else{

@@ -22,7 +22,8 @@ class ProductsController extends AppController {
  */
 	public function index() {
 		$this->Product->recursive = 0;
-		$this->set('products', $this->Paginator->paginate());
+		$products = $this->Product->find('all');
+		$this->set(compact('products'));
 	}
 
 /**
@@ -49,32 +50,6 @@ class ProductsController extends AppController {
 		$this->loadModel('Category');
 		$categories = $this->Category->find('all');
 		$this->set(compact('categories'));
-	}
-
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function edit($id = null) {
-		if (!$this->Product->exists($id)) {
-			throw new NotFoundException(__('Invalid product'));
-		}
-		if ($this->request->is(array('post', 'put'))) {
-			if ($this->Product->save($this->request->data)) {
-				$this->Session->setFlash(__('The product has been saved.'), 'default', array('class' => 'alert alert-success'));
-				return $this->redirect(array('action' => '/index'));
-			} else {
-				$this->Session->setFlash(__('The product could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-			}
-		} else {
-			$options = array('conditions' => array('Product.' . $this->Product->primaryKey => $id));
-			$this->request->data = $this->Product->find('first', $options);
-		}
-		$subCategories = $this->Product->SubCategory->find('list');
-		$this->set(compact('subCategories'));
 	}
 
 /**
@@ -326,12 +301,12 @@ class ProductsController extends AppController {
 	
 	public function image_upload() {
 		$this->autoRender = false;
-	   if($this->request->is('post'))
+		if($this->request->is('post'))
 	    {
 		     if(!empty($_FILES['Image']['name'])) {
-	            $file = $_FILES['Image']; //put the  data into a var for easy use
-	            $ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
-	            $arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
+	            $file = $_FILES['Image'];
+	            $ext = substr(strtolower(strrchr($file['name'], '.')), 1);
+	            $arr_ext = array('jpg', 'jpeg', 'gif', 'png');
 	            $temp = explode(".", $file['name']);
 	            $newfilename = $_FILES['Image']['name'];
 	            if(in_array($ext, $arr_ext))
@@ -343,5 +318,133 @@ class ProductsController extends AppController {
 	            }
 		    }
 	    }
+	}
+
+	public function edit() {
+		$this->loadModel('Product');
+		$this->loadModel('SubCategory');
+		$this->loadModel('ProductProperty');
+		$this->loadModel('Category');
+		
+		$product_id = $this->params['url']['id'];
+		$this->set(compact('product_id'));
+		
+		$current_product = $this->Product->findById($product_id);
+		$this->set(compact('current_product'));
+		
+		$categories = $this->Category->find('all');
+		$this->set(compact('categories'));
+		
+		$sub_category_id = $current_product['Product']['sub_category_id'];
+		$sub_category = $this->SubCategory->findById($sub_category_id);
+		$this->set(compact('sub_category'));
+	}
+	
+	public function update_product() {
+		$this->autoRender = false;
+		$this->response->type('text');
+		
+		$this->loadModel('Product');
+		$this->loadModel('ProductProperty');
+		$this->loadModel('ProductValue');
+		
+		$data = $this->request->data;
+		$id = $data['id'];
+		$sub_category_id = $data['sub_category'];
+		$other_info = $data['other_info'];
+		$image_change = $data['image_change'];
+		$image_keep = $data['image_keep'];
+		$keep_image = $data['keep_image'];
+		$appended_obj = $data['appended_obj'];
+		
+		if($keep_image=="true"){
+			$image = $image_keep;
+		}
+		else {
+			$image = $image_change;
+		}
+		
+		echo json_encode("Image: ".$image);
+		$DS_UpdateProduct = $this->Product->getDataSource();
+		$DS_UpdateProduct->begin();
+		
+		$this->Product->id = $id;
+		$this->Product->set(['sub_category_id'=>$sub_category_id,
+							'other_info'=>$other_info,
+							'image'=>$image]);
+		
+		if($this->Product->save()) {
+			echo json_encode("Product is Updated");
+			
+			$DS_ProductProperty = $this->ProductProperty->getDataSource();
+			$DS_ProductProperty->begin();
+			
+			$DS_ProductValue = $this->ProductValue->getDataSource();
+						$DS_ProductValue->begin();
+
+			$this->ProductProperty->id = $id;
+			$delete_properties = $this->ProductProperty->find('all', ['conditions'=>
+														['product_id'=>$id]]);
+			foreach ($delete_properties as $delete_property) {
+				$delete_property_id = $delete_property['ProductProperty']['id'];
+				
+				$this->ProductProperty->delete($delete_property_id);
+
+				$delete_values = $this->ProductValue->find('all',
+							['conditions'=>['product_property_id'=>$delete_property_id]]);
+				foreach ($delete_values as $delete_value) {
+					$delete_value_id = $delete_value['ProductValue']['id'];
+					
+					$this->ProductValue->delete($delete_value_id);
+				}
+			}
+			
+			if ($DS_ProductProperty->commit() && $DS_ProductValue->commit()) {
+				for($i=0; $i < count($appended_obj["appended"]); $i++) {
+					$prop = $appended_obj["appended"][$i]['prop'];
+					$val = $appended_obj["appended"][$i]['val'];
+					$price = $appended_obj["appended"][$i]['price'];
+					$default = $appended_obj["appended"][$i]['def'];
+					
+					$this->ProductProperty->create();
+					$this->ProductProperty->set(['name'=>$prop,
+												'product_id'=>$id]);
+												
+					if($this->ProductProperty->save()){
+						echo json_encode("ProductProperty is Updated");
+						$product_property_id = $this->ProductProperty->getLastInsertId();
+						
+						$this->ProductValue->create();
+						$this->ProductValue->set(['value'=>$val,
+												'price'=>$price,
+												'default'=>$default,
+												'product_property_id'=>$product_property_id]);
+												
+						if ($this->ProductValue->save()) {
+							echo json_encode("ProductValue is Updated");
+							$DS_ProductValue->commit();
+							$DS_ProductProperty->commit();
+							$DS_UpdateProduct->commit();
+						}
+						else {
+							$DS_ProductValue->rollback();
+							$DS_ProductProperty->rollback();
+							$DS_UpdateProduct->rollback();
+						}
+					}
+					else { 
+						$DS_ProductValue->rollback();
+						$DS_ProductProperty->rollback();
+						$DS_UpdateProduct->rollback();
+					}
+				}
+			}
+		}
+		$DS_ProductValue->commit();
+		$DS_ProductProperty->commit();
+		$DS_UpdateProduct->commit();
+		
+		return json_encode("Update Successful");
+		exit;
 	}
 }

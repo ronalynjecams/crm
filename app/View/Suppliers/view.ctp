@@ -27,7 +27,8 @@
 			</div><!-- end actions -->
 		</div><!-- end col md 3 -->
 
-		<div class="col-md-9">			
+		<div class="col-md-9">	
+		<div class="table-responsive">
 			<table cellpadding="0" cellspacing="0" class="table table-striped">
 				<tbody>
 				<tr>
@@ -123,7 +124,7 @@
 </tr>
 				</tbody>
 			</table>
-
+			</div>
 		</div><!-- end col md 9 -->
 
 	</div>
@@ -133,6 +134,7 @@
 	<div class="col-md-12">
 	<h3><?php echo __('Related Supplier Tags'); ?></h3>
 	<?php if (!empty($supplier['SupplierTag'])): ?>
+	<div class="table-responsive">
 	<table cellpadding = "0" cellspacing = "0" class="table table-striped">
 	<thead>
 	<tr>
@@ -161,6 +163,7 @@
 	<?php endforeach; ?>
 	</tbody>
 	</table>
+	</div>
 <?php endif; ?>
 
 	<div class="actions">

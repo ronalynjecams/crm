@@ -216,6 +216,7 @@
                 <div id="qInfo-panel-collapse" class="collapse in">
                     <div class="panel-body">
                         <div class="row">
+                            <div class="table-responsive">
                             <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <tr>
                                     <th>Date Created</th>
@@ -314,6 +315,7 @@
                                     <td colspan="4"></td>
                                 </tr>
                             </table> 
+                            </div>
                         </div> 
                     </div>
                 </div>

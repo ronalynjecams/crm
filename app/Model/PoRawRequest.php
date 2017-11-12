@@ -57,6 +57,16 @@ class PoRawRequest extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'product_combo_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'qty' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
@@ -80,6 +90,13 @@ class PoRawRequest extends AppModel {
 		'QuotationProduct' => array(
 			'className' => 'QuotationProduct',
 			'foreignKey' => 'quotation_product_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'ProductCombo' => array(
+			'className' => 'ProductCombo',
+			'foreignKey' => 'product_combo_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

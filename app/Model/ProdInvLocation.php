@@ -95,5 +95,7 @@ class ProdInvLocation extends AppModel {
 			'counterQuery' => ''
 		)
 	);
+	
+	public $hasOne = 'ProdInvCombo';
 
 }
