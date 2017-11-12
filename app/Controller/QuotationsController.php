@@ -660,7 +660,7 @@ class QuotationsController extends AppController {
         $quotation_id = $data['quotation_id'];
         $this->Quotation->id = $quotation_id;
         $this->Quotation->set(array(
-            'status' => 'moved',
+            'status' => 'accounting_moved',
             'vat_type' => $data['vat_type'],
             'quotation_term_id' => $term_id,
             'delivery_mode' => $data['delivery_mode'],
@@ -814,7 +814,7 @@ class QuotationsController extends AppController {
     
     
     public function proprietor() {
-        if ($this->Auth->user('role') == 'proprietor') {
+        if ($this->Auth->user('role') == 'proprietor' || $this->Auth->user('role') == 'accounting_head') {
             
         $quote_status = $this->params['url']['status'];
             $this->Quotation->recursive = 2;
@@ -822,7 +822,7 @@ class QuotationsController extends AppController {
                     'Quotation.status' => $quote_status),
                 'order' => 'Quotation.created DESC');
             $this->set('quotations', $this->Quotation->find('all', $options));
-        }
+        } 
     }
     
     public function proprietor_approve(){
@@ -831,14 +831,25 @@ class QuotationsController extends AppController {
         if ($this->request->is('ajax')) {
             $data = $this->request->data;
             $id = $data['id']; 
-
+            $usr = $data['usr']; 
+            
+            if($usr == 'proprietor'){
+                $dateA = 'date_approved';
+                $apprval = 'approved_by';
+                $stts = 'approved';
+            }else if($usr == 'accounting'){
+                $dateA = 'accounting_approved_date';
+                $apprval = 'accounting_approved';
+                $stts = 'accounting_moved';
+            }
+             
             $dateToday = date("Y-m-d H:i:s");
             $this->Quotation->id = $id;
             $this->Quotation->set(array(
-                'status' => 'approved',
-                'date_approved' => $dateToday,
-                'approved_by' => $this->Auth->user('id'),
-            ));
+                'status' => $stts,
+                $dateA => $dateToday,
+                $apprval => $this->Auth->user('id'),
+            )); 
             if ($this->Quotation->save()) {
                 return (json_encode($id));
             } else {

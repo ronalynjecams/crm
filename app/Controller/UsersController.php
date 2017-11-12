@@ -154,10 +154,13 @@ class UsersController extends AppController {
                 return $this->redirect('/users/dashboard_fitout');
             } else if ($this->Auth->user('role') == 'it_staff') {
                 return $this->redirect('/users/dashboard_it_staff');
-            } //////////////////new admin staff dashboard
-               else if ($this->Auth->user('role') == 'admin_staff') {
+            } else if ($this->Auth->user('role') == 'admin_staff') {
                 return $this->redirect('/users/dashboard_admin_staff');
-            } 
+            }  else if ($this->Auth->user('role') == 'proprietor') {
+                return $this->redirect('/users/dashboard_proprietor');
+            }   else if ($this->Auth->user('role') == 'accounting_head') {
+                    return $this->redirect('/users/dashboard_accounting_head');
+                } 
             
         }
 
@@ -194,9 +197,12 @@ class UsersController extends AppController {
                     return $this->redirect('/users/dashboard_fitout');
                 } else if ($this->Auth->user('role') == 'it_staff') {
                     return $this->redirect('/users/dashboard_it_staff');
-                } //////////////////new admin staff dashboard
-                else if ($this->Auth->user('role') == 'admin_staff') {
-                return $this->redirect('/users/dashboard_admin_staff');
+                } else if ($this->Auth->user('role') == 'admin_staff') {
+                    return $this->redirect('/users/dashboard_admin_staff');
+                }  else if ($this->Auth->user('role') == 'proprietor') {
+                    return $this->redirect('/users/dashboard_proprietor');
+                }  else if ($this->Auth->user('role') == 'accounting_head') {
+                    return $this->redirect('/users/dashboard_accounting_head');
                 } 
             
             }

@@ -302,7 +302,9 @@
                 var qid = $(this).data("viewquoteid");
                 var userrole = $(this).data("userrole");
                 if((userrole == 'supply_staff')||(userrole == 'supply_head')){
-                    window.open("/quotations/view_supply?id=" + qid, '_blank');
+                    // window.open("/quotations/view_supply?id=" + qid, '_blank');
+                    window.open("/purchase_orders/quotation_view_supply?id=" + qid, '_blank'); 
+
                 }else{
                     window.open("/quotations/view?id=" + qid, '_blank');
                 }

@@ -119,9 +119,14 @@
                                 <input type="hidden" id="supId" value="<?php echo $this->params['url']['id']; ?>">
                                 <select class="form-control" id="pd_id">
                                     <option></option> 
-                                    <?php foreach ($products as $product) { ?>
-                                        <option><?php echo h($product['ProductCombo']['Product']['name'])?></option>
-                                    <?php } ?>
+                                    <?php //foreach ($products as $product) { ?>
+                                        <!--<option><?php echo h($product['ProductCombo']['Product']['name'])?></option>-->
+                                    <?php //} ?>
+                                      <?php
+                                    foreach ($prods as $prod) {
+                                        echo '<option value="' . $prod['Product']['id'] . '">' . $prod['Product']['name'] . '</option>';
+                                    }
+                                    ?>
                                 </select>
                             </div> 
                         </div> 

@@ -170,7 +170,7 @@ class CollectionSchedulesController extends AppController {
         $quotation_id = $data['quotation_id'];
         $this->Quotation->id = $quotation_id;
         $this->Quotation->set(array(
-            'status' => 'moved',
+            'status' => 'accounting_moved',
             'vat_type' => $data['vat_type'],
             'quotation_term_id' => $data['term_id'],
             'delivery_mode' => $data['delivery_mode'],

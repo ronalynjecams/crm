@@ -240,6 +240,42 @@ class InventoryProductsController extends AppController {
 		}
 		
 	}
+    //codes as of 11-06-2017
+
+    public function get_inventory_products() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $inv_location_id = $this->request->query['id']; 
+            $this->InventoryProduct->recursive = -1;
+            $inv_products = $this->InventoryProduct->find('all', [
+                'conditions' => ['InventoryProduct.inv_location_id' => $inv_location_id],
+                'fields' => ['Distinct(InventoryProduct.product_combo_id)']
+            ]);
+            
+            $arr = [];
+            foreach($inv_products as $prod_combo_id){
+                array_unique($prod_combo_id, array_push($arr,$prod_combo_id['InventoryProduct']['product_combo_id']));
+            }
+            
+            $this->loadModel('ProductCombo');
+            $prods = $this->ProductCombo->find('all',[
+                'conditions'=>['ProductCombo.id'=>$arr],
+                'fields'=>['Distinct(Product.id)']
+            ]);
+            
+            $arr_product = [];
+            $this->loadModel('Product');
+            $prds = $this->Product->find('all',[
+                'conditions'=>['Product.id'=>1]]);
+            
+            return json_encode($prds);
+            
+            
+            
+            exit;
+        }
+    }
 
 	
 }

@@ -17,7 +17,7 @@
     <!--Page Title-->
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <div id="page-title">
-        <h1 class="page-header text-overflow"><?php echo ucwords($this->params['url']['status']); ?> Quotations</h1>
+        <h1 class="page-header text-overflow"><?php if($this->params['url']['status'] == 'accounting_moved'){echo 'Approved by Accounting';}else{echo ucwords($this->params['url']['status']);} ?> Quotations</h1>
     </div>
 
     <!--Page content-->
@@ -35,7 +35,7 @@
                                 <?php
                                 if($this->params['url']['status'] == 'pending'){
                                     echo 'Created';
-                                }else if($this->params['url']['status'] == 'moved'){
+                                }else if($this->params['url']['status'] == 'moved' || $this->params['url']['status'] == 'accounting_moved'){
                                     echo 'Moved';
                                 }else if($this->params['url']['status'] == 'approved'){
                                     echo 'Approved';
@@ -62,7 +62,7 @@
                                 if($this->params['url']['status'] == 'pending'){
                                     echo date('F d, Y', strtotime($pending_quotation['Quotation']['created']));
                                     echo '<br/><small>' . date('h:i a', strtotime($pending_quotation['Quotation']['created'])) . '</small>';
-                                 }else if($this->params['url']['status'] == 'moved'){
+                                 }else if($this->params['url']['status'] == 'moved'  || $this->params['url']['status'] == 'accounting_moved'){
                                     echo date('F d, Y', strtotime($pending_quotation['Quotation']['date_moved']));
                                     echo '<br/><small>' . date('h:i a', strtotime($pending_quotation['Quotation']['date_moved'])) . '</small>';
                                  }else if($this->params['url']['status'] == 'approved'){
@@ -104,13 +104,23 @@
                                 <td>
                                     <button class="btn btn-info btn-icon add-tooltip view_quote" data-toggle="tooltip"  data-original-title="View Quotation?" data-viewquoteid="<?php echo $pending_quotation['Quotation']['id']; ?>"><i class="fa fa-eye"></i> </button>
                                
-                                    <?php if (AuthComponent::user('role') == 'proprietor') { ?>
-                                         <?php
-                                        if ($this->params['url']['status'] == 'moved') { ?>
-                                            <button class="btn btn-danger btn-icon add-tooltip approve_quote" data-toggle="tooltip"  data-original-title="Approve Quotation?" data-apquoteid="<?php echo $pending_quotation['Quotation']['id']; ?>" >Approve</button>
+                                    <?php
+                                    if (AuthComponent::user('role') == 'proprietor') { 
+                                        
+                                        if ($this->params['url']['status'] == 'accounting_moved') { ?>
+                                            <button class="btn btn-danger btn-icon add-tooltip approve_quote" data-toggle="tooltip"  data-original-title="Approve Quotation?" data-apquoteid="<?php echo $pending_quotation['Quotation']['id']; ?>" data-usr="proprietor" >Approve</button>
                                            <?php
                                         }
                                     }
+                                    
+                                    if (AuthComponent::user('role') == 'accounting_head') { 
+                                        
+                                        if ($this->params['url']['status'] == 'moved') { ?>
+                                            <button class="btn btn-danger btn-icon add-tooltip approve_quote" data-toggle="tooltip"  data-original-title="Approve Quotation?" data-apquoteid="<?php echo $pending_quotation['Quotation']['id']; ?>"  data-usr="accounting">Approve</button>
+                                           <?php
+                                        }
+                                    }
+                                     
                                     ?>
                                 </td> 
                             </tr>
@@ -280,6 +290,7 @@
         $('.approve_quote').each(function (index) {
             $(this).click(function () {
                 var id = $(this).data("apquoteid"); 
+                var usr = $(this).data("usr"); 
                  
                 swal({
                     title: "Are you sure?",
@@ -297,7 +308,7 @@
                                 $.ajax({
                                     url: "/quotations/proprietor_approve",
                                     type: 'POST',
-                                    data: {'id': id},
+                                    data: {'id': id, 'usr': usr},
                                     dataType: 'json',
                                     success: function (dd) {
                                         location.reload();

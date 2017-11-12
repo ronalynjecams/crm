@@ -289,4 +289,35 @@ class SupplierProductsController extends AppController {
 		}
     }
     
+    
+    /////////////////new codes as of 11-03-2017
+    public function get_supplier_product_combo() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $product_combo_id = $this->request->query['id'];
+            $this->SupplierProduct->recursive=2;
+            $product_supplier = $this->SupplierProduct->findAllByProductComboId($product_combo_id);
+            return json_encode($product_supplier);
+            exit;
+        }
+    }
+    
+    public function get_po_product_last_supplier(){
+        $this->loadModel('PurchaseOrder');
+        $this->loadModel('PurchaseOrderProduct');
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $product_combo_id = $this->request->query['id']; 
+        $this->PurchaseOrderProduct->recursive = 2;
+            $product_combo_supplier = $this->PurchaseOrder->PurchaseOrderProduct->find('all',[
+                'conditions'=>['PurchaseOrderProduct.product_combo_id' => $product_combo_id],
+                'fields'=>['MAX(PurchaseOrder.id) as po_id', 'PurchaseOrder.*']
+            ]);
+            return json_encode($product_combo_supplier);
+            exit;
+        }
+    }
+    
 }

@@ -53,7 +53,10 @@ class AppController extends Controller {
         $moved_quote_count_left_side = $this->Quotation->find('count', array(
         'conditions' => array('Quotation.status' => 'moved' 
             )));
-        $this->set(compact('moved_quote_count_left_side'));  
+        $accounting_moved_quote_count_left_side = $this->Quotation->find('count', array(
+        'conditions' => array('Quotation.status' => 'accounting_moved' 
+            )));
+        $this->set(compact('moved_quote_count_left_side','accounting_moved_quote_count_left_side'));  
         
 //        if($this->Auth->user('role') == 'new'){
 //            return $this->redirect('/users/login?profile=incomplete');
