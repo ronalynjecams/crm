@@ -35,6 +35,7 @@
 						<th><?php echo $this->Paginator->sort('reference_type'); ?></th>
 						<th><?php echo $this->Paginator->sort('mode'); ?></th>
 						<th><?php echo $this->Paginator->sort('mode_num'); ?></th>
+						<th><?php echo $this->Paginator->sort('product_combo_id'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
 						<th class="actions"></th>
@@ -48,6 +49,7 @@
 						<td><?php echo h($transactionSource['TransactionSource']['reference_type']); ?>&nbsp;</td>
 						<td><?php echo h($transactionSource['TransactionSource']['mode']); ?>&nbsp;</td>
 						<td><?php echo h($transactionSource['TransactionSource']['mode_num']); ?>&nbsp;</td>
+						<td><?php echo h($transactionSource['TransactionSource']['product_combo_id']); ?>&nbsp;</td>
 						<td><?php echo h($transactionSource['TransactionSource']['created']); ?>&nbsp;</td>
 						<td><?php echo h($transactionSource['TransactionSource']['modified']); ?>&nbsp;</td>
 						<td class="actions">

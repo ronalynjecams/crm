@@ -28,7 +28,7 @@
                 <div id="products-panel-collapse" class="collapse in">
                     <div class="panel-body">
                         <?php if (count($jr_products) != 0) { ?>
-                            <div class="table-responsive">
+                            
                                 <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
@@ -112,7 +112,7 @@
                                     </tbody>
                                 </table>
                                 </div>
-                            </div> 
+                            
                         <?php } ?>
                     </div>
                 </div>

@@ -12,7 +12,8 @@
 <script src="../js/erp_js/quotation.js"></script> 
 <script src="../js/erp_js/erp_scripts.js"></script>  
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
-<script src="../js/sweetalert.min.js"></script>  
+<script src="../js/sweetalert.min.js"></script>
+
 <!--===================================================-->
 <div id="content-container" >
     <div id="page-title">
@@ -311,7 +312,7 @@
                 <div id="products-panel-collapse" class="collapse in">
                     <div class="panel-body">
                         <?php if (count($quote_products) != 0) { ?>
-                            <div class="table-responsive">
+                            
                                 <div class="table-responsive">
                                 <table class="table table-striped">
                                     <!--<thead>-->
@@ -362,11 +363,12 @@
                                     </tbody>
                                 </table>
                                 </div>
-                            </div>
+                            
 
 
                             <div class="col-sm-7"></div>
                             <div class="col-sm-5" align="right">
+                                <div class="table-responsive">
                                 <table>
                                     <tr>
                                         <td><b>Sub Total:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b></td>
@@ -403,6 +405,7 @@
                                         </td>
                                     </tr>
                                 </table> 
+                                </div>
                             </div>
 
 

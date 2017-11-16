@@ -65,6 +65,13 @@
 		</td>
 </tr>
 <tr>
+		<th><?php echo __('Product Combo Id'); ?></th>
+		<td>
+			<?php echo h($transactionSource['TransactionSource']['product_combo_id']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
 			<?php echo h($transactionSource['TransactionSource']['created']); ?>
