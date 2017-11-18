@@ -1,21 +1,15 @@
-<!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
 <script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
 <script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
-<!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
 <script src="../js/erp_js/erp_scripts.js"></script>
-
-<!-- REQUIRED FOR MULTIPLE SELECT ON QUOTATION -->
-<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">
-<script src="../plugins/chosen/chosen.jquery.min.js"></script>
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -26,7 +20,6 @@
         <h1 class="page-header text-overflow">Official Businesses</h1>
     </div>
 
-        
     <!--Page content-->
     <!--===================================================-->
     <div id="page-content">
@@ -35,15 +28,10 @@
             <div class="row">
         <div class="col-sm-12">
             <div class="panel">
-
              <div class="panel-heading" align="left">
                  <div class="panel-control">
-                        <?php #if ($UserIn['User']['role'] == 'fitout_facilitator') { ?>
-                           
-                        <?php #} ?> </h3>
-                     
+                           <button class="btn btn-success btn-sm add-tooltip" id="addOB" data-toggle="tooltip" data-placement="left" data-original-title="Add official business"><i class="fa fa-plus"></i>&nbsp;Add official business</button>
                 </div>
-                
             </div>
            
             <div class="panel-body">
@@ -115,8 +103,126 @@
 
 </div>
 </div>
+<!-- Add Modal for Start -->
+<!--===================================================-->
+<div class="modal fade" id="add-ob-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Add Official Business</h4>
+            </div>
+            <!--Modal body-->
+             <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
 
-<!-- Edit product Modal Start-->
+                        <div class="col-sm-6">
+                            <label>Mode</label>
+                            <select class="form-control" id="mode">
+                                <option value="none">Select a mode</option>
+                                <option value="ob">ob</option>
+                                <option value="gate_pass">gate_pass</option>
+                                <option value="site_visit">site_visit</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label>Companion</label>
+                            
+                            <select class="form-control selectpicker" id="user" multiple >
+                               <?php
+                                    foreach($users as $user){ 
+                                ?>
+                                        <option value="<?php echo $user['User']['id'] ?>">
+                                            <?php echo $user['User']['first_name']." ".$user['User']['last_name']; ?>
+                                        </option>
+                                <?php
+                                    }
+                                ?>
+
+                            </select>
+                            
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label>Expected Departure Date</label>
+                            <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="exp_date">
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Expected Departure Time</label>
+                            <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="exp_time">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group" >
+                        
+                        <?php if( $UserIn['User']['role'] == 'sales_executive' ){ ?>
+                        <div class="col-sm-12">
+                            <label>Client</label>
+                            <select class="form-control" id="client">
+                                <option value="0">Select a client</option>
+                                <?php foreach ($my_official_business_lists as $client) {?>
+                                    <option value="<?php echo $client['OfficialBusiness']['Client']['id']; ?>"><?php echo $client['OfficialBusiness']['Client']['name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <?php }else if( $UserIn['User']['role'] == 'sales_manager' ){ ?>
+                        <div class="col-sm-12">
+                            <label>Client</label>
+                            <select class="form-control" id="client">
+                                <option value="0">Select a client</option>
+                                <?php foreach ($my_official_business_lists as $client) {?>
+                                    <option value="<?php echo $client['OfficialBusiness']['Client']['team_id']; ?>"><?php echo $client['OfficialBusiness']['Client']['team_id']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+
+                        <?php }else{ ?>
+                            <div class="col-sm-12">
+                                <label>Company Name</label>
+                                <input type="text" class="form-control" id="company">
+                            </div> 
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                        <input type="checkbox" id="svrequest"> check for service request
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>Purpose</label></label>
+                        <textarea class="form-control" id="purpose"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="addOBProcess">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--===================================================-->
+<!-- Add Modal End!-->
+<!-- Edit Modal Start-->
 <!--===================================================-->
 <div class="modal fade" id="edit-report-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
@@ -148,13 +254,17 @@
 </div>
 </div>
 <!--===================================================-->
-<!-- Edit product Modal End!-->
-
+<!-- Edit Modal End!-->
 
 <!---JAVASCRIPT FUNCTIONS--->
 <script>
     $(document).ready(function () {
-        
+        $('#addOB').on("click", function () {
+            $('#add-ob-modal').modal('show');
+        });
+    
+         $('.selectpicker').selectpicker('deselectAll');
+         
         $('#example1').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
@@ -179,9 +289,208 @@
         });
     });
       
-    })
+    });
+    
 </script>
+<?php
+if($UserIn['User']['role'] == 'sales_executive'){
+?>
+<script>
+    $('#addOBProcess').on("click", function () {
+        var mode = $('#mode').val();
+        var user = $('.selectpicker').val();
+        var exp_date = $('#exp_date').val();
+        var exp_time = $('#exp_time').val();
+        var client=$('#client').val();
+        
+        if ($('#svrequest').is(":checked")){
+             var svrequest = 1;
+        }else{
+            var svrequest = 0;
+        }
+        
+        var purpose = $('#purpose').val();
+        
+         if ((mode != "none" )){ 
+                 if((exp_date != "" )){
+                     if((exp_time != "")){
+                          if((client != 0)){
+                            if((purpose != "")){
+                                
+                            var data = {"mode": mode, "user": user, "exp_date": exp_date, "exp_time": exp_time, "client": client, "svrequest": svrequest, "purpose": purpose }
+                            
+                            $.ajax({
+                                url: "/official_businesses/add_ob_sales",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'json',
+                                success: function (data) {
+                                  location.reload(true);
+                                    
+                                },
+                                error: function () {
+                                    alert('error')
+                                    console.log(data);
+                                }
+                            });
+                            
+        } else {
+            document.getElementById('purpose').style.borderColor = "red";
+        }
+        
+                         
+        } else {
+            document.getElementById('client').style.borderColor = "red";
 
+        }
+        
+        } else {
+            document.getElementById('exp_time').style.borderColor = "red";
+        }
+
+                            
+        } else {
+            document.getElementById('exp_date').style.borderColor = "red";
+
+        }
+                            
+        } else {
+            document.getElementById('mode').style.borderColor = "red";
+
+        }
+            
+        });
+</script>
+<?php }else if($UserIn['User']['role'] == 'sales_manager'){ ?>
+<script>
+   $('#addOBProcess').on("click", function () {
+        var mode = $('#mode').val();
+        var user = $('.selectpicker').val();
+        var exp_date = $('#exp_date').val();
+        var exp_time = $('#exp_time').val();
+        var client=$('#client').val();
+       
+        if ($('#svrequest').is(":checked")){
+             var svrequest = 1;
+        }else{
+            var svrequest = 0;
+        }
+        
+        var purpose = $('#purpose').val();
+        
+         if ((mode != "none" )){ 
+                 if((exp_date != "" )){
+                     if((exp_time != "")){
+                            if((purpose != "")){
+                                
+                            var data = {"mode": mode, "user": user, "exp_date": exp_date, "exp_time": exp_time, "client": client, "svrequest": svrequest, "purpose": purpose }
+                            
+                            $.ajax({
+                                url: "/official_businesses/add_ob_sales",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'json',
+                                success: function (data) {
+                                    location.reload(true);
+                                },
+                                error: function () {
+                                    alert('error')
+                                }
+                            });
+                            
+        } else {
+            document.getElementById('purpose').style.borderColor = "red";
+        }
+                            
+        } else {
+            document.getElementById('exp_time').style.borderColor = "red";
+        }
+
+                            
+        } else {
+            document.getElementById('exp_date').style.borderColor = "red";
+
+        }
+                            
+        } else {
+            document.getElementById('mode').style.borderColor = "red";
+
+        }
+            
+        });
+</script>
+<?php }else{ ?>
+<script>
+       $('#addOBProcess').on("click", function () {
+        var mode = $('#mode').val();
+        var user = $('.selectpicker').val();   //.val();
+
+        var exp_date = $('#exp_date').val();
+        var exp_time = $('#exp_time').val();
+        var company = $('#company').val();
+       
+        if ($('#svrequest').is(":checked")){
+             var svrequest = 1;
+        }else{
+            var svrequest = 0;
+        }
+        
+        var purpose = $('#purpose').val();
+        
+         if ((mode != "none" )){ 
+             
+            if((exp_date != "" )){
+                
+                if((exp_time != "")){
+                    
+                    if((company != "")){
+                            
+                        if((purpose != "")){
+                                
+                            var data = {"mode": mode, "user": user, "exp_date": exp_date, "exp_time": exp_time, "company": company, "svrequest": svrequest, "purpose": purpose }
+                            console.log(data);
+                            
+                            $.ajax({
+                                url: "/official_businesses/add_ob_users",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'json',
+                                success: function (data) {
+                                    location.reload(true);
+                                },
+                                error: function () {
+                                    alert('error')
+                                }
+                             
+                             
+                            });
+                            
+        } else {
+            document.getElementById('purpose').style.borderColor = "red";
+        }
+        
+        } else {
+            document.getElementById('company').style.borderColor = "red";
+        }
+                            
+        } else {
+            document.getElementById('exp_time').style.borderColor = "red";
+        }
+
+                            
+        } else {
+            document.getElementById('exp_date').style.borderColor = "red";
+
+        }
+                            
+        } else {
+            document.getElementById('mode').style.borderColor = "red";
+
+        }
+            
+        });
+</script>
+<?php } ?>
 <script> 
     function killCopy(e) {
         return false

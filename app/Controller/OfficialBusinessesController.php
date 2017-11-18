@@ -115,20 +115,23 @@ class OfficialBusinessesController extends AppController {
 		$this->loadModel('OfficialBusinessReport');
 		$this->loadModel('Client');
 		$this->loadModel('User');
+		$this->loadModel('Team');
 		 
 		$passed_mode = $this->params['url']['mode'];
 		$passed_status = $this->params['url']['status'];
         
+        $users = $this->User->find('all'); // list all users
+        // $clients = $this->Client->find('all'); // list all clients
+        
         $this->OfficialBusinessReport->recursive=4;
         $my_official_business_lists = $this->OfficialBusinessReport->find('all', ['conditions'=>['OfficialBusiness.mode'=>$passed_mode, 'OfficialBusiness.status'=>$passed_status]]);
-        $this->set(compact('my_official_business_lists'));
-        
+        $this->set(compact('my_official_business_lists', 'users'));
+
         // debug($my_official_business_lists);
 	}
 	
 	
 	public function all_list(){
-		$this->loadModel('OfficialBusiness');
 		$this->loadModel('OfficialBusinessReport');
 		$this->loadModel('Client');
 		$this->loadModel('User');
@@ -143,7 +146,6 @@ class OfficialBusinessesController extends AppController {
 	}
 	
 	public function update_status($id=null){
-		$this->loadModel('OfficialBusiness');
 		$this->loadModel('User');
 		
 		$this->autoRender = false;
@@ -176,7 +178,6 @@ class OfficialBusinessesController extends AppController {
 	}
 
 	public function approve($id=null){
-		$this->loadModel('OfficialBusiness');
 		$this->loadModel('User');
 		
 		$this->autoRender = false;
@@ -208,4 +209,102 @@ class OfficialBusinessesController extends AppController {
         exit;
         
 	}
+    
+	public function add_ob_sales(){
+        
+        $this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $mode = $data['mode'];
+        $user = json_encode($data['user']);
+        $exp_date = $data['exp_date'];
+        $exp_time = $data['exp_time'];
+        $status = "pending";
+		$client = $data['client'];
+        $svrequest = $data['svrequest'];
+        $purpose = $data['purpose'];
+        
+        
+        $combined_DT = date('Y-m-d H:i:s', strtotime("$exp_date $exp_time"));
+
+        if($this->request->is('post')){
+				
+			$OB_TS = $this->OfficialBusiness->getDataSource();
+			$OB_TS->begin();    
+			
+			$this->OfficialBusiness->create();
+			
+			$this->OfficialBusiness->set(array(
+				'mode' => $mode,
+				'user_id' => $user,
+				'expected_departure' => $combined_DT,
+				'status' => $status,
+				'service_request' => $svrequest,
+				'client_id' => $client,
+				'purpose' => $purpose
+            ));
+            
+            $save = $this->OfficialBusiness->save();
+			if($save){
+				$OB_TS->commit();
+				echo json_encode($this->request->data); 
+				
+			}else{
+				$OB_TS->rollback();
+				return json_encode(['ob' => $user, 'status' => 'error']);
+			}
+			exit;
+		}
+	}
+	
+	public function add_ob_users(){
+        
+        $this->autoRender = false;
+        header("Content-type:application/json");
+        $data = $this->request->data;
+        
+        $mode = $data['mode'];
+        $user = json_encode($data['user']);
+        $exp_date = $data['exp_date'];
+        $exp_time = $data['exp_time'];
+		$company = $data['company'];
+		
+        $svrequest = $data['svrequest'];
+        $purpose = $data['purpose'];
+        $status = "pending";
+        $combined_DT = date('Y-m-d H:i:s', strtotime("$exp_date $exp_time"));
+
+
+        if($this->request->is('post')){
+				
+			$OB_TS = $this->OfficialBusiness->getDataSource();
+			$OB_TS->begin();
+			
+			$this->OfficialBusiness->create();
+			
+			$this->OfficialBusiness->set(array(
+				'mode' => $mode,
+				'user_id' => $user,
+				'expected_departure' =>  $combined_DT,
+				'status' => $status,
+				'company_name' => $company,
+				'purpose' => $purpose
+            ));
+            
+            $save = $this->OfficialBusiness->save();
+            
+			if($save){
+				$OB_TS->commit();
+				echo json_encode($this->request->data); 
+				
+			}else{
+				$OB_TS->rollback();
+				return json_encode(['ob' => $user, 'status' => 'error']);
+			}
+			exit;
+		}
+
+	}
+	
 }
