@@ -33,14 +33,16 @@
                 <?php } ?>
                 <br/>
                 <div class="table-responsive">
-                    <table id="example" class="table table-striped table-bordered"
-    					        cellspacing="0" width="100%">
+                    <table id="example"
+                           class="table table-striped table-bordered"
+					       cellspacing="0" width="100%"
+    					   data-sort-name="no_pur" data-sort-order="asc">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Product</th>
                                 <th>Description</th>
-                                <th>Number of times Purchased</th>
+                                <th data-field="no_pur" data-sortable="true">Number of times Purchased</th>
                             </tr>
                         </thead>
                         <tbody id="here">
@@ -106,16 +108,17 @@
 <script>
     $(document).ready(function() {
         $('#example').DataTable({
-            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-            "order": [[0, "asc"]],
-            "stateSave": true
+            "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
+            "orderable": true,
+            "order": [[3,"asc"]],
+            "stateSave": false
         });
         
         $('select option[value="<?php echo $passed_dept; ?>"]').prop("selected", true);
         
         $("#select_purchasing_dept").change(function() {
             var purchasing_dept = $(this).val();
-            window.location.replace("/purchase_order_products/top_purchased?limit=0&&dept="+purchasing_dept+"");
+            window.location.replace("/purchase_order_products/top_purchased?dept="+purchasing_dept+"");
         }); 
     });
 </script>

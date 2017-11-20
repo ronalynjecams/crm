@@ -122,6 +122,59 @@
                             </li>
                             <li>
                                 <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Cash Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=acknowledged">Acknowledged</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Cheque Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Petty Cash Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=replenished">Replenished</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
                                     <i class="fa fa-file-pdf-o"></i>
                                     <span class="menu-title">
                                         <strong>Quotations</strong>
@@ -370,10 +423,10 @@
                                     <i class="arrow"></i>
                                 </a> 
                                 <ul class="collapse">  
-                                    <li><a href="/purchase_order_products/top_purchased?limit=0&&dept=<?php echo $UserIn['User']['department_id']; ?>">Top Purchased</a></li>
-                                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li>
-                                    <li><a href="/purchase_orders/po?status=pending">Pending</a></li>   
-                                    <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
+                                    <li><a href="/purchase_order_products/top_purchased?dept=<?php echo $UserIn['User']['department_id']; ?>">Top Purchased</a></li>
+                                    <li><a href="/purchase_orders/all_list?status=ongoing">Ongoing</a></li>
+                                    <li><a href="/purchase_orders/all_list?status=pending">Pending</a></li>   
+                                    <li><a href="/purchase_orders/all_list?status=processed">Processed</a></li>   	
                                 </ul>
                             </li> 
                             <li >
@@ -435,9 +488,9 @@
                                     <i class="arrow"></i>
                                 </a> 
                                 <ul class="collapse">  
-                                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li>
-                                    <li><a href="/purchase_orders/po?status=pending">Pending</a></li>   
-                                    <li><a href="/purchase_orders/po?status=processed">Processed</a></li>   	
+                                    <li><a href="/purchase_orders/all_list?status=ongoing">Ongoing</a></li>
+                                    <li><a href="/purchase_orders/all_list?status=pending">Pending</a></li>   
+                                    <li><a href="/purchase_orders/all_list?status=processed">Processed</a></li>   	
                                 </ul>
                             </li> 
                             <li >
@@ -568,6 +621,14 @@
                                     <li><a href="/collections/accounting?status=paid">Fully Collected</a></li> 
 
                                 </ul>
+                            </li>
+                            <li>
+                                <a href="/statement_of_accounts/all_list"> 
+                                    <i class="fa fa-newspaper-o"></i>
+                                    <span class="menu-title">
+                                        <strong>Statement of accounts</strong>
+                                    </span>
+                                </a>
                             </li> 
                             <li>
                                 <a href=""> 
@@ -582,15 +643,64 @@
                                     <li><a href="/collection_papers/advance_invoice?status=served">Served</a></li>
                                 </ul>
                             </li> 
-                            <!--						            <li>
-                                                                                            <a href="/collection_papers/advance_invoice"> 
-                                                                                                <i class="fa fa-file"></i>
-                                                                                                <span class="menu-title">
-                                                                                                    <strong>For Advance Invoice</strong>
-                                                                                                </span>
-                                                                                            </a>
-                                                                                        </li>  -->
-
+                        <?php } ?>
+                        <?php
+                            if($UserIn['User']['role']=="accounting_assistant" ||
+                               $UserIn['User']['role']=="proprietor_secretary") {
+                                   ?>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Cash Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=acknowledged">Acknowledged</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Cheque Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Petty Cash Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=replenished">Replenished</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
                         <?php } ?>
                         <!-- collection_officer -->
 
@@ -613,9 +723,9 @@
                                     <i class="arrow"></i>
                                 </a> 
                                 <ul class="collapse">  
-                                    <li><a href="/purchase_orders/po?status=ongoing">New</a></li>
-                                    <li><a href="/purchase_orders/po?status=ongoing">Ongoing</a></li> 
-                                    <li><a href="/purchase_orders/po?status=ongoing">Finished</a></li>  
+                                    <li><a href="/purchase_orders/all_list?status=ongoing">New</a></li>
+                                    <li><a href="/purchase_orders/all_list?status=ongoing">Ongoing</a></li> 
+                                    <li><a href="/purchase_orders/all_list?status=ongoing">Finished</a></li>  
                                 </ul>
                             </li> 
                             <li>
@@ -762,6 +872,59 @@
                                         <strong>Dashboard</strong>
                                     </span>
                                 </a>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Cash Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=acknowledged">Acknowledged</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cash&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Cheque Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=cheque&&status=closed">Closed</a></li> 
+                                </ul>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-money"></i>
+                                    <span class="menu-title">
+                                        <strong>Petty Cash Request</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">  
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=approved">Approved</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=released">Released</a></li>
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=liquidated">Liquidated</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=verified">Verified</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=replenished">Replenished</a></li> 
+                                    <li><a href="/payment_requests/all_list?type=pettycash&&status=closed">Closed</a></li> 
+                                </ul>
                             </li>
                             <li>
                                 <a href=""> 

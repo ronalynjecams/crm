@@ -199,6 +199,8 @@ class ProductsController extends AppController {
 		$other_info = $data['other_info'];
 		$sub_category = $data['sub_category'];
 		$image = $data['image'];
+		$type = $data['type'];
+		$sale_price = $data['sale_price'];
 		
 		$required_properties = $data['required_properties'];
 		$required_values = $data['required_values'];
@@ -215,7 +217,9 @@ class ProductsController extends AppController {
 							'other_info'=>$other_info,
 							'sub_category'=>$sub_category,
 							'image'=>$image,
-							'sub_category_id'=>$sub_category]);
+							'sub_category_id'=>$sub_category,
+							'type'=>$type,
+							'sale_price'=>$sale_price]);
 							
         if ($this->Product->save()){
 			echo json_encode("product saved");
@@ -355,6 +359,8 @@ class ProductsController extends AppController {
 		$image_change = $data['image_change'];
 		$image_keep = $data['image_keep'];
 		$keep_image = $data['keep_image'];
+		$sale_price = $data['sale_price'];
+		$type = $data['type'];
 		$appended_obj = $data['appended_obj'];
 		
 		if($keep_image=="true"){
@@ -371,7 +377,9 @@ class ProductsController extends AppController {
 		$this->Product->id = $id;
 		$this->Product->set(['sub_category_id'=>$sub_category_id,
 							'other_info'=>$other_info,
-							'image'=>$image]);
+							'image'=>$image,
+							'sale_price'=>$sale_price,
+							'type'=>$type]);
 		
 		if($this->Product->save()) {
 			echo json_encode("Product is Updated");

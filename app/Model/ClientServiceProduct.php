@@ -96,8 +96,8 @@ class ClientServiceProduct extends AppModel {
 			),
 		),
 		'expected_demo_data' => array(
-			'date' => array(
-				'rule' => array('date'),
+			'datetime' => array(
+				'rule' => array('datetime'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -106,8 +106,8 @@ class ClientServiceProduct extends AppModel {
 			),
 		),
 		'expected_pullout_date' => array(
-			'date' => array(
-				'rule' => array('date'),
+			'datetime' => array(
+				'rule' => array('datetime'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -116,8 +116,8 @@ class ClientServiceProduct extends AppModel {
 			),
 		),
 		'pullout_data' => array(
-			'date' => array(
-				'rule' => array('date'),
+			'datetime' => array(
+				'rule' => array('datetime'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,

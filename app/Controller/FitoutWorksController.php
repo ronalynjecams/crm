@@ -251,7 +251,8 @@ class FitoutWorksController extends AppController {
     	
     	$fitout_work_id = $this->params['url']['id'];
     	$fitout_work_object = $this->FitoutWork->findById($fitout_work_id);
-    	$this->set(compact('fitout_work_object'));
+    	$fo_work_status = $fitout_work_object['FitoutWork']['status'];
+    	$this->set(compact('fitout_work_object', 'fo_work_status'));
     	
 		$clients = $this->Client->find('all', ['conditions'=>['Client.lead'=>0]]);
 		$this->set(compact('clients'));
@@ -272,7 +273,7 @@ class FitoutWorksController extends AppController {
     
     public function update_fitout_works() {
     	$this->autoRender = false;
-    	$this->response->type('json');
+    	$this->response->type('text');
     	
     	$this->loadModel('FitoutWork');
     	$this->loadModel('FitoutQoute');
@@ -298,6 +299,7 @@ class FitoutWorksController extends AppController {
     								'user_id'=>$user_id]);
 
             if ($this->FitoutWork->save()) {
+            	echo json_encode("Fitout work saved");
             	$this->FitoutQoute->recursive = -1;
             	$fitout_quotes = $this->FitoutQoute->find('all', ['conditions'=>['FitoutQoute.fitout_work_id'=>$id]]);
  
@@ -326,8 +328,6 @@ class FitoutWorksController extends AppController {
             		}
             		else {
             			if (!empty($data['old_quotation_id'])) {
-            				echo json_encode($data['old_quotation_id']);
-            
 	        				foreach($data['old_quotation_id'] as $old_quote) {
 	        					$this->FitoutQoute->create();
 	    						$this->FitoutQoute->set(['quotation_id'=>$old_quote, 'fitout_work_id'=>$id]);
@@ -344,9 +344,10 @@ class FitoutWorksController extends AppController {
 	        				
 	        				$DS_FitoutWork->rollback();
 	        				$DS_FitoutWork->rollback();
-	        				
-	        				$this->Session->setFlash('No Quotation was selected. Please try again.');
-	        				return;
+        					$this->Session->setFlash('No Quotation was selected. Please try again.',
+							'default', array('class' => 'alert alert-danger'), 'alertforexisting');
+	        				return json_encode('No Quotation was selected. Please try again.');
+	        				exit;
 	        			}
 	        		}
 	        			
@@ -354,9 +355,9 @@ class FitoutWorksController extends AppController {
 	    			else { $DS_FitoutWork->rollback(); $DS_FitoutWork->rollback(); }
             }
             $DS_FitoutWork->commit();
-            
-            return json_encode($data);
         }
+        return json_encode($data);
+        exit;
     }
 
 	public function view_works() {

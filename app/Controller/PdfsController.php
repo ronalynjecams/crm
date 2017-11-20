@@ -731,7 +731,7 @@ $this->Mpdf->AddPage();
         </td> 
         <td width="200" align="left" style="padding-left:5px;padding-right:10px;padding-bottom:-50px;">
             <font style="font-size:11px;">
-            <p style="margin-top: -5px;"><b>DR Number:</b> DR-' . $delivery['DeliverySchedule']['dr_number'] . '</p>  
+            <p style="margin-top: -5px;"><b>DR Number:</b>'. $delivery['DeliverySchedule']['dr_number'] . '</p>  
             <p>' .$approved_by. '</p>
         
              </font>  
@@ -866,4 +866,161 @@ $this->Mpdf->AddPage();
         $this->render('print_po');
         $this->Mpdf->setFilename('PurchaseOrder.pdf');
     }
+    
+    
+    public function print_soa() {
+        $this->Mpdf->init();
+
+        $soa_id = $this->params['url']['id'];
+
+        $this->loadModel('StatementOfAccount');
+        $this->loadModel('CollectionPaper');
+        $this->loadModel('Collection');
+        
+        $soa = $this->StatementOfAccount->findById($soa_id);
+        $collections = $this->Collection->find('all',
+                      ['conditions'=>
+                        ['quotation_id'=>$soa['StatementOfAccount']['quotation_id'],
+                         'Collection.status'=>'verified',
+                         'Collection.type !='=>'none'],
+                        ['fields'=>['Collection.id']]]); 
+        //mae ids lang kukunin mo sa query na to?yaan iespecify mo TAMA!
+        // :D //patapos ka na pakatapos kaini pahingaluan mo naman ta sa aga naman achan pag turog ka na isend ko ang task mo kay para hanggang next week na ini hahahaha
+        //hahaha sige po salamat ate Ron. aayusin ko na po to ok
+        
+        $tbody = '';
+        // foreach($collections as $collection) {
+        //     $tbody .= '<tr><td style="border: 1px solid black;padding: 3px;">'.date("F d, Y", strtotime($collection['Collection']['created'])).'</td><td style="border: 1px solid black;padding: 3px;">';
+        //     $collection_id = $collection['Collection']['id'];
+        
+        //     $this->CollectionPaper->recursive = -1;
+        //     $collection_papers = $this->CollectionPaper->find('all', ['conditions'=>['collection_id'=>$collection_id]]);
+        //     foreach($collection_papers as $collection_paper) {
+        //         $ref_num = $collection_paper['CollectionPaper']['ref_number'];
+        //         $tbody .= $ref_num;
+        //     }
+        //     $tbody .= '     </td>
+        //                     <td style="border: 1px solid black;padding: 3px;" align="right"> ₱ '.number_format((float)$soa['StatementOfAccount']['collected_amount'], 2, '.', '').'</td>
+        //                     <td style="border: 1px solid black;padding: 3px;" align="right"> ₱ '.number_format((float)$soa['StatementOfAccount']['balance'], 2, '.', '').'</td>
+        //               </tr>';
+        // }
+        
+        
+        
+        foreach($collections as $collection) {
+            $tbody .= '<tr><td style="border: 1px solid black;padding: 3px;">'.date("F d, Y", strtotime($collection['Collection']['created'])).'</td><td style="border: 1px solid black;padding: 3px;">';
+            $collection_id = $collection['Collection']['id'];
+        
+            $this->CollectionPaper->recursive = -1;
+            $collection_papers = $this->CollectionPaper->find('all', ['conditions'=>['collection_id'=>$collection_id]]);
+            foreach($collection_papers as $collection_paper) {
+                $ref_num = $collection_paper['CollectionPaper']['ref_number'];
+                $tbody .= $ref_num;
+            }
+            $paid = $collection['Collection']['amount_paid'] + $collection['Collection']['with_held'] + $collection['Collection']['other_amount'];
+            $bal = $soa['Quotation']['grand_total'] - $paid;
+            $tbody .= '     </td>
+                            <td style="border: 1px solid black;padding: 3px;" align="right"> ₱ '.number_format($paid, 2).'</td>
+                            <td style="border: 1px solid black;padding: 3px;" align="right"> ₱ '.number_format($bal, 2).'</td>
+                       </tr>';
+        }
+        
+        $this->Mpdf->SetHTMLHeader('<div style="padding-top:-15px; right:500px; font-size:10px; " align="right">' . date("F d, Y h:i A") . '</div>');
+        $this->Mpdf->SetHTMLFooter(' <table style="width: 100%;padding-bottom:-15px;  ">
+                                        <tr>
+                                            <td style="text-align: left;width:70%;font-size:10px;">
+                                                SOA # ' . $soa['StatementOfAccount']['soa_number'] . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                            <td style="text-align: right;width: 30%;font-size:10px;">{PAGENO} / {nbpg}</td> 
+                                        </tr>
+                                    </table> ');
+        $this->Mpdf->autoPageBreak = true; 
+        $mpdf->shrink_tables_to_fit = 1;
+
+        $html = '<div style=" top: 35px; left:18px;  font-size:16px; ">
+                    <table style="width: 100%; border:1px; page-break-inside: avoid " autosize=�1� >
+                        <tr>
+                            <td style="text-align: left;width:25%; font-size:10px;">
+                                <img src="../img/jecams/logo_full.png" width="170" height="35">  
+                            </td>
+                            <td style="text-align: right;width:35%; font-size:13px;padding-right:20px;">
+                                <p style="margin-top: -5px;">www.jecams.com.ph</p>
+                            </td> 
+                        </tr>
+                    </table>
+                    <table border="0" style="width: 100%">
+                        <tr>
+                            <td width="320" align="left" style="padding-left:10px;padding-right:10px;padding-bottom:-50px;"> 
+                                <font style="font-size:12px;">From:</font>
+                                <font style="font-size:10px;"> 
+                                    <p style="font-weight:bold">JECAMS INC.</p>
+                                    <p style="margin-top: -5px;">3 Queen St.Forest Hills Novaliches Quezon City 1117</p>  
+                                    <p style="margin-top: -5px;">Tel: 358.8149 / 921.1033</p>
+                                    <p>Website: www.jecams.com.ph</p>
+                                </font>
+                            </td>
+                    
+                            <td width="240" align="left" style="padding-left:10px;padding-right:10px;padding-bottom:-50px;">
+                                <font style="font-size:12px;">To:</font>
+                                <font style="font-size:10px;">
+                                    <p style="font-weight:bold">'.$soa['Client']['name'].'</p>
+                                    <p>Bill to: '.$soa['Client']['address'].'</p>
+                                    <p>Phone: '.$soa['Client']['contact_number'].'</p>
+                                    <p>Email: '.$soa['Client']['email'].'</p>
+                                </font> 
+                            </td> 
+                            <td width="240" align="left" style="padding-left:5px;padding-right:5px;padding-bottom:-20px;">
+                                <font style="font-size:13px;">Statement of Account</font>
+                                <font style="font-size:11px;">
+                                    <p style="font-weight:bold">Statement number: '.$soa['StatementOfAccount']['soa_number'].'</p>
+                                    <p><b>Quotation #:</b> '.$soa['Quotation']['quote_number'].'</p>
+                                </font>
+                            </td>
+                        </tr>   
+                    </table>
+                    
+                    <br/><br/><br/>
+                    
+                    <div>
+                        <font style="font-size:12px;">STATEMENT OF ACCOUNT</font><br/>
+                        <table border="0" style="width: 100%">
+                            <tbody>
+                                <tr>
+                                    <td width="500" align="left">Contract Amount: '.number_format($soa['Quotation']['grand_total'],2).'</td>
+                                    <td width="500" align="right">Payment Due Date: '.date("F d, Y",strtotime($soa['Quotation']['collection_due'])).'</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <table style="font-size:12px;width: 100%;border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid black;padding: 3px;">Date</th>
+                                <th style="border: 1px solid black;padding: 3px;">References</th>
+                                <th style="border: 1px solid black;padding: 3px;">Payment</th>
+                                <th style="border: 1px solid black;padding: 3px;">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        '.$tbody.'
+                        </tbody>
+                    </table>
+                </div>
+                <br/><br/><br/><br/>
+                <div style="font-size:9px">
+                    <font style="font-size:15px;font-weight:bold;">Remittance</font><br/>
+                    Customer Name: '.$soa['Client']['name'].'<br/>
+                    Statement #: '.$soa['StatementOfAccount']['soa_number'].'<br/>
+                    Date: '.date("F d, Y").'<br/>
+                    Amount due: ₱ '.number_format($bal, 2).'
+                </div>
+                ';
+                                        
+        $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+        $this->Mpdf->WriteHTML($html);
+        
+        $this->layout = 'pdf';
+        $this->render('print_soa');
+        $this->Mpdf->setFilename('soa.pdf');
+    }
+    
 }

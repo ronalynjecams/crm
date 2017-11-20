@@ -130,6 +130,7 @@ class PurchaseOrdersController extends AppController {
         $this->set(compact('products'));
 
         $this->loadModel('QuotationProduct');
+         
         $this->QuotationProduct->recursive = 3;
         if ($this->Auth->user('role') != 'supply_staff') {
             $quote_products = $this->QuotationProduct->find('all', array(
@@ -197,7 +198,7 @@ class PurchaseOrdersController extends AppController {
         $this->loadModel('DrPaper');
         $drpapers = $this->DrPaper->find('all');
         $this->set(compact('drpapers', 'delivery_papers'));
-
+// pr($this->QuotationProduct->findById(62));
 //        $this->loadModel('SupplierProduct');
 //        $this->SupplierProduct->recursive=-1;
 //        $product_supplier = $this->SupplierProduct->findAllByProductComboId(1);
@@ -211,7 +212,7 @@ class PurchaseOrdersController extends AppController {
 //                'conditions' => ['InventoryProduct.inv_location_id' => 4],
 ////                'fields' => ['MAX(PurchaseOrder.id) as po_id', 'PurchaseOrder.*']
 //            ]);
-//        pr($inv_products);
+//        pr($inv_products); 
     }
 
     /////////////////new codes as of 11-04-2017
@@ -242,6 +243,7 @@ class PurchaseOrdersController extends AppController {
         $this->loadModel('InventoryJobOrder');
         $this->loadModel('QuotationProduct');
         $this->loadModel('Quotation');
+        $this->loadModel('TransactionSource');
 
         if ($quotation_product_id != 0 && (!empty($quotation_product_id))) {
             $qprod = $this->QuotationProduct->findById($quotation_product_id);
@@ -327,8 +329,10 @@ class PurchaseOrdersController extends AppController {
                 $po_product_id = $this->PurchaseOrderProduct->getLastInsertID();
             }
         }
+        
+        
         if ($quotation_product_id != 0 && (!empty($quotation_product_id))) {
-            $dateToday = date("Y-m-d H:i:s");
+                $dateToday = date("Y-m-d H:i:s");
             $this->Quotation->id = $quotation_id;
             $this->Quotation->set(array(
                 'status' => 'processed',
@@ -340,7 +344,19 @@ class PurchaseOrdersController extends AppController {
             $this->QuotationProduct->set(array(
                 'processed_qty' => $pro_qty
             ));
-            $this->QuotationProduct->save();
+            if($this->QuotationProduct->save()){ 
+                $this->TransactionSource->create;
+                $this->TransactionSource->set(array(
+                    'reference_num'=>$quotation_id,
+                    'reference_type'=>'quotation', 
+                    'mode'=>'po',
+                    'mode_num'=>$po_id,
+                    'product_combo_id'=>$product_combo_id,
+                    'product_source'=>$quotation_product_id,
+                    'type'=>$qprod['Product']['type'], 
+                )); 
+                $this->TransactionSource->save();
+            }
         }
          
             $this->InventoryJobOrder->create;
@@ -354,7 +370,7 @@ class PurchaseOrdersController extends AppController {
                 'status'=>'newest'
             )); 
             if($this->InventoryJobOrder->save()){
-                echo json_encode($data);
+                    echo json_encode($data); 
             } 
     }
     
@@ -472,6 +488,26 @@ class PurchaseOrdersController extends AppController {
         }
         exit;
         
+    }
+    
+    public function all_list(){
+        
+        $status = $this->params['url']['status'];
+
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        if ($user['User']['department_id'] == 6) {
+            $type = 'supply';
+        } else if ($user['User']['department_id'] == 7) {
+            $type = 'raw';
+        }
+        $pendings = $this->PurchaseOrder->find('all', array(
+            'conditions' => array(
+                'PurchaseOrder.status' => $status,
+                'PurchaseOrder.type' => $type,
+            )
+        ));
+        $this->set(compact('pendings', 'type'));
     }
 
 }

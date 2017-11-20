@@ -1,5 +1,6 @@
 <!--Select2 [ OPTIONAL ]-->
 <link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<script src="../plugins/select2/js/select2.min.js"></script>
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
@@ -9,13 +10,9 @@
 <script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
-<!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
-
 <!-- REQUIRED FOR MULTIPLE SELECT ON QUOTATION -->
-<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">
-<script src="../plugins/chosen/chosen.jquery.min.js"></script>
+<!--<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">-->
+<!--<script src="../plugins/chosen/chosen.jquery.min.js"></script>-->
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -43,6 +40,9 @@
                                     <?php echo $clients['Client']['name']; ?>
                                 </option><?php
                             }
+                            else {
+                                echo '<option></option>';
+                            }
                             ?>
                             <?php foreach ($clients as $client) {
                                 ?>
@@ -65,7 +65,9 @@
                                 </option>
                                 <?php
                             }
-                            else { echo '<option>Select Project Head</option>'; }
+                            else {
+                                echo '<option></option>';
+                            }
                             ?>
                             <?php foreach ($users as $user) {
                                 ?>
@@ -83,8 +85,8 @@
                         
                         <div class="form-group">
                             <label class="control-label" id="labelSupplier">Select Quotations</label> 
-                            <select class="form-control" id="selected_quotations" style="width: 100%;" multiple> 
-                                <option>Select Quotations</option>
+                            <select class="form-control" id="selected_quotations" style="width:100%" multiple> 
+                                <option></option>
                             </select>
                         </div>
                     </div>
@@ -123,11 +125,15 @@
     $(document).ready(function () {
         $('.quotation_info').hide();
         
-        $('#client_id').select2({
+        $("#client_id").select2({
+            placeholder: "Select Client Name",
             allowClear: true
         });
         
-        $('#quotation_id').chosen({width: '100%'});
+        $("#project_head_id").select2({
+            placeholder: "Select Project Head",
+            allowClear: true
+        });
         
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
@@ -148,8 +154,8 @@
             var project_head_id = $('#project_head_id').val();
             var client_id = $('#client_id').val();
             
-            if ((client_id != "Select Client")) {
-                if (quotation_id != "") {
+            if (client_id!="") {
+                if (quotation_id.length != 0) {
                     if (deadline_date != "") {
                         if (expected_start != "") {
                             if (project_head_id != "Select Project Head") {
@@ -184,6 +190,9 @@
                     } else {
                         document.getElementById('deadline_date').style.borderColor = "red";
                     }
+                }
+                else {
+                    document.getElementById('selected_quotations').style.borderColor = "red";
                 }
             } else {
                 document.getElementById('client_id').style.borderColor = "red";
@@ -225,19 +234,5 @@
         });
         //---- end of client and quotation selection ----//
     })
-</script>
-
-<script> 
-    function killCopy(e) {
-        return false
-    }
-    function reEnable() {
-        return true
-    }
-    document.onselectstart = new Function("return false")
-    if (window.sidebar) {
-        document.onmousedown = killCopy
-        document.onclick = reEnable
-    }
 </script>
 <!---END OF JAVASCTRIPT FUNCTIONS--->

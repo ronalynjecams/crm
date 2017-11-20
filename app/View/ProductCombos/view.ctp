@@ -70,7 +70,7 @@
 											data-toggle="tooltip" data-placement="top"
 											title="Edit"
 											data-popout="true"
-											value="<?php echo $prod_combo_id; ?>" />
+											value="<?php echo $product_combo['ProductCombo']['id']; ?>" />
 											<span class="fa fa-edit"></span>
 										</button>
 										<?php if($UserIn['User']['role'] == 'super_admin') { ?>
@@ -202,6 +202,11 @@
             "stateSave": true
         });
         
+        $("button.edit").on('click', function() {
+        	var prod_combo_id = $(this).val();
+        	window.location = '/product_combos/edit?id='+prod_combo_id;
+        });
+        
         $("button.remove").on("click", function () {
         	var id = $(this).val();
         	var ordering = $(this).closest("tr").find(".ordering").text();
@@ -312,18 +317,5 @@
         	else { $("#prod_name").css({'border-color':'red'}); }
         });
     })
-</script>
-<script> 
-    function killCopy(e) {
-        return false
-    }
-    function reEnable() {
-        return true
-    }
-    document.onselectstart = new Function("return false")
-    if (window.sidebar) {
-        document.onmousedown = killCopy
-        document.onclick = reEnable
-    }
 </script>
 <!---END OF JAVASCTRIPT FUNCTIONS--->

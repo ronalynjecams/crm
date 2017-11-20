@@ -21,6 +21,9 @@
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
+    <div>
+		<?php echo $this->Session->flash('alertforexisting'); ?>
+	</div>
     <!--Page Title-->
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <div id="page-title">
@@ -37,7 +40,7 @@
             <div class="panel-body">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <input type="hidden" id="fitout_work_id" value="<?php echo $fitout_work_object['FitoutWork']['id']; ?>" readonly />
+                        <input type="hidden" id="fitout_work_id" value="<?php echo $fitout_work_object['FitoutWork']['id']; ?>" readonly>
                         <br/>
                         
                         <label>Client <span class="text-danger">*</span></label>
@@ -163,21 +166,18 @@
             
             var old_quotation_id = $(".old_selected_quotations").val();
             var new_quotation_id = $(".new_selected_quotations").val();
-       
-            console.log(new_quotation_id);
-            console.log(old_quotation_id);
             
             var deadline_date = $('#deadline_date').val();
             var expected_start = $('#expected_start').val();
             var project_head_id = $('#project_head_id').val();
             var client_id = $('#client_id').val();
-            var status = $("#status").val();
+            var status = "<?php echo $fo_work_status; ?>";
             
-            if ((client_id != "Select Client")) {
+            if (client_id != "") {
                 // if (quotation_id != "") {
                     if (deadline_date != "") {
                         if (expected_start != "") {
-                            if (project_head_id != "Select Project Head") {
+                            if (project_head_id != "") {
                                 var data = {
                                     "id": id,
                                     "deadline": deadline_date,
@@ -187,13 +187,15 @@
                                     "client_id": client_id,
                                     "old_quotation_id": old_quotation_id,
                                     "new_quotation_id": new_quotation_id
-                                }
+                                };
                                 $.ajax({
                                     url: "/fitout_works/update_fitout_works",
                                     type: 'POST',
                                     data: {'data': data},
-                                    dataType: 'json',
+                                    dataType: 'text',
                                     success: function (id) {
+                                        console.log(id);
+                                        console.log("successfull");
                                         window.location = "/fitout_works/project?status="+status;
                                     },
                                     erorr: function (id) {

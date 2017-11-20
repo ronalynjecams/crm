@@ -19,6 +19,9 @@
 
 <!--===================================================-->
 <div id="content-container" >
+	<div>
+    	<?php echo $this->Session->flash('alertforexisting'); ?>
+	</div>
     <div id="page-title">
     </div>
     <div id="page-content">   
@@ -465,9 +468,31 @@
                                                                 <td  align="right">&#8369; <?php echo number_format($quote_prod['QuotationProduct']['edited_amount'], 2); ?></td> 
                                                                 <td align="right">&#8369; <?php echo number_format($quote_prod['QuotationProduct']['total'], 2); ?></td>
                                                             <?php } ?>
-                                                            <td align="center" class="td_row">
+                                                            <td class="td_row">
                                                                 <?php
-                                                                if($quote_prod['QuotationProduct']['demo']==0) {
+                                                                    if($UserIn['User']['role'] == "collection_officer") {
+                                                                        // if($soa_balance!=0) {
+                                		                            	?>
+                                		                                <button class="btn btn-mint btn_issue_soa"
+                                		                                        data-toggle="tooltip"
+                                		                                        data-placement="top"
+                                												data-title="Issue SOA"
+                                												value="<?php echo $quote_prod['Quotation']['id']; ?>">
+                                		                                    <span class="fa fa-plus"></span> Issue SOA
+                                		                                </button>
+                                		                                <?php 
+                                		                            	}
+                                		                            	else {
+                                		                            		?>
+                                	                            		<button class="btn btn-mint" disabled>
+                                		                                    <span class="fa fa-plus"></span>
+                                		                                </button>
+                                		                            		<?php
+                                		                          //  	}
+                                                                    }
+                                                                ?>
+                                                                <?php
+                                                                if($quote_prod['QuotationProduct']['demo']!=0) {
                                                                     if (count($quote_prod['Quotation']['JobRequest']) != 0) {
                                                                         foreach ($quote_prod['Quotation']['JobRequest']['JrProduct'] as $jrprod) {
                                                                             if ($jrprod['quotation_product_id'] == $quote_prod['QuotationProduct']['id']) {
@@ -478,10 +503,11 @@
                                                                         echo '-';
                                                                     }
                                                                 }
-                                                                else {
+                                                                else if ($quote_prod['QuotationProduct']['demo']==0) {
                                                                     $name_tmp = $quote_prod['Product']['name'];
                                                                     $id_tmp = $quote_prod['Product']['id'];
                                                                     $client_id = $quote_data['Client']['id'];
+                                                                    $quotationproduct_id = $quote_prod['QuotationProduct']['id'];
                                                                     
                                     				                $today=date("myd");
                                     				                $service_code="JECDEMO-".$today;
@@ -495,6 +521,7 @@
                                                                         class="btn btn-info"
                                                                         style="color:white;font-weight:bold;"
                                                                         data-id="<?php echo $id_tmp; ?>"
+                                                                        data-qpid="<?php echo $quotationproduct_id; ?>"
                                                                         data-name="<?php echo $name_tmp; ?>">
                                                                         <span class="fa fa-plus"></span>
                                                                         Demo Product
@@ -777,18 +804,28 @@
                     </div>
                     <br/>
 				    <div class="form-group row">
-				        <div class="col-sm-6">
+				        <div class="col-lg-6">
 				            <label>Expected Delivery Date <span class="text-danger"> *</span></label>
 		                    <input type="date" class="form-control"
-        				        placeholder="Expected Delivery Date"
         				        id="expected_delivery_date"/>
 				        </div>
-				        <div class="col-sm-6">
+				        <div class="col-lg-6">
+				            <label>Expected Delivery Time <span class="text-danger"> *</span></label>
+				             <input type="time" class="form-control"
+        				        id="expected_delivery_time" />
+				        </div>
+				    </div>
+				    <br/>
+				    <div class="form-group row">
+				        <div class="col-lg-6">
 				            <label>Expected Pull Out Date <span class="text-danger"> *</span></label>
 				             <input type="date" class="form-control"
-        				        value="<?php echo Date('m:d:y', strtotime("+3 days")); ?>"
-        				        placeholder="Expected Pull Out Date"
         				        id="expected_pull_out_date"/>
+				        </div>
+				        <div class="col-lg-6">
+				            <label>Expected Pull Out Time <span class="text-danger"> *</span></label>
+				             <input type="time" class="form-control"
+        				        id="expected_pull_out_time"/>
 				        </div>
 				    </div>
 				    <br/>
@@ -828,11 +865,21 @@
         // ===================================================> jQuery for Add Demo
         AllAddDemoMethod();
         
+        var qty;
+        var product;
+        var product_combo;
+        var expected__delivery_date;
+        var expected_pull_out_date;
+        var expected__delivery_time;
+        var expected_pull_out_time;
         var id_quotation;
+        var qpid;
         var type = "Demo";
         var status = "newest";
         var service_code = $("#service_code").val();
         var client = $("#client_id").val();
+        var prop_tmp = [];
+        var value_tmp = [];
         
         $('[data-toggle="tooltip"]').tooltip();
         
@@ -842,6 +889,7 @@
             var button = $(event.relatedTarget);
     
             id_quotation = button.data('id');
+            qpid = button.data('qpid');
             var name = button.data('name');
     
             var modal = $(this);
@@ -896,7 +944,9 @@
                 product_combo = $("#select_product_combo").val();
                 expected_delivery_date = $("#expected_delivery_date").val();
                 expected_pull_out_date = $("#expected_pull_out_date").val();
-                
+                expected_delivery_time = $("#expected_delivery_time").val();
+                expected_pull_out_time = $("#expected_pull_out_time").val();
+        
                 if(qty!="" && parseInt(qty)) {
                     if(product_combo!="Select Product Combination") {
                         if(product_combo!="No Product Combination") {
@@ -909,12 +959,14 @@
                                         'product_combo_id':product_combo,
                                         'expected_delivery_date':expected_delivery_date,
                                         'expected_pull_out_date':expected_pull_out_date,
+                                        'expected_delivery_time':expected_delivery_time,
+                                        'expected_pull_out_time':expected_pull_out_time,
                                         'service_code':service_code,
                                         'type':type,
                                         'status':status,
                                         'property':prop_tmp,
                                         'value':value_tmp,
-                                        'quotation_product_id':id_quotation
+                                        'quotation_product_id':qpid
                                     };
                                     $.ajax({
             							url: "/client_services/add_demo_or_su",
@@ -923,7 +975,7 @@
             							dataType: 'text',
             							success: function(id) {
             								console.log(id);
-            								// location.reload();
+            								location.reload();
             							},
             							error: function(err) {
             								console.log("AJAX error in add_demo_or_su: " + JSON.stringify(err, null, 2));
@@ -1147,6 +1199,31 @@
     //                document.getElementById('agent_note').style.borderColor = "red";
                 }
             
+        });
+        
+        $("button.btn_issue_soa").on('click', function() {
+        	var id = $(this).val();
+        	swal({
+                    title: "Are you sure?",
+                    text: "You will issue SOA for this quotation?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+						$.get('/statement_of_accounts/add', {id: id}, function(data) {
+							console.log(data);
+							location.reload();
+						})
+                    } else {
+                        swal("Cancelled", "", "error");
+                    }
+                });
         });
     });
 

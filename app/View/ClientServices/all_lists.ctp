@@ -64,7 +64,9 @@
 					        </tr>
 					    </thead>
 					    <tbody>
-					        <?php foreach($client_services as $client_service) { ?>
+					        <?php foreach($client_services as $client_service) {
+					            $client_service_id = $client_service['ClientService']['id'];
+					        ?>
 					        <tr>
 					            <td><?php echo $client_service['ClientService']['created']; ?></td>
 					            <td><?php echo $client_service['ClientService']['service_code']; ?></td>
@@ -78,21 +80,43 @@
 					                    echo $first_name." ".$last_name;
 				                    ?>
 				                </td>
-				                <?php } ?>
+				                <?php }
+				                
+				                foreach($cs_prods[$client_service_id] as $cs_prod) {
+				                    $expected_demo_date = $cs_prod['ClientServiceProduct']['expected_demo_date'];
+				                    $expected_pullout_date = $cs_prod['ClientServiceProduct']['expected_pullout_date'];
+				                    $pullout_date = $cs_prod['ClientServiceProduct']['pullout_date'];
+				                ?>
 					            <td>
         			                <?php
-        					           // if($status=="newest" || $status =="pending" ||
-        					           //     $status=="processed") {
-        					           //         echo  $client_service_product['ClientServiceProduct']['expected_demo_date'];
-        				            //     }
-        				            //     else if($status=="delivered") {
-        				            //         echo  $client_service_product['ClientServiceProduct']['expected_pullout_date'];
-        				            //     }
-        				            //     else if($status=="pullout") {
-        				            //         echo  $client_service_product['ClientServiceProduct']['pullout_date'];
-        				            //     }
+        					            if($status=="newest" || $status =="pending" ||
+        					                $status=="processed") {
+    					                    if($expected_demo_date != null) {
+            					                echo date('F d, Y [h : i a]', strtotime($expected_demo_date));
+    					                    }
+    					                    else {
+    					                        echo "Date is not specified";
+    					                    }
+        				                }
+        				                else if($status=="delivered") {
+        				                    if($expected_pullout_date != null) {
+            				                    echo date("F d, Y [h : i a]", strtotime($expected_pullout_date));
+        				                    }
+        				                    else {
+        				                        echo "Date is not specified";
+        				                    }
+        				                }
+        				                else if($status=="pullout") {
+        				                    if($pullout_date != null) {
+            				                    echo date("F d, Y [h : i a]", strtotime($pullout_date));
+        				                    }
+        				                    else {
+        				                        echo "Date is not specified";
+        				                    }
+        				                }
         				            ?>
 					            </td>
+					            <?php } ?>
 					            <td align="center">
 					                <a style="color:white;font-weight:bold;"
 					                    href="/client_services/view?id=<?php echo $client_service['ClientService']['id'] ?>&&status=<?php echo $status; ?>"
@@ -202,15 +226,25 @@
 				        <div class="col-lg-6">
 				            <label>Expected Delivery Date <span class="text-danger"> *</span></label>
 		                    <input type="date" class="form-control"
-        				        placeholder="Expected Delivery Date"
         				        id="expected_delivery_date"/>
 				        </div>
 				        <div class="col-lg-6">
+				            <label>Expected Delivery Time <span class="text-danger"> *</span></label>
+				             <input type="time" class="form-control"
+        				        id="expected_delivery_time" />
+				        </div>
+				    </div>
+				    <br/>
+				    <div class="form-group row">
+				        <div class="col-lg-6">
 				            <label>Expected Pull Out Date <span class="text-danger"> *</span></label>
 				             <input type="date" class="form-control"
-        				        value="<?php echo Date('m:d:y', strtotime("+3 days")); ?>"
-        				        placeholder="Expected Pull Out Date"
         				        id="expected_pull_out_date"/>
+				        </div>
+				        <div class="col-lg-6">
+				            <label>Expected Pull Out Time <span class="text-danger"> *</span></label>
+				             <input type="time" class="form-control"
+        				        id="expected_pull_out_time"/>
 				        </div>
 				    </div>
 				    <br/>
@@ -238,6 +272,8 @@
     var product_combo;
     var expected__delivery_date;
     var expected_pull_out_date;
+    var expected__delivery_time;
+    var expected_pull_out_time;
     var type = "<?php echo $type; ?>";
     var status = "<?php echo $status; ?>";
     var service_code = $("#service_code").val();
@@ -268,8 +304,7 @@
                     $("#select_product_combo").empty().append($('<option>',
                                         {text: "Select Product Combination"}));
                     for(i=0;i<data.length;i++) {
-                        $("#select_product_combo").removeAttr('readonly').
-                            append($('<option>', {
+                        $("#select_product_combo").removeAttr('readonly').append($('<option>', {
                                 value: data[i]['ProductCombo']['id'],
                                 text: data[i]['ProductCombo']['id']
                             }));
@@ -310,6 +345,8 @@
             product_combo = $("#select_product_combo").val();
             expected_delivery_date = $("#expected_delivery_date").val();
             expected_pull_out_date = $("#expected_pull_out_date").val();
+            expected_delivery_time = $("#expected_delivery_time").val();
+            expected_pull_out_time = $("#expected_pull_out_time").val();
             console.log((product_combo!="Select Product Combination"));
             if(client!="Select Client") {
                 if(qty!="" && parseInt(qty)) {
@@ -325,6 +362,8 @@
                                             'product_combo_id':product_combo,
                                             'expected_delivery_date':expected_delivery_date,
                                             'expected_pull_out_date':expected_pull_out_date,
+                                            'expected_delivery_time':expected_delivery_time,
+                                            'expected_pull_out_time':expected_pull_out_time,
                                             'service_code':service_code,
                                             'type':type,
                                             'status':status,

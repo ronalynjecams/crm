@@ -109,9 +109,32 @@
 										</div>
 									</div>
 									
+									<div class="row">
+										<div class="col-lg-6">
+											<select class="form-control" id="prod_type">
+												<?php if ($current_product['Product']['type']!=null) {
+													echo '<option value="'.$current_product['Product']['type'].'">'.$current_product['Product']['type'].'</option>';
+												}
+												else {
+													echo '<option>Select Type</option>';
+												} ?>
+												<option style="font-size: 0.9pt; background-color: grey;" disabled>&nbsp;</option>
+												<option value="supply">Supply</option>
+												<option value="customized">Customized</option>
+												<option value="combination">Combination</option>
+												<option value="raw">Raw</option>
+												<option value="chopped">Chopped</option>
+												<option value="office">Office</option>
+											</select>
+										</div>
+										<div class="col-lg-6">
+											<input type="text" class="form-control" pattern="[0-9]+" id="prod_sale_price" placeholder="Sale Price" value="<?php echo $current_product['Product']['sale_price']; ?>"/>
+										</div>
+									</div> <br/>
+									
 									<textarea class="form-control" placeholder="Other Information"
 										rows="6" id="prod_other_info">
-									    <?php echo $current_product['Product']['other_info'] ?>
+									    <?php echo $current_product['Product']['other_info']; ?>
 									</textarea>
 								</div>
 							</div>
@@ -365,6 +388,8 @@ $(document).ready(function(){
 	    var other_info = $('#prod_other_info').val();
 	    var category = $('#prod_category').val();
 	    var sub_category = $("#prod_sub_category").val();
+	    var type = $("#prod_type").val();
+	    var sale_price = $("#prod_sale_price").val();
 	    
 	    if($('#keep_image').is(':checked')) {
 			var keep_image = "true";
@@ -429,6 +454,8 @@ $(document).ready(function(){
 					    	"image_change": image_filename,
 					    	"image_keep": image_keep_temp,
 					    	"keep_image": keep_image,
+					    	"sale_price": sale_price,
+					    	"type": type,
 							"appended_obj": appended_obj
 					    };
 						$.ajax({

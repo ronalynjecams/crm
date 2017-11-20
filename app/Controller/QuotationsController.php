@@ -660,7 +660,7 @@ class QuotationsController extends AppController {
         $quotation_id = $data['quotation_id'];
         $this->Quotation->id = $quotation_id;
         $this->Quotation->set(array(
-            'status' => 'accounting_moved',
+            'status' => 'moved',
             'vat_type' => $data['vat_type'],
             'quotation_term_id' => $term_id,
             'delivery_mode' => $data['delivery_mode'],

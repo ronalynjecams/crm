@@ -26,33 +26,6 @@ class ProductCombosController extends AppController {
 	}
 
 /**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function edit($id = null) {
-		if (!$this->ProductCombo->exists($id)) {
-			throw new NotFoundException(__('Invalid product combo'));
-		}
-		if ($this->request->is(array('post', 'put'))) {
-			if ($this->ProductCombo->save($this->request->data)) {
-				$this->Session->setFlash(__('The product combo has been saved.'), 'default', array('class' => 'alert alert-success'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The product combo could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-			}
-		} else {
-			$options = array('conditions' => array('ProductCombo.' . $this->ProductCombo->primaryKey => $id));
-			$this->request->data = $this->ProductCombo->find('first', $options);
-		}
-		$products = $this->ProductCombo->Product->find('list');
-		$units = $this->ProductCombo->Unit->find('list');
-		$this->set(compact('products', 'units'));
-	}
-
-/**
  * delete method
  *
  * @throws NotFoundException
@@ -259,5 +232,119 @@ class ProductCombosController extends AppController {
 		$DS_ProductCombo->commit();
 		
 		return json_encode("Everything was executed");
+	}
+	
+	public function edit() {
+		$prod_combo_id = $this->params['url']['id'];
+		$this->set(compact('prod_combo_id'));
+		
+		$this->loadModel('ProductCombo');
+		$this->loadModel('Unit');
+		
+		$prod_combo = $this->ProductCombo->findById($prod_combo_id);
+		$this->set(compact('prod_combo'));
+		
+		$units = $this->Unit->find('all');
+		$this->set(compact('units'));
+	}
+
+	public function update() {
+		$this->autoRender = false;
+		$this->response->type('text');
+		
+		$data = $this->request->data;
+		$prod_combo_id = $data['id'];
+		$prod_id = $data['product_id'];
+		$unit_id = $data['unit_id'];
+		$prop_value_obj = $data['prop_value_obj'];
+		$prod_combo_id = $data['id'];
+		
+		$this->loadModel('ProductComboProperty');
+		$this->loadModel('ProductCombo');
+		
+		$this->ProductComboProperty->recursive = -1;
+		$prod_combo_prop = $this->ProductComboProperty->find('all',
+							['conditions'=>['product_combo_id'=>$prod_combo_id]]);
+		
+		// 1. format current properties and values for comparing later
+		foreach($prop_value_obj as $prop_value) {
+			foreach($prop_value as $each_prop_value) {
+				$current[] = $each_prop_value['prodcombo_prop'].":".$each_prop_value['prodcombo_val'];
+			}
+		}
+		//end of 1
+		
+		// 2. get existing
+		$product_combos = $this->ProductCombo->find('all', ['conditions'=>
+												['product_id'=>$prod_id]]);
+		$existing = [];
+		$ordering = [];
+		
+		foreach($product_combos as $product_combo) {
+			$existing_tmp=[];
+			
+			$ordering[] = $product_combo['ProductCombo']['ordering'];
+			
+			foreach($product_combo["ProductComboProperty"] as $product_combo_prop) {
+				$existing_prop = $product_combo_prop["property"];
+				$existing_val = $product_combo_prop["value"];
+				
+				$existing_tmp[] = $existing_prop.":".$existing_val;
+			}
+			$existing[] = $existing_tmp;
+		}
+		// end of 2
+		
+		// 3. check if existing
+		$check_array = [];
+		foreach($existing as $each_existing) {
+			$check_array[] = ($current == $each_existing);
+		}
+		
+		if(count($check_array)!=0) {
+			$check_result = in_array(true, $check_array, TRUE);
+		}
+		else {
+			$check_result = false;
+		}
+		// end of 3
+		
+		if($check_result) {
+			$this->Session->setFlash('This combination already exists.',
+			'default', array('class' => 'alert alert-danger'), 'alertforexisting');
+			
+			echo json_encode("This combination already exists.");
+			return json_encode("existing");
+		}
+		else {
+			// delete existing prodcomboprop
+			$DS_ProductComboProperty = $this->ProductComboProperty->getDataSource();
+			$DS_ProductComboProperty->begin();
+			
+			foreach($prod_combo_prop as $each_prop) {
+				$each_prop_id = $each_prop['ProductComboProperty']['id'];
+				
+				$this->ProductComboProperty->delete($each_prop_id);
+			}
+			
+			foreach($prop_value_obj as $prop_value) {
+				foreach($prop_value as $each_prop_value) {
+					$prop = $each_prop_value['prodcombo_prop'];
+					$val = $each_prop_value['prodcombo_val'];
+					
+					$this->ProductComboProperty->create();
+					$this->ProductComboProperty->set(['product_combo_id'=>$prod_combo_id,
+							'property'=>$prop, 'value'=>$val]);
+					if($this->ProductComboProperty->save()) {
+						$DS_ProductComboProperty->commit();
+					}
+					else {
+						$DS_ProductComboProperty->rollback();
+					}
+				}
+			}
+			return json_encode("success");
+		}
+		$DS_ProductComboProperty->commit();
 	}
 }

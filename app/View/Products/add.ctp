@@ -24,7 +24,7 @@
 	    </div>
 	    
 		<div class="page-content">
-			 <div class="panel">
+			<div class="panel">
             	<div class="panel-heading" align="center">
 	                <h3 class="panel-title" align="center">
 	                    <button class="btn btn-primary" id="addproduct-top">Add</button>
@@ -72,8 +72,26 @@
 										</div>
 									</div> <br/>
 									
+									<div class="row">
+										<div class="col-lg-6">
+											<select class="form-control" id="prod_type">
+												<option>Select Type</option>
+												<option style="font-size: 0.9pt; background-color: grey;" disabled>&nbsp;</option>
+												<option value="supply">Supply</option>
+												<option value="customized">Customized</option>
+												<option value="combination">Combination</option>
+												<option value="raw">Raw</option>
+												<option value="chopped">Chopped</option>
+												<option value="office">Office</option>
+											</select>
+										</div>
+										<div class="col-lg-6">
+											<input type="text" class="form-control" pattern="[0-9]+" id="prod_sale_price" placeholder="Sale Price" />
+										</div>
+									</div> <br/>
+									
 									<textarea class="form-control" placeholder="Other Information"
-										rows="6" id="prod_other_info"></textarea>
+										rows="4" id="prod_other_info"></textarea>
 								</div>
 							</div>
 						</div>
@@ -233,6 +251,8 @@ $(document).ready(function(){
 	    var properties = $('#prod_properties').val();
 	    var values = $('#prod_values').val();
 	    var price = $("#prod_price").val();
+	    var type = $("#prod_type").val();
+	    var sale_price = $("#prod_sale_price").val();
 	    var deflt = '';
 		if ($('#prod_default').is(":checked")) {
 			deflt = 'true';
@@ -305,60 +325,72 @@ $(document).ready(function(){
 			    if(name != "") {
 			    	if(category != "Select Category") {
 			    		if(sub_category != "Select Sub Category") {
-			    			if(other_info != "") {
-			    				if(image != "") {
-			    					if(properties != "") {
-			    						if(values != "") {
-			    							if(price != "") {
-												var data = {
-											    	"name": name,
-											    	"other_info": other_info,
-											    	"sub_category": sub_category,
-											    	"image": image_filename,
-											    	"properties": properties,
-											    	"values": values,
-											    	"price": price,
-											    	"required_default": deflt,
-													"required_properties": properties,
-													"required_values": values,
-													"required_price": price,
-													"required_default": def,
-													"appended_obj": appended_obj
-											    };
-												$.ajax({
-													url: "/products/add_product",
-													type: 'Post',
-													data: {'data': data},
-													dataType: 'text',
-													success: function(id) {
-														console.log(id);
-														window.location="/products/index";
-													},
-													error: function(err) {
-														console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-														console.log("error in ajax add");
-													}
-												});
-			    							}
-			    							else {
-			    								$("#prod_price").css({'border-color': 'red'});
-			    							}
-			    						}
-			    						else {
-			    							$("#prod_values").css({'border-color': 'red'});
-			    						}
-			    					}
-			    					else {
-			    						$("#prod_properties").css({'border-color': 'red'});
-			    					}
-			    				}
-			    				else {
-			    					$("#prod_image").css({'border-color': 'red'});
-			    				}
-			    			}
-			    			else {
-			    				$("#prod_other_info").css({'border-color': 'red'});
-			    			}
+				    		if(type != "Select Type") {
+					    		if(sale_price != "" && parseInt(sale_price)) {
+					    			if(other_info != "") {
+					    				if(image != "") {
+					    					if(properties != "") {
+					    						if(values != "") {
+					    							if(price != "") {
+														var data = {
+													    	"name": name,
+													    	"other_info": other_info,
+													    	"sub_category": sub_category,
+													    	"image": image_filename,
+													    	"properties": properties,
+													    	"values": values,
+													    	"price": price,
+													    	"required_default": deflt,
+															"required_properties": properties,
+															"required_values": values,
+															"required_price": price,
+															"required_default": def,
+															"sale_price": sale_price,
+															"type": type,
+															"appended_obj": appended_obj
+													    };
+														$.ajax({
+															url: "/products/add_product",
+															type: 'Post',
+															data: {'data': data},
+															dataType: 'text',
+															success: function(id) {
+																console.log(id);
+																window.location="/products/index";
+															},
+															error: function(err) {
+																console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+																console.log("error in ajax add");
+															}
+														});
+					    							}
+					    							else {
+					    								$("#prod_price").css({'border-color': 'red'});
+					    							}
+					    						}
+					    						else {
+					    							$("#prod_values").css({'border-color': 'red'});
+					    						}
+					    					}
+					    					else {
+					    						$("#prod_properties").css({'border-color': 'red'});
+					    					}
+					    				}
+					    				else {
+					    					$("#prod_image").css({'border-color': 'red'});
+					    				}
+					    			}
+					    			else {
+					    				$("#prod_other_info").css({'border-color': 'red'});
+					    			}
+					    		}
+					    		else {
+					    			$("#prod_sale_price").css({'border-color': 'red'});
+					    		}
+				    		}
+				    		else {
+				    			$("#prod_type").css({'border-color': 'red'});
+				    		}
 			    		}
 			    		else {
 			    			$('#prod_sub_category').css({'border-color': 'red'});

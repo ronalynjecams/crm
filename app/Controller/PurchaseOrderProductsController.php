@@ -113,7 +113,6 @@ class PurchaseOrderProductsController extends AppController {
 	}
     
     public function top_purchased() {
-        $limit = $this->params['url']['limit'];
         $passed_dept = $this->params['url']['dept'];
         $this->set(compact('passed_dept'));
         
