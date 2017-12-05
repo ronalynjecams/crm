@@ -62,6 +62,7 @@
 		                            <td>
 		                            	<a style="font-weight:bold;" href="/pdfs/print_soa?id=<?php echo $soa['id']; ?>">
 		                            		<?php echo $soa['soa_number']; ?>
+		                            		<i class="fa fa-print"></i>
 		                            	</a>
 		                            </td>
 		                            <td><?php echo '₱ '.number_format((float)$soa['contract_amount'], 2, '.', ''); ?></td>
@@ -120,26 +121,26 @@
         $("button.btn_issue_soa").on('click', function() {
         	var id = $(this).val();
         	swal({
-                    title: "Are you sure?",
-                    text: "You will issue SOA for this quotation?",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonClass: "btn-danger",
-                    confirmButtonText: "Yes",
-                    cancelButtonText: "No",
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-						$.get('/statement_of_accounts/add', {id: id}, function(data) {
-							console.log(data);
-							location.reload();
-						})
-                    } else {
-                        swal("Cancelled", "", "error");
-                    }
-                });
+                title: "Are you sure?",
+                text: "You will issue SOA for this quotation?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+					$.get('/statement_of_accounts/add', {id: id}, function(data) {
+						console.log(data);
+						location.reload();
+					})
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            });
         });
 		
         $('#example').DataTable({
