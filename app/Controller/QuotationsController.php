@@ -122,7 +122,8 @@ class QuotationsController extends AppController {
         
         $this->loadModel('DeliverySchedule');
         $DelScheds = $this->DeliverySchedule->find('all',['conditions'=>[
-            'DeliverySchedule.quotation_id'=>$this->params['url']['id'] 
+            'DeliverySchedule.reference_number'=>$this->params['url']['id'],
+            'DeliverySchedule.reference_type'=>'quotation'
         ]]);
         $this->set(compact('DelScheds'));
         
@@ -168,12 +169,25 @@ class QuotationsController extends AppController {
         $id = $data['id'];
 
 
-        $this->Quotation->id = $id;
-        if ($this->Quotation->save($data)) {
-            echo json_encode($data);
-        } else {
-            echo json_encode('invalid data');
-        }
+        if($this->Auth->user('role') == 'sales_manager'){
+            $this->loadModel('QuotationUpdateLog');
+            
+            $this->QuotationUpdateLog->create();
+            $this->QuotationUpdateLog->set([
+                "user_id"=>$this->Auth->user('id'),
+                "quotation_id"=>$id
+                ]);
+            $this->QuotationUpdateLog->save();
+            
+        } 
+
+            $this->Quotation->id = $id;
+            if ($this->Quotation->save($data)) {
+                echo json_encode($data);
+            } else {
+                echo json_encode('invalid data');
+            } 
+        
         exit;
     }
 
@@ -823,7 +837,25 @@ class QuotationsController extends AppController {
                 'order' => 'Quotation.created DESC');
             $this->set('quotations', $this->Quotation->find('all', $options));
             // pr($this->Quotation->find('all', $options));
-        } 
+        } else if($this->Auth->user('role') == 'sales_manager'){
+            
+            $this->loadModel('AgentStatus');
+            $stats = $this->AgentStatus->find('first',[
+                'conditions'=>[
+                    'AgentStatus.user_id' => $this->Auth->user('id'),
+                    'AgentStatus.date_to' => NULL
+                    
+                    ]
+                ]);
+        $quote_status = $this->params['url']['status'];
+            $this->Quotation->recursive = 2;
+            $options = array('conditions' => array( 
+                    'Quotation.status' => $quote_status,
+                    'Quotation.team_id'=>$stats['AgentStatus']['team_id']
+                    ),
+                'order' => 'Quotation.created DESC');
+            $this->set('quotations', $this->Quotation->find('all', $options));
+        }
     }
     
     public function proprietor_approve(){

@@ -115,9 +115,12 @@ class ClientServicesController extends AppController {
 		
 		if ($this->request->is('ajax')) {
 			$product_id = $this->request->query['id'];
-			$this->ProductCombo->recursive = -1;
+			$this->ProductCombo->recursive = 1;
 			$product_combos = $this->ProductCombo->find('all', ['conditions'=>
-													 ['product_id'=>$product_id]]);
+													 ['product_id'=>$product_id],
+													  'fields'=>['ProductCombo.id',
+																 'ProductCombo.ordering',
+																 'Product.name']]);
 			
 			return json_encode($product_combos);
 		}
@@ -364,8 +367,6 @@ class ClientServicesController extends AppController {
 		
 		$this->ClientService->id = $client_service_id;
 		if($this->ClientService->saveField("status", "cancelled")) {
-			echo json_encode("Status set to cancelled");
-			
 			$DS_QuotationProduct = $this->QuotationProduct->getDataSource();
 			$DS_QuotationProduct->begin();
 			

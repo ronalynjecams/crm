@@ -1,10 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="../css/sweetalert.css" rel="stylesheet">
 
 <script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
 <script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="../js/sweetalert.min.js"></script>
 
 <script src="../plugins/datatables/media/js/bootstrap-confirmation.min.js"></script>
 
@@ -100,7 +102,7 @@
 											foreach($pcps as $pcp) {
 												$prop = $pcp['ProductComboProperty']['property'];
 												$val = $pcp['ProductComboProperty']['value'];
-												echo ucwords($prop).":".ucwords($val);
+												echo "<p><font style='font-weight:bold;'>".ucwords($prop)."</font> : ".ucwords($val)."</p>";
 											}	
 										}
 										?>
@@ -120,9 +122,8 @@
 										}
 										?>
 										<button class="btn btn-danger remove"
-											data-toggle="confirmation" data-placement="top"
-											data-title="Are you sure?"
-											data-popout="true"
+											data-toggle="tooltip" data-placement="top"
+											title="Cancel"
 											value="<?php echo $id; ?>"
 											data-qpid = "<?php echo $qpid; ?>"/>
 											<span class="fa fa-close"></span>
@@ -272,9 +273,9 @@
     var qty;
     var product;
     var product_combo;
-    var expected__delivery_date;
-    var expected_pull_out_date;
-    var expected__delivery_time;
+    var expected_delivery_date;
+    var expected_pull_oexpected_pull_out_dateut_date;
+    var expected_delivery_time;
     var expected_pull_out_time;
     var service_code = $("#service_code").val();
     var prop_tmp = [];
@@ -284,11 +285,6 @@
     	var type = "<?php echo $type; ?>";
     	
     	$('[data-toggle="tooltip"]').tooltip();
-    	
-    	$('[data-toggle=confirmation]').confirmation({
-		  rootSelector: '[data-toggle=confirmation]',
-		  // other options
-		});
     	
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
@@ -367,7 +363,8 @@
             product_combo = $("#select_product_combo").val();
             expected_delivery_date = $("#expected_delivery_date").val();
             expected_pull_out_date = $("#expected_pull_out_date").val();
-            console.log((product_combo!="Select Product Combination"));
+            expected_delivery_time = $("#expected_delivery_time").val();
+            expected_pull_out_time = $("#expected_pull_out_time").val();
             if(client!="Select Client") {
                 if(qty!="" && parseInt(qty)) {
                     if(product!="Select Product") {
@@ -439,12 +436,25 @@
         $("#btn_cancel, button.remove").on('click', function() {
         	var client_service_id = $(this).val();
         	var qpid = $(this).data('qpid');
-        	
-        	$.get("/client_services/delete", {id: client_service_id, qpid: qpid}, 
-        	function(data) {
-        		alert(data);
-            	window.location.replace("/client_services/all_lists?type="+type+"&&status="+status);
-        	});
+        	swal({
+	            title: "Are you sure?",
+	            text: "This will cancel service unit.",
+	            type: "warning",
+	            showCancelButton: true,
+	            confirmButtonClass: "btn-danger",
+	            confirmButtonText: "Yes",
+	            cancelButtonText: "No",
+	            closeOnConfirm: false,
+	            closeOnCancel: true
+	        },
+	        function (isConfirm) {
+	            if (isConfirm) {
+		        	$.get("/client_services/delete", {id: client_service_id, qpid: qpid}, 
+		        	function(data) {
+		            	window.location.replace("/client_services/all_lists?type="+type+"&&status="+status);
+		        	});
+	            }
+	        });
         });
     });
 </script>

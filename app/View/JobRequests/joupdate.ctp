@@ -123,9 +123,15 @@
                                                             if ($quote_prod['JrProduct']['status'] == 'cancelled') {
                                                                 echo '<p class="text-danger">Cancelled</p>';
                                                             }else if ($quote_prod['JrProduct']['status'] == 'accomplished') {
-                                                                echo '<p class="text-primary">For Production</p>';
-                                                                ?>
-                                                            
+                                                            ?>
+                                                            <button class="btn btn-primary" id="btn_for_production"
+                                                                    data-qprodid="<?php echo $quote_prod['QuotationProduct']['id']; ?>"
+                                                                    data-jrprodid="<?php echo $quote_prod['JrProduct']['id']; ?>"
+                                                                    data-clientid="<?php echo $quote_prod['QuotationProduct']['Quotation']['client_id']; ?>"
+                                                                    data-totalqty="<?php echo $quote_prod['QuotationProduct']['qty']; ?>">
+                                                                <span class="fa fa-plus"></span>
+                                                                For Production
+                                                            </button>
                                                             <button class="btn btn-mint btn-icon add-tooltip add_rawmats"   data-toggle="tooltip"  data-original-title="Update Raw Materials"  data-rmatsid="<?php echo $quote_prod['JrProduct']['id']; ?>"><i class="fa fa-shopping-cart"></i></button>
                                                             <?php
                                                             
@@ -397,6 +403,51 @@
             } else {
                 document.getElementById('floor_plan_details').style.borderColor = "red";
             }
+        });
+        
+        $("button#btn_for_production").on('click', function() {
+            var qprodid = $(this).data('qprodid');
+            var jrprodid = $(this).data('jrprodid');
+            var clientid = $(this).data('clientid');
+            var totalqty = $(this).data('totalqty');
+            var stat = "pending";
+            swal({
+                title: "Are you sure?",
+                text: "This will add Production",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+                    var data={'qprodid':qprodid,
+                              'jrprodid':jrprodid,
+                              'clientid':clientid,
+                              'totalqty':totalqty,
+                              'stat':stat};
+                              
+                    $.ajax({
+                        url: '/job_requests/add_productions',
+                        type: 'POST',
+    					data: {'data': data},
+    					dataType: 'text',
+    					success: function(id) {
+    						console.log(id);
+    						location.reload();
+    					},
+    					error: function(err) {
+    						console.log("AJAX error: " + JSON.stringify(err, null, 2));
+    					}
+                    });
+                    
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            });
         });
     }); 
 

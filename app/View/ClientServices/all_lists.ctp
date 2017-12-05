@@ -1,10 +1,16 @@
+<!--Select2 [ OPTIONAL ]-->
+<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<script src="../plugins/select2/js/select2.min.js"></script>
+
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 <link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="../css/sweetalert.css" rel="stylesheet">
 
 <script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
 <script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="../js/sweetalert.min.js"></script>
 
 <div id="content-container">
     <div id="page-title">
@@ -25,7 +31,9 @@
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
                     <?php if (($UserIn['User']['role'] == 'fitout_facilitator')
-                        || ($UserIn['User']['role'] == 'sales_executive')) { ?>
+                        || ($UserIn['User']['role'] == 'sales_executive')
+                        || ($UserIn['User']['department_id'] == 6)
+                        || ($UserIn['User']['department_id'] == 7)) { ?>
                     <button id="show_modal" class="btn btn-mint">
                         <i class="fa fa-plus"></i>
                         Add <?php echo $type_tmp; ?>
@@ -68,7 +76,7 @@
 					            $client_service_id = $client_service['ClientService']['id'];
 					        ?>
 					        <tr>
-					            <td><?php echo $client_service['ClientService']['created']; ?></td>
+					            <td><?php echo date("F d, Y [ h:i A ]", strtotime($client_service['ClientService']['created'])); ?></td>
 					            <td><?php echo $client_service['ClientService']['service_code']; ?></td>
 					            <td><?php echo $client_service['Client']['name']; ?></td>
 					            <?php
@@ -92,7 +100,7 @@
         					            if($status=="newest" || $status =="pending" ||
         					                $status=="processed") {
     					                    if($expected_demo_date != null) {
-            					                echo date('F d, Y [h : i a]', strtotime($expected_demo_date));
+            					                echo date('F d, Y [ h:i A ]', strtotime($expected_demo_date));
     					                    }
     					                    else {
     					                        echo "Date is not specified";
@@ -100,7 +108,7 @@
         				                }
         				                else if($status=="delivered") {
         				                    if($expected_pullout_date != null) {
-            				                    echo date("F d, Y [h : i a]", strtotime($expected_pullout_date));
+            				                    echo date("F d, Y [ h:i A ]", strtotime($expected_pullout_date));
         				                    }
         				                    else {
         				                        echo "Date is not specified";
@@ -108,7 +116,7 @@
         				                }
         				                else if($status=="pullout") {
         				                    if($pullout_date != null) {
-            				                    echo date("F d, Y [h : i a]", strtotime($pullout_date));
+            				                    echo date("F d, Y [ h:i A]", strtotime($pullout_date));
         				                    }
         				                    else {
         				                        echo "Date is not specified";
@@ -126,12 +134,12 @@
                                         title="View">
                                         <i class="fa fa-eye"></i>
                                     </a>
-					                </button>
-					                <button class="btn btn-sm btn-danger"
-					                        id="btn_delete" data-toggle="tooltip"
-					                           data-placement="top" title="Delete">
-					                    <span class="fa fa-close"></span>
-					                </button>
+					                <!--<button class="btn btn-sm btn-danger"-->
+					                <!--        id="btn_delete" data-toggle="tooltip"-->
+					                <!--           data-placement="top" title="Delete"-->
+					                <!--           value="<?php //echo $client_service['ClientService']['id'] ?>">-->
+					                <!--    <span class="fa fa-close"></span>-->
+					                <!--</button>-->
 					            </td>
 					        </tr>
 					        <?php } ?>
@@ -144,7 +152,7 @@
     
 	<!--Add New Demo or Service Unit Combo Modal Start-->
 	<!--===================================================-->
-    <div class="modal fade" id="add-demo-su-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal fade" id="add-demo-su-modal" role="dialog"   aria-labelledby="demo-default-modal" aria-hidden="true">
         <div class="modal-dialog">
 			<div class="modal-content">
 				<!--Modal header-->
@@ -174,9 +182,6 @@
                              <input type="hidden" id="service_code" value="<?php echo $service_code; ?>" />
     				         <select class="form-control" id="select_client">
         				        <option>Select Client</option>
-        				        <option style="font-size: 0.5pt; background-color: grey;"
-					    			disabled >&nbsp</option>
-					    			
         				        <?php foreach($clients as $client) {
         				            $client_id = $client['Client']['id'];
         				            $client_name = $client['Client']['name'];
@@ -189,8 +194,9 @@
         				    </select>
 				        </div>
 				        <div class="col-lg-6">
-				            <input type="text" class="form-control"
-				                placeholder="Quantity" id="qty" />
+				            <input type="number" step="any" class="form-control"
+				                placeholder="Quantity" id="qty"
+                                onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57" />
 				        </div>
 				    </div>
                     <br/>
@@ -198,8 +204,6 @@
                         <div class="col-lg-6">
                              <select class="form-control" id="select_product">
         				        <option>Select Product</option>
-        				        <option style="font-size: 0.5pt; background-color: grey;"
-					    			disabled >&nbsp</option>
 					    		<?php
 					    		    foreach($products as $product) {
 					    		        $product_id = $product['Product']['id'];
@@ -289,6 +293,18 @@
             "stateSave": true
         });
         
+        $("#select_client").select2({
+            placeholder: "Select Client",
+            allowClear: true,
+            width: '100%'
+        });
+        
+        $("#select_product").select2({
+            placeholder: "Select Product",
+            allowClear: true,
+            width: '100%'
+        });
+        
         $('#show_modal').on("click", function() {
             $('#add-demo-su-modal').modal('show');
         });
@@ -306,7 +322,7 @@
                     for(i=0;i<data.length;i++) {
                         $("#select_product_combo").removeAttr('readonly').append($('<option>', {
                                 value: data[i]['ProductCombo']['id'],
-                                text: data[i]['ProductCombo']['id']
+                                text: data[i]['Product']['name']+" ["+data[i]['ProductCombo']['ordering']+"]"
                             }));
                     }
                 }
@@ -415,6 +431,30 @@
                 $("#select_client").css({'border-color':'red'});
             }
         });
+        
+        // $("button#btn_delete").on('click', function() {
+        //     var client_service_id = $(this).val();
+        // 	var qpid = $(this).data('qpid');
+        // 	swal({
+	       //     title: "Are you sure?",
+	       //     text: "This will cancel <?php //echo $type_tmp; ?>.",
+	       //     type: "warning",
+	       //     showCancelButton: true,
+	       //     confirmButtonClass: "btn-danger",
+	       //     confirmButtonText: "Yes",
+	       //     cancelButtonText: "No",
+	       //     closeOnConfirm: false,
+	       //     closeOnCancel: true
+	       // },
+	       // function (isConfirm) {
+	       //     if (isConfirm) {
+		      //  	$.get("/client_services/delete", {id: client_service_id, qpid: qpid}, 
+		      //  	function(data) {
+		      //      	window.location.replace("/client_services/all_lists?type="+type+"&&status="+status);
+		      //  	});
+	       //     }
+	       // });
+        // });
     });
 </script>
 <script> 
