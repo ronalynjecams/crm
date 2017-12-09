@@ -51,12 +51,19 @@ class DeliverySchedProduct extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'QuotationProduct' => array(
-			'className' => 'QuotationProduct',
-			'foreignKey' => 'quotation_product_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
+		// 'Product' => array(
+		// 	'className' => 'Product',
+		// 	'foreignKey' => 'product_id',
+		// 	'conditions' => '',
+		// 	'fields' => '',
+		// 	'order' => ''
+		// ),
+		// 'QuotationProduct' => array(
+		// 	'className' => 'QuotationProduct',
+		// 	'foreignKey' => 'quotation_product_id',
+		// 	'conditions' => '',
+		// 	'fields' => '',
+		// 	'order' => ''
+		// )
 	);
 }

@@ -39,7 +39,7 @@
     					   data-sort-name="no_pur" data-sort-order="asc">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <!--<th>#</th>-->
                                 <th>Product</th>
                                 <th>Description</th>
                                 <th data-field="no_pur" data-sortable="true">Number of times Purchased</th>
@@ -56,7 +56,7 @@
                                 $product_id = $product['Product']['id'];
                                 ?>
                                 <tr>
-                                    <td><?php echo $count; ?></td>
+                                    <!--<td><?php //echo $count; ?></td>-->
                                     <td><?php echo $product_name.' <div class="ordering"></div>'; ?></td>
                                     <?php
                                         if(!empty($product_combos[$product_id])) {
@@ -67,7 +67,7 @@
                                                 foreach($product_combo['ProductComboProperty'] as $product_combo_prop) {
                                                     $product_combo_prop_prop = $product_combo_prop['property'];
                                                     $product_combo_prop_val = $product_combo_prop['value'];
-                                                    $desc[] = ucwords($product_combo_prop_prop).':'.ucwords($product_combo_prop_val);
+                                                    $desc[] = "<font style='font-weight:bold'>".ucwords($product_combo_prop_prop)."</font>".' : '.ucwords($product_combo_prop_val);
                                                 }
                                             }
                                         }
@@ -83,7 +83,7 @@
                                         if(!empty($desc)) {
                                             for($i=0;$i<count($desc);$i++) {
                                                 if($desc[$i]!="") {
-                                                    echo $desc[$i];
+                                                    echo "<p>".$desc[$i]."</p>";
                                                 }
                                             }
                                         }
@@ -110,7 +110,7 @@
         $('#example').DataTable({
             "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
             "orderable": true,
-            "order": [[3,"asc"]],
+            "order": [[2,"desc"]],
             "stateSave": false
         });
         

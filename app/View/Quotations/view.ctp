@@ -30,6 +30,8 @@
                 <div class="col-sm-7">
                     <h3 class="page-header text-overflow">
                         <input type="hidden" id="qteidd" value="<?php echo $this->params['url']['id']; ?>"/>
+                        <input type="hidden" id="deliver_to" value="<?php echo $quote_data['Client']['name']; ?>"/>
+                        <input type="hidden" id="clnt_id" value="<?php echo $quote_data['Client']['id']; ?>"/>
                  
                         <?php echo $quote_data['Client']['name']; ?>
                         <?php if (!empty($quote_data['Client']['tin_number'])) echo '<br/><small>[' . $quote_data['Client']['tin_number'] . ']</small>'; ?>
@@ -221,6 +223,9 @@
                                                 <?php
                                             }
                                             ?> 
+                                            <input type="hidden" id="shipping_address" value="<?php echo  $quote_data['Quotation']['ship_address'].', '.$quote_data['Quotation']['ship_geolocation'];  ?>">
+                                            <input type="hidden" id="g_maps" value="<?php echo $quote_data['Quotation']['ship_latitude'].'_'.$quote_data['Quotation']['ship_longitude']; ?>">
+                                            
                                         </div>
                                     </div>
                                 <?php }
@@ -276,13 +281,14 @@
                                 <!--<button class="btn btn-dark btn-icon add-tooltip advance_invoice_btn" data-toggle="tooltip"  data-original-title="Advance Invoice" id="advance_invoice_btn" data-advnceid="<?php echo $quote_data['Quotation']['id']; ?>">Advance Invoice</button>-->
                                 <?php
                             }
-                        } else if ($quote_data['Quotation']['status'] == 'approved') {
+                        } 
+                        // else if ($quote_data['Quotation']['status'] == 'approved') {
                             if (AuthComponent::user('role') == 'sales_manager') {
                                 ?>
                                 <button class="btn btn-mint btn-icon add-tooltip update_quote" data-toggle="tooltip"  data-original-title="Update Quotation?" id="update_quote" data-upquoteid="<?php echo $quote_data['Quotation']['id']; ?>"><i class="fa fa-edit"></i></button>
                                 <?php
                             }
-                        }
+                        // }
                         ?>
                     </h3> 
 
@@ -314,11 +320,11 @@
                                         }
 
                                         $balance = $quote_data['Quotation']['grand_total'] - $total_collection;
-                                        if($balance>=1){
+                                        if($balance>=1){ 
                                             echo '<br/><br/><span class="text-danger"><b>Balance: </b> <br/>&#8369; ' . number_format($balance, 2).'</span>';
                                         }else{
                                              
-                                        }
+                                        } 
                                     }
 
                                     if ($total_collection != $quote_data['Quotation']['grand_total']) {
@@ -338,9 +344,14 @@
                                                 }
                                             }
                                         }
+                                        
+                                        
+                                        
                                     }
+                                    
+                                    
                                     ?>
-
+                
 
                                     </div>    
                                     
@@ -358,6 +369,26 @@
                                     </div>
                                     <div class="col-sm-12">
                                     <?php  
+                                    
+                                    
+                                    
+                                            // ISSUE SOA BUTTON
+                                            
+                                    if ($total_collection != $quote_data['Quotation']['grand_total']) {
+                                            if($UserIn['User']['department_id'] == 10) {
+                                                
+                                                ?><br/>
+        		                                <button class="btn btn-xs btn-mint btn_issue_soa"
+        		                                        data-toggle="tooltip"
+        		                                        data-placement="top"
+        												data-title="Issue SOA"
+        												value="<?php echo $quote_data['Quotation']['id']; ?>">
+        		                                    <span class="fa fa-plus"></span> Issue SOA
+        		                                </button>
+        		                                <?php
+    		                            	}
+    		                            	}
+    		                            	
                                          if(!empty($CollectSched)){
                                                     echo '<hr style="border-top: dotted 1px;" />For collection on '.date('F d, Y', strtotime($CollectSched['CollectionSchedule']['collection_date'])) . '<small> [' . date('h:i a', strtotime($CollectSched['CollectionSchedule']['collection_date'])) . ']</small>';
                                                 }
@@ -470,28 +501,6 @@
                                                             <?php } ?>
                                                             <td class="td_row">
                                                                 <?php
-                                                                    if($UserIn['User']['role'] == "collection_officer") {
-                                                                        // if($soa_balance!=0) {
-                                		                            	?>
-                                		                                <button class="btn btn-mint btn_issue_soa"
-                                		                                        data-toggle="tooltip"
-                                		                                        data-placement="top"
-                                												data-title="Issue SOA"
-                                												value="<?php echo $quote_prod['Quotation']['id']; ?>">
-                                		                                    <span class="fa fa-plus"></span> Issue SOA
-                                		                                </button>
-                                		                                <?php 
-                                		                            	}
-                                		                            	else {
-                                		                            		?>
-                                	                            		<button class="btn btn-mint" disabled>
-                                		                                    <span class="fa fa-plus"></span>
-                                		                                </button>
-                                		                            		<?php
-                                		                          //  	}
-                                                                    }
-                                                                ?>
-                                                                <?php
                                                                 if($quote_prod['QuotationProduct']['demo']!=0) {
                                                                     if (count($quote_prod['Quotation']['JobRequest']) != 0) {
                                                                         foreach ($quote_prod['Quotation']['JobRequest']['JrProduct'] as $jrprod) {
@@ -514,7 +523,7 @@
                                     				                ?>
                                                                     <input type="hidden" id="service_code" value="<?php echo $service_code; ?>" />
                                                                     <input type="hidden" id="client_id" value="<?php echo $client_id; ?>" />
-                                                                    
+                                                                    <?php if (AuthComponent::user('role') == 'sales_executive') { ?>
                                                                     <a ng-href=""
                                                                         data-target="#add-demo-modal"
                                                                         data-toggle="modal"
@@ -527,6 +536,7 @@
                                                                         Demo Product
                                                                     </a>
                                                                     <?php
+                                                                    }
                                                                 }
                                                                 ?>
                                                             </td > 
@@ -539,7 +549,7 @@
                                                                             if ($quote_prod['QuotationProduct']['dr_requested'] == 0) {
                                                                                 if ($userRole == 'sales_executive') {
                                                                                     ?>
-                                                                                    <button class=" btn btn-mint  btn-icon  add-tooltip delivery_sched" data-toggle="tooltip"  data-original-title="Schedule Delivery"  data-dspquoteid="<?php echo $quote_prod['QuotationProduct']['id']; ?>" data-dspquoteqty="<?php echo $quote_prod['QuotationProduct']['qty']; ?>"><i class="fa fa-calendar"></i></button>
+                                                                                    <button class=" btn btn-mint  btn-icon  add-tooltip delivery_sched" data-toggle="tooltip"  data-original-title="Schedule Delivery"  data-dspquoteid="<?php echo $quote_prod['QuotationProduct']['id']; ?>" data-dspquoteqty="<?php echo $quote_prod['QuotationProduct']['qty']; ?>"  data-myprodid="<?php echo $quote_prod['QuotationProduct']['product_id']; ?>"><i class="fa fa-calendar"></i></button>
                                                                                     <?php
                                                                                 }
                                                                             } else {
@@ -641,6 +651,7 @@
             <div class="modal-body">
                 <div class="row"> 
                     <input type="hidden" id="quotation_product_id"/> 
+                    <input type="hidden" id="myprod_id">
                     <input type="hidden" id="quotation_id" value="<?php echo $this->params['url']['id']; ?>"/>   
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -747,10 +758,11 @@
             </div>
             <div class="modal-body">
                 <div class="row"> 
+                <p class="text-danger">Delivery Note could not be edited if schedule was approved by the delivery personnel.</p>
                     <input type="hidden" id="delschedlID"/>
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <label class="control-label" id="labelDeliveryNote">Delivery Note</label> 
+                            <label class="control-label" id="labelDeliveryNote"></label> 
                             <textarea id="agent_note" class="form-control" ></textarea>
                         </div>
                     </div>   
@@ -1059,9 +1071,11 @@
             $(this).click(function () {
                 var pqid = $(this).data("dspquoteid");
                 var pqqty = Math.abs($(this).data("dspquoteqty"));
+                var myprodid = $(this).data("myprodid"); 
                 $('#delivery-sched-modal').modal('show');
                 $('#quotation_product_id').val(pqid);
                 $('#requested_qty').val(pqqty);
+                $('#myprod_id').val(myprodid);
             });
         });
     
@@ -1071,9 +1085,14 @@
             var delivery_date = $('#delivery_date').val();
             var delivery_time = $('#delivery_time').val();
             var requested_qty = $('#requested_qty').val();
+            var myprod_id = $("#myprod_id").val();
             var quotation_product_id = $('#quotation_product_id').val();
             var quotation_id = $('#quotation_id').val();
             var type = $('#type').val();
+            var deliver_to = $('#deliver_to').val();
+            var clnt_id = $('#clnt_id').val(); 
+            var shipping_address = $('#shipping_address').val(); 
+            var g_maps = $('#g_maps').val(); 
     
             if (delivery_date != '') {
                 if (requested_qty != '') {
@@ -1081,11 +1100,19 @@
                         if (type != '') {
                             var data = {"delivery_date": delivery_date,
                                 "requested_qty": requested_qty,
-                                "quotation_product_id": quotation_product_id,
-                                "quotation_id": quotation_id,
+                                "product_reference": quotation_product_id,
+                                "reference_number": quotation_id,
                                 "delivery_time": delivery_time,
-                                "mode":type
+                                "mode":type,
+                                "reference_type":'quotation',
+                                "deliver_to":deliver_to,
+                                "product_id":myprod_id,
+                                "client_id":clnt_id,
+                                "supplier_id":0,
+                                "shipping_address":shipping_address,
+                                "g_maps": g_maps
                             }
+                            // console.log(data);
                             $.ajax({
                                 url: "/delivery_schedules/addSched",
                                 type: 'POST',

@@ -878,7 +878,7 @@
 
     });
 
-        $(".editstartBtn").each(function (index) {
+    $(".editstartBtn").each(function (index) {
         $(this).on("click", function () {
               var id = $(this).data('sid');
 

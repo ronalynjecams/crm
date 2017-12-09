@@ -145,6 +145,8 @@ class DeliveryItenerariesController extends AppController {
         $client_id = $data['client_id'];
         $delivery_schedule_id = $data['delivery_schedule_id'];
         $del_type = $data['del_type'];
+        $shipping_address = $data['shipping_address'];
+        $g_maps = $data['g_maps'];
         ///merge expected start date and time 
 
         $combinedDT = date('Y-m-d H:i:s', strtotime("$expected_start_date $expected_start_time"));
@@ -159,7 +161,10 @@ class DeliveryItenerariesController extends AppController {
             'type' => $del_type,
             'status' => 'scheduled',
             'client_id' => $client_id,
-            'processed_by' => $this->Auth->user('id')
+            'shipping_address' => $shipping_address,
+            'g_maps' => $g_maps,
+            'processed_by' => $this->Auth->user('id'),
+            
         ));
         if ($this->DeliveryItenerary->save()) {
             $delivery_itenerary_id = $this->DeliveryItenerary->getLastInsertID();
@@ -187,10 +192,21 @@ class DeliveryItenerariesController extends AppController {
     }
 
     public function list_view() {
+        
         $status = $this->params['url']['status'];
         $iteneraries = $this->DeliveryItenerary->find('all', ['conditions' => ['DeliveryItenerary.status' => $status]]);
-
-        $this->set(compact('iteneraries', 'status'));
+// pr($iteneraries);
+        $this->loadModel("Vehicle");
+        $this->Vehicle->recursive = -1;
+        $vehicles = $this->Vehicle->find('all');
+        $this->loadModel("User");
+        $this->User->recursive = -1;
+        $users = $this->User->find('all');
+        $this->set(compact('iteneraries', 'status', 'vehicles', 'users'));
+        
+        // $this->loadModel('DeliverySchedProduct');
+        //  $drpeods = $this->DeliverySchedProduct->findAllByDeliveryScheduleId(14);
+        //  pr($drpeods);
     }
 
     public function process_update_departure() {
@@ -202,7 +218,8 @@ class DeliveryItenerariesController extends AppController {
         $departure_time = $data['departure_time'];
 
         $combinedDT = date('Y-m-d H:i:s', strtotime("$departure_date $departure_time"));
-//
+        
+        
         $this->DeliveryItenerary->id = $delivery_itenerary_id;
         $this->DeliveryItenerary->set(array(
             'departure' => $combinedDT
@@ -238,6 +255,8 @@ class DeliveryItenerariesController extends AppController {
     }
     
         public function process_update_end() {
+            $this->loadModel('DeliverySchedule');
+            $this->loadModel('DeliverySchedProduct');
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
@@ -249,6 +268,8 @@ class DeliveryItenerariesController extends AppController {
         $remarks = $data['remarks'];
         
 
+        $DIinfo = $this->DeliveryItenerary->findById($end_id);
+        
         $combined_EDT = date('Y-m-d H:i:s', strtotime("$end_date $end_time"));
         
         $this->DeliveryItenerary->id = $end_id;
@@ -260,10 +281,163 @@ class DeliveryItenerariesController extends AppController {
         ));
         
         if($this->DeliveryItenerary->save()){
-                echo json_encode($end_id);
+            $this->DeliverySchedule->id = $DIinfo['DeliveryItenerary']['delivery_schedule_id'];
+            if($status == 'delivered'){
+            $this->DeliverySchedule->set(array(
+                        'status' => 'delivered', 
+                    ));
+                    if ($this->DeliverySchedule->save()) {
+                        
+                        //kapag galing quotation
+                        if($DIinfo['DeliveryItenerary']['type']=='dr'){
+                            
+                        $this->loadModel('DeliverySchedProduct');
+                        $this->loadModel('QuotationProduct');
+                        $drpeods = $this->DeliverySchedProduct->findAllByDeliveryScheduleId($DIinfo['DeliveryItenerary']['delivery_schedule_id']);
+                       
+                        foreach($drpeods as $drpeod){
+                             pr($drpeod['DeliverySchedProduct']['id']);
+                            if($drpeod['DeliverySchedProduct']['actual_qty'] !=0 ){
+                            $this->DeliverySchedProduct->id = $drpeod['DeliverySchedProduct']['id'];
+                            $this->DeliverySchedProduct->set(array(
+                                'delivered_qty' => $drpeod['DeliverySchedProduct']['actual_qty']
+                                ));
+                            $this->DeliverySchedProduct->save();
+                            
+                            //update quotation product
+                            
+                            $this->QuotationProduct->id = $drpeod['DeliverySchedProduct']['reference_num'];
+                            $this->QuotationProduct->set(array(
+                                'delivered_qty' => $drpeod['DeliverySchedProduct']['actual_qty'],
+                                'dr_requested' => 0
+                                ));
+                            
+                            $this->QuotationProduct->save();
+                            }
+                        }
+                        
+                            //update quotation product based on delivered quantity from delivery sched product delivered_qty
+                            //as of now kung ano ang actual qty yun na muna ang delivered qty
+                              
+                        }
+                    } 
+            }
+                // echo json_encode($end_id);
         }
         exit;
     }
+    
+    public function process_update_vehicle(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $vehicle = $data['vehicle'];
+        $del_itenerary_id = $data['del_itenerary_id'];
+        
+        $this->DeliveryItenerary->id = $del_itenerary_id;
+        $this->DeliveryItenerary->set(array('vehicle_id' => $vehicle));
+        if($this->DeliveryItenerary->save()){
+            return json_encode('success');
+        } else {
+            return json_encode('error');
+        }
+        
+        exit;
+        
+    }
+    
+    public function process_update_driver(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $driver = $data['driver'];
+        $del_itenerary_id = $data['del_itenerary_id'];
+        
+        $this->DeliveryItenerary->id = $del_itenerary_id;
+        $this->DeliveryItenerary->set(array('driver' => $driver));
+        if($this->DeliveryItenerary->save()){
+            return json_encode('success');
+        } else {
+            return json_encode('error');
+        }
+        
+        exit;
+        
+    }
+    
+    public function process_update_bookingcode(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $booking_code = $data['booking_code'];
+        $del_itenerary_id = $data['del_itenerary_id'];
+        
+        $this->DeliveryItenerary->id = $del_itenerary_id;
+        $this->DeliveryItenerary->set(array('booking_code' => $booking_code));
+        if($this->DeliveryItenerary->save()){
+            return json_encode('success');
+        } else {
+            return json_encode('error');
+        }
+        
+        exit;
+        
+    }
 
+    public function import(){
+	
+	print("asfd");	 
+    $csvMimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain');
+        if(!empty($_FILES['file']['name']) && in_array($_FILES['file']['type'],$csvMimes)){
+            if(is_uploaded_file($_FILES['file']['tmp_name'])){
+                   
+    			$csvFile = fopen($_FILES['file']['tmp_name'], 'r'); 
+    			$stat = $this->request->data['status'];
+    			$matrix = array();
+    			while (($row = fgetcsv($csvFile, 1000, ",")) !== FALSE) 
+    			{
+    			$matrix[] = $row;
+    			}
+    			           
+    // 			pr($matrix);  exit;          
+    			$matrix_count = count($matrix) - 1;
+    			 
+    			for($i=1; $i<=$matrix_count; $i++){ 
+    			    $ctr = 0; 
+    				$booking_code = $matrix[$i][0];
+    				$amount = floatval($matrix[$i][8]);
+    				$arrival = $matrix[$i][1];
+    				$status = $matrix[$i][9];
+    				
+    				$this->DeliveryItenerary->recursive = -1;
+    				$di = $this->DeliveryItenerary->findByBookingCode($booking_code);
+    				
+    				if($di && $status == 'Delivery Completed'){
+    				    // pr($di); 
+    				    $this->DeliveryItenerary->id = $di['DeliveryItenerary']['id'];
+    				    $this->DeliveryItenerary->set(array('ammount' => $amount, 'arrival' => $arrival));
+    				    $this->DeliveryItenerary->save();
+    				}
+                }
+                fclose($csvFile);
+                $qstring = '?status=succ';
+                // $this->Session->setFlash(__('Import completed.'), 'default', array('class' => 'alert alert-success'));
+                return $this->redirect('/delivery_iteneraries/list_view?status='.$stat);
+                // return $this->redirect(array('action' => 'list_view'));
+            }else{
+                $qstring = '?status=err';
+            }
+        } else{
+            echo "error";
+            $qstring = '?status=invalid_file';
+        } 
+        exit;
+	}
 
 }

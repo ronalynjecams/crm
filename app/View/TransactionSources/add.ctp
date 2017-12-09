@@ -40,6 +40,9 @@
 					<?php echo $this->Form->input('mode_num', array('class' => 'form-control', 'placeholder' => 'Mode Num'));?>
 				</div>
 				<div class="form-group">
+					<?php echo $this->Form->input('product_combo_id', array('class' => 'form-control', 'placeholder' => 'Product Combo Id'));?>
+				</div>
+				<div class="form-group">
 					<?php echo $this->Form->submit(__('Submit'), array('class' => 'btn btn-default')); ?>
 				</div>
 

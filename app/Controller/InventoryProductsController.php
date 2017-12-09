@@ -292,9 +292,10 @@ class InventoryProductsController extends AppController {
         $this->response->type('json');
         if ($this->request->is('ajax')) {
             $prod_combo_id = $this->request->query['id']; 
+            $location = $this->request->query['slctd_inv_lcation'];  
             $this->InventoryProduct->recursive = -1;
             $inv_products = $this->InventoryProduct->find('first', [
-                'conditions' => ['InventoryProduct.product_combo_id' => $prod_combo_id] ,
+                'conditions' => ['InventoryProduct.product_combo_id' => $prod_combo_id, 'InventoryProduct.inv_location_id' => $location] ,
                 'fields' => ['InventoryProduct.qty']
             ]);
              

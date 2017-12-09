@@ -133,11 +133,11 @@
                                         <div class="form-group oldInfo">
                                             <div class="col-sm-6">
                                                 <label class="control-label">Contact Person</label>
-                                                <input type="text" class="form-control" readonly id="contact_person" value="<?php echo $quote_data['Client']['contact_person']; ?>">
+                                                <input type="text" class="form-control" readonly id="contact_persond" value="<?php echo $quote_data['Client']['contact_person']; ?>">
                                             </div>
                                             <div class="col-sm-6">
                                                 <label class="control-label">Contact Number</label>
-                                                <input type="text" class="form-control" readonly id="contact_number" value="<?php echo $quote_data['Client']['contact_number']; ?>">
+                                                <input type="text" class="form-control" readonly id="contact_numberd" value="<?php echo $quote_data['Client']['contact_number']; ?>">
                                             </div>
                                         </div>
                                     <?php } ?>

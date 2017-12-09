@@ -41,27 +41,47 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pending_jrs as $pending_jr) { ?> 
-                            <tr>
-                                <td >
-                                    <?php
-                                    echo date('F d, Y', strtotime($pending_jr['JobRequest']['created']));
-                                    echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';
-                                    ?>
-                                </td>
-                                <td>
-                                    <?php
-                                    echo $pending_jr['Quotation']['type'];
-                                    ?> 
-                                </td> 
-                                <td ><?php echo $pending_jr['Client']['name']; ?><br/><small>[ <?php echo $pending_jr['JobRequest']['jr_number']; ?> ]</small></td>
-                                <td ><?php echo $pending_jr['User']['first_name']; ?></td>  
-                                <td> <?php
-                                    echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation']['id'] . '"><i class="fa fa-edit"></i></button>';
-                                    ?>
-                                </td> 
-                            </tr>
+                        <?php //pr($pending_jrs);exit; ?>
+                         <?php foreach ($pending_jrs as $pending_jr) { ?> 
+                        
+                        <tr>
+                            <td >
+                                <?php 
+                                     echo date('F d, Y', strtotime($pending_jr['JobRequest']['created']));
+                                     echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';
+                                     ?> 
+                            </td> 
+                            <td align="center"><?php echo $pending_jr['Quotation'][0]['type']; ?></td> 
+                            <td align="center"><?php echo $pending_jr['Quotation'][0]['Client']['name'].'<br/>'.$pending_jr['JobRequest']['jr_number']; ?></td>
+                            <td align="center"><?php echo $pending_jr['Quotation'][0]['User']['first_name'].' '.$pending_jr['Quotation'][0]['User']['last_name']; ?></td>   
+                            <td align="center"> 
+                            <?php
+                            echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation'][0]['id'] . '"><i class="fa fa-edit"></i></button>';
+                            ?>
+                            </td> 
+                        </tr>
                         <?php } ?>
+                        <?php //foreach ($pending_jrs as $pending_jr) { ?> 
+                            <!--<tr>-->
+                            <!--    <td >-->
+                            <!--        <?php-->
+                            <!--        echo date('F d, Y', strtotime($pending_jr['JobRequest']['created']));-->
+                            <!--        echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';-->
+                            <!--        ?>-->
+                            <!--    </td>-->
+                            <!--    <td>-->
+                            <!--        <?php-->
+                            <!--        echo $pending_jr['Quotation']['type'];-->
+                            <!--        ?> -->
+                            <!--    </td> -->
+                            <!--    <td ><?php echo $pending_jr['Client']['name']; ?><br/><small>[ <?php echo $pending_jr['JobRequest']['jr_number']; ?> ]</small></td>-->
+                            <!--    <td ><?php echo $pending_jr['User']['first_name']; ?></td>  -->
+                            <!--    <td> <?php-->
+                            <!--        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation']['id'] . '"><i class="fa fa-edit"></i></button>';-->
+                            <!--        ?>-->
+                            <!--    </td> -->
+                            <!--</tr>-->
+                        <?php //} ?>
                     </tbody>
                     <tfoot>
                         <tr>

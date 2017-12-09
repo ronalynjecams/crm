@@ -23,7 +23,7 @@
     <!--Page Title-->
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <div id="page-title">
-        <h1 class="page-header text-overflow"><?php echo $req['Quotation']['Client']['name']; ?></h1>
+        <h1 class="page-header text-overflow"><?php echo $req['DeliverySchedule']['deliver_to']; ?></h1>
     </div>
 
     <!--Page content-->
@@ -39,7 +39,7 @@
                     <?php if ($req['DeliverySchedule']['status'] == 'pending' || $req['DeliverySchedule']['status'] == 'ongoing') { ?>
                         <button class="btn btn-primary" id="approvedSched" data-dsid="<?php echo $req['DeliverySchedule']['id']; ?>">  Done</button>
                     <?php }else{ ?>
-                        <button class="btn btn-primary" id="approvedSched" data-dsid="<?php echo $req['DeliverySchedule']['id']; ?>">  Prints </button>
+                        <!--<button class="btn btn-primary" id="approvedSched" data-dsid="<?php echo $req['DeliverySchedule']['id']; ?>">  Prints </button>-->
                     <?php } ?>
                 </div>
                 <br/>
@@ -55,48 +55,42 @@
                         </tr>
                     </thead> 
                     <tbody>
-                        <?php foreach ($scheds as $sched) { ?>
+                          <?php foreach ($vars as $var) { ?>
                             <tr>
                                 <th>
-                                    <?php if (!is_null($sched['QuotationProduct']['Product']['image'])) { ?>
-                                        <img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $sched['QuotationProduct']['Product']['image']; ?>" alt="Product Picture">
+                                    <?php if (!is_null($var['prod_image'])) { ?>
+                                        <img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $var['prod_image']; ?>" alt="Product Picture">
                                         <?php
                                     } else {
                                         echo 'no image';
                                     }
                                     ?>
                                 </th> 
-                                <th><?php echo $sched['QuotationProduct']['Product']['name']; ?></th>  
+                                <th><?php echo $var['prod_name']; ?></th>  
                                 <th> 
                                     <ul class="list-group"> 
                                         <?php
-                                        foreach ($sched['QuotationProduct']['QuotationProductProperty'] as $desc) {
-                                            if (is_null($desc['property'])) {
-                                                echo '<li class="list-group-item"><b>' . $desc['ProductProperty']['name'] . '</b> : ' . $desc['ProductValue']['value'] . '</li>';
-                                            } else {
-                                                echo '<li class="list-group-item"><b>' . $desc['property'] . '</b> : ' . $desc['value'] . '</li>';
-                                            }
-                                        }
+                                        
                                         ?>
-                                        <?php echo '<li class="list-group-item"><b>Other Info : <br/></b>' . $sched['QuotationProduct']['other_info'] . '</li>'; ?>
+                                        <?php echo '<li class="list-group-item"><b>Other Info : <br/></b>' . $var['other_info'] . '</li>'; ?>
 
                                     </ul>
                                 </th>
                                 <th><?php
-                                    if ($sched['DeliverySchedProduct']['actual_qty'] != 0) {
-                                        echo $sched['DeliverySchedProduct']['actual_qty'] . ' / ' . $sched['DeliverySchedProduct']['requested_qty'];
+                                    if ($var['actual_qty'] != 0) {
+                                        echo $var['actual_qty'] . ' / ' . $var['requested_qty'];
                                     } else {
-                                        echo $sched['DeliverySchedProduct']['requested_qty'];
+                                        echo $var['requested_qty'];
                                     }
                                     ?>
                                 </th> 
                                 <th>
-                                    <?php if ($sched['DeliverySchedProduct']['status'] == 'pending') { ?>
-                                        <button class="btn btn-primary processBtn" data-id="<?php echo $sched['DeliverySchedProduct']['id']; ?>" data-qty="<?php echo $sched['DeliverySchedProduct']['requested_qty']; ?>"><i class="fa fa-edit"></i></button>
+                                    <?php if ($var['status'] == 'pending') { ?>
+                                        <button class="btn btn-primary processBtn" data-id="<?php echo $var['dsproduct_id']; ?>" data-qty="<?php echo $var['requested_qty']; ?>"><i class="fa fa-edit"></i></button>
                                         <?php
-                                    } else if ($sched['DeliverySchedProduct']['status'] == 'processed') {
+                                    } else if ($var['status'] == 'processed') {
                                         echo 'processed';
-                                    } else if ($sched['DeliverySchedProduct']['status'] == 'delivered') {
+                                    } else if ($var['status'] == 'delivered') {
                                         echo 'how about backjob?';
                                     }
                                     ?>
@@ -188,8 +182,8 @@
         var status = 'approved';
 
         swal({
-            title: "Are you sure you're done?",
-            text: "You will not be able to edit after this confirmation!",
+            title: "Are you sure you're done?", 
+            text: "You will not be able to edit after this confirmation! Other unprocessed products will be cancelled",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",

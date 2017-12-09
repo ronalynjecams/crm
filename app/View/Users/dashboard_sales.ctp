@@ -180,7 +180,11 @@
 					                        </p>
 					                        <p class="mar-no">
 					                            <span class="pull-right text-bold">$1,332</span>
-					                            Last 7 Day
+					                            This Month
+					                        </p>
+					                        <p class="mar-no">
+					                            <span class="pull-right text-bold">$1,332</span>
+					                            This Year
 					                        </p>
 					                    </div>
 					                    <div class="pad-all text-center">

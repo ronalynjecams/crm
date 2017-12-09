@@ -56,13 +56,20 @@ class DeliverySchedule extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Quotation' => array(
-			'className' => 'Quotation',
-			'foreignKey' => 'quotation_id',
+		// 'Quotation' => array(
+		// 	'className' => 'Quotation',
+		// 	'foreignKey' => 'quotation_id',
+		// 	'conditions' => '',
+		// 	'fields' => '',
+		// 	'order' => ''
+		// )z,
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		) 
+		),
 	);
 
 /**

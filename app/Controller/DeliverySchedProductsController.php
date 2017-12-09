@@ -112,17 +112,57 @@ class DeliverySchedProductsController extends AppController {
 
     public function process() {
         $this->loadModel('DeliverySchedule');
+        $this->loadModel('QuotationProduct');
         $delivery_sched_id = $this->params['url']['id'];
+        
+        
 
-        $this->DeliverySchedProduct->recursive = 3;
-        $scheds = $this->DeliverySchedProduct->find('all', [
+        // $this->DeliverySchedProduct->recursive = 3;
+        $sched_products = $this->DeliverySchedProduct->find('all', [
             'conditions' => ['DeliverySchedProduct.delivery_schedule_id' => $delivery_sched_id]
         ]);
+        // pr($req);
+        
         $this->DeliverySchedule->recursive = 2;
         $req = $this->DeliverySchedule->findById($delivery_sched_id);
-
-        $this->set(compact('scheds', 'req'));
-//        pr($scheds[0]['Quotation']);
+        
+        if($req['DeliverySchedule']['reference_type'] == 'quotation'){
+            $vars = [];
+            // $data = [];
+            // $propvaluedata = [];
+            $propvaluevar = [];
+            foreach ($sched_products as $sched_product){
+                $prods = $this->QuotationProduct->findById($sched_product['DeliverySchedProduct']['reference_num']);
+                // pr($prods);exit;
+                // foreach ($prods['QuotationProductProperty'] as $propvalue) {
+                // //     $propvaluedata = array_merge($propvaluevar, array(
+                // //             "prod_property"=>$propvalue['property'],
+                // //             "prod_value"=>$propvalue['value'], 
+                // //         )); 
+                //      array_push($propvaluevar,$propvalue);  
+                    
+                // }
+                
+                
+                
+                $data = array_merge($vars, array(
+                        "prod_image"=>$prods['Product']['image'],
+                        "prod_name"=>$prods['Product']['name'], 
+                        "requested_qty"=>$sched_product['DeliverySchedProduct']['requested_qty'],
+                        "actual_qty"=>$sched_product['DeliverySchedProduct']['actual_qty'],
+                        "status"=>$sched_product['DeliverySchedProduct']['status'],
+                        "properties"=>$propvaluevar,
+                        "other_info"=>$prods['QuotationProduct']['other_info'],
+                        "dsproduct_id"=>$sched_product['DeliverySchedProduct']['id'],
+                    ));
+                     
+                 array_push($vars,$data);  
+            }
+            
+           
+            
+        } 
+        $this->set(compact('vars', 'req')); 
     }
 
     public function saveProductSched() {
@@ -135,7 +175,8 @@ class DeliverySchedProductsController extends AppController {
 
         $this->DeliverySchedProduct->id = $delivery_sched_product_id;
         $this->DeliverySchedProduct->set(array(
-            'actual_qty' => $actual_qty
+            'actual_qty' => $actual_qty,
+            'status'=>'processed'
         ));
         if ($this->DeliverySchedProduct->save()) {
             echo json_encode($data);

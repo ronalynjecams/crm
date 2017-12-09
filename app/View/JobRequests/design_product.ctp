@@ -49,6 +49,7 @@
                     </thead>
                     <tbody>
                         <?php
+                        // pr($jrprods[0]['Quotation']);
                         foreach ($jrprods as $jrprod) {
                             ?> 
                             <tr>
@@ -63,15 +64,15 @@
                                     }
                                    ?>
                                 </td>
-                                <td ><?php echo $jrprod['QuotationProduct']['Quotation']['Client']['name']; ?><br/>
-                                    <small>[ <?php echo $jrprod['QuotationProduct']['Quotation']['JobRequest']['jr_number']; ?> ]</small></td>
-                                <td ><?php echo $jrprod['QuotationProduct']['Quotation']['User']['first_name']; ?></td>  
+                                <td ><?php echo $jrprod['Quotation'][0]['Client']['name']; ?><br/>
+                                    <small>[ <?php echo $jrprod['JobRequest']['jr_number']; ?> ]</small></td>
+                                <td ><?php echo $jrprod['Quotation'][0]['User']['first_name']; ?></td>  
 
                                 <td> <?php
                                     if ($this->params['url']['type'] != 'accomplished') {
-                                        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $jrprod['QuotationProduct']['quotation_id'] . '"><i class="fa fa-edit"></i></button>';
+                                        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $jrprod['Quotation'][0]['id'] . '"><i class="fa fa-edit"></i></button>';
                                     } else {
-                                        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="View Job Request"  type="button" data-jobrid="' . $jrprod['QuotationProduct']['quotation_id'] . '"><i class="fa fa-eye"></i></button>';
+                                        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="View Job Request"  type="button" data-jobrid="' . $jrprod['Quotation'][0]['id'] . '"><i class="fa fa-eye"></i></button>';
                                     }
                                     ?>
                                 </td> 

@@ -134,7 +134,18 @@ class ClientsController extends AppController {
         } else if ($this->Auth->user('role') == 'marketing_staff') {
             $options = array('conditions' => array('Client.lead' => 1, 'Client.user_id' => 0, 'Client.owner_marketing' => $this->Auth->user('id')));
             $this->set('leads', $this->Client->find('all', $options));
-        } 
+        } else if ($this->Auth->user('role') == 'sales_manager') {
+            $this->loadModel('AgentStatus');
+            $stats = $this->AgentStatus->find('first',[
+                'conditions'=>[
+                    'AgentStatus.user_id' => $this->Auth->user('id'),
+                    'AgentStatus.date_to' => NULL
+                    
+                    ]
+                ]);
+            $options = array('conditions' => array('Client.lead' => 1, 'Client.team_id'=>$stats['AgentStatus']['team_id']));
+            $this->set('leads', $this->Client->find('all', $options));
+        }
 //            else if(sales coordinator dapat per team din)
 //            else if(sales manager dapat per team din)
 //            else if(marketing head , accounting and proprietor dapat lahat)
@@ -205,6 +216,19 @@ class ClientsController extends AppController {
             $options = array('conditions' => array('Client.lead' => 0, 'Client.user_id'=>$this->Auth->user('id')));
             $this->set('clients', $this->Client->find('all', $options));
         }
+        if ($this->Auth->user('role') == 'sales_manager') {
+            $this->loadModel('AgentStatus');
+            $stats = $this->AgentStatus->find('first',[
+                'conditions'=>[
+                    'AgentStatus.user_id' => $this->Auth->user('id'),
+                    'AgentStatus.date_to' => NULL
+                    
+                    ]
+                ]);
+            $options = array('conditions' => array('Client.lead' => 0, 'Client.team_id'=>$stats['AgentStatus']['team_id']));
+            $this->set('clients', $this->Client->find('all', $options));
+        }
+        
 //            else if(marketing dapat per user din)
 //            else if(sales coordinator dapat per team din)
 //            else if(sales manager dapat per team din)

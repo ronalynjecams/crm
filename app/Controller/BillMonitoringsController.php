@@ -112,21 +112,32 @@ class BillMonitoringsController extends AppController {
 	public function view_monitoring(){
 		$this->loadModel('Bill');
 		$this->loadModel('BillAccount');
+		$this->loadModel('BillMonitoring');
 		$this->loadModel('User');
 		
-		$this->BillAccount->recursive=-1;
+		$this->BillMonitoring->recursive=1; //-1
 		$monitorings = $this->BillMonitoring->find('all');
-
-		$billaccounts = $this->BillAccount->find('all');
+		
+		// pr($monitorings);
+		
+		$this->Bill->recursive=4;
+		$billaccounts = $this->BillAccount->Bill->find('all');
+		// pr($billaccounts);
+		
+		$this->User->recursive=4;
 		$users = $this->User->find('all');
 		
-			
 		
-		// foreach($monitorings as )
-		/** needs to use push array in order to show paid_by values.  
-		*////
-		
-		
+		// pr($monitorings);
+	// $jr_arr = [];
+ //   	foreach($monitorings as $sel){ 
+ //   		if(!in_array($sel['Bill']['id'], $jr_arr)){
+ //   		array_push($jr_arr, $sel['Bill']['id']); 
+ //   		pr($jr_arr);
+ //   		}
+ //   	}
+
+
 		/*
 		 $this->BillMonitoring->recursive = -1;
 		 $mons = $this->BillMonitoring->find('all', array(
@@ -139,7 +150,7 @@ class BillMonitoringsController extends AppController {
 		*/
 		
 		
-		$this->set(compact('monitorings', 'billaccounts', 'users'));
+		$this->set(compact('monitorings', 'users', 'billaccounts'));
 	}
 	
 	public function add_monitoring(){ 

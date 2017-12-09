@@ -156,6 +156,7 @@
                     ?>
     <p style="text-align:center; font-weight:bold; padding-top:5mm;">INVOICE</p>
     <br />
+    <div class="table-responsive">
     <table class="heading" style="width:100%;">
         <tr>
             <td style="width:80mm;">
@@ -188,7 +189,7 @@
             </td>
         </tr>
     </table>
-         
+    </div>
          
     <div id="content">
          
@@ -228,6 +229,7 @@
         </div>
         <div id="invoice_total">
             Total Amount :
+            <div class="table-responsive">
             <table>
                 <tr>
                     <td style="text-align:left; padding-left:10px;">One  Hundred And Fifty Seven  only</td>
@@ -235,11 +237,12 @@
                     <td style="width:15%;" class="mono">157.00</td>
                 </tr>
             </table>
+            </div>
         </div>
         <br />
         <hr />
         <br />
-         
+         <div class="table-responsive">
         <table style="width:100%; height:35mm;">
             <tr>
                 <td style="width:65%;" valign="top">
@@ -258,6 +261,7 @@
                 </td>
             </tr>
         </table>
+        </div>
     </div>
      
     <br />

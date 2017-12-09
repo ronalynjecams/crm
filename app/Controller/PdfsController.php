@@ -404,9 +404,6 @@ class PdfsController extends AppController {
 
         $this->Mpdf->init();
 
-
-
-
         $this->loadModel('PurchaseOrder');
         $po_id = $this->params['url']['id'];
 
@@ -414,6 +411,8 @@ class PdfsController extends AppController {
         $this->Mpdf->SetHTMLHeader('<div style="padding-top:-15px; right:500px; font-size:10px; " align="right">' . date("F d, Y h:i A") . '</div>');
 
         $dis = $purchase_order['PurchaseOrder']['discount'];
+        
+        // pr($dis); exit;
         if ($dis == 0) {
             $discount = "";
         } else {
@@ -449,17 +448,18 @@ class PdfsController extends AppController {
                  </tr>';
         }
 
-        $ewt = $purchase_order['PurchaseOrder']['ewt'];
+        // $ewt = $purchase_order['PurchaseOrder']['ewt'];
         $grand_total = $purchase_order['PurchaseOrder']['grand_total'];
         $total_purchased = $purchase_order['PurchaseOrder']['total_purchased'];
 
 
         ////// PRODUCT DETAILS START //////
 
-        $this->loadModel('PoProduct');
-        $this->PoProduct->recursive = 2;
-        $quote_products = $this->PoProduct->find('all', array(
-            'conditions' => array('PoProduct.purchase_order_id' => $po_id)
+        // $this->loadModel('PoProduct');
+        $this->loadModel('PurchaseOrderProduct');
+        $this->PurchaseOrderProduct->recursive = 2;
+        $quote_products = $this->PurchaseOrderProduct->find('all', array(
+            'conditions' => array('PurchaseOrderProduct.purchase_order_id' => $po_id)
         ));
 
         $cnt = 1;
@@ -562,8 +562,10 @@ $this->Mpdf->AddPage();
     </tr>
     ' ;
     $myCtr = 0;
+    // pr($quote_products);exit;
       foreach ($quote_products as $prod) {
-            $total = $prod['PoProduct']['qty'] * $prod['PoProduct']['price'];
+        //   pr($prod);
+            $total = $prod['PurchaseOrderProduct']['qty'] * $prod['PurchaseOrderProduct']['list_price'];
             $prod_prop = [];
 //            foreach ($prod['PoProductProperty'] as $desc) {
 ////                if (is_null($desc['property'])) {
@@ -581,11 +583,12 @@ $this->Mpdf->AddPage();
 
             $html .= '<tr>
                 <td width="15" align="left">' . $cnt . '</td>
-                <td width="140" align="center"><b>' . $prod['Product']['name'] . '</b></td>
-                <td width="120" align="center"><img class="img-responsive" src="../product_uploads/' . $prod['Product']['image'] . '" width="70" height="70"></td>
+                <td width="140" align="center"><b>' . $prod['ProductCombo']['Product']['name'] . '</b></td>
+                <td width="120" align="center"><img class="img-responsive" src="../product_uploads/' . $prod['ProductCombo']['Product']['image'] . '" width="70" height="70"></td>
                 <td width="200"> 
                       <ul class="list-group">' ;
-                    foreach ($prod['PoProductProperty'] as $desc) {
+                    foreach ($prod['ProductCombo']['ProductComboProperty'] as $desc) {
+                        // pr($desc);
 //                if (is_null($desc['property'])) {
 //                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
 //                } else {
@@ -596,8 +599,8 @@ $this->Mpdf->AddPage();
                      <p>&nbsp;<br/></p><br/></li>
                         </ul>
                         </td>
-                <td width="20">' . abs($prod['PoProduct']['qty']) . '</td>
-                <td width="100" align="right">&#8369;  ' . number_format($prod['PoProduct']['price'], 2) . '</td> 
+                <td width="20">' . abs($prod['PurchaseOrderProduct']['qty']) . '</td>
+                <td width="100" align="right">&#8369;  ' . number_format($prod['PurchaseOrderProduct']['list_price'], 2) . '</td> 
                 <td width="120" align="right">&#8369;  ' . number_format($total, 2) . '</td></tr>';
 
 
@@ -618,11 +621,11 @@ $this->Mpdf->AddPage();
         <td colspan="3" >  </td> 
         <td colspan="4" align="right">
             <table style="font-size:12px;width:250" align="right">
+                ' . $discount . '
                   <tr>
                     <td style="width:50%" align="right"><b>Total Purchased:</b><br/> <br/></td>
                     <td  style="text-align:right">&#8369;  ' . number_format($purchase_order['PurchaseOrder']['total_purchased'], 2) . ' </td>
                   </tr> 
-                ' . $discount . '
                 ' . $vat . ' 
                 ' . $ewt . ' 
                   <tr>
@@ -692,6 +695,7 @@ $this->Mpdf->AddPage();
         $cnt = 1;
         $sub_total = 0;
         $product_details = $delivery['DeliverySchedProduct'];
+        // pr($product_details); exit;
 
 $this->Mpdf->autoPageBreak = true; 
 $mpdf->shrink_tables_to_fit = 1;
@@ -751,15 +755,18 @@ $this->Mpdf->AddPage();
     ' ;
     $myCtr = 0;
       foreach ($product_details as $prod) {
-        $product_id = $prod['QuotationProduct']['product_id'];
-        $quotation_product_id = $prod['QuotationProduct']['id'];
-        $this->loadModel('Product');
-        $this->Product->recursive = -1;
-        $product = $this->Product->find('first', array('conditions' => array('Product.id' => $product_id)));
+        // $product_id = $prod['QuotationProduct']['product_id'];
+        $quotation_product_id = $prod['reference_num'];
         
-        $this->loadModel('QuotationProductProperty');
-        $this->QuotationProductProperty->recursive = -1;
-        $quotation_product_properties = $this->QuotationProductProperty->find('all', array('conditions' => array('QuotationProductProperty.id' => $quotation_product_id)));
+        $this->loadModel('QuotationProduct');
+        // $this->QuotationProduct->recursive = -1;
+        $quotation_product = $this->QuotationProduct->find('first', array('conditions' => array('QuotationProduct.id' => $quotation_product_id)));
+        
+        // pr($quotation_product); exit;
+        
+        // $this->loadModel('Product');
+        // $this->Product->recursive = -1;
+        // $product = $this->Product->find('first', array('conditions' => array('Product.id' => $product_id)));
         
 //            $total = $prod['PoProduct']['qty'] * $prod['PoProduct']['price'];
             $prod_prop = [];
@@ -778,17 +785,17 @@ $this->Mpdf->AddPage();
 //            }
 
             $html .= '<tr>
-                <td width="120" align="left"><b>' . $product['Product']['name'] . '</b></td>
-                <td width="130" align="center"><img class="img-responsive" src="../product_uploads/' . $prod['QuotationProduct']['image'] . '" width="70" height="70"></td>
+                <td width="120" align="left"><b>' . $quotation_product['Product']['name'] . '</b></td>
+                <td width="130" align="center"><img class="img-responsive" src="../product_uploads/' . $quotation_product['Product']['image'] . '" width="70" height="70"></td>
                 <td width="260"> 
                       <ul class="list-group">' ;
-                    foreach ($quotation_product_properties as $desc) {
+                    foreach ($quotation_product['QuotationProductProperty'] as $desc) {
 //                if (is_null($desc['property'])) {
 //                    $prod_prop[] = '<li class="list-group-item"> ' . $desc['ProductProperty']['name'] . ' : ' . $desc['ProductValue']['value'] . '</li>';
 //                } else {
-                $html .= '<li class="list-group-item"> ' . $desc['QuotationProductProperty']['property'] . ' : ' . $desc['QuotationProductProperty']['value'] . '</li>';
+                        $html .= '<li class="list-group-item"> ' . $desc['property'] . ' : ' . $desc['value'] . '</li>';
 //                }
-            }
+                    }
                     $html .= '<li class="list-group-item"> 
                      <p>&nbsp;<br/></p><br/></li>
                         </ul>

@@ -43,8 +43,8 @@
                         <tr>
                             <th>Date of Request</th> 
                             <th>Delivery Date [Time]</th>  
-                            <th>Client</th>
-                            <th>Agent</th>
+                            <th>Deliver To</th>
+                            <th>Requested By</th>
                             <th></th>  
                         </tr>
                     </thead> 
@@ -64,8 +64,8 @@
                                             . ']';
                                     ?>  
                                 </td>  
-                                <td><?php echo $data['Quotation']['Client']['name']; ?></td>
-                                <td><?php echo $data['Quotation']['User']['first_name'].'  '.$data['Quotation']['User']['last_name']; ?></td>
+                                <td><?php echo $data['DeliverySchedule']['deliver_to']; ?></td>
+                                <td><?php echo $data['User']['first_name'].'  '.$data['User']['last_name']; ?></td>
                                 <td>
                                     <?php 
                                     if($data['DeliverySchedule']['type'] == 'dr'){
@@ -78,8 +78,8 @@
                                     }
                                     
                                     if($data['DeliverySchedule']['status']== 'scheduled'){
-//                                       
-                                        echo '&nbsp; <a href="/delivery_iteneraries/new_itenerary?type='.$data['DeliverySchedule']['type'].'&&id='.$data['DeliverySchedule']['id'].'" class="btn btn-dark  add-tooltip "data-toggle="tooltip"  data-original-title="Update Departure" ><i class="fa fa-edit"></i></a>'; 
+                                    //   echo 'scheduled';
+                                        // echo '&nbsp; <a href="/delivery_iteneraries/new_itenerary?type='.$data['DeliverySchedule']['type'].'&&id='.$data['DeliverySchedule']['id'].'" class="btn btn-dark  add-tooltip "data-toggle="tooltip"  data-original-title="Update Departure" ><i class="fa fa-edit"></i></a>'; 
                                     }
                                     ?>
                                     

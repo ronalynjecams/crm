@@ -24,7 +24,7 @@
     <div id="page-title">
         <h1 class="page-header text-overflow">Create Itenerary</h1>
     </div>
-    <?php echo '<input type="text" id="del_type" value="'.$this->params['url']['type'].'">' ?>
+    <?php echo '<input type="hidden" id="del_type" value="'.$this->params['url']['type'].'">' ?>
     
 
     <!--Page content-->
@@ -38,26 +38,32 @@
             </div>
             <div class="panel-body">
                 <?php
-                echo '<input type="hidden" id="client_id" value="' . $delivery_schedule['Quotation']['Client']['id'] . '">';
+                echo '<input type="hidden" id="client_id" value="' . $delivery_schedule['DeliverySchedule']['client_id'] . '">';
                 echo '<input type="hidden" id="delivery_schedule_id" value="' . $this->params['url']['id'] . '">';
                 echo '<input type="hidden" id="delivery_type" value="' . $this->params['url']['type'] . '">';
                 if ($type != 'pickup') {
                     echo '
-                <div class="col-sm-6"><b>Client:</b> ' . $delivery_schedule['Quotation']['Client']['name'] . '</div>
-                <div class="col-sm-6"><b>Agent:</b> ' . $delivery_schedule['Quotation']['User']['first_name'] . '  ' . $delivery_schedule['Quotation']['User']['last_name'] . '</div>
+                <div class="col-sm-6"><b>Deliver To:</b> ' . $delivery_schedule['DeliverySchedule']['deliver_to'] . '</div>
+                <div class="col-sm-6"><b>Agent:</b> ' . $delivery_schedule['User']['first_name'] . '  ' . $delivery_schedule['User']['last_name'] . '</div>
                 <div class="col-sm-6"><b>Delivery Mode:</b> ' . $delivery_schedule['DeliverySchedule']['mode'] . '</div>
                 <div class="col-sm-6">';
                     ?>
                     <b>Shipping Address:</b> 
-                    <a class="btn btn-xs btn-pink" id="bill_ship_direction" href="http://maps.google.com/?q=<?php echo $delivery_schedule['Quotation']['ship_latitude'] . ',' . $delivery_schedule['Quotation']['ship_longitude']; ?>" target="_blank"> <i class="fa fa-external-link"></i> </a>
-
                     <?php
-                    if ((!is_null($delivery_schedule['Quotation']['ship_address'])) && $delivery_schedule['Quotation']['ship_address'] != "") {
-                        echo $delivery_schedule['Quotation']['ship_address'] . ', ' . $delivery_schedule['Quotation']['ship_geolocation'];
-                    } else {
-                        echo $delivery_schedule['Quotation']['ship_geolocation'];
-                    }
+                        echo '<input type="hidden" id="g_maps" value="'.$delivery_schedule['DeliverySchedule']['g_maps'].'">';
+                    $maps = explode("_",$delivery_schedule['DeliverySchedule']['g_maps']);//split string
+                    // pr();
                     ?>
+                    
+                    <?php
+                    // if ((!is_null($delivery_schedule['Quotation']['ship_address'])) && $delivery_schedule['Quotation']['ship_address'] != "") {
+                        // echo $delivery_schedule['Quotation']['ship_address'] . ', ' . $delivery_schedule['Quotation']['ship_geolocation'];
+                    // } else {
+                        echo $delivery_schedule['DeliverySchedule']['shipping_address'];
+                        echo '<input type="hidden" id="shipping_address" value="'.$delivery_schedule['DeliverySchedule']['shipping_address'].'">';
+                    // }
+                    ?><a class="btn btn-xs btn-pink" id="bill_ship_direction" href="http://maps.google.com/?q=<?php echo $maps[0] . ',' . $maps[1]; ?>" target="_blank"> <i class="fa fa-external-link"></i> </a>
+
                 </div> 
                 <?php
                 // }
@@ -216,6 +222,8 @@
             var delivery_type = $('#delivery_type').val();
             var delivery_schedule_id = $('#delivery_schedule_id').val();
             var del_type = $('#del_type').val();
+            var shipping_address = $('#shipping_address').val();
+            var g_maps = $('#g_maps').val();
 
             var data = {"typo": typo,
                 "vehicle_id": vehicle_id,
@@ -230,6 +238,8 @@
                 "delivery_type": delivery_type,
                 "delivery_schedule_id": delivery_schedule_id,
                 "del_type": del_type,
+                "shipping_address": shipping_address,
+                "g_maps":g_maps
             }
             if (people.length === 0) {
                 people = 0;

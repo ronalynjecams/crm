@@ -69,6 +69,30 @@ class InventoryJobOrder extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		
+		'PurchaseOrder' => array(
+			'className' => 'PurchaseOrder',
+			'foreignKey' => 'reference_num',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		
+		'Quotation' => array(
+			'className' => 'Quotation',
+			'foreignKey' => 'reference_num',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		
+		'ClientService' => array(
+			'className' => 'ClientService',
+			'foreignKey' => 'reference_num',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
 }

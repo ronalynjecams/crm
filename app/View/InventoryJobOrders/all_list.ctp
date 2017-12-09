@@ -51,7 +51,9 @@
                         </tr>
                     </thead> 
                     <tbody>
-                        <?php foreach ($inventory as $data) { ?>
+                        <?php foreach ($inventory as $data) { 
+                            $inv = json_encode($inventory);
+                        ?>
                             <tr>
                                 <td>
                                     <?php
@@ -77,51 +79,33 @@
                                     <?php echo $data['InventoryJobOrder']['processed_qty']; ?>
                                 </td>
                                 <td>
-                                    <?php echo $data['InventoryJobOrder']['processed_qty']; ?>
+                                    <?php 
+                                        $ref_type = $data['InventoryJobOrder']['reference_type'];
+                                        
+                                        if($ref_type == 'po') {
+                                            echo $data['PurchaseOrder']['Supplier']['name'];
+                                        } else if($ref_type == 'dr') {
+                                            echo $data['Quotation']['Client']['name']; 
+                                        } else if($ref_type == 'demo' || $ref_type == 'service_unit') {
+                                            echo $data['ClientService']['Client']['name'];
+                                        }
+                                    ?>
                                 </td>
                                 <td>
-                                    <?php
-                                    if (!is_null($data['DeliveryItenerary']['departure'])) {
-                                        if (!is_null($data['DeliveryItenerary']['actual_start'])) {
-                                            echo'<div class="col-md-6">';
-                                            echo date('F d, Y', strtotime($data['DeliveryItenerary']['actual_start']));
-                                            echo '<br/><small>' . date('h:i a', strtotime($data['DeliveryItenerary']['actual_start'])) . '</small>';
-                                            echo'</div>';
-                                            if (!is_null($data['DeliveryItenerary']['end_work'])) {
-                                                echo'<div class="col-md-6">';
-                                                echo ' to ';
-                                                echo date('F d, Y', strtotime($data['DeliveryItenerary']['end_work']));
-                                                echo '<br/><small>' . date('h:i a', strtotime($data['DeliveryItenerary']['end_work'])) . '</small>';
-                                                echo'</div>';
-                                            } else {
-                                                echo'<div class="col-md-6">';
-                                                echo '<button class="btn btn-xs btn-default update_end" data-toggle="tooltip"  data-original-title="Update end date" data-endid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="end"><i class="fa fa-calendar-plus-o"></i></button>';
-                                                echo'</div>';
-                                            }
-                                        } else {
-                                            
-                                            //update actual start
-                                            if( $data['DeliveryItenerary']['actual_start'] == "" ){
-                                                echo '<button class="btn btn-xs btn-success update_actualstart" data-toggle="tooltip"  data-original-title="Update actual start date" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-calendar-plus-o"></i></button>';
-                                            }
+                                   <?php 
+                                        $ref_type = $data['InventoryJobOrder']['reference_type'];
+                                        
+                                        if($ref_type == 'po') {
+                                            echo $data['PurchaseOrder']['po_number'];
+                                        } else if($ref_type == 'dr') {
+                                            echo $data['Quotation']['quote_number']; 
+                                        } else if($ref_type == 'demo' || $ref_type == 'service_unit') {
+                                            echo $data['ClientService']['service_code'];
                                         }
-                                    } else {
-                                        echo '<small>Waiting to depart</small>';
-                                    }
-                                    ?>  
+                                    ?>
                                 </td> 
                                 <td>
-                                    
-                                    
-                                    <?php
-                                    if ($data['DeliveryItenerary']['delivery_mode'] == 'jecams') {
-                                        //change vehicle_id ( select vehicle , value should be brand - plate number)
-                                        //change driver (query users, value of option should be first name and last name)
-                                    } else if ($data['DeliveryItenerary']['delivery_mode'] == 'transportify') {
-                                       //update booking code
-                                    }
-                                    ?>
-                                    
+                                    <button class="btn btn-xs btn-success open_modal" data-toggle="tooltip"  data-original-title="Update actual start date" data-actid="<?php echo $data['InventoryJobOrder']['id']; ?>" data-prodname="<?php echo $data['ProductCombo']['Product']['name']; ?>" data-invarr='<?php echo $inv; ?>' data-buttontype="start"><i class="fa fa-calendar-plus-o"></i></button>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -134,7 +118,7 @@
     </div>
 </div>
 <!-- UPDATE MODAL ACTUAL START-->
-<div class="modal fade" id="updateActualstart-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="release-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -142,121 +126,51 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="pci-cross pci-circle"></i>
                 </button>
-                <h4 class="modal-title">Update Actual Start</h4>
+                <h4 class="modal-title"><?php echo ucwords($mode); ?></h4>
             </div>
             <!--Modal body-->
             <div class="modal-body">
                 
-                <input type="text" class="form-control"  id="actual_id">  
-                <p class="text-danger" id="error_agent"></p>
-                <div class="form-group"> 
+                <div class="row">
                     <div class="col-sm-6">
-                        <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="actual_date"> 
+                        <select id="location_id" class="form-control" style="width: 100%;"> 
+                            <option> -- Location --</option>
+                            <?php foreach ($locations as $location) { ?>
+                                <option value="<?php echo $location['InvLocation']['id']; ?>"> <?php echo $location['InvLocation']['name']; ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
-                    <div class="col-sm-6"> 
-                        <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="actual_time">
+                    <div class="col-sm-6">
+                        <input type="number" step="any" id="prod_qty" class="form-control" placeholder="Quantity">
+                        <input type="hidden" id="reference_type"/>
+                        <input type="hidden" id="reference_num"/>
+                        <input type="hidden" id="prod_combo_id"/>
+                        <input type="hidden" id="invjo_qty"/>
+                        <input type="hidden" id="invjo_pqty"/>
+                        <input type="hidden" id="invjo_id"/>
+                    </div>
+                
+                <div class="col-sm-12">
+                    <div id="prod_description">
+                        <h4 id="product_name" align="center">Available product</h4>
+                        <div class="col-sm-12">
+                            <div class="col-sm-6" align="center"><b> Property </b></div>
+                            <div class="col-sm-6" align="center"><b> Value </b></div>
+                        </div>     
                     </div>
                 </div>
-
+                </div>
+                
             </div>
             <!--Modal footer-->
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                <button class="btn btn-primary" id="updateActualBtn">Update</button>
+                <button class="btn btn-primary" id="updateInventory"><?php echo ucwords($mode); ?></button>
             </div>
         </div>
     </div>
 </div>
 <!-- UPDATE MODAL ACTUAL START END-->
-
-
-
-<!-- UPDATE MODAL  END-->
-<div class="modal fade" id="updateEnd-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!--Modal header-->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <i class="pci-cross pci-circle"></i>
-                </button>
-                <h4 class="modal-title">Update End work</h4>
-            </div>
-            <!--Modal body-->
-            <div class="modal-body">
-                
-                <input type="hidden" class="form-control"  id="end_id">  
-                <p class="text-danger" id="error_agent"></p>
-                <div class="form-group"> 
-                    <div class="col-sm-6">
-                        <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="end_date"> 
-                    </div>
-                    <div class="col-sm-6"> 
-                        <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="end_time">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Status</label>
-                    <select class="form-control" id="status">
-                    <option value="none">Please select a status</option>
-                    <option value="delivered">delivered</option>
-                    <option value="cancelled">cancelled</option>
-                    <option value="backjob">backjob</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Remarks</label>
-                    <textarea id="remarks" row="40" class="form-control"></textarea>
-                </div>
-                
-            </div>
-            <!--Modal footer-->
-            <div class="modal-footer">
-                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                <button class="btn btn-primary" id="updateEndBtn">Update</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- UPDATE MODAL END-->
-
-
-
-<!-- UPDATE MODAL DEPARTURE START-->
-<div class="modal fade" id="updateDeparture-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!--Modal header-->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <i class="pci-cross pci-circle"></i>
-                </button>
-                <h4 class="modal-title">Update Departure</h4>
-            </div>
-            <!--Modal body-->
-            <div class="modal-body">
-                <input type="hidden" class="form-control"  id="dep_itenerary_id">  
-                <p class="text-danger" id="error_agent"></p>
-                <div class="form-group"> 
-                    <div class="col-sm-6">
-                        <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="departure_date"> 
-                    </div>
-                    <div class="col-sm-6"> 
-                        <input type="time" value="<?php echo date('H:i:s'); ?>" class="form-control" id="departure_time">
-                    </div>
-
-                </div>
-            </div>
-            <!--Modal footer-->
-            <div class="modal-footer">
-                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                <button class="btn btn-primary" id="updateDepartureBtn">Update</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- UPDATE MODAL DEPARTURE END-->
 
 <script>
     $(document).ready(function () {
@@ -266,5 +180,97 @@
             "stateSave": true
 
         });
+    });
+    
+    $(".open_modal").each(function (index) {
+        $(this).on("click", function () {
+            var invarr = new Array();
+            var id = $(this).data('deptid');
+            var prodname = $(this).data('prodname');
+            invarr = $(this).data('invarr');
+            console.log(invarr);
+            console.log(invarr[0]['InventoryJobOrder']);
+            
+            var inv_jo = invarr[0]['InventoryJobOrder'];
+            var product_combo = invarr[0]['ProductCombo']['ProductComboProperty'];
+            
+            $('#inv_id').val(id);
+            $('#reference_type').val(inv_jo['reference_type']);
+            $('#reference_num').val(inv_jo['reference_num']);
+            $('#prod_combo_id').val(inv_jo['product_combo_id']);
+            $('#invjo_qty').val(inv_jo['qty']);
+            $('#invjo_pqty').val(inv_jo['processed_qty']);
+            $('#invjo_id').val(inv_jo['id']);
+            $('#release-modal').modal('show');
+            $('#product_name').text(prodname);
+            
+            $('#prod_qty').append('<tr><td></td>'+
+                 '<td></td>'+
+                 '<td></td>'+
+                 '</tr>');
+            
+            $('.prod_description_add').each(function (index) {
+                $(".prod_description_add").remove();
+            });
+            
+            $.each(product_combo, function(index, value){
+                $('#prod_description').append('<div  class="col-sm-12 prod_description_add">' +
+                    '<div class="col-sm-6" align="center">' + value['property'] + '</div>' +
+                    '<div class="col-sm-6" align="center"> ' + value['value'] + ' </div>' +
+                    '</div>');
+            });
+            
+        });
+    });
+    
+    $("#updateInventory").click(function () {
+        var location = $("#location_id").val();
+        var qty = $("#prod_qty").val();
+        var ref_type = $("#reference_type").val();
+        var ref_num = $("#reference_num").val();
+        var prod_combo_id = $("#prod_combo_id").val();
+        var invjo_qty = $("#invjo_qty").val();
+        var invjo_pqty = $("#invjo_pqty").val();
+        var invjo_id = $("#invjo_id").val();
+        
+        var total_pqty = parseFloat(qty)+parseFloat(invjo_pqty);
+        var status = "";
+        
+        if(parseFloat(total_pqty) < parseFloat(invjo_qty)){
+            status = "partial";
+        } 
+        if(parseFloat(total_pqty) == parseFloat(invjo_qty)){
+            status = "accomplished";
+        }
+        
+        console.log(status);
+        if(status == 'partial' || status == 'accomplished'){
+            var data = {
+                "location": location,
+                "qty": qty,
+                "ref_type": ref_type,
+                "ref_num": ref_num,
+                "prod_combo_id": prod_combo_id,
+                "status": status,
+                "invjo_id": invjo_id,
+                "invjo_pqty": invjo_pqty
+            }
+            $.ajax({
+                url: "/inventory_job_orders/save_inventory",
+                type: 'POST',
+                data: {'data': data},
+                dataType: 'json',
+                success: function (dd) {
+                    // location.reload();
+                        console.log(dd);
+                },
+                error: function (dd) {
+                    console.log('error' + dd);
+                }
+            });
+        } else{
+            alert("error");
+        }
+        
     });
 </script>

@@ -10,6 +10,10 @@
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
 
+<!--SWEET ALERT-->
+<link href="../css/sweetalert.css" rel="stylesheet">
+<script src="../js/sweetalert.min.js"></script>
+
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
@@ -91,7 +95,8 @@
                                         if ($pending['PurchaseOrder']['status'] != 'ongoing') {
                                     ?>
                                     <button class="btn btn-primary btn-icon add-tooltip print_po" data-toggle="tooltip"  data-original-title="Print Purchase Order?" data-printpoid="<?php echo $pending['PurchaseOrder']['id']; ?>"><i class="fa fa-print"></i> </button>
-                                        <?php } ?>
+                                        <?php }
+                                    ?>
                                 </td> 
                             </tr> 
                         <?php } ?>
@@ -104,7 +109,63 @@
 </div>
 
 
-<div class="modal fade" id="set-supplier-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
+<!--<div class="modal fade" id="set-supplier-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+            <!--Modal header-->
+<!--            <div class="modal-header">-->
+<!--                <button type="button" class="close" data-dismiss="modal">-->
+<!--                    <i class="pci-cross pci-circle"></i>-->
+<!--                </button>-->
+<!--                <h4 class="modal-title">Purchase Product</h4>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <div class="row"> -->
+<!--                    <input type="hidden" id="sup_pid"/>    -->
+<!--                    <div class="col-sm-6">-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="control-label" id="labelSupplier">Select Product Supplier</label> -->
+<!--                            <select id="selected_product_supplier" class="form-control" style="width: 100%;"> -->
+<!--                                <option>Select Product Supplier</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>  -->
+<!--                    <div class="col-sm-6">-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="control-label" id="labelSupplier">Select Supplier</label> -->
+<!--                            <select id="selected_supplier" class="form-control" style="width: 100%;"> -->
+<!--                                <option>Select Supplier</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-sm-12">-->
+<!--                        <div id="product_supplier_properties_div">-->
+<!--                            <h4 align="center">Available product</h4>-->
+<!--                            <div class="col-sm-12">-->
+<!--                                <div class="col-sm-1">-->
+<!--                                </div>-->
+<!--                                <div class="col-sm-4" align="center"><b> Property </b></div>-->
+<!--                                <div class="col-sm-4" align="center"><b> Value </b></div>-->
+<!--                                <div class="col-sm-2"> Quantity </div> <div class="col-sm-2"> </div>-->
+<!--                                <div class="col-sm-1">-->
+<!--                                </div>-->
+<!--                            </div>     -->
+<!--                        </div> -->
+<!--                    </div> -->
+<!--                </div>-->
+<!--            </div>-->
+            <!--Modal footer-->
+<!--            <div class="modal-footer">-->
+<!--                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>-->
+<!--                <button class="btn btn-primary" id="savesetSupplier">Add</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<!--CREATE PURCHASE ORDER MODAL START-->
+<div class="modal fade" id="purchase-order-product-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -112,53 +173,105 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="pci-cross pci-circle"></i>
                 </button>
-                <h4 class="modal-title">Purchase Product</h4>
+                <h4 class="modal-title">Create Purchase Order</h4>
             </div>
             <div class="modal-body">
                 <div class="row"> 
-                    <input type="hidden" id="sup_pid"/>    
+                    <input type="hidden" id="quote_product_id"/>    
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label class="control-label" id="labelSupplier">Select Product Supplier</label> 
-                            <select id="selected_product_supplier" class="form-control" style="width: 100%;"> 
-                                <option>Select Product Supplier</option>
-                            </select>
-                        </div>
-                    </div>  
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label class="control-label" id="labelSupplier">Select Supplier</label> 
-                            <select id="selected_supplier" class="form-control" style="width: 100%;"> 
-                                <option>Select Supplier</option>
+                            <label class="control-label" id="labelSupplier">Select Product</label> 
+                            <select id="slctd_prdct" class="form-control" style="width: 100%;"> 
+                                <option></option>
+                                <?php
+                                foreach ($products as $product) {
+                                    echo '<option value="' . $product['Product']['id'] . '">' . $product['Product']['name'] . '</option>';
+                                }
+                                ?>
                             </select>
                         </div>
                     </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Select Product Combo</label> 
+                            <select id="slctd_prdctcombo" class="form-control" style="width: 100%;"> 
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Select Supplier</label> 
+                            <select id="slctd_prdct_supplier" class="form-control" style="width: 100%;"> 
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Quantity</label> 
+                            <input type="number" span="any" id="po_qty" class="form-control" value="0">
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label" id="labelSupplier">Price</label> 
+                            <input type="number" span="any" id="list_price" class="form-control" value="0">
+                            <input type="hidden"  id="supplier_product_id"  >
+                        </div>
+                    </div>
+                    <div class="col-sm-12"id="last_supplier"></div>
+                    <div class="col-sm-6"id="rqrd_fld"></div>
+
                     <div class="col-sm-12">
-                        <div id="product_supplier_properties_div">
-                            <h4 align="center">Available product</h4>
-                            <div class="col-sm-12">
-                                <div class="col-sm-1">
-                                </div>
-                                <div class="col-sm-4" align="center"><b> Property </b></div>
-                                <div class="col-sm-4" align="center"><b> Value </b></div>
-                                <div class="col-sm-2"> Quantity </div> <div class="col-sm-2"> </div>
-                                <div class="col-sm-1">
-                                </div>
+                        <div id="product_combo_properties_div">
+                            <h4 align="center">Product Description</h4>
+                            <div class="col-sm-12"> 
+                                <div class="col-sm-6" align="center"><b> Property </b></div>
+                                <div class="col-sm-6" align="center"><b> Value </b></div>  
                             </div>     
-                        </div> 
+                        </div>
                     </div> 
                 </div>
             </div>
             <!--Modal footer-->
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                <button class="btn btn-primary" id="savesetSupplier">Add</button>
+                <button class="btn btn-primary" id="saveNewSupplierProductBtn">Add</button>
             </div>
         </div>
     </div>
-</div>
+</div> 
+
+<!--CREATE PURCHASE ORDER MODAL END-->
 <script>
-    $(document).ready(function () {
+    $(document).ready(function () { 
+        $('[data-toggle="tooltip"]').tooltip();
+
+        $("#slctd_prdct").select2({
+            placeholder: "Select Product Code",
+            width: '100%',
+            allowClear: false
+        });
+        $("#slctd_prdctcombo").select2({
+            placeholder: "Select Product Combo",
+            width: '100%',
+            allowClear: false
+        });
+        $("#slctd_prdct_supplier").select2({
+            placeholder: "Select Product Supplier",
+            width: '100%',
+            allowClear: false
+        });
+        $("#slctd_inv_lcation").select2({
+            placeholder: "Select Location",
+            width: '100%',
+            allowClear: false
+        });
 
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
@@ -176,10 +289,186 @@
         $('.updatePOBtn').each(function (index) {
             $(this).click(function () {
                 var id = $(this).data("id");
-                window.open("/purchase_orders/po_products?id=" + id, '_blank');
+                window.open("/purchase_orders/po_product?id=" + id, '_blank');
             });
         });
     });
+    
+    
+
+
+        // $('.additional_po_product').each(function (index) {
+            $('.additional_po_product').click(function () {
+                var qoute_prod_id = $(this).data("qtprodid");
+                $('#purchase-order-product-modal').modal('show');
+                $('#quote_product_id').val(qoute_prod_id);
+
+                $("#slctd_prdct").change(function () {
+                    $('#slctd_prdctcombo').empty().append('<option></option>');
+                    $('#slctd_prdct_supplier').empty().append('<option></option>');
+                    $('.added_product_combo_properties_div').each(function (index) {
+                        $(".added_product_combo_properties_div").remove();
+                    });
+                    $("#slctd_prdctcombo").select2({
+                        placeholder: "Select Product Combo",
+                        width: '100%',
+                        allowClear: false
+                    });
+                    var selected_product_id = $("#slctd_prdct").val();
+                    ////show product combos of selected product
+                    $.get('/supplier_products/get_product_combination', {
+                        id: selected_product_id,
+                    }, function (data) {
+                        for (i = 0; i < data.length; i++) {
+                            $('#slctd_prdctcombo').append($('<option>', {
+                                value: data[i]['ProductCombo']['id'],
+                                text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
+                            }));
+                        }
+                    });
+
+                    ////in here get suppliers for selected profct combo
+                    $("#slctd_prdctcombo").change(function () {
+                        $('.added_product_combo_properties_div').each(function (index) {
+                            $(".added_product_combo_properties_div").remove();
+                        });
+                        $("#slctd_prdct_supplier").select2({
+                            placeholder: "Select Product Supplier",
+                            width: '100%',
+                            allowClear: false
+                        });
+
+                        var selected_product_id = $("#slctd_prdct").val();
+                        var selected_product_combo_id = $("#slctd_prdctcombo").val();
+
+                        //GET LAST PURCHASED SUPPLIER
+                        $.get('/supplier_products/get_po_product_last_supplier', {
+                            id: selected_product_id,
+                        }, function (data) {
+                            $("#added_last_supplier").remove();
+                            $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data[0]['PurchaseOrder']['Supplier']['name'] + '  [<small>' + data[0]['PurchaseOrder']['created'] + '</small>]</div>')
+                        }); //end of ajax get /supplier_products/get_po_product_last_supplier
+
+                        $.get('/supplier_products/get_supplier_product_combo', {
+                            id: selected_product_id,
+                        }, function (data) {
+                            for (i = 0; i < data.length; i++) {
+                                $('#slctd_prdctcombo').append($('<option>', {
+                                    value: data[i]['ProductCombo']['id'],
+                                    text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
+                                }));
+                            }
+                        }); //end of ajax get /supplier_products/get_product_combination
+
+                        $('#slctd_prdct_supplier').empty().append('<option></option>');
+                        $('.added_product_combo_properties_div').each(function (index) {
+                            $(".added_product_combo_properties_div").remove();
+                        });
+                        $.get('/supplier_products/get_supplier_product_combo', {
+                            id: selected_product_combo_id,
+                        }, function (data) {
+                            $('.added_product_combo_properties_div').each(function (index) {
+                                $(".added_product_combo_properties_div").remove();
+                            });
+                            $('#slctd_prdct_supplier').empty().append('<option></option>');
+                            for (i = 0; i < data.length; i++) {
+                                $('#slctd_prdct_supplier').append($('<option>', {
+                                    value: data[i]['Supplier']['id'],
+                                    text: data[i]['Supplier']['name']
+                                }));
+                                $('#list_price').val(data[i]['ProductCombo']['SupplierProduct'][0]['supplier_price']);
+                                $('#supplier_product_id').val(data[i]['ProductCombo']['SupplierProduct'][0]['id']);
+                                var prod_combo_property = data[i]['ProductCombo']['ProductComboProperty'];
+
+                                for (v = 0; v < prod_combo_property.length; v++) {
+                                    $('#product_combo_properties_div').append('<div class="col-sm-12 added_product_combo_properties_div">' +
+                                            '<div class="col-sm-6" align="center">' + prod_combo_property[v]['property'] + '</div>' +
+                                            '<div class="col-sm-6" align="center">' + prod_combo_property[v]['value'] + '</div></div>');
+                                }
+                            }
+                        }); //end of ajax get /supplier_products/get_supplier_product_combo 
+                    }); //end of onchange slctd_prdctcombo 
+                }); // end of onchange slctd_prdct 
+            }); //end of each po_product_btn
+        // });
+    
+    
+
+///SAVE PURCHASE ORDER PRODUCT
+        $('#saveNewSupplierProductBtn').click(function () {
+            $('#added_rqrd_fld').remove();
+            var product_combo_id = $('#slctd_prdctcombo').val();
+            var product_id = $("#slctd_prdct").val();
+            var supplier_id = $("#slctd_prdct_supplier").val();
+            var quote_product_id = $("#quote_product_id").val();
+            var po_qty = $("#po_qty").val();
+            var list_price = $("#list_price").val();
+            var supplier_product_id = $("#supplier_product_id").val();
+
+
+            if (product_id != "") {
+                if (product_combo_id != "") {
+                    if (supplier_id != "") {
+                        if (po_qty != "" && po_qty != 0 && po_qty >= 1) {
+                            if (list_price != "" && list_price != 0 && list_price >= 1) {
+                                $('#added_rqrd_fld').remove();
+                                var data = {
+                                    "product_combo_id": product_combo_id,
+                                    "product_id": product_id,
+                                    "supplier_id": supplier_id,
+                                    "quote_product_id": 0,
+                                    "po_qty": po_qty,
+                                    "list_price": list_price,
+                                    "additional": 2,
+                                    "supplier_product_id": supplier_product_id,
+                                    "inventory_job_order_type": 'po',
+                                    "po_raw_request_id":0,
+                                    "po_raw_request_qty":0
+                                    
+                                }
+                                $.ajax({
+                                    url: "/purchase_orders/process_new_po",
+                                    type: 'POST',
+                                    data: {'data': data},
+                                    dataType: 'json',
+                                    success: function (dd) {
+                                        location.reload();
+//                    console.log(dd);
+                                    },
+                                    error: function (dd) {
+                                        // console.log('error' + dd);
+                                        
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Price is required</font></div>')
+                            }
+                        } else {
+                            $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Quantity is required</font></div>')
+                        }
+                    } else {
+                        $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Supplier is required</font></div>')
+                    }
+                } else {
+                    $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Product Combination is required</font></div>')
+                }
+            } else {
+                $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Product is required</font></div>')
+            }
+        });
+
+
+///////////////////////////////////////////////////////////////
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 

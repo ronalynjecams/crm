@@ -89,27 +89,6 @@ class PurchaseOrdersController extends AppController {
         $this->set(compact('suppliers', 'users'));
     }
 
-    /**
-     * delete method
-     *
-     * @throws NotFoundException
-     * @param string $id
-     * @return void
-     */
-    public function delete($id = null) {
-        $this->PurchaseOrder->id = $id;
-        if (!$this->PurchaseOrder->exists()) {
-            throw new NotFoundException(__('Invalid purchase order'));
-        }
-        $this->request->onlyAllow('post', 'delete');
-        if ($this->PurchaseOrder->delete()) {
-            $this->Session->setFlash(__('The purchase order has been deleted.'), 'default', array('class' => 'alert alert-success'));
-        } else {
-            $this->Session->setFlash(__('The purchase order could not be deleted. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
-        }
-        return $this->redirect(array('action' => 'index'));
-    }
-
     public function quotation_view_supply() {
         
         $this->loadModel('Quotation');
@@ -215,7 +194,7 @@ class PurchaseOrdersController extends AppController {
 //        pr($inv_products); 
     }
 
-    /////////////////new codes as of 11-04-2017
+    ///////////////// 
     public function process_new_po() {
         $this->autoRender = false;
         $data = $this->request->data;
@@ -228,7 +207,9 @@ class PurchaseOrdersController extends AppController {
         $additional = $data['additional'];
         $supplier_product_id = $data['supplier_product_id'];
         $inventory_job_order_type = $data['inventory_job_order_type'];
+        $ref_type = $data['ref_type'];
 
+       
         
 //        pr($inventory_job_order_type);exit;
         //check if with existing ongoing purchase order
@@ -245,6 +226,8 @@ class PurchaseOrdersController extends AppController {
         $this->loadModel('Quotation');
         $this->loadModel('TransactionSource');
 
+
+
         if ($quotation_product_id != 0 && (!empty($quotation_product_id))) {
             $qprod = $this->QuotationProduct->findById($quotation_product_id);
             $product_id = $qprod['QuotationProduct']['product_id'];
@@ -253,10 +236,19 @@ class PurchaseOrdersController extends AppController {
             //get processed qty in quote product  
             $processed_qty = $qprod['QuotationProduct']['processed_qty'];
             $pro_qty = $processed_qty + $qty;
-            $reference_num = $quotation_product_id;
+            
+            if($data['po_raw_request_id'] != 0){
+                $reference_type = 'po_raw_request';  
+                $reference_num = $quotation_product_id;
+            }else{
+                $reference_type = 'quotation';
+                $reference_num = $quotation_product_id; 
+                
+            }
             $reference_type = 'quotation';
             $transaction_num = $quotation_id;
         } else {
+            
             $quotation_product_id = 0;
             $quotation_id = 0;
             $reference_num = 0;
@@ -331,7 +323,9 @@ class PurchaseOrdersController extends AppController {
         }
         
         
+        // if reference type == quotation
         if ($quotation_product_id != 0 && (!empty($quotation_product_id))) {
+            if($additional == 0){
                 $dateToday = date("Y-m-d H:i:s");
             $this->Quotation->id = $quotation_id;
             $this->Quotation->set(array(
@@ -344,7 +338,9 @@ class PurchaseOrdersController extends AppController {
             $this->QuotationProduct->set(array(
                 'processed_qty' => $pro_qty
             ));
-            if($this->QuotationProduct->save()){ 
+            $this->QuotationProduct->save(); 
+            
+            }
                 $this->TransactionSource->create;
                 $this->TransactionSource->set(array(
                     'reference_num'=>$quotation_id,
@@ -354,24 +350,80 @@ class PurchaseOrdersController extends AppController {
                     'product_combo_id'=>$product_combo_id,
                     'product_source'=>$quotation_product_id,
                     'type'=>$qprod['Product']['type'], 
+                    'qty' => $qty
                 )); 
-                $this->TransactionSource->save();
+                $this->TransactionSource->save(); 
+                
+        }///end of reference type=quotation
+        
+         //if purchase order product if from po raw request
+        if($data['po_raw_request_id'] != 0){
+            $this->loadModel('PoRawRequest');
+            $po_raw_request_id = $data['po_raw_request_id'];
+            $po_raw_request_qty = $data['po_raw_request_qty']; //this is the processed qty
+            
+            //update prodcut combo id, processed qty, pdate processed
+            
+            $po_raw_qry = $this->PoRawRequest->findById($po_raw_request_id); 
+            
+            
+            $dateToday = date("Y-m-d H:i:s");
+            $new_processed_qty = $po_raw_request_qty + $qty;
+            
+            if($po_raw_qry['PoRawRequest']['qty'] == $new_processed_qty){
+                $raw_status = 'processed';
+            }else{
+                $raw_status = 'pending';
             }
-        }
-         
-            $this->InventoryJobOrder->create;
-            $this->InventoryJobOrder->set(array(
+            
+            $this->PoRawRequest->id = $po_raw_request_id;
+            $this->PoRawRequest->set([
+                'processed_qty'=>$new_processed_qty,
                 'product_combo_id'=>$product_combo_id,
-                'qty'=>$qty,
-                'processed_qty'=>0,
-                'reference_num'=>$po_id,
-                'reference_type'=>$inventory_job_order_type,
-                'mode'=>'receive',
-                'status'=>'newest'
-            )); 
-            if($this->InventoryJobOrder->save()){
-                    echo json_encode($data); 
-            } 
+                'date_processed'=>$dateToday,
+                'status'=>$raw_status
+                ]);
+            if($this->PoRawRequest->save()){
+                
+                $this->TransactionSource->create;
+                $this->TransactionSource->set(array(
+                    'reference_num'=>$po_raw_request_id,
+                    'reference_type'=>'po_raw_request', 
+                    'mode'=>'po',
+                    'mode_num'=>$po_id,
+                    'product_combo_id'=>$product_combo_id,
+                    'product_source'=>$quotation_product_id,
+                    'type'=>$po_raw_qry['Product']['type'], 
+                    'qty' => $qty
+                )); 
+                $this->TransactionSource->save(); 
+                
+            }
+            
+            
+            
+            
+            
+        }
+        
+        
+                /////////// this is universal
+                $this->InventoryJobOrder->create;
+                $this->InventoryJobOrder->set(array(
+                    'product_combo_id'=>$product_combo_id,
+                    'qty'=>$qty,
+                    'processed_qty'=>0,
+                    'reference_num'=>$po_id,
+                    'reference_type'=>$inventory_job_order_type,
+                    'mode'=>'receive',
+                    'status'=>'newest'
+                )); 
+                if($this->InventoryJobOrder->save()){
+                        echo json_encode($data); 
+                } 
+        
+        
+         
     }
     
     
@@ -507,7 +559,319 @@ class PurchaseOrdersController extends AppController {
                 'PurchaseOrder.type' => $type,
             )
         ));
+        
+
+        $this->loadModel('Product');
+        $products = $this->Product->find('all');
+        $this->set(compact('products'));
         $this->set(compact('pendings', 'type'));
     }
+    public function po_product() {
+        $id = $this->params['url']['id'];
+        $this->PurchaseOrder->recursive = 3;
+        $po = $this->PurchaseOrder->findById($id);
+//        pr($po);
+        $this->set(compact('po'));
 
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        if ($user['User']['department_id'] == 6) {
+            $type = 'supply';
+        } else if ($user['User']['department_id'] == 7) {
+            $type = 'raw';
+        }
+
+        $this->loadModel('Product');
+        $products = $this->Product->find('all');
+        $this->set(compact('products', 'type'));
+        
+        
+    }
+    
+    
+    public function updatePoProductPrice() {
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $po_product_id = $data['po_product_id'];
+        $price = $data['price'];
+
+        $this->loadModel('PurchaseOrderProduct');
+
+        $this->PurchaseOrderProduct->id = $po_product_id;
+        $this->PurchaseOrderProduct->set(array(
+            'list_price' => $price
+        ));
+        if ($this->PurchaseOrderProduct->save()) {
+            echo json_encode($data);
+        }
+    }
+    public function poAmounts() {
+
+        $this->autoRender = false;
+        $data = $this->request->data;
+
+
+        $discount = $data['discount'];
+        $vat = $data['vat'];
+        $total_purchased_val = $data['total_purchased_val'];
+        $total_purchased = $data['total_purchased'];
+//        $total = $data['total'];
+        $ewt = $data['ewt'];
+        $grand_total = $data['grand_total'];
+        $po_id = $data['po_id'];
+
+        //get total of all poproduct
+        $this->loadModel('PurchaseOrderProduct');
+//            $po_prods = $this->PoProduct->FindAllByPurchaseOrderId($po_id);
+        $po_prods = $this->PurchaseOrderProduct->find('all', array(
+            'conditions' => array('PurchaseOrderProduct.purchase_order_id' => $po_id,
+                                  'PurchaseOrderProduct.status'=>null)
+        ));
+        $ntp = 0;
+        foreach ($po_prods as $po_prod) {
+            $total_p = $po_prod['PurchaseOrderProduct']['list_price'] * $po_prod['PurchaseOrderProduct']['qty'];
+            $ntp = $ntp + $total_p;
+        }
+
+
+        if ($discount != 0) {
+            $new_total_purchased = $ntp - $discount;
+        } else {
+            $new_total_purchased = $ntp;
+        }
+        if ($vat == 0) {
+            //computation for vat inc
+            $non_vat = $new_total_purchased / 1.12;
+            $new_ewt = $non_vat * 0.01;
+            $new_grand_total = $new_total_purchased - $new_ewt;
+//            $new_vat = 0;
+        } else {
+            //computation for vat ex
+//           $new_vat =   $new_total_purchased *0.12;
+            $new_ewt = $new_total_purchased * 0.01;
+            $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+        }
+        $this->PurchaseOrder->id = $po_id;
+        $this->PurchaseOrder->set(array(
+            'total_purchased' => $new_total_purchased,
+            'vat_amount' => $vat,
+            'ewt_amount' => $new_ewt,
+            'grand_total' => $new_grand_total,
+            'discount' => $discount
+        ));
+        if ($this->PurchaseOrder->save()) {
+            echo json_encode($data);
+        }
+    }
+    public function changeStatus() {
+        $this->autoRender = false;
+        $data = $this->request->data;
+
+
+        $po_id = $data['po_id'];
+        $status = $data['savestatus'];
+
+        $this->PurchaseOrder->id = $po_id;
+        $this->PurchaseOrder->set(array(
+            'status' => $status
+        ));
+        if ($this->PurchaseOrder->save()) {
+            echo json_encode($data);
+        }
+    }
+    
+    public function delete() {
+        $this->autoRender = false;
+        $data = $this->request->data;
+        
+        $id = $data['id'];
+        $po_id = $data['poid'];
+        
+        $this->loadModel('PurchaseOrderProduct');
+        $this->loadModel('Quotation');
+        $this->loadModel('QuotationProduct');
+        $this->loadModel('TransactionSource');
+        
+        $DS_PurchaseOrderProduct = $this->PurchaseOrderProduct->getDataSource();
+        $DS_Quotation = $this->Quotation->getDataSource();
+        $DS_QuotationProduct = $this->QuotationProduct->getDataSource();
+        $DS_TransactionSource = $this->TransactionSource->getDataSource();
+        $DS_PurchaseOrder = $this->PurchaseOrder->getDataSource();
+        $DS_PurchaseOrder1 = $this->PurchaseOrder->getDataSource();
+        $DS_PurchaseOrderProduct->begin();
+
+        $get_po_prod = $this->PurchaseOrderProduct->findById($id);
+        $ret_po_prod = $get_po_prod['PurchaseOrderProduct'];
+        $additional = $ret_po_prod['additional'];
+        $qp_id = $ret_po_prod['reference_num'];
+        $po_p_process_qty = $ret_po_prod['processed_qty'];
+        
+        $this->QuotationProduct->recursive = -1;
+        $get_qps = $this->QuotationProduct->findById($qp_id);
+        
+        $qps_process_qty = 0;
+        if(!empty($get_qps)) {
+            $qps_process_qty = $get_qps['QuotationProduct']['processed_qty'];
+        }
+        
+        $total_insert_qty = $qps_process_qty - $po_p_process_qty;
+        
+        if($additional==0) {
+            $DS_QuotationProduct->begin();
+            $this->QuotationProduct->id=$qp_id;
+            $this->QuotationProduct->set(['processed_qty'=>$total_insert_qty]);
+        }
+        
+        //get total of all poproduct
+        $po_prods = $this->PurchaseOrderProduct->find('all', array(
+            'conditions' => array('PurchaseOrderProduct.purchase_order_id' => $po_id,
+                                  'PurchaseOrderProduct.status'=>null)
+        ));
+        
+        $ntp = 0;
+        $stat_count = 0;
+        $count = count($po_prods);
+        foreach ($po_prods as $po_prod) {
+            $po_obj = $po_prod['PurchaseOrder'];
+            $po_id = $po_obj['id'];
+            $po_prod_id_remaining = $po_prod['PurchaseOrderProduct']['id'];
+            $total_p = $po_prod['PurchaseOrderProduct']['list_price'] * $po_prod['PurchaseOrderProduct']['qty'];
+            $ntp = $ntp + $total_p;
+            $discount = $po_prod['PurchaseOrder']['discount'];
+            $vat = $po_obj['vat_amount'];
+            $ref_num = $po_prod['PurchaseOrderProduct']['reference_num'];
+            
+            $transactionSources = $this->TransactionSource->find("all",
+                ['conditions'=>['reference_type'=>'quotation',
+                                'reference_num'=>$ref_num,
+                                'product_source'=>$po_prod_id_remaining,
+                                'mode_num'=>$po_id]]);
+            
+            foreach($transactionSources as $transactionSource) {
+                $ts_id = $transactionSource['TransactionSource']['id'];
+                
+                $DS_TransactionSource->begin();
+                $this->TransactionSource->id = $ts_id;
+                $this->TransactionSource->set(['status'=>'deleted']);
+            }
+            
+            // QUOTATION
+            $r_po_prod_stat = $po_prod['PurchaseOrderProduct']['status'];
+            if($r_po_prod_stat=="processed") {
+                $stat_count++;
+            }
+            
+            $this->QuotationProduct->recursive = -1;
+            $get_q_ids = $this->QuotationProduct->find('all',
+                ['conditions'=>['QuotationProduct.id'=>$ref_num],
+                                'fields'=>['QuotationProduct.quotation_id']]);
+            
+            foreach($get_q_ids as $get_q_id) {
+                $q_id = $get_q_id['QuotationProduct']['quotation_id'];
+                
+                $DS_Quotation->begin();
+                $this->Quotation->id = $q_id;
+                if($stat_count==$count) {
+                    // UPDATE STATUS TO PROCESSED
+                    $this->Quotation->set(['status'=>'processed']);
+                }
+                else if($stat_count==($count-1)) {
+                    // UPDATE STATUS TO APPROVED
+                    $this->Quotation->set(['status'=>'approved']);
+                }
+            }
+            
+            if ($discount != 0) {
+                $new_total_purchased = $ntp - $discount;
+            } else {
+                $new_total_purchased = $ntp;
+            }
+            
+            if ($vat == 0) {
+                //computation for vat inc
+                $non_vat = $new_total_purchased / 1.12;
+                $new_ewt = $non_vat * 0.01;
+                $new_grand_total = $new_total_purchased - $new_ewt;
+            } else {
+                //computation for vat ex
+                $new_ewt = $new_total_purchased * 0.01;
+                $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+            }
+            $DS_PurchaseOrder->begin();
+            $this->PurchaseOrder->id = $po_id;
+            $this->PurchaseOrder->set(array(
+                'total_purchased' => $new_total_purchased,
+                'vat_amount' => $vat,
+                'ewt_amount' => $new_ewt,
+                'grand_total' => $new_grand_total
+            ));
+        }
+        
+        // DELETE PO IF NO PO PRODUCTS LEFT
+        if($count==1) {
+            $DS_PurchaseOrder1->begin();
+            $this->PurchaseOrder->id = $po_id;
+            if($this->PurchaseOrder->delete()) {
+                echo json_encode("Purchase Order Deleted");
+                $DS_PurchaseOrder1->commit();
+            }
+        }
+        
+        $this->PurchaseOrderProduct->id = $id;
+        if($this->PurchaseOrderProduct->delete()) {
+            echo json_encode("PurchaseOrderProduct saved");
+            
+            if($this->PurchaseOrder->save()) {
+                echo json_encode("PurchaseOrder saved");
+                
+                if($this->Quotation->save()) {
+                    echo json_encode("Quotation saved");
+                    
+                    if($this->QuotationProduct->save()) {
+                        echo json_encode("QuotationProduct saved");
+                        
+                        if($this->TransactionSource->save()) {
+                            echo json_encode("TransactionSource saved");
+                            $DS_TransactionSource->commit();
+                            $DS_QuotationProduct->commit();
+                            $DS_PurchaseOrderProduct->commit();
+                            $DS_Quotation->commit();
+                        }
+                        else {
+                            $DS_QuotationProduct->rollback();
+                            $DS_PurchaseOrderProduct->rollback();
+                            $DS_Quotation->rollback();
+                            $DS_PurchaseOrder1-rollback();
+                            return json_encode("Error in updating TransactionSource");
+                            exit;
+                        }
+                    }
+                    else {
+                        $DS_PurchaseOrderProduct->rollback();
+                        $DS_Quotation->rollback();
+                        $DS_PurchaseOrder1->rollback();
+                        return json_encode("Error in updating QuotationProduct");
+                        exit;
+                    }
+                }
+                else {
+                    $DS_PurchaseOrderProduct->rollback();
+                    $DS_PurchaseOrder1->rollback();
+                    return json_encode("Error in saving PurchaseOrder");
+                    exit;
+                }
+            }
+            else {
+                $DS_PurchaseOrderProduct->rollback();
+                $DS_PurchaseOrder1->rollback();
+                return json_encode("Error in saving PurchaseOrder");
+                exit;
+            }
+        }
+        
+        $DS_PurchaseOrder1->commit();
+        $DS_PurchaseOrderProduct->commit();
+        return json_encode("PurchaseOrder Delete Done");
+        exit;
+    }
 }

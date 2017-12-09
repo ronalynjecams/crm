@@ -174,6 +174,19 @@
                                 </ul>
                             </li>
                             <li>
+                                <a href="">
+                                    <i class="fa fa-check-square"></i>
+                                    <span class="menu-title">
+                                        <strong>Replenishments</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+                                <ul class="collapse">
+                                    <li><a href="/payment_requests/replenishments?status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/replenishments?status=acknowledged">Acknowledged</a></li>
+                                </ul>
+                            </li>
+                            <li>
                                 <a href=""> 
                                     <i class="fa fa-file-pdf-o"></i>
                                     <span class="menu-title">
@@ -276,6 +289,53 @@
                                 </ul>
                             </li>
                         <?php } ?>
+                        <!-- sales manager start-->
+                        <?php if ($UserIn['User']['role'] == 'sales_manager') { ?>
+                            <li class="active-link">
+                                <a href="/users/dashboard_sales">
+                                    <!--<i class="demo-psi-home"></i>-->
+                                    <i class="ion-home"></i>
+                                    <span class="menu-title">
+                                        <strong>Dashboard</strong>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-address-card"></i>
+                                    <span class="menu-title">
+                                        <strong>Clients</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+
+                                <!--Submenu-->
+                                <ul class="collapse">
+                                    <li><a href="/clients/leads">Leads</a></li>
+                                    <li><a href="/clients/clients">Clients</a></li>
+
+                                </ul>
+                            </li> 
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-file-pdf-o"></i>
+                                    <span class="menu-title">
+                                        <strong>Quotations</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a> 
+                                <ul class="collapse">
+                                    <li><a href="/quotations/proprietor?status=pending">Pending</a></li>
+                                    <li><a href="/quotations/proprietor?status=moved">Moved</a></li>
+                                    <li><a href="/quotations/proprietor?status=accounting_moved">Approved By Accounting</a></li>
+                                    <li><a href="/quotations/proprietor?status=approved">Approved</a></li>
+                                    <li><a href="/quotations/proprietor?status=processed">Processed</a></li> 
+                                </ul>
+                            </li>
+                            
+                            
+                        <?php } ?>
+                        <!-- sales manage end -->
                         <!-- marketing_staff -->
                         <?php if ($UserIn['User']['role'] == 'marketing_staff') { ?>
                             <li class="active-link">
@@ -326,7 +386,24 @@
                                     </span>
                                 </a>
                             </li>
+                            <li>
+                                <a href=""> 
+                                    <i class="fa fa-paint-brush"></i>
+                                    <span class="menu-title">
+                                        <strong>Productions</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+                                
+                                <!--Submenu-->
+                                <ul class="collapse">
+                                    <li><a href="/productions/all_list?status=pending">Pending</a></li>
+                                    <li><a href="/productions/all_list?status=ongoing">Ongoing</a></li>
+                                    <li><a href="/productions/all_list?status=accomplished">Accomplished</a></li>
+                                    <li><a href="/productions/all_list?status=viewed">Viewed</a></li>
 
+                                </ul>
+                            </li>
                             <li>
                                 <a href=""> 
                                     <i class="ion-soup-can"></i>
@@ -365,6 +442,24 @@
                                         <strong>Dashboard</strong>
                                     </span>
                                 </a>
+                            </li>
+                             <li>
+                                <a href=""> 
+                                    <i class="fa fa-paint-brush"></i>
+                                    <span class="menu-title">
+                                        <strong>Productions</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+                                
+                                <!--Submenu-->
+                                <ul class="collapse">
+                                    <li><a href="/productions/all_list?status=pending">Pending</a></li>
+                                    <li><a href="/productions/all_list?status=ongoing">Ongoing</a></li>
+                                    <li><a href="/productions/all_list?status=accomplished">Accomplished</a></li>
+                                    <li><a href="/productions/all_list?status=viewed">Viewed</a></li>
+
+                                </ul>
                             </li>
                             <li>
                                 <a href=""> 
@@ -701,6 +796,19 @@
                                     <li><a href="/payment_requests/all_list?type=pettycash&&status=closed">Closed</a></li> 
                                 </ul>
                             </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-check-square"></i>
+                                    <span class="menu-title">
+                                        <strong>Replenishments</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+                                <ul class="collapse">
+                                    <li><a href="/payment_requests/replenishments?status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/replenishments?status=acknowledged">Acknowledged</a></li>
+                                </ul>
+                            </li>
                         <?php } ?>
                         <!-- collection_officer -->
 
@@ -713,7 +821,26 @@
                                         <strong>Dashboard</strong>
                                     </span>
                                 </a>
-                            </li>        
+                            </li>     
+                             <li>
+                                <a href=""> 
+                                    <i class="fa fa-paint-brush"></i>
+                                    <span class="menu-title">
+                                        <strong>Productions</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+                                
+                                <!--Submenu-->
+                                <ul class="collapse">
+                                    <li><a href="/productions/all_list?status=pending">Pending</a></li>
+                                    <li><a href="/productions/all_list?status=ongoing">Ongoing</a></li>
+                                    <li><a href="/productions/all_list?status=accomplished">Accomplished</a></li>
+                                    <li><a href="/productions/all_list?status=viewed">Viewed</a></li>
+
+                                </ul>
+                            </li>
+                            
                             <li>
                                 <a href=""> 
                                     <i class="fa fa-file-powerpoint-o"></i>
@@ -768,19 +895,19 @@
                                 </ul> 
                             </li>  
                             <li>
-                                <a href=""> 
+                                <a href="/delivery_schedules/drs"> 
                                     <i class="fa fa-file-powerpoint-o"></i>
                                     <span class="menu-title">
                                         <strong>Delivery Receipts</strong>
                                     </span>
-                                    <i class="arrow"></i>
+                                    <!--<i class="arrow"></i>-->
                                 </a> 
-                                <ul class="collapse">  
+                                <!--<ul class="collapse">  -->
                                     <!--pending; meaning d pa naischedule sa delivery itenerary--> 
-                                    <li><a href="/delivery_schedules/drs?status=ongoing">Pending</a></li>
-                                    <li><a href="/delivery_schedules/drs?status=scheduled">Scheduled</a></li>  
-                                    <li><a href="/delivery_schedules/drs?status=delivered">Delivered</a></li>  
-                                </ul> 
+                                <!--    <li><a href="/delivery_schedules/drs?status=ongoing">Pending</a></li>-->
+                                <!--    <li><a href="/delivery_schedules/drs?status=scheduled">Scheduled</a></li>  -->
+                                <!--    <li><a href="/delivery_schedules/drs?status=delivered">Delivered</a></li>  -->
+                                <!--</ul> -->
                             </li>  
                             <li>    
                                 <a href=""> 
@@ -793,8 +920,8 @@
                                 <ul class="collapse">  
                                     <!--pending; meaning d pa naischedule sa delivery itenerary--> 
                                     <!--<li><a href="/delivery_iteneraries/new_itenerary">Add</a></li>-->
-                                    <!--<li><a href="/delivery_iteneraries/list_view?status=pending">Pending</a></li>-->
                                     <li><a href="/delivery_iteneraries/list_view?status=scheduled">Scheduled</a></li>  
+                                    <li><a href="/delivery_iteneraries/list_view?status=ongoing">Ongoing Delivery</a></li>
                                     <li><a href="/delivery_iteneraries/list_view?status=delivered">Delivered</a></li>  
                                 </ul> 
                             </li>  
@@ -927,6 +1054,19 @@
                                 </ul>
                             </li>
                             <li>
+                                <a href="">
+                                    <i class="fa fa-check-square"></i>
+                                    <span class="menu-title">
+                                        <strong>Replenishments</strong>
+                                    </span>
+                                    <i class="arrow"></i>
+                                </a>
+                                <ul class="collapse">
+                                    <li><a href="/payment_requests/replenishments?status=pending">Pending</a></li>
+                                    <li><a href="/payment_requests/replenishments?status=acknowledged">Acknowledged</a></li>
+                                </ul>
+                            </li>
+                            <li>
                                 <a href=""> 
                                     <i class="fa fa-file-pdf-o"></i>
                                     <span class="menu-title">
@@ -990,6 +1130,14 @@
                                     <li><a href="/collection_papers/advance_invoice?status=pending">Pending</a></li>
                                     <li><a href="/collection_papers/advance_invoice?status=served">Served</a></li>
                                 </ul>
+                            </li> 
+                            <li>
+                                <a href="/statement_of_accounts/all_list"> 
+                                    <i class="fa fa-newspaper-o"></i>
+                                    <span class="menu-title">
+                                        <strong>Statement of accounts</strong>
+                                    </span>
+                                </a>
                             </li> 
                         <?php } ?>
                         <!-- accounting_head -->

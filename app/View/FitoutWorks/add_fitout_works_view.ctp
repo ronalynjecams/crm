@@ -10,6 +10,10 @@
 <script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
 <script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
+<!--SWEET ALERT-->
+<link href="../css/sweetalert.css" rel="stylesheet">
+<script src="../js/sweetalert.min.js"></script>
+
 <!-- REQUIRED FOR MULTIPLE SELECT ON QUOTATION -->
 <!--<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">-->
 <!--<script src="../plugins/chosen/chosen.jquery.min.js"></script>-->
@@ -35,7 +39,8 @@
                     <div class="form-group">
                         <label>Client <span class="text-danger">*</span></label>
                         <select id="client_id" class="form-control">
-                            <?php if ($clients['Client']['id'] != 0) {
+                            <?php
+                            if ($clients['Client']['id'] != 0) {
                                 ?><option value="<?php echo $clients['Client']['id']; ?>">
                                     <?php echo $clients['Client']['name']; ?>
                                 </option><?php
@@ -155,8 +160,8 @@
             var client_id = $('#client_id').val();
             
             if (client_id!="") {
-                if (quotation_id.length != 0) {
-                    if (deadline_date != "") {
+                if (quotation_id.length!=0) {
+                    if (deadline_date!="") {
                         if (expected_start != "") {
                             if (project_head_id != "Select Project Head") {
                                 var data = {
@@ -192,17 +197,30 @@
                     }
                 }
                 else {
-                    document.getElementById('selected_quotations').style.borderColor = "red";
+                    swal({
+                        title: "Cannot be empty!",
+                        text: "Please select Quotation.",
+                        type: "warning",
+                        confirmButtonClass: "btn-danger",
+                        confirmButtonText: "Okay",
+                        closeOnConfirm: false,
+                    });
                 }
             } else {
-                document.getElementById('client_id').style.borderColor = "red";
+                swal({
+                    title: "Cannot be empty!",
+                    text: "Please select Client.",
+                    type: "warning",
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Okay",
+                    closeOnConfirm: false,
+                });
             }
         });
         
         //---- this section is required in client and quotation selection ----/
          $('#deadline_date').on('change', function (e) {
             var value = $("#deadline_date").val();
-    
         });
         
         // expected_start

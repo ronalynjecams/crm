@@ -128,8 +128,8 @@ class PurchaseOrder extends AppModel {
  * @var array
  */
 	public $hasMany = array(
-		'PoProduct' => array(
-			'className' => 'PoProduct',
+		'PurchaseOrderProduct' => array(
+			'className' => 'PurchaseOrderProduct',
 			'foreignKey' => 'purchase_order_id',
 			'dependent' => false,
 			'conditions' => '',

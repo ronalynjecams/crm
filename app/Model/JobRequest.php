@@ -33,8 +33,7 @@ class JobRequest extends AppModel {
  * belongsTo associations
  *
  * @var array
- */
-	 
+ */ 
 
 /**
  * hasMany associations

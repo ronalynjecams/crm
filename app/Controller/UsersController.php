@@ -160,7 +160,9 @@ class UsersController extends AppController {
                 return $this->redirect('/users/dashboard_proprietor');
             }   else if ($this->Auth->user('role') == 'accounting_head') {
                     return $this->redirect('/users/dashboard_accounting_head');
-                } 
+            }  else if ($this->Auth->user('role') == 'sales_manager') {
+                    return $this->redirect('/users/dashboard_sales_manager');
+            } 
             
         }
 
@@ -203,7 +205,9 @@ class UsersController extends AppController {
                     return $this->redirect('/users/dashboard_proprietor');
                 }  else if ($this->Auth->user('role') == 'accounting_head') {
                     return $this->redirect('/users/dashboard_accounting_head');
-                } 
+                }   else if ($this->Auth->user('role') == 'sales_manager') {
+                    return $this->redirect('/users/dashboard_sales_manager');
+            } 
             
             }
 
@@ -220,8 +224,105 @@ class UsersController extends AppController {
     }
 
     public function dashboard_sales() {
+        $this->loadModel('Quotation');
+        $this->loadModel('User');
+        
+        // if($this->Auth->user('role') == 'sales_executive'){
+            
+        // }
         
     }
+    // carl?
+
+    public function dashboard_proprietor() {
+        // $this->loadModel('Quotation');
+        // $passed_status = $this->params['url']['status'];
+        
+        // $status1 = $this->quotation1($passed_status);
+        // #pr($status1);
+        
+        
+        //  $passed_month = $this->params['url']['month'];
+        //  $status2 = $this->quotation2($passed_status, $passed_month);
+        //  pr($status2);
+         
+        //  $passed_year = $this->params['url']['year'];
+        //  $status3 = $this->quotation3($passed_status, $passed_year);
+        //  //pr($status3);
+        
+        // // $status4 = $this->quotation4();
+        // $this->set('status1', $status1);
+
+        
+    }
+    
+    public function quotation1($passed_status){
+        $this->loadModel('Quotation');
+		//array('ongoing','pending','moved','approved','processed','revised','lost','deleted','void','accounting_moved');
+	
+         if($passed_status == 'approved' || $passed_status == 'processed'){
+        
+                $status1 = $this->Quotation->find('all', array(
+                'conditions'=>['Quotation.status'=>[$passed_status]],
+                'fields' => ['SUM(Quotation.grand_total)']
+                )
+                ); 
+                 $this->set(compact('status1'));
+                return $status1;
+         }
+        
+    }
+    
+    public function quotation2($passed_status, $passed_month){
+        $this->loadModel('Quotation');
+         
+        //condition to validate status
+        
+                $status2 = $this->Quotation->find('all', array(
+                'conditions'=>['Quotation.status'=>$passed_status, 'MONTH(Quotation.date_moved)'=>$passed_month],
+                'fields' => ['SUM(Quotation.grand_total)']
+                )
+                ); 
+                $this->set(compact('status2'));
+                return $status2;
+    }
+    
+    public function quotation3($passed_status, $passed_year){
+        $this->loadModel('Quotation');
+        
+        //condition to validate status
+        
+                $status3 = $this->Quotation->find('all', array(
+                'conditions'=>['Quotation.status'=>$passed_status, 'YEAR(Quotation.date_moved)'=>$passed_year],
+                'fields' => ['SUM(Quotation.grand_total)']
+                )
+                ); 
+                $this->set(compact('status3'));
+                return $status3;
+        
+    }
+    
+        public function quotation4(){
+        $this->loadModel('Quotation');
+        
+		$passed_status = $this->params['url']['status'];
+		$passed_date = $this->params['url']['date'];
+         
+        //condition to validate status
+        
+                $status4 = $this->Quotation->find('all', array(
+                'conditions'=>['Quotation.status'=>$passed_status, 'CURDATE(Quotation.date_moved)'=>$passed_date],
+                'fields' => ['SUM(Quotation.grand_total)']
+                )
+                ); 
+                
+                $this->set(compact('status4'));
+                return $status4;
+
+        
+    }
+    
+    
 
     public function demo_icons() {
         

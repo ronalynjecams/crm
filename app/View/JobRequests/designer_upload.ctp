@@ -50,11 +50,13 @@
                         </div>
                     </div>
                     <?php
+                    // pr($files);
                     if (!empty(count($files))) {
 
                         foreach ($files as $file) {
                             $path = $file['JrUpload']['file'];
                             $data = explode($this->params['url']['id'] . '/', $path);
+                            // pr($data);
                             ?>
 
                             <div  >
@@ -67,7 +69,7 @@
 
                                                 </div>
                                                 <div class="media-body"> 
-                                                    <p class="text-main text-bold mar-no text-overflow" ><?php echo $data[1]; ?></p>
+                                                    <p class="text-main text-bold mar-no text-overflow" ><?php echo $path; ?></p>
                                                     <span class="dz-error text-danger text-sm" ></span>
                                                     <p class="text-sm" ></p>
                                                     <div id="dz-total-progress" style="opacity:0">

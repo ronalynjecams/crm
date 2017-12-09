@@ -41,8 +41,8 @@
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>DR Number</th> 
                             <th>Delivery Date [Time]</th>  
+                            <th>DR Number</th> 
                             <th>Client</th>
                             <th>Agent</th>
                             <th></th>  
@@ -52,17 +52,17 @@
                         <?php foreach ($arr as $data) { ?>
                             <tr>
                                 <td>
-                                    <?php echo 'DR-'.$data['DeliverySchedule']['dr_number']; ?> 
-                                </td> 
-                                <td>
                                     <?php
                                     echo date('F d, Y', strtotime($data['DeliverySchedule']['delivery_date']));
                                     echo '   [' . date('h:i a', strtotime($data['DeliverySchedule']['delivery_time'])) . ''
                                             . ']';
                                     ?>  
                                 </td>  
-                                <td><?php echo $data['Quotation']['Client']['name']; ?></td>
-                                <td><?php echo $data['Quotation']['User']['first_name'].'  '.$data['Quotation']['User']['last_name']; ?></td>
+                                <td>
+                                    <?php echo 'DR-'.$data['DeliverySchedule']['dr_number']; ?> 
+                                </td> 
+                                <td><?php echo $data['DeliverySchedule']['deliver_to']; ?></td>
+                                <td><?php echo $data['User']['first_name'].'  '.$data['User']['last_name']; ?></td>
                                 <td>
                                     <!--<a href="/delivery_sched_products/process?id=<?php echo $data['DeliverySchedule']['id']; ?>" class="btn btn-primary"><i class="fa fa-eye"></i></a>-->
                                     <a href="/pdfs/print_dr?id=<?php echo $data['DeliverySchedule']['id']; ?>" target="_blank" class="btn btn-primary add-tooltip" data-toggle="tooltip"  data-original-title="Print DR" ><i class="fa fa-print"></i></a>

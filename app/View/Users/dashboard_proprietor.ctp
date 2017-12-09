@@ -137,9 +137,9 @@
 					                        This Month:
 											<?php
 											
-												foreach ($status2 as $stat2) {
-													echo $stat2['Quotation']['grand_total'];
-												}
+												// foreach ($status2 as $stat2) {
+												// 	echo $stat2['Quotation']['grand_total'];
+												// }
 											?>
 					                        </p>
 					                        <p class="mar-no">  Last Month </p>

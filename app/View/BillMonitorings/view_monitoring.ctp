@@ -84,11 +84,16 @@
                                 <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['billing_date_from']))); ?></td>
                                 <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['billing_date_to']))); ?></td>
                                 <td><?php echo h($monitoring['User']['first_name'])." ".h($monitoring['User']['last_name']); ?></td>
-                                <td><?php echo h($monitoring['BillMonitoring']['bill_id']); ?></td>
+                                <td><?php echo h($monitoring['Bill']['id']); ?></td>
                                 <td><?php echo '&#8369; ' . number_format($monitoring['BillMonitoring']['bill_amount'],2); ?></td>
                                 <td><?php echo h($monitoring['BillMonitoring']['receipt_reference_num']); ?></td>
                                 <td><?php echo h($monitoring['BillMonitoring']['payment_mode']); ?></td>
-                                <td><?php echo h($monitoring['BillMonitoring']['paid_by']); ?></td>
+                                <td>
+                                <?php 
+                                echo h($monitoring['BillMonitoring']['paid_by']); 
+                                
+                                ?>
+                                </td>
                                 <td>
                                     <?php 
                                         if($monitoring['BillMonitoring']['paid'] == 1){
@@ -99,7 +104,15 @@
                                         
                                     ?>
                                 </td>
-                                <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['receipt_date']))); ?></td>
+                                <td>
+                                <?php 
+                                
+                                if($monitoring['BillMonitoring']['receipt_date'] == ""){
+                                    echo"<p>not available</p>";
+                                }else{
+                                    echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['receipt_date']))); 
+                                }
+                                ?></td>
                                 
                                 <td>
                                 <?php 
@@ -167,7 +180,7 @@
                         <?php 
                             foreach($billaccounts as $billaccount){
                         ?>
-                        <option value="<?php echo h($billaccount['BillAccount']['id']); ?>"><?php echo h($billaccount['BillAccount']['name']); ?></option>
+                        <option value="<?php echo h($billaccount['Bill']['id']); ?>"><?php echo h($billaccount['Bill']['bill_account_id']); ?></option>
                         <?php 
                             } 
                         ?>

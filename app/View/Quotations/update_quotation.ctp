@@ -885,7 +885,9 @@
                         if (button_type == 'savenew') {
                             location.reload();
                         } else {
-                            window.location.href = '/quotations/pending';
+                            
+                            location.reload();
+                            // window.location.href = '/quotations/pending';
                         }
 
                     },

@@ -368,16 +368,29 @@ class JobRequestsController extends AppController {
     public function design_product() {
         $this->loadModel('JrProduct');
         $this->loadModel('Quotation');
-        $this->JrProduct->recursive = 3;
-        $jrprods = $this->JrProduct->find('all',array(
-            'contain'=>array('Quotation'),
+        $this->JobRequest->recursive = 3;
+        $jreqs = $this->JrProduct->find('all',array( 
             'conditions'=>array(
                 'JrProduct.user_id'=>$this->Auth->user('id'),
                 'JrProduct.status'=>$this->params['url']['type']
-            ),
-            'group'=>'JrProduct.job_request_id'
+            ), 
+            'fields'=>array('JrProduct.job_request_id')
         )); 
         
+        $arvar = [];
+        foreach ($jreqs as $jrprod) {
+            if(!in_array($jrprod['JrProduct']['job_request_id'], $arvar, true)){
+                array_push($arvar, $jrprod['JrProduct']['job_request_id']);
+            }
+            // array_push($arvar,$jrprod['JrProduct']['job_request_id']);
+        }
+        
+        $jrprods = $this->JobRequest->find('all',array( 
+                'conditions'=>array(
+                    'JobRequest.id'=>$arvar,
+            ), 
+        )); 
+        // pr($jrprods);
         
         $this->set(compact('jrprods'));
     }
@@ -400,15 +413,108 @@ class JobRequestsController extends AppController {
     public function head_view() {
         $status = $this->params['url']['status'];
         $this->loadModel('JrProduct');
-//        $this->JobRequest->recursive =5;
+        // $this->JobRequest->recursive =3;
         $this->loadModel('JobRequest');
         $this->loadModel('Quotation');
-        $pending_jrs = $this->JobRequest->Quotation->find('all', array(
+        $this->loadModel('QuotationProduct');
+        //quotation buda cliet tabi friend thanks :* uki uki
+        $this->JobRequest->recursive =2;
+        $pending_jrs = $this->JobRequest->find('all', array(
             'conditions' => array('JobRequest.status' => $status
         )));
-
-        $this->set(compact('pending_jrs'));
+        
+        // pr($pending_jrs); exit;
+        
+        $arvar = [];
+        foreach ($pending_jrs as $jrs) {
+            $count = 0;
+            $a = $jrs;
+            foreach ($jrs['JrProduct'] as $jrprod) {
+                $q_prod_id = $jrprod['quotation_product_id']; 
+                $q_prod = $this->QuotationProduct->findById($q_prod_id);
+                if($q_prod){
+                    if($q_prod['QuotationProduct']['type'] == 'combination' || $q_prod['QuotationProduct']['type'] == 'customized'){
+                        $count += 1;
+                    }
+                }
+            }
+            if($count != 0){
+                array_push($arvar, $a);
+            }
+        }
+        
+        // pr($arvar); exit;
+        $this->set(array('pending_jrs' => $arvar));
         $this->set(compact('status'));
     }
 
+    public function add_productions() {
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $qprodid = $data['qprodid'];
+        $jrprodid = $data['jrprodid'];
+        $clientid = $data['clientid'];
+        $totalqty = $data['totalqty'];
+        $stat = $data['stat'];
+        $userin = $this->Auth->user('id');
+        
+        $production_set = ['quotation_product_id'=>$qprodid,
+                           'jr_product_id'=>$jrprodid,
+                           'client_id'=>$clientid,
+                           'total_qty'=>$totalqty,
+                           'status'=>$stat];
+        					  
+        $this->loadModel('Production');
+        $this->loadModel('ProductionLog');
+        $this->loadModel('JrProduct');
+        
+        $DS_Production = $this->Production->getDataSource();
+        $DS_ProductionLog = $this->ProductionLog->getDataSource();
+        $DS_JrProduct = $this->JrProduct->getDataSource();
+        
+        $DS_Production->begin();
+        $this->Production->create();
+        $this->Production->set($production_set);
+        
+        if($this->Production->save()) {
+            echo json_encode("Production saved");
+            $production_id = $this->Production->getLastInsertId();
+            $ProductionLog_set = ['production_id'=>$production_id,
+							  'production_process_id'=>0,
+							  'production_carpenter_id'=>0,
+							  'type'=>'production',
+							  'status'=>$stat,
+							  'user_id'=>$userin];
+			$DS_ProductionLog->begin();
+			$this->ProductionLog->create();
+			$this->ProductionLog->set($ProductionLog_set);
+			if($this->ProductionLog->save()) {
+			    echo json_encode("ProductionLog saved");
+			    $DS_JrProduct->begin();
+			    $this->JrProduct->id = $jrprodid;
+			    $this->JrProduct->set(['status'=>'production']);
+			    
+			    if($this->JrProduct->save()) {
+			        echo json_encode("JrProduct saved");
+			        $DS_JrProduct->commit();
+    			    $DS_ProductionLog->commit();
+                    $DS_Production->commit();
+			    }
+			    else {
+    			    $DS_ProductionLog->rollback();
+                    $DS_Production->rollback();
+                    return json_encode("Error in updating JrProduct");
+                    exit;
+			    }
+			}
+			else {
+			    $DS_Production->rollback();
+			    return json_encode("Error in saving ProductionLog");
+			    exit;
+			}
+        }
+        
+        return json_encode("Add Productions Done");
+        exit;
+    }
 }

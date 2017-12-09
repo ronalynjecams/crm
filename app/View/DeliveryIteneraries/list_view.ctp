@@ -38,7 +38,7 @@
                 </h3>  
             </div>
             <div class="panel-body">
- 
+             <button class="btn btn-xs btn-success" id="import" data-toggle="tooltip"  data-original-title="Import Transportify Data" data-buttontype="start"><i class="fa fa-upload"></i></button>
                 <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
@@ -76,7 +76,7 @@
                                     }
 
                                     echo $data['DeliveryItenerary']['driver'];
-                                    echo 'change driver or vehicle';
+                                    // echo 'change driver or vehicle button here';
                                     ?>
                                 </td>
                                 <td>
@@ -133,12 +133,18 @@
                                     
                                     
                                     <?php
-                                    if ($data['DeliveryItenerary']['delivery_mode'] == 'jecams') {
-                                        //change vehicle_id ( select vehicle , value should be brand - plate number)
-                                        //change driver (query users, value of option should be first name and last name)
-                                    } else if ($data['DeliveryItenerary']['delivery_mode'] == 'transportify') {
-                                       //update booking code
+                                    if($data['DeliveryItenerary']['status'] != "delivered"){
+                                        if ($data['DeliveryItenerary']['delivery_mode'] == 'jecams') {
+                                            echo '<button class="btn btn-xs btn-success update_vehicle" data-toggle="tooltip"  data-original-title="Change Vehicle" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-car"></i></button>';
+                                            echo '<button class="btn btn-xs btn-success update_driver" data-toggle="tooltip"  data-original-title="Change Driver" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-id-card-o"></i></button>';
+                                            //add condition na kapag status != delivered
+                                            //change vehicle_id ( select vehicle , value should be brand - plate number) 
+                                            //change driver (query users, value of option should be first name and last name)
+                                        } else if ($data['DeliveryItenerary']['delivery_mode'] == 'transportify') {
+                                           echo '<button class="btn btn-xs btn-success update_booking_code" data-toggle="tooltip"  data-original-title="Update Booking Code" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-code="' . $data['DeliveryItenerary']['booking_code'] . '" data-buttontype="start"><i class="fa fa-cog"></i></button>';
                                     }
+                                    }
+                                //   echo  $data['DeliveryItenerary']['delivery_mode'];
                                     ?>
                                     
                                 </td>
@@ -166,7 +172,7 @@
             <!--Modal body-->
             <div class="modal-body">
                 
-                <input type="text" class="form-control"  id="actual_id">  
+                <input type="hidden" class="form-control"  id="actual_id">  
                 <p class="text-danger" id="error_agent"></p>
                 <div class="form-group"> 
                     <div class="col-sm-6">
@@ -203,7 +209,7 @@
             </div>
             <!--Modal body-->
             <div class="modal-body">
-                
+                <p class="text-danger">Updating this will affect status of all products in this itenerary</p>
                 <input type="hidden" class="form-control"  id="end_id">  
                 <p class="text-danger" id="error_agent"></p>
                 <div class="form-group"> 
@@ -277,6 +283,149 @@
 </div>
 <!-- UPDATE MODAL DEPARTURE END-->
 
+<!-- UPDATE MODAL VEHICLE START-->
+<div class="modal fade" id="updateVehicle-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Change Vehicle</h4>
+            </div>
+            <!--Modal body-->
+            <div class="modal-body">
+                <input type="hidden" class="form-control"  id="del_itenerary_id">  
+                <p class="text-danger" id="error_agent"></p>
+                <div class="form-group"> 
+                    <div class="col-sm-12">
+                        <select class="form-control" id="vehicle">
+                            <option value="none">Select Vehicle</option>
+                            <?php foreach($vehicles as $vehicle){ ?>
+                            <option value="<?php echo $vehicle['Vehicle']['id'];?>"><?php echo $vehicle['Vehicle']['brand'].' - '.$vehicle['Vehicle']['plate_number'];?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="updateVehicleBtn">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- UPDATE MODAL VEHICLE END-->    
+
+<!-- UPDATE MODAL DRIVER START-->
+<div class="modal fade" id="updateDriver-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Change Driver</h4>
+            </div>
+            <!--Modal body-->
+            <div class="modal-body">
+                <input type="hidden" class="form-control"  id="del_itenerary_id">  
+                <p class="text-danger" id="error_agent"></p>
+                <div class="form-group"> 
+                    <div class="col-sm-12">
+                        <select class="form-control" id="driver">
+                            <option value="none">Select Driver</option>
+                            <?php foreach($users as $user){ ?>
+                            <option value="<?php echo $user['User']['first_name'].' '.$user['User']['last_name'];?>"><?php echo $user['User']['first_name'].' '.$user['User']['last_name'];?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="updateDriverBtn">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- UPDATE MODAL DRIVER END-->    
+
+<!-- UPDATE MODAL DRIVER START-->
+<div class="modal fade" id="updateBookingCode-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Update Booking Code</h4>
+            </div>
+            <!--Modal body-->
+            <div class="modal-body">
+                <input type="hidden" class="form-control"  id="del_itenerary_id">  
+                <p class="text-danger" id="error_agent"></p>
+                <div class="form-group"> 
+                    <div class="col-sm-12">
+                         <input type="text" class="form-control" id="booking_code">
+                    </div>
+
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="updateBookingCodeBtn">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- UPDATE MODAL DRIVER END-->  
+
+<!-- UPDATE MODAL DRIVER START-->
+<div class="modal fade" id="import-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Import Transportify Data</h4>
+            </div>
+            <!--Modal body-->
+            <form action="/delivery_iteneraries/import" method="post" enctype="multipart/form-data" name="form1" id="form1"> 
+            <div class="modal-body">
+                <!--<input type="hidden" class="form-control"  id="del_itenerary_id">  -->
+                <p class="text-danger" id="error_agent"></p>
+                <div class="form-group"> 
+                    <div class="col-sm-12">
+                        Choose your file: <br /> 
+                        <input type="file" name="file" class="form-control" />
+                        <input type="hidden" name="status" value="<?php echo $status; ?>" class="form-control" />
+                                        <!--<input type="text" name="name" />-->
+                    </div>
+
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <input type="submit" value="Import" class="btn btn-primary "type="button" />
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- UPDATE MODAL DRIVER END-->  
+
 <script>
     $(document).ready(function () {
         $('#example').DataTable({
@@ -297,8 +446,41 @@
             });
         });
 
+        $(".update_vehicle").each(function (index) {
+            $(this).on("click", function () {
+                var id = $(this).data('actid');
+                $('#del_itenerary_id').val(id);
+                $('#updateVehicle-modal').modal('show');
 
+            });
+        });
+        
+        $(".update_driver").each(function (index) {
+            $(this).on("click", function () {
+                var id = $(this).data('actid');
+                $('#del_itenerary_id').val(id);
+                $('#updateDriver-modal').modal('show');
 
+            });
+        });
+
+        $(".update_booking_code").each(function (index) {
+            $(this).on("click", function () {
+                var id = $(this).data('actid');
+                var booking_code = $(this).data('code');
+                $('#del_itenerary_id').val(id);
+                $('#booking_code').val(booking_code);
+                $('#updateBookingCode-modal').modal('show');
+
+            });
+        });
+        
+        $("#import").on("click", function () {
+            $(this).on("click", function () {
+                $('#import-modal').modal('show');
+
+            });
+        });
 
         $(".update_end").each(function (index) {
             $(this).on("click", function () {
@@ -342,18 +524,8 @@
             }else{
                 alert('Please select a status')
             }
-            
-            
-            
-            
+             
         });
-        
-
-
-
-
-
-
 
         $(".update_actualstart").each(function (index) {
             $(this).on("click", function () {
@@ -393,25 +565,83 @@
             });
         });
         
+        $('#updateVehicleBtn').on("click", function () {
+            var del_itenerary_id= $('#del_itenerary_id').val();
+            var vehicle = $('#vehicle').val();
+            
+            var data = {
+                "del_itenerary_id": del_itenerary_id,
+                "vehicle": vehicle
+            }
+            if(vehicle !== 'none'){     
+                $.ajax({
+                    url: "/delivery_iteneraries/process_update_vehicle",
+                    type: 'POST',
+                    data: {'data': data},
+                    dataType: 'json',
+                    success: function (id) {
+                        location.reload();
+                    },
+                    erorr: function (id) {
+                        alert('error!');
+                    }
+                });
+            } else{
+                alert('Please select vehicle');
+            }
+        });
         
+        $('#updateDriverBtn').on("click", function () {
+            var del_itenerary_id= $('#del_itenerary_id').val();
+            var driver = $('#driver').val();
+            
+            var data = {
+                "del_itenerary_id": del_itenerary_id,
+                "driver": driver
+            }
+            if(driver !== 'none'){     
+                $.ajax({
+                    url: "/delivery_iteneraries/process_update_driver",
+                    type: 'POST',
+                    data: {'data': data},
+                    dataType: 'json',
+                    success: function (id) {
+                        location.reload();
+                    },
+                    erorr: function (id) {
+                        alert('error!');
+                    }
+                });
+            } else{
+                alert('Please select driver');
+            }
+        });
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        $('#updateBookingCodeBtn').on("click", function () {
+            var del_itenerary_id= $('#del_itenerary_id').val();
+            var booking_code = $('#booking_code').val();
+            
+            var data = {
+                "del_itenerary_id": del_itenerary_id,
+                "booking_code": booking_code
+            }
+            if(booking_code !== ''){     
+                $.ajax({
+                    url: "/delivery_iteneraries/process_update_bookingcode",
+                    type: 'POST',
+                    data: {'data': data},
+                    dataType: 'json',
+                    success: function (id) {
+                        location.reload();
+                    },
+                    erorr: function (id) {
+                        alert('error!');
+                    }
+                });
+            } else{
+                alert('Please provide booking code');
+            }
+        });
 
         $('#updateDepartureBtn').on("click", function () {
             var delivery_itenerary_id = $('#dep_itenerary_id').val();
