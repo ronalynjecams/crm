@@ -288,6 +288,159 @@ class AppController extends Controller {
 	    }
 	}
 	
+	
+	public function grand_total(){
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+				'fields' => 'grand_total',
+				'conditions' => array(
+					'OR' => array(
+						array('status' => 'approved'),
+						'status' => 'processed'
+						)
+					)
+				));
+			
+			$grand_total = array_sum($total);
+			
+			// return $grand_total;
+			return json_encode($grand_total);
+			exit;
+	}
+	
+	public function monthly_total(){
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+					'fields' => 'grand_total',
+					'recursive' => -1,
+					'conditions' => array(
+						'MONTH(date_moved)' => date('m'),
+						'YEAR(date_moved)' => date('Y'),
+						'OR' => array(
+						array('Quotation.status' => 'approved'),
+						'Quotation.status' => 'processed'
+						)
+					)
+				));
+			
+		$grand_total = array_sum($total);
+		
+		return $grand_total;
+		exit;
+	}
+	
+	public function yearly_total(){
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+					'fields' => 'grand_total',
+					'recursive' => -1,
+					'conditions' => array(
+						'YEAR(date_moved)' => date('Y'),
+						'OR' => array(
+						array('Quotation.status' => 'approved'),
+						'Quotation.status' => 'processed'
+						)
+					)
+				));
+			
+		$grand_total = array_sum($total);
+		
+		return $grand_total;
+		exit;
+	}
+	
+	public function daily_total(){
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+					'fields' => 'grand_total',
+					'recursive' => -1,
+					'conditions' => array(
+						'DAY(date_moved)' => date('d'),
+						'MONTH(date_moved)' => date('m'),
+						'YEAR(date_moved)' => date('Y'),
+						'OR' => array(
+						array('Quotation.status' => 'approved'),
+						'Quotation.status' => 'processed'
+						)
+					)
+				));
+			
+		$grand_total = array_sum($total);
+		
+		return $grand_total;
+		exit;
+	}
+	
+	public function team_total($type = null, $team = null){
+		$this->loadModel('Quotation');
+		$this->loadModel('Team');
+		
+		if($type == 'yearly'){
+		$condition['YEAR(date_moved)'] = date('Y');
+		}
+		
+		if($type == 'monthly'){
+		$condition['YEAR(date_moved)'] = date('Y');
+		$condition['MONTH(date_moved)'] = date('m');
+		}
+		
+		if($type == 'daily'){
+		$condition['YEAR(date_moved)'] = date('Y');
+		$condition['MONTH(date_moved)'] = date('m');
+		$condition['DAY(date_moved)'] = date('d');
+		}
+		
+		$condition['OR'] = array(
+					array('Quotation.status' => 'approved'),
+					'Quotation.status' => 'processed'
+					);
+					
+		if($team != null){
+			$condition['Quotation.team_id'] = $team;
+			$res = $this->Quotation->find('first', array(
+					'fields' => 'sum(Quotation.grand_total) as grand_total_team, Quotation.team_id, Quotation.date_moved, Team.*',
+					'recursive' => -1,
+					'conditions' => $condition,
+					'group' => array('Quotation.team_id'),
+					'joins' => array(
+					    array(
+					        'table' => 'teams',
+					        'alias' => 'Team',
+					        'type' => 'LEFT',
+					        'conditions' => array(
+					            'Team.id = Quotation.team_id',
+					        )
+					    ),
+					)
+				));
+		} else{
+			$this->Team->recursive = 0;
+			$team_list = $this->Team->find('all');
+			$count = 0;
+			foreach($team_list as $data){
+				
+				$team_data = $data['Team'];
+				$condition['Quotation.team_id'] = $team_data['id'];
+				$total = $this->Quotation->find('first', array(
+							'fields' => 'sum(Quotation.grand_total) as grand_total_team',
+							'recursive' => -1,
+							'conditions' => $condition,
+						));
+				$res[$count] = $team_data;
+				$res[$count]['grand_total_team'] = $total[0]['grand_total_team'];
+				$count++;
+			}	
+		}
+		// $grand_total = array_sum($total);
+		
+		return $res;
+		exit;
+	}
+	
 	/* CSV Import functionality for all controllers
 	*     
 	*/

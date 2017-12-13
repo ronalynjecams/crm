@@ -598,6 +598,13 @@
                             </li>  
 
                         <?php } ?>
+                        
+                        <!--FOR HR HEAD SIDE BAR-->
+                        <?php
+                        if($UserIn['User']['role'] == 'hr_head') { ?>
+                        <?php } ?>
+                        <!--END OF HR HEAD SIDE BAR-->
+                        
                         <!-- raw_staff -->
                         <!-- warehouse supply-->
                         <?php if ($UserIn['User']['department_id'] == 9) { ?>

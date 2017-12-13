@@ -825,8 +825,11 @@
                 var delivery_charge = $('#delivery_charge').val();
                 var discount = $('#discount').val();
                 var grand_total = $('#grand_total').val();
-                var terms_info = $('#terms').val();
-//let user select if quotation or fitout
+                // var terms_info = $('#terms').val();
+                
+                
+    var terms_info = tinyMCE.get('terms_info').getContent();
+//let user select if quotation or fitout 
 
                 var id = $("#quotation_id").val();
                 var type = $("#type").val();

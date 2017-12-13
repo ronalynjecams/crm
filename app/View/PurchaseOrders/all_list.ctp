@@ -432,13 +432,13 @@
                                     data: {'data': data},
                                     dataType: 'json',
                                     success: function (dd) {
-                                        location.reload();
+                                        // location.reload();
 //                    console.log(dd);
                                     },
                                     error: function (dd) {
                                         // console.log('error' + dd);
                                         
-                                        location.reload();
+                                        // location.reload();
                                     }
                                 });
                             } else {

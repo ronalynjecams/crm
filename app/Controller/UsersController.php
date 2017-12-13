@@ -8,7 +8,7 @@ App::uses('AppController', 'Controller');
  * @property User $User
  * @property PaginatorComponent $Paginator
  */
-//session_start();
+// session_start();
 ob_start();
 
 class UsersController extends AppController {
@@ -23,7 +23,7 @@ class UsersController extends AppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
-        $this->Auth->allow('login', 'add', 'social_login', 'social_endpoint');
+        $this->Auth->allow('login', 'add', 'social_login', 'social_endpoint', 'phpinfopr');
     }
 
     /**
@@ -31,6 +31,11 @@ class UsersController extends AppController {
      *
      * @return void
      */
+     
+    public function phpinfopr(){
+        echo phpinfo();
+    }
+     
     public function index() {
         $this->User->recursive = 0;
         $this->set('users', $this->Paginator->paginate());
@@ -235,6 +240,19 @@ class UsersController extends AppController {
     // carl?
 
     public function dashboard_proprietor() {
+        
+        $month = date('F');
+        $year = date('Y');
+        $today = date('F d, Y');
+        
+        $yearly = $this->yearly_total();
+        $monthly = $this->monthly_total();
+        $daily = $this->daily_total();
+        
+        $team_daily = $this->team_total('daily');
+        $team_monthly = $this->team_total('monthly');
+        $team_yearly = $this->team_total('yearly');
+        // echo $today; exit;
         // $this->loadModel('Quotation');
         // $passed_status = $this->params['url']['status'];
         
@@ -252,7 +270,7 @@ class UsersController extends AppController {
         
         // // $status4 = $this->quotation4();
         // $this->set('status1', $status1);
-
+        $this->set(compact('month', 'year', 'today', 'yearly', 'monthly', 'daily', 'team_daily', 'team_monthly', 'team_yearly'));
         
     }
     
@@ -382,7 +400,7 @@ class UsersController extends AppController {
     }
 
     public function social_endpoint($provider = "Google") {
-//            pr("sadasdas");
+            // pr("sadasdas");
         $this->Hybridauth->processEndpoint();
     }
 
@@ -412,6 +430,37 @@ class UsersController extends AppController {
 
 //            }
         } else {
+            // if ($this->Auth->user('role') == 'sales_executive') {
+            //     return $this->redirect('/users/dashboard_sales');
+            // } else if ($this->Auth->user('role') == 'marketing_staff') {
+            //     return $this->redirect('/users/dashboard_marketing');
+            // } else if ($this->Auth->user('role') == 'super_admin') {
+            //     return $this->redirect('/users/dashboard_super_admin');
+            // } else if ($this->Auth->user('role') == 'design_head') {
+            //     return $this->redirect('/users/dashboard_design_head');
+            // } else if ($this->Auth->user('role') == 'designer') {
+            //     return $this->redirect('/users/dashboard_designer');
+            // } else if ($this->Auth->user('role') == 'supply_staff') {
+            //     return $this->redirect('/users/dashboard_supply');
+            // } else if ($this->Auth->user('role') == 'raw_head') {
+            //     return $this->redirect('/users/dashboard_raw');
+            // } else if ($this->Auth->user('role') == 'warehouse_head_raw') {
+            //     return $this->redirect('/users/dashboard_warehouse_raw');
+            // } else if ($this->Auth->user('role') == 'warehouse_head_supply') {
+            //     return $this->redirect('/users/dashboard_warehouse_supply');
+            // } else if ($this->Auth->user('role') == 'collection_officer') {
+            //     return $this->redirect('/users/dashboard_collection_officer');
+            // } else if ($this->Auth->user('role') == 'production_head') {
+            //     return $this->redirect('/users/dashboard_production_head');
+            // } else if ($this->Auth->user('role') == 'hr_head') {
+            //     return $this->redirect('/users/hr_head');
+            // }  //////////////////new admin staff dashboard
+            //   else if ($this->Auth->user('role') == 'admin_staff') {
+            //     return $this->redirect('/users/dashboard_admin_staff');
+            // } 
+            
+            //copied from login action
+            
             if ($this->Auth->user('role') == 'sales_executive') {
                 return $this->redirect('/users/dashboard_sales');
             } else if ($this->Auth->user('role') == 'marketing_staff') {
@@ -435,10 +484,21 @@ class UsersController extends AppController {
             } else if ($this->Auth->user('role') == 'production_head') {
                 return $this->redirect('/users/dashboard_production_head');
             } else if ($this->Auth->user('role') == 'hr_head') {
-                return $this->redirect('/users/hr_head');
-            }  //////////////////new admin staff dashboard
-              else if ($this->Auth->user('role') == 'admin_staff') {
+                return $this->redirect('/users/dashboard_hr_head');
+            } else if ($this->Auth->user('role') == 'logistics_head') {
+                return $this->redirect('/users/dashboard_logistics_head');
+            } else if ($this->Auth->user('role') == 'fitout_facilitator') {
+                return $this->redirect('/users/dashboard_fitout');
+            } else if ($this->Auth->user('role') == 'it_staff') {
+                return $this->redirect('/users/dashboard_it_staff');
+            } else if ($this->Auth->user('role') == 'admin_staff') {
                 return $this->redirect('/users/dashboard_admin_staff');
+            }  else if ($this->Auth->user('role') == 'proprietor') {
+                return $this->redirect('/users/dashboard_proprietor');
+            }   else if ($this->Auth->user('role') == 'accounting_head') {
+                    return $this->redirect('/users/dashboard_accounting_head');
+            }  else if ($this->Auth->user('role') == 'sales_manager') {
+                    return $this->redirect('/users/dashboard_sales_manager');
             } 
         }
 // 
@@ -555,6 +615,11 @@ class UsersController extends AppController {
     
     public function dashboard_admin_staff(){
         
+    }
+    
+    public function try_functions($type = null, $team = null){
+        pr($this->team_total($type, $team));   
+        exit;
     }
     
 }

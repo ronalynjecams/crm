@@ -85,8 +85,8 @@
                                 <td> 
                                     <?php  if ($po_products['PurchaseOrder']['status'] != 'ongoing') { ?>
                                         <button class=" btn btn-mint  btn-icon  add-tooltip delivery_sched" data-toggle="tooltip"  data-original-title="Schedule Delivery"  data-dspquoteid="<?php echo $po_products['id']; ?>" data-dspquoteqty="<?php echo $po_products['qty']; ?>"><i class="fa fa-calendar"></i></button></td>
-                                    <?php } ?>
-                                    <?php
+                                    <?php }
+                                    else {
                                         $id = $po_products['id'];
                                         
                                         if($po['PurchaseOrder']['payment_request']==0) {
@@ -103,6 +103,7 @@
                                             </button>
                                             <?php
                                         }
+                                    }
                                     ?>
                                 <td>
                                    
@@ -163,7 +164,7 @@
                                 <input type="text" id="total_purchased" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['total_purchased']); ?>"/></td>  
                         </tr>
                         <tr >
-                            <td colspan="5" align="right"><input id="nonvat" type="checkbox"  <?php if ($po['PurchaseOrder']['vat_amount'] != 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
+                            <td colspan="5" align="right"><input id="nonvat" type="checkbox"  <?php if ((int)$po['PurchaseOrder']['vat_amount'] == 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
                             <td align="right"><div class="vatDiv"><b>ADD: 12% VAT:</b></div></td>  
                             <td><input type="hidden"  readonly class="form-control" id="vat_val" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/>
                                 <div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
@@ -176,7 +177,17 @@
                         </tr>-->
 
                         <tr>
-                            <td colspan="6" align="right"><b>LESS: 1% EWT:</b></td>  
+                            <td colspan="6" align="right">
+                                <select id="ewt_type" class="form-control">
+                                    <?php if($po['PurchaseOrder']['ewt_type'] == 'one'):?>
+                                        <option value="one">LESS: 1% EWT:</option>
+                                        <option value="two">LESS: 2% EWT:</option>
+                                    <?php else: ?>
+                                        <option value="two">LESS: 2% EWT:</option>
+                                        <option value="one">LESS: 1% EWT:</option>
+                                    <?php endif; ?>
+                                </select>
+                            </td>  
                             <td><input type="text" id="ewt" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['ewt_amount']); ?>"/></td>  
                         </tr>
                         <tr>
@@ -415,7 +426,7 @@
             var id=$(this).val();
             var poid = $(this).data("poid");
             var data = {"id":id,"poid":poid};
-            var status_all = "<?php echo $po['PurchaseOrder']['status']; ?>";
+            
             swal({
                 title: "Are you sure?",
                 text: "This will delete Purchase Order Product.",
@@ -436,7 +447,10 @@
 						dataType: 'text',
 						success: function(id) {
 							console.log(id);
-							window.location="/purchase_orders/all_list?status="+status_all;
+							if(id == "empty") {
+							    window.location = "/purchase_orders/all_list?status=ongoing";
+							}
+							else { location.reload(); }
 						},
 						error: function(err) {
 							console.log("AJAX error: " + JSON.stringify(err, null, 2));
@@ -477,12 +491,13 @@
         $("#nonvat").on("click", function () {
             if (this.checked) {
                 $(".vatDiv").hide();
-                $("#vat").val(0);
+                // $("#vat").val(0);
                 var discount = $("#discount").val();
                 var total_purchased_val = $("#total_purchased_val").val();
                 var total_purchased = $("#total_purchased").val();
 //                var total = $("#total").val();
                 var ewt = $("#ewt").val();
+                var ewt_type = $("#ewt_type").val();
                 var grand_total = $("#grand_total").val();
                 var po_id = $("#po_idd").val();
 
@@ -502,9 +517,12 @@
                     "total_purchased": total_purchased,
 //                    "total": total,
                     "ewt": ewt,
+                    "ewt_type": ewt_type,
                     "grand_total": grand_total,
                     "po_id": po_id
                 }
+                // console.log(data)
+                // console.log('if')
                 changeAmount(data);
             } else {
                 $(".vatDiv").show();
@@ -516,6 +534,7 @@
                 var total_purchased = $("#total_purchased").val();
 //                var total = $("#total").val();
                 var ewt = $("#ewt").val();
+                var ewt_type = $("#ewt_type").val();
                 var grand_total = $("#grand_total").val();
                 var po_id = $("#po_idd").val();
 
@@ -526,13 +545,51 @@
                     "total_purchased": total_purchased,
 //                    "total": total,
                     "ewt": ewt,
+                    "ewt_type": ewt_type,
                     "grand_total": grand_total,
                     "po_id": po_id
                 }
                 changeAmount(data);
+                // console.log(data)
+                // console.log('else')
 
             }
         });
+        
+        $("#ewt_type").change(function () {
+            var discount = $("#discount").val();
+            var total_purchased_val = $("#total_purchased_val").val();
+            var total_purchased = $("#total_purchased").val();
+//                var total = $("#total").val();
+            var ewt = $("#ewt").val();
+            var ewt_type = $("#ewt_type").val();
+            var grand_total = $("#grand_total").val();
+            var po_id = $("#po_idd").val();
+
+            if ($("#nonvat").is(':checked')) {
+                var new_total_purchased = parseFloat(total_purchased_val) - parseFloat(discount);
+                var new_vat = parseFloat(new_total_purchased) * 0.12;
+
+                var vat = new_vat;
+            } else {
+                var vat = $("#vat").val();
+            }
+//                console.log(vat);
+            var data = {
+                "discount": discount,
+                "vat": parseFloat(vat),
+                "total_purchased_val": total_purchased_val,
+                "total_purchased": total_purchased,
+//                    "total": total,
+                "ewt": ewt,
+                "ewt_type": ewt_type,
+                "grand_total": grand_total,
+                "po_id": po_id
+            }
+            changeAmount(data);
+        
+        });
+        
         $("#nodiscount").on("click", function () {
             if (this.checked) {
                 $(".discountDiv").hide();
@@ -543,6 +600,7 @@
                 var total_purchased = $("#total_purchased").val();
 //                var total = $("#total").val();
                 var ewt = $("#ewt").val();
+                var ewt_type = $("#ewt_type").val();
                 var grand_total = $("#grand_total").val();
                 var po_id = $("#po_idd").val();
                 if ($("#nonvat").is(':checked')) {
@@ -560,6 +618,7 @@
                     "total_purchased": total_purchased,
 //                    "total": total,
                     "ewt": ewt,
+                    "ewt_type": ewt_type,
                     "grand_total": grand_total,
                     "po_id": po_id
                 }
@@ -579,6 +638,7 @@
             var total_purchased = $("#total_purchased").val();
 //            var total = $("#total").val();
             var ewt = $("#ewt").val();
+            var ewt_type = $("#ewt_type").val();
             var grand_total = $("#grand_total").val();
             var po_id = $("#po_idd").val();
 
@@ -598,6 +658,7 @@
                 "total_purchased": total_purchased,
 //                "total": total,
                 "ewt": ewt,
+                "ewt_type": ewt_type,
                 "grand_total": grand_total,
                 "po_id": po_id
             }
@@ -633,6 +694,7 @@
                     var total_purchased = $("#total_purchased_val").val();
                     //            var total = $("#total").val();
                     var ewt = $("#ewt").val();
+                    var ewt_type = $("#ewt_type").val();
                     var grand_total = $("#grand_total").val();
                     var po_id = $("#po_idd").val();
 
@@ -651,6 +713,7 @@
                         "total_purchased": total_purchased_val,
                         //                "total": total,
                         "ewt": ewt,
+                        "ewt_type": ewt_type,
                         "grand_total": grand_total,
                         "po_id": po_id
                     }
@@ -740,7 +803,7 @@
             data: {'data': data},
             dataType: 'json',
             success: function (dd) {
-//                console.log(dd);
+                // console.log(dd);
                 location.reload();
             },
             error: function (dd) {

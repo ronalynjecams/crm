@@ -42,3 +42,4 @@ require APP_DIR . DS . WEBROOT_DIR . DS . 'index.php';
 
 //₱
 //ñ
+// onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57"

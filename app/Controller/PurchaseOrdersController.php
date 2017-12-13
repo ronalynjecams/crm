@@ -207,9 +207,10 @@ class PurchaseOrdersController extends AppController {
         $additional = $data['additional'];
         $supplier_product_id = $data['supplier_product_id'];
         $inventory_job_order_type = $data['inventory_job_order_type'];
-        $ref_type = $data['ref_type'];
+        // $ref_type = $data['ref_type'];
 
-       
+        $discount = 0;
+        $ewt_type = "one";
         
 //        pr($inventory_job_order_type);exit;
         //check if with existing ongoing purchase order
@@ -320,8 +321,9 @@ class PurchaseOrdersController extends AppController {
             if ($this->PurchaseOrderProduct->save()) {
                 $po_product_id = $this->PurchaseOrderProduct->getLastInsertID();
             }
+            $discount = $check_po['PurchaseOrder']['discount'];
+            $ewt_type = $check_po['PurchaseOrder']['ewt_type'];
         }
-        
         
         // if reference type == quotation
         if ($quotation_product_id != 0 && (!empty($quotation_product_id))) {
@@ -418,12 +420,64 @@ class PurchaseOrdersController extends AppController {
                     'mode'=>'receive',
                     'status'=>'newest'
                 )); 
-                if($this->InventoryJobOrder->save()){
-                        echo json_encode($data); 
-                } 
+                $this->InventoryJobOrder->save();
+                // if($this->InventoryJobOrder->save()){
+                //         echo json_encode($data); 
+                // } 
         
+        $this->loadModel('Supplier');
+        $supplier = $this->Supplier->findById($supplier_id);
         
-         
+        $vatable = $supplier['Supplier']['vatable'];
+        
+        $total = $this->PurchaseOrderProduct->find('first', array(
+                'fields' => 'sum(PurchaseOrderProduct.list_price * PurchaseOrderProduct.qty) as total',
+                'recursive' => -1,
+                'conditions' => array(
+                    'PurchaseOrderProduct.purchase_order_id' => $po_id
+                    )
+            ));
+            
+        if ($discount != 0) {
+            $new_total_purchased = $total['0']['total'] - $discount;
+        } else {
+            $new_total_purchased = $total['0']['total'];
+        }
+        if($ewt_type == 'one'){
+            $new_ewt = $new_total_purchased * .01;
+        } else{
+            $new_ewt = $new_total_purchased * .02;
+        }
+        if ($vatable == 0) {
+            //computation for vat inc
+            $data['vaat'] = 'if';
+            $vat = $new_total_purchased * .12;
+            $data['newvat'] = $vat;
+            // $new_ewt = $non_vat * 0.01;
+            $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+            // $new_vat = $non_vat;
+            //$new_vat = 0;
+        } else {
+            //computation for vat ex
+            $data['vaat'] = 'else';
+            $new_vat =   0;
+            $vat = 0;
+            // $new_ewt = $new_total_purchased * 0.01;
+            $new_grand_total = $new_total_purchased - $new_ewt;
+        }
+        $this->PurchaseOrder->id = $po_id;
+        $this->PurchaseOrder->set(array(
+            'total_purchased' => $new_total_purchased,
+            'vat_amount' => floatval($vat),
+            'ewt_amount' => $new_ewt,
+            'ewt_type' => $ewt_type,
+            'grand_total' => $new_grand_total,
+            'discount' => $discount
+        ));
+        
+        if ($this->PurchaseOrder->save()) {
+            echo json_encode($data);
+        }
     }
     
     
@@ -580,11 +634,11 @@ class PurchaseOrdersController extends AppController {
         } else if ($user['User']['department_id'] == 7) {
             $type = 'raw';
         }
-
+        
+        $stat = $po['PurchaseOrder']['status'];
         $this->loadModel('Product');
         $products = $this->Product->find('all');
-        $this->set(compact('products', 'type'));
-        
+        $this->set(compact('products', 'type', 'stat'));
         
     }
     
@@ -617,6 +671,7 @@ class PurchaseOrdersController extends AppController {
         $total_purchased = $data['total_purchased'];
 //        $total = $data['total'];
         $ewt = $data['ewt'];
+        $ewt_type = $data['ewt_type'];
         $grand_total = $data['grand_total'];
         $po_id = $data['po_id'];
 
@@ -637,28 +692,41 @@ class PurchaseOrdersController extends AppController {
         if ($discount != 0) {
             $new_total_purchased = $ntp - $discount;
         } else {
-            $new_total_purchased = $ntp;
+        $new_total_purchased = $ntp;
         }
-        if ($vat == 0) {
+        if($ewt_type == 'one'){
+            $new_ewt = $new_total_purchased * .01;
+        } else{
+            $new_ewt = $new_total_purchased * .02;
+        }
+        if ((int)$vat == 0) {
             //computation for vat inc
-            $non_vat = $new_total_purchased / 1.12;
-            $new_ewt = $non_vat * 0.01;
-            $new_grand_total = $new_total_purchased - $new_ewt;
-//            $new_vat = 0;
+            $data['vaat'] = 'if';
+            $vat = $new_total_purchased * .12;
+            $data['newvat'] = $vat;
+            // $new_ewt = $non_vat * 0.01;
+            $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+            // $new_vat = $non_vat;
+            //$new_vat = 0;
         } else {
             //computation for vat ex
-//           $new_vat =   $new_total_purchased *0.12;
-            $new_ewt = $new_total_purchased * 0.01;
-            $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+            $data['vaat'] = 'else';
+            $new_vat =   0;
+            $vat = 0;
+            // $new_ewt = $new_total_purchased * 0.01;
+            $new_grand_total = $new_total_purchased - $new_ewt;
         }
         $this->PurchaseOrder->id = $po_id;
         $this->PurchaseOrder->set(array(
             'total_purchased' => $new_total_purchased,
-            'vat_amount' => $vat,
+            'vat_amount' => floatval($vat),
             'ewt_amount' => $new_ewt,
+            'ewt_type' => $ewt_type,
             'grand_total' => $new_grand_total,
             'discount' => $discount
         ));
+        $this->PurchaseOrder->recursive = -1;
+        $data[] = $this->PurchaseOrder->findById($po_id);
         if ($this->PurchaseOrder->save()) {
             echo json_encode($data);
         }
@@ -687,19 +755,18 @@ class PurchaseOrdersController extends AppController {
         $id = $data['id'];
         $po_id = $data['poid'];
         
+        $empty = "not_empty";
         $this->loadModel('PurchaseOrderProduct');
         $this->loadModel('Quotation');
         $this->loadModel('QuotationProduct');
         $this->loadModel('TransactionSource');
         
-        $DS_PurchaseOrderProduct = $this->PurchaseOrderProduct->getDataSource();
-        $DS_Quotation = $this->Quotation->getDataSource();
-        $DS_QuotationProduct = $this->QuotationProduct->getDataSource();
-        $DS_TransactionSource = $this->TransactionSource->getDataSource();
         $DS_PurchaseOrder = $this->PurchaseOrder->getDataSource();
-        $DS_PurchaseOrder1 = $this->PurchaseOrder->getDataSource();
-        $DS_PurchaseOrderProduct->begin();
-
+        $DS_PurchaseOrderProduct = $this->PurchaseOrderProduct->getDataSource();
+        
+        // ==================================================
+        //  RECOMPUTE vat, total_purchased, ewt, grand_total;
+        // ==================================================
         $get_po_prod = $this->PurchaseOrderProduct->findById($id);
         $ret_po_prod = $get_po_prod['PurchaseOrderProduct'];
         $additional = $ret_po_prod['additional'];
@@ -715,18 +782,47 @@ class PurchaseOrdersController extends AppController {
         }
         
         $total_insert_qty = $qps_process_qty - $po_p_process_qty;
-        
         if($additional==0) {
-            $DS_QuotationProduct->begin();
             $this->QuotationProduct->id=$qp_id;
             $this->QuotationProduct->set(['processed_qty'=>$total_insert_qty]);
+            $this->QuotationProduct->save();
         }
         
+        
+        
+        // delete po_product
+        $DS_PurchaseOrderProduct->begin();
+        $this->PurchaseOrderProduct->id=$id;
+        if($this->PurchaseOrderProduct->delete()) {
+            // get all po_prod where po_id == po_id
+            $count_po_prods = $this->PurchaseOrderProduct->find('all', ['conditions'=>
+                ['purchase_order_id'=>$po_id]]);
+            // end of get all po_prod where po_id == po_id
+            
+            if(count($count_po_prods)==0) {
+                // DELETE PO
+                $DS_PurchaseOrder->begin();
+                $this->PurchaseOrder->id = $po_id;
+                if($this->PurchaseOrder->delete()) {
+                    $DS_PurchaseOrder->commit();
+                    $DS_PurchaseOrderProduct->commit();
+                    $empty = "empty";
+                }
+                else {
+                    echo json_encode("Error in deleting PurchaseOrder");
+                    $DS_PurchaseOrderProduct->rollback();
+                }
+                // END OF DELETE PO
+            }
+            else {
+                $DS_PurchaseOrderProduct->commit();
+            }
+        }
+        // end of delete po_product
+        
         //get total of all poproduct
-        $po_prods = $this->PurchaseOrderProduct->find('all', array(
-            'conditions' => array('PurchaseOrderProduct.purchase_order_id' => $po_id,
-                                  'PurchaseOrderProduct.status'=>null)
-        ));
+        $po_prods = $this->PurchaseOrderProduct->find('all',
+            ['conditions' =>['PurchaseOrderProduct.purchase_order_id' => $po_id]]);
         
         $ntp = 0;
         $stat_count = 0;
@@ -738,21 +834,22 @@ class PurchaseOrdersController extends AppController {
             $total_p = $po_prod['PurchaseOrderProduct']['list_price'] * $po_prod['PurchaseOrderProduct']['qty'];
             $ntp = $ntp + $total_p;
             $discount = $po_prod['PurchaseOrder']['discount'];
+            $ewt_type= $po_prod['PurchaseOrder']['ewt_type'];
             $vat = $po_obj['vat_amount'];
             $ref_num = $po_prod['PurchaseOrderProduct']['reference_num'];
             
             $transactionSources = $this->TransactionSource->find("all",
                 ['conditions'=>['reference_type'=>'quotation',
-                                'reference_num'=>$ref_num,
-                                'product_source'=>$po_prod_id_remaining,
-                                'mode_num'=>$po_id]]);
-            
+                            'reference_num'=>$ref_num,
+                            'product_source'=>$po_prod_id_remaining,
+                            'mode_num'=>$po_id]]);
+        
             foreach($transactionSources as $transactionSource) {
                 $ts_id = $transactionSource['TransactionSource']['id'];
                 
-                $DS_TransactionSource->begin();
                 $this->TransactionSource->id = $ts_id;
                 $this->TransactionSource->set(['status'=>'deleted']);
+                $this->TransactionSource->save();
             }
             
             // QUOTATION
@@ -769,7 +866,6 @@ class PurchaseOrdersController extends AppController {
             foreach($get_q_ids as $get_q_id) {
                 $q_id = $get_q_id['QuotationProduct']['quotation_id'];
                 
-                $DS_Quotation->begin();
                 $this->Quotation->id = $q_id;
                 if($stat_count==$count) {
                     // UPDATE STATUS TO PROCESSED
@@ -779,6 +875,7 @@ class PurchaseOrdersController extends AppController {
                     // UPDATE STATUS TO APPROVED
                     $this->Quotation->set(['status'=>'approved']);
                 }
+                $this->Quotation->save();
             }
             
             if ($discount != 0) {
@@ -786,92 +883,49 @@ class PurchaseOrdersController extends AppController {
             } else {
                 $new_total_purchased = $ntp;
             }
-            
-            if ($vat == 0) {
+            if($ewt_type == 'one'){
+                $new_ewt = $new_total_purchased * .01;
+            } else{
+                $new_ewt = $new_total_purchased * .02;
+            }
+            if ((int)$vat == 0) {
                 //computation for vat inc
-                $non_vat = $new_total_purchased / 1.12;
-                $new_ewt = $non_vat * 0.01;
-                $new_grand_total = $new_total_purchased - $new_ewt;
+                $data['vaat'] = 'if';
+                $vat = $new_total_purchased * .12;
+                $data['newvat'] = $vat;
+                // $new_ewt = $non_vat * 0.01;
+                $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+                // $new_vat = $non_vat;
+                //$new_vat = 0;
             } else {
                 //computation for vat ex
-                $new_ewt = $new_total_purchased * 0.01;
-                $new_grand_total = ($new_total_purchased + $vat) - $new_ewt;
+                $data['vaat'] = 'else';
+                $new_vat =   0;
+                $vat = 0;
+                // $new_ewt = $new_total_purchased * 0.01;
+                $new_grand_total = $new_total_purchased - $new_ewt;
             }
-            $DS_PurchaseOrder->begin();
             $this->PurchaseOrder->id = $po_id;
             $this->PurchaseOrder->set(array(
                 'total_purchased' => $new_total_purchased,
-                'vat_amount' => $vat,
+                'vat_amount' => floatval($vat),
                 'ewt_amount' => $new_ewt,
-                'grand_total' => $new_grand_total
+                'ewt_type' => $ewt_type,
+                'grand_total' => $new_grand_total,
+                'discount' => $discount
             ));
-        }
-        
-        // DELETE PO IF NO PO PRODUCTS LEFT
-        if($count==1) {
-            $DS_PurchaseOrder1->begin();
-            $this->PurchaseOrder->id = $po_id;
-            if($this->PurchaseOrder->delete()) {
-                echo json_encode("Purchase Order Deleted");
-                $DS_PurchaseOrder1->commit();
+            $this->PurchaseOrder->recursive = -1;
+            $data[] = $this->PurchaseOrder->findById($po_id);
+            if ($this->PurchaseOrder->save()) {
+                echo json_encode($data);
             }
         }
+        // =====================================================
+        // END RECOMPUTE vat, total_purchased, ewt, grand_total;
+        // =====================================================
         
-        $this->PurchaseOrderProduct->id = $id;
-        if($this->PurchaseOrderProduct->delete()) {
-            echo json_encode("PurchaseOrderProduct saved");
-            
-            if($this->PurchaseOrder->save()) {
-                echo json_encode("PurchaseOrder saved");
-                
-                if($this->Quotation->save()) {
-                    echo json_encode("Quotation saved");
-                    
-                    if($this->QuotationProduct->save()) {
-                        echo json_encode("QuotationProduct saved");
-                        
-                        if($this->TransactionSource->save()) {
-                            echo json_encode("TransactionSource saved");
-                            $DS_TransactionSource->commit();
-                            $DS_QuotationProduct->commit();
-                            $DS_PurchaseOrderProduct->commit();
-                            $DS_Quotation->commit();
-                        }
-                        else {
-                            $DS_QuotationProduct->rollback();
-                            $DS_PurchaseOrderProduct->rollback();
-                            $DS_Quotation->rollback();
-                            $DS_PurchaseOrder1-rollback();
-                            return json_encode("Error in updating TransactionSource");
-                            exit;
-                        }
-                    }
-                    else {
-                        $DS_PurchaseOrderProduct->rollback();
-                        $DS_Quotation->rollback();
-                        $DS_PurchaseOrder1->rollback();
-                        return json_encode("Error in updating QuotationProduct");
-                        exit;
-                    }
-                }
-                else {
-                    $DS_PurchaseOrderProduct->rollback();
-                    $DS_PurchaseOrder1->rollback();
-                    return json_encode("Error in saving PurchaseOrder");
-                    exit;
-                }
-            }
-            else {
-                $DS_PurchaseOrderProduct->rollback();
-                $DS_PurchaseOrder1->rollback();
-                return json_encode("Error in saving PurchaseOrder");
-                exit;
-            }
-        }
+        $DS_PurchaseOrder->commit();
         
-        $DS_PurchaseOrder1->commit();
-        $DS_PurchaseOrderProduct->commit();
-        return json_encode("PurchaseOrder Delete Done");
-        exit;
+        return $empty;
     }
 }

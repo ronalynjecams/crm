@@ -132,18 +132,12 @@
 					                <!--Sparkline Area Chart-->
 					                <div class="panel panel-success panel-colorful">
 					                    <div class="pad-all">
-					                        <p class="text-lg text-semibold"><i class="demo-pli-data-storage icon-fw"></i> Reports</p>
+					                        <p class="text-lg text-semibold"><i class="demo-pli-data-storage icon-fw"></i> Sales</p>
 					                        <p class="mar-no">  
-					                        This Month:
-											<?php
-											
-												// foreach ($status2 as $stat2) {
-												// 	echo $stat2['Quotation']['grand_total'];
-												// }
-											?>
+					                        Today:
+											&#8369; <?php echo number_format($daily, 2); ?>
 					                        </p>
-					                        <p class="mar-no">  Last Month </p>
-					                        <p class="mar-no">  Yearly </p>
+					                        <p class="mar-no">  <?php echo 'For the month of '.$month.': &#8369; '.number_format($monthly,2); ?> </p>
 					                    </div>
 					                    <div class="pad-all text-center">
 					                        <!--Placeholder-->
@@ -157,20 +151,11 @@
 					                <div class="panel panel-info panel-colorful">
 					                    <div class="pad-all">
 					                        <p class="text-lg text-semibold"><i class="demo-pli-wallet-2 icon-fw"></i> Earning</p>
+					                   		<span class="text-2x text-semibold">&#8369; <?php echo number_format($yearly, 2);?></span>
 					                        <p class="mar-no">
-					                            <span class="pull-right text-bold">$764</span>
-					                            Today
+					                         	For the year <?php echo $year;?>
 					                        </p>
-					                        <p class="mar-no">
-					                            <span class="pull-right text-bold">$1,332</span>
-					                            Last 7 Day
-					                        </p>
-					                    </div>
-					                    <div class="pad-all text-center">
-					
-					                        <!--Placeholder-->
-					                        <div id="demo-sparkline-line"></div>
-					
+					                        <p>	</p>
 					                    </div>
 					                </div>
 					            </div>
@@ -181,18 +166,15 @@
 					                <!--Sparkline bar chart -->
 					                <div class="panel panel-purple panel-colorful">
 					                    <div class="pad-all">
-					                        <p class="text-lg text-semibold"><i class="demo-pli-bag-coins icon-fw"></i> Sales</p>
+					                        <p class="text-lg text-semibold"><i class="demo-pli-bag-coins icon-fw"></i>Team Sales [<?php echo $month;?>]</p>
+					                        <?php foreach($team_monthly as $data): ?>
 					                        <p class="mar-no">
-					                            <span class="pull-right text-bold">$764</span>
-					                            Today
+					                            <span class="pull-right text-bold">&#8369; <?php if($data['grand_total_team'] != 0) echo number_format($data['grand_total_team'],2); else echo 0;?></span>
+					                            [<?php echo $data['display_name']; ?>] =>
 					                        </p>
-					                        <p class="mar-no">
-					                            <span class="pull-right text-bold">$1,332</span>
-					                            Last 7 Day
-					                        </p>
+					                        <?php endforeach; ?>
 					                    </div>
 					                    <div class="pad-all text-center">
-					
 					                        <!--Placeholder-->
 					                        <div id="demo-sparkline-bar" class="box-inline"></div>
 					
