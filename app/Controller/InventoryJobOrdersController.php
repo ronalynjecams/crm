@@ -225,8 +225,17 @@ class InventoryJobOrdersController extends AppController {
         
         $this->InventoryJobOrder->recursive = 2;
         
-        $options = array('conditions' => array('InventoryJobOrder.mode' => $mode, 'InventoryJobOrder.status' => $status));
-        $inventory = $this->InventoryJobOrder->find('all', $options);
+        if($this->Auth->user('role') == "warehouse_head_supply") {
+	        $options = array('conditions' => array('InventoryJobOrder.mode' => $mode, 'InventoryJobOrder.status' => $status, 'InventoryJobOrder.product_type' => 'supply'));
+	        $inventory = $this->InventoryJobOrder->find('all', $options);
+        }
+        elseif($this->Auth->user('role') == "warehouse_head_raw") {
+	        $options = array('conditions' => array('InventoryJobOrder.mode' => $mode, 'InventoryJobOrder.status' => $status, 'InventoryJobOrder.product_type' => 'raw'));
+		    $inventory = $this->InventoryJobOrder->find('all', $options);
+        }
+        else {
+        	$inventory = [];
+        }
         
         
         $this->loadModel("InvLocation");
@@ -241,7 +250,7 @@ class InventoryJobOrdersController extends AppController {
 		$this->autoRender = false;
 		header("Content-type:application/json");
         $data = $this->request->data;
-		
+		 
 		$ref_type = $data['ref_type'];
 		$location = $data['location'];
         $qty = $data['qty'];

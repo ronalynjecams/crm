@@ -124,14 +124,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($purchaseOrderProduct['PurchaseOrderProduct']['created']); ?>
+			<?php echo time_elapsed_string($purchaseOrderProduct['PurchaseOrderProduct']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($purchaseOrderProduct['PurchaseOrderProduct']['modified']); ?>
+			<?php echo time_elapsed_string($purchaseOrderProduct['PurchaseOrderProduct']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

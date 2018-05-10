@@ -48,8 +48,8 @@
 								<td>
 			<?php echo $this->Html->link($supplierTag['Supplier']['name'], array('controller' => 'suppliers', 'action' => 'view', $supplierTag['Supplier']['id'])); ?>
 		</td>
-						<td><?php echo h($supplierTag['SupplierTag']['created']); ?>&nbsp;</td>
-						<td><?php echo h($supplierTag['SupplierTag']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($supplierTag['SupplierTag']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($supplierTag['SupplierTag']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $supplierTag['SupplierTag']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $supplierTag['SupplierTag']['id']), array('escape' => false)); ?>

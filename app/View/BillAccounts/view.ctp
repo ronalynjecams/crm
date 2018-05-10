@@ -48,14 +48,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($billAccount['BillAccount']['created']); ?>
+			<?php echo time_elapsed_string($billAccount['BillAccount']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($billAccount['BillAccount']['modified']); ?>
+			<?php echo time_elapsed_string($billAccount['BillAccount']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -97,8 +97,8 @@
 			<td><?php echo $bill['payment_type']; ?></td>
 			<td><?php echo $bill['bill_account_id']; ?></td>
 			<td><?php echo $bill['inv_location_id']; ?></td>
-			<td><?php echo $bill['created']; ?></td>
-			<td><?php echo $bill['modified']; ?></td>
+			<td><?php echo time_elapsed_string($bill['created']); ?></td>
+			<td><?php echo time_elapsed_string($bill['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'bills', 'action' => 'view', $bill['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'bills', 'action' => 'edit', $bill['id']), array('escape' => false)); ?>

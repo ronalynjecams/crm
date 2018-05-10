@@ -44,8 +44,8 @@
 					<tr>
 						<td><?php echo h($quotationTerm['QuotationTerm']['id']); ?>&nbsp;</td>
 						<td><?php echo h($quotationTerm['QuotationTerm']['name']); ?>&nbsp;</td>
-						<td><?php echo h($quotationTerm['QuotationTerm']['created']); ?>&nbsp;</td>
-						<td><?php echo h($quotationTerm['QuotationTerm']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationTerm['QuotationTerm']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationTerm['QuotationTerm']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $quotationTerm['QuotationTerm']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $quotationTerm['QuotationTerm']['id']), array('escape' => false)); ?>

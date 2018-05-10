@@ -62,14 +62,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($productComboProperty['ProductComboProperty']['created']); ?>
+			<?php echo time_elapsed_string($productComboProperty['ProductComboProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($productComboProperty['ProductComboProperty']['modified']); ?>
+			<?php echo time_elapsed_string($productComboProperty['ProductComboProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

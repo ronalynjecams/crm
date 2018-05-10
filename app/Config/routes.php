@@ -28,11 +28,16 @@
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
-	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+		Router::connect('/pages/*', array('controller' => 'users', 'action' => 'display'));
         Router::connect('/social_login/*', array( 'controller' => 'users', 'action' => 'social_login'));
 	Router::connect('/social_endpoint/*', array( 'controller' => 'users', 'action' => 'social_endpoint'));
-	
-Router::parseExtensions('pdf');
+
+Router::mapResources('quotations');	
+Router::mapResources('products');
+Router::mapResources('sub_categories');
+Router::parseExtensions('pdf', 'json');
+
+
 /**
  * Load all plugin routes. See the CakePlugin documentation on
  * how to customize the loading of plugin routes.

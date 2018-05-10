@@ -74,14 +74,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($transactionSource['TransactionSource']['created']); ?>
+			<?php echo time_elapsed_string($transactionSource['TransactionSource']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($transactionSource['TransactionSource']['modified']); ?>
+			<?php echo time_elapsed_string($transactionSource['TransactionSource']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

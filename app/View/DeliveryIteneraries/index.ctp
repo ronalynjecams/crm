@@ -75,15 +75,15 @@
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['amount']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['driver']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['expected_start']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['actual_start']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['end_work']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['actual_start']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['end_work']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['type']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['status']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['remarks']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['departure']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['arrival']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['created']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryItenerary['DeliveryItenerary']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['modified']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($deliveryItenerary['Client']['name'], array('controller' => 'clients', 'action' => 'view', $deliveryItenerary['Client']['id'])); ?>
 		</td>

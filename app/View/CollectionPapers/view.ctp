@@ -48,7 +48,7 @@
 <tr>
 		<th><?php echo __('Ref Date'); ?></th>
 		<td>
-			<?php echo h($collectionPaper['CollectionPaper']['ref_date']); ?>
+			<?php echo time_elapsed_string($collectionPaper['CollectionPaper']['ref_date']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -76,14 +76,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($collectionPaper['CollectionPaper']['created']); ?>
+			<?php echo time_elapsed_string($collectionPaper['CollectionPaper']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($collectionPaper['CollectionPaper']['modified']); ?>
+			<?php echo time_elapsed_string($collectionPaper['CollectionPaper']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

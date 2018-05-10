@@ -46,7 +46,7 @@
 								<td>
 			<?php echo $this->Html->link($paymentReplenishment['User']['id'], array('controller' => 'users', 'action' => 'view', $paymentReplenishment['User']['id'])); ?>
 		</td>
-						<td><?php echo h($paymentReplenishment['PaymentReplenishment']['acknowledged_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentReplenishment['PaymentReplenishment']['acknowledged_date']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $paymentReplenishment['PaymentReplenishment']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $paymentReplenishment['PaymentReplenishment']['id']), array('escape' => false)); ?>

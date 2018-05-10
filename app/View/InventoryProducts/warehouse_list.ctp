@@ -1,21 +1,21 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
 
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>
+<!--<script src="/js/erp_scripts.js"></script>-->
 <style>
     #add_work{
         margin-top: 10px;
@@ -100,7 +100,8 @@
                             //       if(($fitout_todo['FitoutTodo']['date_started'] == "" )){
                                     echo"<div class='row'>";
                                         echo"<div class='col-xs-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip editproductBtn btn-xs" data-toggle="tooltip" href="#" data-original-title="Update" data-id="'.h($selected_prod['InventoryProduct']['id']).'" data-qty="'.h($selected_prod['InventoryProduct']['qty']).'" data-qtyrepair="'.h($selected_prod['InventoryProduct']['qty_for_repair']).'" data-qtychop="'.h($selected_prod['InventoryProduct']['qty_chopped']).'" data-minstock="'.h($selected_prod['InventoryProduct']['min_stock_level']).'"><i class="demo-psi-pen-5 icon-lg"></i></a>';
+                                            echo '<a class="btn btn-default btn-icon add-tooltip editproductBtn btn-xs" data-toggle="tooltip" href="#" data-original-title="Update" data-id="'.h($selected_prod['InventoryProduct']['id']).'" data-qty="'.h($selected_prod['InventoryProduct']['qty']).'" data-qtyrepair="'.h($selected_prod['InventoryProduct']['qty_for_repair']).'" data-qtychop="'.h($selected_prod['InventoryProduct']['qty_chopped']).'" data-minstock="'.h($selected_prod['InventoryProduct']['min_stock_level']).'"
+                                            data-maxstock="'.h($selected_prod['InventoryProduct']['max_stock_level']).'"><i class="demo-psi-pen-5 icon-lg"></i></a>';
                                          echo"</div>";
                                     echo"</div";
 
@@ -135,7 +136,7 @@
 
 <!--Add New people Modal Start-->
 <!--===================================================-->
-<div class="modal fade" id="add-product-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="add-product-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -149,7 +150,7 @@
             <div class="modal-body">
                 <div class="form-group" id="name_validation">
                    <div class="row">
-                       <div class="col-sm-6">
+                       <div class="form-group col-sm-6">
                         <label>Product name</label>
                         <input type="hidden" id="inv_location_id" value="<?php echo $invs['InvLocation']['id']; ?>" >
                         
@@ -161,7 +162,7 @@
                             ?>
                         </select>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="form-group col-sm-6">
                         <label>Product Combo</label>
                         <select class="form-control" id="selected_product_combo" >
                             <option value="0">Selected Product combo</option>
@@ -169,23 +170,27 @@
                         </div>
                     </div>
                     <div class="row">
-                       <div class="col-sm-4">
+                       <div class="form-group col-sm-4">
                         <label>Quantity</label>
                             <input type="number" class="form-control" id="quantity" >
                         </div>
-                        <div class="col-sm-4">
+                        <div class="form-group col-sm-4">
                         <label>Quantity for repair</label>
                             <input type="number" class="form-control" id="quantity_repair" >
                         </div>
-                        <div class="col-sm-4">
+                        <div class="form-group col-sm-4">
                         <label>Quantity Chop</label>
                             <input type="number" class="form-control" id="quantity_chop" >
                         </div>
                     </div>
                      <div class="row">
-                         <div class="col-sm-12">
-                         <label>Minimum stock level</label>
+                         <div class="form-group col-sm-6">
+                             <label>Minimum stock level</label>
                              <input type="number" class="form-control" id="min_stock_level">
+                         </div>
+                         <div class="form-group col-sm-6">
+                             <label>Maximum stock level</label>
+                             <input type="number" class="form-control" id="max_stock_level">
                          </div>
                      </div>
                 </div>
@@ -240,6 +245,13 @@
                             <div class="col-sm-12">
                             <label>Min stock</label>
                             <input type="number" class="form-control" id="u_minstock">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <label>Max stock</label>
+                            <input type="number" class="form-control" id="u_maxstock">
                             </div>
                         </div>
                     </div>
@@ -323,12 +335,14 @@
               var qtyrepair = $(this).data('qtyrepair');
               var qtychop = $(this).data('qtychop');
               var minstock = $(this).data('minstock');
+              var maxstock = $(this).data('maxstock');
 
                 $('#u_id').val(id);
                 $('#u_qty').val(qty);
                 $('#u_qtyrepair').val(qtyrepair);
                 $('#u_qtychop').val(qtychop);
                 $('#u_minstock').val(minstock);
+                $('#u_maxstock').val(maxstock);
                 
                 $('#edit-product-modal').modal('show');
         });
@@ -340,13 +354,17 @@
             var u_qtyrepair = $('#u_qtyrepair').val();
             var u_qtychop = $('#u_qtychop').val();
             var u_minstock = $('#u_minstock').val();
+            var u_maxstock = $('#u_maxstock').val();
 
             if(( u_qty != "")){
                 if(( u_qtyrepair != "" )){
                     if(( u_qtychop != "" )){
                         if(( u_minstock != "" )){
-                        
-                            var data = { "u_id": u_id, "u_qty": u_qty, "u_qtyrepair": u_qtyrepair, "u_qtychop": u_qtychop, "u_minstock": u_minstock }
+                         
+                        if(( u_maxstock != "" )){
+                         
+                            var data = { "u_id": u_id, "u_qty": u_qty, "u_qtyrepair": u_qtyrepair, "u_qtychop": u_qtychop, "u_minstock": u_minstock,
+                            "u_maxstock": u_maxstock}
 
                     $.ajax({
                         url: "/InventoryProducts/update_product",
@@ -362,6 +380,10 @@
                         }
                     });
 
+            }else{
+              document.getElementById('u_maxstock').style.borderColor = "red";
+            }
+                            
             }else{
               document.getElementById('u_minstock').style.borderColor = "red";
             }
@@ -391,12 +413,19 @@
         var quantity_repair = $('#quantity_repair').val();
         var quantity_chop = $('#quantity_chop').val();
         var min_stock_level = $('#min_stock_level').val();
+        var max_stock_level = $('#max_stock_level').val();
 
         if((product != 0)){
             if((selected_product_combo != 0)){
                 if((quantity != 0)){
                                 
-                                 var data = {"inv_location_id": inv_location_id, "selected_product_combo": selected_product_combo, "quantity": quantity, "quantity_repair": quantity_repair, "quantity_chop": quantity_chop, "min_stock_level": min_stock_level }
+                         var data = {"inv_location_id": inv_location_id,
+                                     "selected_product_combo": selected_product_combo,
+                                     "quantity": quantity,
+                                     "quantity_repair": quantity_repair,
+                                     "quantity_chop": quantity_chop,
+                                     "min_stock_level": min_stock_level,
+                                     "max_stock_level": max_stock_level };
                                  
                             $.ajax({
                                 url: "/InventoryProducts/add_product",

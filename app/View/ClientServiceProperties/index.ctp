@@ -50,8 +50,8 @@
 		</td>
 						<td><?php echo h($clientServiceProperty['ClientServiceProperty']['property']); ?>&nbsp;</td>
 						<td><?php echo h($clientServiceProperty['ClientServiceProperty']['value']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProperty['ClientServiceProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProperty['ClientServiceProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProperty['ClientServiceProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProperty['ClientServiceProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $clientServiceProperty['ClientServiceProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $clientServiceProperty['ClientServiceProperty']['id']), array('escape' => false)); ?>

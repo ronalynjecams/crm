@@ -57,14 +57,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($fitoutQoute['FitoutQoute']['created']); ?>
+			<?php echo time_elapsed_string($fitoutQoute['FitoutQoute']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($fitoutQoute['FitoutQoute']['modified']); ?>
+			<?php echo time_elapsed_string($fitoutQoute['FitoutQoute']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

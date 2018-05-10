@@ -55,14 +55,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($supplierTag['SupplierTag']['created']); ?>
+			<?php echo time_elapsed_string($supplierTag['SupplierTag']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($supplierTag['SupplierTag']['modified']); ?>
+			<?php echo time_elapsed_string($supplierTag['SupplierTag']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

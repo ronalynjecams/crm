@@ -1,17 +1,17 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>
 
 <!--CONTENT CONTAINER-->
 
@@ -50,7 +50,9 @@
                             <th>Expected Start</th>
                             <th>Project Head</th>
                             <th>Status</th>
+                            <?php if($passed_status != 'accomplished'): ?>
                             <th>Action</th> 
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tfoot>
@@ -58,8 +60,10 @@
                             <th>Deadline Date</th>
                             <th>Expected Start</th>
                             <th>Project Head</th>
-                            <th>Status</th>  
+                            <th>Status</th>
+                            <?php if($passed_status != 'accomplished'): ?>
                             <th>Action</th>  
+                            <?php endif; ?>
                         </tr>
                     </tfoot>
                     <tbody>
@@ -69,6 +73,7 @@
                             <td><?php echo $fitoutwork['FitoutWork']['expected_start']; ?></td>
                             <td><?php echo $fitoutwork['User']['last_name'].' '.$fitoutwork['User']['first_name']; ?></td>
                             <td><?php echo ucwords($fitoutwork['FitoutWork']['status']); ?></td>
+                            <?php if($passed_status != 'accomplished'): ?>
                             <td class='text-center'>
                                 <a style="color:white;font-weight:bold;" href="/fitout_works/view_works?id=<?php echo $fitoutwork['FitoutWork']['id']; ?>"
                                     class="btn btn-primary btn-sm">
@@ -81,6 +86,7 @@
                                 </a>
                                 
                             </td>
+                            <?php endif; ?>
                         </tr>
                         <?php } ?>
                     </tbody>

@@ -45,14 +45,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($companyFund['CompanyFund']['created']); ?>
+			<?php echo time_elapsed_string($companyFund['CompanyFund']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($companyFund['CompanyFund']['modified']); ?>
+			<?php echo time_elapsed_string($companyFund['CompanyFund']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

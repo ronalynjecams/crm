@@ -80,14 +80,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($quotationProductProperty['QuotationProductProperty']['created']); ?>
+			<?php echo time_elapsed_string($quotationProductProperty['QuotationProductProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($quotationProductProperty['QuotationProductProperty']['modified']); ?>
+			<?php echo time_elapsed_string($quotationProductProperty['QuotationProductProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

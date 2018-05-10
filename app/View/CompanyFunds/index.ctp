@@ -41,8 +41,8 @@
 					<tr>
 						<td><?php echo h($companyFund['CompanyFund']['id']); ?>&nbsp;</td>
 						<td><?php echo h($companyFund['CompanyFund']['amount']); ?>&nbsp;</td>
-						<td><?php echo h($companyFund['CompanyFund']['created']); ?>&nbsp;</td>
-						<td><?php echo h($companyFund['CompanyFund']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($companyFund['CompanyFund']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($companyFund['CompanyFund']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $companyFund['CompanyFund']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $companyFund['CompanyFund']['id']), array('escape' => false)); ?>

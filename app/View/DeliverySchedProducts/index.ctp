@@ -54,8 +54,8 @@
 			<?php echo $this->Html->link($deliverySchedProduct['QuotationProduct']['id'], array('controller' => 'quotation_products', 'action' => 'view', $deliverySchedProduct['QuotationProduct']['id'])); ?>
 		</td>
 						<td><?php echo h($deliverySchedProduct['DeliverySchedProduct']['status']); ?>&nbsp;</td>
-						<td><?php echo h($deliverySchedProduct['DeliverySchedProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($deliverySchedProduct['DeliverySchedProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliverySchedProduct['DeliverySchedProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliverySchedProduct['DeliverySchedProduct']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $deliverySchedProduct['DeliverySchedProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $deliverySchedProduct['DeliverySchedProduct']['id']), array('escape' => false)); ?>

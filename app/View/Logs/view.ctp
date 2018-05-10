@@ -60,14 +60,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($log['Log']['created']); ?>
+			<?php echo time_elapsed_string($log['Log']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($log['Log']['modified']); ?>
+			<?php echo time_elapsed_string($log['Log']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

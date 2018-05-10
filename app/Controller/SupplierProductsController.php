@@ -117,23 +117,56 @@ class SupplierProductsController extends AppController {
 
         $supplier = $this->Supplier->findById($id); 
 
-        $this->SupplierProduct->recursive=4;
+        $this->SupplierProduct->recursive=2;
         $products = $this->SupplierProduct->find('all', array(
             'conditions'=>array('SupplierProduct.supplier_id' => $id)
         ));
           
-        $this->Product->recursive=4;
+        $this->Product->recursive=2;
+        // $prods = $this->Product->find('all', array(
+        //     'conditions' => array('Product.type' => array('supply', 'combi', 'chopped')),
+        //     'fields'=>array('Product.id','Product.name')
+        // )); 
+        
         $prods = $this->Product->find('all', array(
-            'conditions' => array('Product.type' => array('supply', 'combi', 'chopped')),
+            // 'conditions' => array('Product.type' => array('supply', 'combi', 'chopped')),
             'fields'=>array('Product.id','Product.name')
         )); 
-        
         
         $this->set(compact('supplier','products', 'prods'));
         
     		
     		
     		
+    }
+    
+    
+    public function supplier_product() {
+        $this->loadModel('Supplier');
+        $this->loadModel('Product');
+        $this->loadModel('ProductCombo');
+
+        $this->SupplierProduct->recursive=2;
+        $product_suppliers = $this->SupplierProduct->find('all');
+        pr($product_suppliers);exit;
+
+        // $supplier = $this->Supplier->find('all'); 
+
+        // $products = [];
+        // foreach($supplier as $return_supplier) {
+        //     $id = $return_supplier['Supplier']['id'];
+        //     $this->SupplierProduct->recursive=2;
+        //     $products[] = $this->SupplierProduct->find('all', array(
+        //         'conditions'=>array('SupplierProduct.supplier_id' => $id) 
+        //     ));
+        // }
+        
+        // $this->Product->recursive=2;
+        // $prods = $this->Product->find('all', array( 
+        //     'fields'=>array('Product.id','Product.name')
+        // )); 
+        
+        $this->set(compact('product_suppliers' ));
     }
     
     public function get_product_combination(){ 
@@ -291,6 +324,20 @@ class SupplierProductsController extends AppController {
     
     
     /////////////////new codes as of 11-03-2017
+    // public function get_supplier_product_combo() {
+    //     $this->autoRender = false;
+    //     $this->response->type('json');
+    //     if ($this->request->is('ajax')) {
+    //         $product_combo_id = $this->request->query['id'];
+    //         $this->SupplierProduct->recursive=2;
+    //         $product_supplier = $this->SupplierProduct->find('all',
+    //             ['conditions'=>['product_combo_id'=>$product_combo_id,
+    //                           'status'=>'active']]);
+    //         return json_encode($product_supplier);
+    //         exit;
+    //     }
+    // }
+    
     public function get_supplier_product_combo() {
         $this->autoRender = false;
         $this->response->type('json');
@@ -298,6 +345,22 @@ class SupplierProductsController extends AppController {
             $product_combo_id = $this->request->query['id'];
             $this->SupplierProduct->recursive=2;
             $product_supplier = $this->SupplierProduct->findAllByProductComboId($product_combo_id);
+            return json_encode($product_supplier);
+            exit;
+        }
+    }
+    public function get_prodct_supplier() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $product_combo_id = $this->request->query['id'];
+            $supplier_id= $this->request->query['supplier_id'];
+            $this->SupplierProduct->recursive=2;
+            $product_supplier = $this->SupplierProduct->find('all',[
+                'conditions'=>[
+                    'SupplierProduct.product_combo_id'=>$product_combo_id, 
+                    'SupplierProduct.supplier_id'=>$supplier_id,  
+                    ]]);
             return json_encode($product_supplier);
             exit;
         }
@@ -310,14 +373,50 @@ class SupplierProductsController extends AppController {
         $this->response->type('json');
         if ($this->request->is('ajax')) {
             $product_combo_id = $this->request->query['id']; 
-        $this->PurchaseOrderProduct->recursive = 2;
-            $product_combo_supplier = $this->PurchaseOrder->PurchaseOrderProduct->find('all',[
+            $this->PurchaseOrderProduct->recursive = 2;
+            $product_combo_supplier = $this->PurchaseOrder->PurchaseOrderProduct->find('first',[
                 'conditions'=>['PurchaseOrderProduct.product_combo_id' => $product_combo_id],
                 'fields'=>['MAX(PurchaseOrder.id) as po_id', 'PurchaseOrder.*']
             ]);
-            return json_encode($product_combo_supplier);
+            
+            $pop_id = max(array_column($product_combo_supplier['PurchaseOrder']['PurchaseOrderProduct'], 'id'));
+            $this->PurchaseOrderProduct->recursive = -1;
+            $pop = $this->PurchaseOrderProduct->findById($pop_id);
+            $pop['PurchaseOrderProduct']['list_price'] = number_format($pop['PurchaseOrderProduct']['list_price'],2);
+            $product_combo_supplier['PurchaseOrder']['PurchaseOrderProduct'] = $pop['PurchaseOrderProduct'];
+            
+            
+            return json_encode($product_combo_supplier['PurchaseOrder']);
             exit;
         }
     }
+    
+    public function fitout_lists(){
+            $this->loadModel('Supplier');
+        $this->loadModel('Product');
+        $this->loadModel('ProductCombo');
+
+        $this->SupplierProduct->recursive=2;
+        $product_suppliers = $this->SupplierProduct->find('all');
+        pr($product_suppliers);exit;
+
+        // $supplier = $this->Supplier->find('all'); 
+
+        // $products = [];
+        // foreach($supplier as $return_supplier) {
+        //     $id = $return_supplier['Supplier']['id'];
+        //     $this->SupplierProduct->recursive=2;
+        //     $products[] = $this->SupplierProduct->find('all', array(
+        //         'conditions'=>array('SupplierProduct.supplier_id' => $id) 
+        //     ));
+        // }
+        
+        // $this->Product->recursive=2;
+        // $prods = $this->Product->find('all', array( 
+        //     'fields'=>array('Product.id','Product.name')
+        // )); 
+        
+        $this->set(compact('product_suppliers' ));
+    }   
     
 }

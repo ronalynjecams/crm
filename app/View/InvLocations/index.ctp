@@ -44,8 +44,8 @@
 					<tr>
 						<td><?php echo h($invLocation['InvLocation']['id']); ?>&nbsp;</td>
 						<td><?php echo h($invLocation['InvLocation']['name']); ?>&nbsp;</td>
-						<td><?php echo h($invLocation['InvLocation']['created']); ?>&nbsp;</td>
-						<td><?php echo h($invLocation['InvLocation']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($invLocation['InvLocation']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($invLocation['InvLocation']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $invLocation['InvLocation']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $invLocation['InvLocation']['id']), array('escape' => false)); ?>

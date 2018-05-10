@@ -59,8 +59,8 @@
 		</td>
 						<td><?php echo h($poProduct['PoProduct']['price']); ?>&nbsp;</td>
 						<td><?php echo h($poProduct['PoProduct']['qty']); ?>&nbsp;</td>
-						<td><?php echo h($poProduct['PoProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($poProduct['PoProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($poProduct['PoProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($poProduct['PoProduct']['modified']); ?>&nbsp;</td>
 						<td><?php echo h($poProduct['PoProduct']['quotation_product_id']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $poProduct['PoProduct']['id']), array('escape' => false)); ?>

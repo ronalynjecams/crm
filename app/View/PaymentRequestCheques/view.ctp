@@ -65,7 +65,7 @@
 <tr>
 		<th><?php echo __('Cheque Date'); ?></th>
 		<td>
-			<?php echo h($paymentRequestCheque['PaymentRequestCheque']['cheque_date']); ?>
+			<?php echo time_elapsed_string($paymentRequestCheque['PaymentRequestCheque']['cheque_date']); ?>
 			&nbsp;
 		</td>
 </tr>

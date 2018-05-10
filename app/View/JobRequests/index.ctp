@@ -48,8 +48,8 @@
 						<td><?php echo h($jobRequest['JobRequest']['jr_number']); ?>&nbsp;</td>
 						<td><?php echo h($jobRequest['JobRequest']['user_id']); ?>&nbsp;</td>
 						<td><?php echo h($jobRequest['JobRequest']['status']); ?>&nbsp;</td>
-						<td><?php echo h($jobRequest['JobRequest']['created']); ?>&nbsp;</td>
-						<td><?php echo h($jobRequest['JobRequest']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jobRequest['JobRequest']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jobRequest['JobRequest']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $jobRequest['JobRequest']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $jobRequest['JobRequest']['id']), array('escape' => false)); ?>

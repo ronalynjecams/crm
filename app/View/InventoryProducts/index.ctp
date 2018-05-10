@@ -58,8 +58,8 @@
 						<td><?php echo h($inventoryProduct['InventoryProduct']['qty']); ?>&nbsp;</td>
 						<td><?php echo h($inventoryProduct['InventoryProduct']['qty_for_repair']); ?>&nbsp;</td>
 						<td><?php echo h($inventoryProduct['InventoryProduct']['qty_chopped']); ?>&nbsp;</td>
-						<td><?php echo h($inventoryProduct['InventoryProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($inventoryProduct['InventoryProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($inventoryProduct['InventoryProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($inventoryProduct['InventoryProduct']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $inventoryProduct['InventoryProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $inventoryProduct['InventoryProduct']['id']), array('escape' => false)); ?>

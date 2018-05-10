@@ -50,8 +50,8 @@
 		</td>
 						<td><?php echo h($productComboProperty['ProductComboProperty']['property']); ?>&nbsp;</td>
 						<td><?php echo h($productComboProperty['ProductComboProperty']['value']); ?>&nbsp;</td>
-						<td><?php echo h($productComboProperty['ProductComboProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productComboProperty['ProductComboProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productComboProperty['ProductComboProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productComboProperty['ProductComboProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $productComboProperty['ProductComboProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $productComboProperty['ProductComboProperty']['id']), array('escape' => false)); ?>

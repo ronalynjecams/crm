@@ -1,12 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 
 <div id="content-container">
     <div id="page-title">
@@ -45,11 +45,11 @@
                                 
                                 $created_log = '';
                                 foreach($payment_request_logs[$payment_request_id] as $payment_request_log) {
-                                    $created_log = date("F d, Y [h:i a]", strtotime($payment_request_log['PaymentRequestLog']['created']));
+                                    $created_log = time_elapsed_string($payment_request_log['PaymentRequestLog']['created']);
                                 }
                                 
                                 if ($status=="pending") {
-                                    $created = date("F d, Y [h:i a]", strtotime($payment_request['created']));
+                                    $created = time_elapsed_string($payment_request['created']);
                                 }
                                 else {
                                     $created = '[ '.$created_log.' ]';

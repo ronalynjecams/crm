@@ -52,8 +52,8 @@
 						<td><?php echo h($productSupplierProperty['ProductSupplierProperty']['property']); ?>&nbsp;</td>
 						<td><?php echo h($productSupplierProperty['ProductSupplierProperty']['value']); ?>&nbsp;</td>
 						<td><?php echo h($productSupplierProperty['ProductSupplierProperty']['price']); ?>&nbsp;</td>
-						<td><?php echo h($productSupplierProperty['ProductSupplierProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productSupplierProperty['ProductSupplierProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSupplierProperty['ProductSupplierProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSupplierProperty['ProductSupplierProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $productSupplierProperty['ProductSupplierProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $productSupplierProperty['ProductSupplierProperty']['id']), array('escape' => false)); ?>

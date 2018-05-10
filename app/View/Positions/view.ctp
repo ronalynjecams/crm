@@ -50,14 +50,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($position['Position']['created']); ?>
+			<?php echo time_elapsed_string($position['Position']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($position['Position']['modified']); ?>
+			<?php echo time_elapsed_string($position['Position']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -95,8 +95,8 @@
 			<td><?php echo $notification['position_id']; ?></td>
 			<td><?php echo $notification['title']; ?></td>
 			<td><?php echo $notification['viewed']; ?></td>
-			<td><?php echo $notification['created']; ?></td>
-			<td><?php echo $notification['modified']; ?></td>
+			<td><?php echo time_elapsed_string($notification['created']); ?></td>
+			<td><?php echo time_elapsed_string($notification['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'notifications', 'action' => 'view', $notification['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'notifications', 'action' => 'edit', $notification['id']), array('escape' => false)); ?>

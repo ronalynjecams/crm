@@ -12,24 +12,24 @@
 
 
     <!--Bootstrap Stylesheet [ REQUIRED ]-->
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 
 
     <!--Nifty Stylesheet [ REQUIRED ]-->
-    <link href="../css/nifty.min.css" rel="stylesheet">
+    <link href="/css/nifty.min.css" rel="stylesheet">
 
 
     <!--Nifty Premium Icon [ DEMONSTRATION ]-->
-    <link href="../css/demo/nifty-demo-icons.min.css" rel="stylesheet">
+    <link href="/css/demo/nifty-demo-icons.min.css" rel="stylesheet">
 
 
 
     <!--Demo [ DEMONSTRATION ]-->
-    <link href="../css/demo/nifty-demo.min.css" rel="stylesheet">
+    <link href="/css/demo/nifty-demo.min.css" rel="stylesheet">
 
 
     <!--Magic Checkbox [ OPTIONAL ]-->
-    <link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">
+    <link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">
 
 
 
@@ -40,20 +40,20 @@
     <!--=================================================-->
 
     <!--Pace - Page Load Progress Par [OPTIONAL]-->
-    <link href="../plugins/pace/pace.min.css" rel="stylesheet">
-    <script src="../plugins/pace/pace.min.js"></script>
+    <link href="/css/plug/pace/pace.min.css" rel="stylesheet">
+    <script src="/css/plug/pace/pace.min.js"></script>
 
 
     <!--jQuery [ REQUIRED ]-->
-    <script src="../js/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
 
 
     <!--BootstrapJS [ RECOMMENDED ]-->
-    <script src="../js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 
 
     <!--NiftyJS [ RECOMMENDED ]-->
-    <script src="../js/nifty.min.js"></script>
+    <script src="/js/nifty.min.js"></script>
 
 
 
@@ -109,7 +109,33 @@
                 <div class="media-body text-left">
                     Login with
                 </div> 
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+
+              <!--  <div class="pull-right"> -->
+		            <!--<a href="/employee_details/add" class="btn-link mar-lft"><i class="fa fa-address-book icon-lg text-primary"></i></a>-->
+              <!--  </div>-->
+                <!--<div class="media-body text-left">Applicant</div> -->
+                
+
+               
             </div>
+             
+		
+		        <div class="pad-all">
+		            <!--<a href="pages-password-reminder.html" class="btn-link mar-rgt">Are you an Applicant ?</a>-->
+		
+		            <div class="media pad-top bord-top">
+		                <div class="pull-right">
+		                    <a href="/employee_details/add" class="pad-rgt"><i class="demo-pli-add-user icon-lg text-danger"></i></a>
+		                </div>
+		                <div class="media-body text-left">
+		                    Applicant
+		                </div>
+		            </div>
+		        </div>
         </div>
     </div>
     <div id="result_with_incognito"> 

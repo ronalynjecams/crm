@@ -54,8 +54,8 @@
 						<td><?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['qty']); ?>&nbsp;</td>
 						<td><?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['property']); ?>&nbsp;</td>
 						<td><?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['value']); ?>&nbsp;</td>
-						<td><?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($prodInvLocationProperty['ProdInvLocationProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($prodInvLocationProperty['ProdInvLocationProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $prodInvLocationProperty['ProdInvLocationProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $prodInvLocationProperty['ProdInvLocationProperty']['id']), array('escape' => false)); ?>

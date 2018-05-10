@@ -62,21 +62,21 @@
 <tr>
 		<th><?php echo __('Date Started'); ?></th>
 		<td>
-			<?php echo h($fitoutTodo['FitoutTodo']['date_started']); ?>
+			<?php echo time_elapsed_string($fitoutTodo['FitoutTodo']['date_started']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($fitoutTodo['FitoutTodo']['created']); ?>
+			<?php echo time_elapsed_string($fitoutTodo['FitoutTodo']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($fitoutTodo['FitoutTodo']['modified']); ?>
+			<?php echo time_elapsed_string($fitoutTodo['FitoutTodo']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -15,8 +15,8 @@ class StatementOfAccount extends AppModel {
  */
 	public $validate = array(
 		'soa_number' => array(
-			'alphaNumeric' => array(
-				'rule' => array('alphaNumeric'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -87,6 +87,16 @@ class StatementOfAccount extends AppModel {
 		'user_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'collection_due' => array(
+			'numeric' => array(
+				'rule' => array('date'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,

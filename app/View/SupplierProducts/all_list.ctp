@@ -1,14 +1,14 @@
 
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 <!--<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">-->
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<!--<link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">-->
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
 
@@ -18,7 +18,13 @@
     <!--Page Title-->
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <div id="page-title">
-        <h1 class="page-header text-overflow"><?php echo $supplier['Supplier']['name']; ?></h1>
+        <?php
+            $suppliername = '';
+            if(!empty($supplier['Supplier'])) {
+                $suppliername = $supplier['Supplier']['name'];
+            }
+        ?>
+        <h1 class="page-header text-overflow"><?= $suppliername; ?></h1>
     </div>
         
     <!--Page content-->
@@ -64,7 +70,7 @@
                     <tbody>
                         <?php foreach ($products as $product) { ?> 
                             <tr>
-                                <td><?php echo '<img class="img-responsive" src="../product_uploads/' . h($product['ProductCombo']['Product']['image']) . '" width="70" height="70">'; ?></td> 
+                                <td><?php echo '<img class="img-responsive" src="/img/product-uploads/' . h($product['ProductCombo']['Product']['image']) . '" width="70" height="70">'; ?></td> 
                                 <td><?php echo h($product['SupplierProduct']['supplier_code']); ?></td> 
                                 <td><?php echo '&#8369; ' . number_format($product['SupplierProduct']['supplier_price'],2); ?></td> 
                                 <td><?php echo h($product['ProductCombo']['Product']['name']); ?></td>  
@@ -366,7 +372,7 @@
         var product_id = $("#pd_id").val();
         var product_combo_id = $("#pdc_id").val();
         var code = $("#supplier_code").val();
-        var price = $("#supplier_price").val();
+        var price = parseFloat($("#supplier_price").val());
         var note = $("#note").val();
         var supplier_id = $("#supId").val();  
         
@@ -378,7 +384,7 @@
             "note": note,
             "supplier_id": supplier_id
         }
-        
+        console.log(price);
         if (product_id != "") {
             if(product_combo_id!=""){ 
                 if(code!=""){ 
@@ -435,26 +441,7 @@
                 $('#uval').html(val);
                 
                 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+                 
                 
                 $('#edit-supplier-modal').modal('show');
 
@@ -465,7 +452,7 @@
          $('#editProductSupplierBtn').on("click", function () {
             var u_id = $('#u_id').val();
             var usupplier_code = $('#usupplier_code').val();
-            var usupplier_price = $('#usupplier_price').val();
+            var usupplier_price = parseFloat($('#usupplier_price').val());
             var unote = $('#unote').val();
 
             if(( usupplier_code != "")){

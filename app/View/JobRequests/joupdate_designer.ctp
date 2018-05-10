@@ -1,10 +1,10 @@
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script> 
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
 <div id="content-container" >
     <div id="page-title">
         <h1 class="page-header text-overflow">Job Request <small>[<?php echo $qq['Client']['name']; ?>]</small></h1>
@@ -46,35 +46,69 @@
                                         $cc = 0;
                                         if ($jr_products != 0) {
                                             foreach ($jr_products as $quote_prod) {
-//                                        if($quote_prod['JrProduct']['status']!='cancelled'){
+                                                $qp_obj = $quote_prod['QuotationProduct'];
+                                                $qpp_obj = [];
+                                                $qpp_image = 'image_placeholder.jpg';
+                                                if(array_key_exists('Product', $qp_obj)) {
+                                                    $qpp_obj = $qp_obj['Product'];
+                                                    
+                                                    if($qpp_obj['image']!="") {
+                                                        $qpp_image = $qpp_obj['image'];
+                                                    }
+                                                }
+                                                if($qp_obj['deleted']==null) {
                                                 ?> 
                                                 <tr>
                                                     <td > 
                                                         <?php
-//                                                        echo $quote_prod['JrProduct']['id'];
-                                                        echo date('F d, Y', strtotime($quote_prod['JrProduct']['date_assigned']));
+                                                        echo time_elapsed_string($quote_prod['JrProduct']['date_assigned']);
                                                         echo '<br/><small>' . date('h:i a', strtotime($quote_prod['JrProduct']['created'])) . '</small>';
                                                         ?>  
                                                     </td>
                                                     <?php
                                                     if (is_null($quote_prod['JrProduct']['floor_plan_details'])) {
-                                                        echo '<td >';
-                                                        echo $quote_prod['QuotationProduct']['Product']['name'];
-
-                                                        echo '</td>
-                                            <td >
-                                                <ul class="list-group">';
-
-                                                        foreach ($quote_prod['QuotationProduct']['QuotationProductProperty'] as $desc) {
-                                                            if (is_null($desc['property'])) {
-                                                                echo '<li class="list-group-item"><b>' . $desc['ProductProperty']['name'] . '</b> : ' . $desc['ProductValue']['value'] . '</li>';
-                                                            } else {
-                                                                echo '<li class="list-group-item"><b>' . $desc['property'] . '</b> : ' . $desc['value'] . '</li>';
+                                                        echo '<td width="15%">';
+                                                        if(!empty($qpp_obj)) {
+                                                            $qpp_name = $qpp_obj['name'];
+                                                            if($qpp_name!="") {
+                                                                echo $qpp_name;
                                                             }
+                                                            else {
+                                                                echo "<font class='text-danger'>No product found.</font>";
+                                                            }
+                                                        }else {
+                                                            echo "<font class='text-danger'>No product found.</font>";
                                                         }
-                                                        echo '     
-                                                </ul>
-                                            </td>';
+                                                            
+                                                    echo '<img width="40%" class="img-responsive" src="/img/product-uploads/'.$qpp_image.'"
+											            id="prod_image_preview" />';
+                                                        echo '</td>
+                                                        <td >
+                                                            <ul class="list-group">';
+                                                                if(array_key_exists('QuotationProductProperty', $qp_obj)) {
+                                                                    foreach ($qp_obj['QuotationProductProperty'] as $desc) {
+                                                                        if (is_null($desc['property'])) {
+                                                                            if(!empty($des['ProductProperty'])) {
+                                                                                echo '<li class="list-group-item"><b>' . $desc['ProductProperty']['name'] . '</b> : ' . $desc['ProductValue']['value'] . '</li>';
+                                                                            }
+                                                                        } else {
+                                                                            echo '<li class="list-group-item"><b>' . $desc['property'] . '</b> : ' . $desc['value'] . '</li>';
+                                                                        }
+                                                                    }
+                                                                }
+                                                                    echo '     
+                                                            </ul>';
+                                                            
+                                                            if(!empty($qpp_obj)) {
+                                                                if($qpp_obj['other_info']) {
+                                                                    echo '
+                                                                    <ul class="list-group"><li class="list-group-item">
+                                                                    <b>Other Info:</b><p>
+                                                                     '.$quote_prod['QuotationProduct']['other_info'].'
+                                                                    </p></li></ul>';
+                                                                }
+                                                            }
+                                                        echo '</td>';
                                                     } else {
                                                         echo '<td colspan="2"><b>Floor Plan Details:   </b>' . $quote_prod['JrProduct']['floor_plan_details'] . '</td>';
                                                     }
@@ -101,9 +135,16 @@
                                                         ?>
                                                     </td>
                                                 </tr> 
-
-
                                                 <?php
+                                                }
+                                                else {
+                                                    echo '<tr><td>' . $cnt . '</td>'
+                                                        . '<td >' . $quote_prod['Product']['name'] . '</td>'
+                                                        . '<td colspan="5" class="text-danger"><b>Date Deleted: </b> '
+                                                        . time_elapsed_string($quote_prod['QuotationProduct']['deleted']) . '</td>'
+                                                        . '<td></td><td></td><td></td><td></td><td></td>'
+                                                        . '</tr>';
+                                                }
                                                 $cnt++;
                                                 $cc++;
                                             }
@@ -241,7 +282,7 @@
                     console.log(data);
                     $("#prod_img").remove();
                     $(".initial_product_type_div").remove();
-                    $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="../product_uploads/' + data['QuotationProduct']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['QuotationProduct']['image'] + '"></div>');
+                    $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="/img/product-uploads/' + data['QuotationProduct']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['QuotationProduct']['image'] + '"></div>');
 
                     $("#product_code").remove();
                     $(".product_code_div").append('<div id="product_code"><h3>' + data['QuotationProduct']['Product']['name'] + '</h3></div>');

@@ -1,10 +1,10 @@
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script> 
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
 <div id="content-container" >
     <div id="page-title">
         <h1 class="page-header text-overflow">Job Request</h1>
@@ -35,14 +35,18 @@
             </div>
             <div id="products-panel-collapse" class="collapse in">
                 <div class="panel-body">
-<?php if (count($jr_products) != 0) { ?>
+                    <?php if (count($jr_products) != 0) { ?>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                 <th>Date Created</th>
                                 <th>Product Code / Floor Plan</th>
+                                <th>Client</th>
+                                <th>Image</th>
+                                <th>Quotation #</th>
+                                <th>Agent</th>
                                 <th>Description</th>
-                                <th>Qty</th> 
+                                <th>Qty</th>
                                 <th>Designer</th>  
                                 <th>Deadline</th>  
                                 <th>Status</th>  
@@ -53,40 +57,94 @@
                                     $cnt = 1;
                                     $cc = 0;
                                     if ($jr_products != 0) {
+                                        // echo pr($jr_products);
                                         foreach ($jr_products as $quote_prod) {
-//                                        if($quote_prod['JrProduct']['status']!='cancelled'){
+                                            if($quote_prod['QuotationProduct']['deleted']==null) {
                                             ?> 
                                             <tr>
                                                 <td > 
                                                     <?php
                                                     
-                                                    echo date('F d, Y', strtotime($quote_prod['JrProduct']['created']));
+                                                    echo time_elapsed_string($quote_prod['JrProduct']['created']);
                                                     echo '<br/><small>' . date('h:i a', strtotime($quote_prod['JrProduct']['created'])) . '</small>';
                                                     ?>  
                                                 </td>
                                                 <?php
-                                                if (is_null($quote_prod['JrProduct']['floor_plan_details'])) {
-                                                    echo '<td >';
-                                                    echo $quote_prod['QuotationProduct']['Product']['name'];
-
-                                                    echo '</td>
-                                            <td >
-                                                <ul class="list-group">';
-
-                                                    foreach ($quote_prod['QuotationProduct']['QuotationProductProperty'] as $desc) {
-                                                        if (is_null($desc['property'])) {
-                                                            echo '<li class="list-group-item"><b>' . $desc['ProductProperty']['name'] . '</b> : ' . $desc['ProductValue']['value'] . '</li>';
-                                                        } else {
-                                                            echo '<li class="list-group-item"><b>' . $desc['property'] . '</b> : ' . $desc['value'] . '</li>';
+                                                $productname = '';
+                                                if(!empty($quote_prod['QuotationProduct']['Product']['name'])) {
+                                                    $productname = $quote_prod['QuotationProduct']['Product']['name'];
+                                                }?>
+                                                
+                                                <td><?= $productname; ?></td>
+                                                
+                                                <?php
+                                                $qp_obj = $quote_prod['QuotationProduct'];
+                                                $client_name = "<font class='text-danger'>Unknown</font>";
+                                                $image = "/img/product-uploads/image_placeholder.jpg";
+                                                $quotation_no = "<font class='text-danger'>Not Specified</font>";
+                                                $agent = "<font class='text-danger'>Unknown</font>";
+                                                if(array_key_exists("Quotation", $qp_obj)) {
+                                                    if(array_key_exists("Client", $qp_obj['Quotation'])) {
+                                                        $client_obj = $qp_obj['Quotation']['Client'];
+                                                        if($client_obj['name']!="" || $client_obj['name']!=null) {
+                                                            $client_name = $client_obj['name'];
                                                         }
                                                     }
-                                                    echo '     
-                                                </ul>
-                                            </td>';
+                                                    
+                                                    if(array_key_exists("User", $qp_obj['Quotation'])) { 
+                                                        $fname = $qp_obj['Quotation']['User']['first_name'];
+                                                        $lname = $qp_obj['Quotation']['User']['last_name'];
+                                                        
+                                                        if($fname!="" && $lname!="") {
+                                                            $agent = ucwords($fname." ".$lname);
+                                                        }
+                                                    }
+                                                    $quotation_no = $qp_obj['Quotation']['quote_number'];
+                                                }
+                                                if($qp_obj['image']!="" || $qp_obj['image']!=null) {
+                                                //     if(file_exists("/img/product-uploads/".$qp_obj['image'])) { // not working : always returns false
+                                                        $image = "/img/product-uploads/".$qp_obj['image'];
+                                                //     }
+                                                }
+                                                ?>
+                                                
+                                                <td><?= $client_name; ?></td>
+                                                <?php
+                                                if (is_null($quote_prod['JrProduct']['floor_plan_details'])) { ?>
+                                                <td width="20%"><img width="100%" src="<?= $image; ?>" /></td>
+                                                <?php } ?>
+                                                <td><?= $quotation_no; ?></td>
+                                                <td><?= $agent; ?></td>
+                                                
+                                                <?php
+                                                if (is_null($quote_prod['JrProduct']['floor_plan_details'])) {
+                                                    echo'
+                                                    <td >
+                                                        <ul class="list-group">';
+                                                            if(!empty($quote_prod['QuotationProduct']['QuotationProductProperty'])) {
+                                                                foreach ($quote_prod['QuotationProduct']['QuotationProductProperty'] as $desc) {
+                                                                    if (is_null($desc['property'])) {
+                                                                        if(!empty($desc['ProductProperty'])) {
+                                                                            echo '<li class="list-group-item"><b>' . $desc['ProductProperty']['name'] . '</b> : ' . $desc['ProductValue']['value'] . '</li>';
+                                                                        }
+                                                                    } else {
+                                                                        echo '<li class="list-group-item"><b>' . $desc['property'] . '</b> : ' . $desc['value'] . '</li>';
+                                                                    }
+                                                                }
+                                                            }
+                                                            echo '     
+                                                        </ul>';
+                                                        
+                                                        echo '
+                                                        <ul class="list-group"><li class="list-group-item">
+                                                        <b>Other Info:</b><p>
+                                                        '.$quote_prod['QuotationProduct']['other_info'].'
+                                                        </p></li></ul>';
+                                                    echo '</td>';
                                                 } else {
                                                     echo '<td colspan="2"><b>Floor Plan Details:   </b>' . $quote_prod['JrProduct']['floor_plan_details'] . '</td>';
                                                 }
-                                                ?> 
+                                                ?>
                                                 <td><?php echo abs($quote_prod['QuotationProduct']['qty']); ?></td> 
                                                 <td><?php echo $quote_prod['User']['first_name']; ?></td> 
                                                 <td>
@@ -124,14 +182,49 @@
                                                                 echo '<p class="text-danger">Cancelled</p>';
                                                             }else if ($quote_prod['JrProduct']['status'] == 'accomplished') {
                                                             ?>
-                                                            <button class="btn btn-primary" id="btn_for_production"
-                                                                    data-qprodid="<?php echo $quote_prod['QuotationProduct']['id']; ?>"
-                                                                    data-jrprodid="<?php echo $quote_prod['JrProduct']['id']; ?>"
-                                                                    data-clientid="<?php echo $quote_prod['QuotationProduct']['Quotation']['client_id']; ?>"
-                                                                    data-totalqty="<?php echo $quote_prod['QuotationProduct']['qty']; ?>">
-                                                                <span class="fa fa-plus"></span>
-                                                                For Production
-                                                            </button>
+                                                            <?php
+                                                                $qpid = '';
+                                                                if($quote_prod['QuotationProduct']['id'] != "" || $quote_prod['QuotationProduct']['id'] != null) {
+                                                                    $qpid = $quote_prod['QuotationProduct']['id'];
+                                                                }
+                                                                $jrid = '';
+                                                                if($quote_prod['JrProduct']['id'] != "" || $quote_prod['JrProduct']['id'] != null) {
+                                                                    $jrid = $quote_prod['JrProduct']['id'];
+                                                                }
+                                                                $clid = '';
+                                                                if(!empty($quote_prod['QuotationProduct']['Quotation'])) {
+                                                                    $clid = $quote_prod['QuotationProduct']['Quotation']['client_id'];
+                                                                }
+                                                                $qqty = 0;
+                                                                if($quote_prod['QuotationProduct']['qty'] != "" || $quote_prod['QuotationProduct']['qty'] != null) {
+                                                                    $qqty = $quote_prod['QuotationProduct']['qty'];
+                                                                }
+                                                                
+                                                                if(empty($quote_prod['JrProduct'])) {
+                                                                    echo "Job Request Product.\n";
+                                                                }
+                                                                if(empty($quote_prod['QuotationProduct'])) {
+                                                                    echo "No Quotation Product.\n";
+                                                                }
+                                                                if(empty($quote_prod['QuotationProduct']['Quotation'])) {
+                                                                    echo "No Quotation.\n";
+                                                                }
+                                                                
+                                                                if(!empty($quote_prod['JrProduct']) && !empty($quote_prod['QuotationProduct']) && !empty($quote_prod['QuotationProduct']['Quotation'])) {
+                                                                ?>
+                                                                <!--<button class="btn btn-primary" id="btn_for_production"-->
+                                                                <!--        data-qprodid=""-->
+                                                                <!--        data-jrprodid=""-->
+                                                                <!--        data-clientid=""-->
+                                                                <!--        data-totalqty="">-->
+                                                                <!--    <span class="fa fa-plus"></span>-->
+                                                                <!--    For Production-->
+                                                                <!--     $qpid-->
+                                                                <!--     $jrid-->
+                                                                <!--     $clid-->
+                                                                <!--     $qqty-->
+                                                                <!--</button>-->
+                                                            <?php } ?>
                                                             <button class="btn btn-mint btn-icon add-tooltip add_rawmats"   data-toggle="tooltip"  data-original-title="Update Raw Materials"  data-rmatsid="<?php echo $quote_prod['JrProduct']['id']; ?>"><i class="fa fa-shopping-cart"></i></button>
                                                             <?php
                                                             
@@ -146,9 +239,18 @@
                                                     ?>          
                                                 </td>
                                             </tr> 
-
-
                                             <?php
+                                            }
+                                            else {
+                                                echo '<tr><td>' . $cnt . '</td>'
+                                                . '<td >' . $quote_prod['Product']['name'] . '</td>'
+                                                . '<td colspan="5" class="text-danger"><b>Date Deleted: </b> '
+                                                . time_elapsed_string($quote_prod['QuotationProduct']['deleted']) . '</td>'
+                                                . '<td></td><td></td><td></td><td></td><td></td>'
+                                                . '</tr>';
+                                            }
+
+
                                             $cnt++;
                                             $cc++;
                                         }
@@ -204,6 +306,18 @@
                                             <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <select class="form-control" id="select_type">
+                                        <option>---- Select Type ----</option>
+                                        <option style="background-color:grey; font-size:0.9px;" disabled>&nbsp;</option>
+                                        <option>Intial 2D</option>
+                                        <option>Initial 3D</option>
+                                        <option>For Production</option>
+                                        <option>Revision 2D</option>
+                                        <option>Revision 3D</option>
+                                        <option>For Production Revision</option>
+                                    </select>
                                 </div>
 <?php } ?>
 
@@ -284,7 +398,7 @@
                     console.log(data);
                     $("#prod_img").remove();
                     $(".initial_product_type_div").remove();
-                    $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="../product_uploads/' + data['QuotationProduct']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['QuotationProduct']['image'] + '"></div>');
+                    $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="/img/product-uploads/' + data['QuotationProduct']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['QuotationProduct']['image'] + '"></div>');
 
                     $("#product_code").remove();
                     $(".product_code_div").append('<div id="product_code"><h3>' + data['QuotationProduct']['Product']['name'] + '</h3></div>');
@@ -299,14 +413,16 @@
             var deadline = $('#deadline_date').val();
             var user_id = $('#designer_id').val();
             var usr_typ = $('#usr_typ').val();
-//alert(user_id);
+            var select_type = $("#select_type").val();
+
             if (usr_typ === 'agent') {
-                $("#saveJRProduct").prop("disabled", true);
+                // $("#saveJRProduct").prop("disabled", true);
                 var data = {
                     "job_request_id": job_request_id,
                     "id": id,
                     "deadline": deadline,
-                    "usr_typ": usr_typ
+                    "usr_typ": usr_typ,
+                    "select_type": select_type
                 }
 
             } else if (usr_typ === 'design_head') {
@@ -314,25 +430,38 @@
                     "job_request_id": job_request_id,
                     "id": id,
                     "user_id": user_id,
-                    "usr_typ": usr_typ
+                    "usr_typ": usr_typ,
+                    "select_type": select_type
                 }
             }
 
             console.log(data);
 
-            $.ajax({
-                url: "/job_requests/updateJRProduct",
-                type: 'POST',
-                data: {'data': data},
-                dataType: 'json',
-                success: function (dd) {
-//                    console.log(dd);
-                    location.reload();
-                },
-                error: function (dd) {
-                    console.log(dd);
+            if(deadline!=" ") {
+                if(select_type!="---- Select Type ----") {
+                    $("#saveJRProduct").prop("disabled", true);
+                    $.ajax({
+                        url: "/job_requests/updateJRProduct",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'json',
+                        success: function (dd) {
+                            console.log(dd);
+                            location.reload();
+                        },
+                        error: function (dd) {
+                            location.reload();
+                            console.log(dd);
+                        }
+                    });
                 }
-            });
+                else {
+                    $("#select_type").css({'border-color':'red'});
+                }
+            }
+            else {
+                $("#deadline_date").css({'border-color':'red'});
+            }
         });
 
 //    cancel_jr_product

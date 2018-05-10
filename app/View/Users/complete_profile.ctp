@@ -36,24 +36,24 @@ aside
 
 
     <!--Bootstrap Stylesheet [ REQUIRED ]-->
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 
 
     <!--Nifty Stylesheet [ REQUIRED ]-->
-    <link href="../css/nifty.min.css" rel="stylesheet">
+    <link href="/css/nifty.min.css" rel="stylesheet">
 
 
     <!--Nifty Premium Icon [ DEMONSTRATION ]-->
-    <link href="../css/demo/nifty-demo-icons.min.css" rel="stylesheet">
+    <link href="/css/demo/nifty-demo-icons.min.css" rel="stylesheet">
 
 
 
     <!--Demo [ DEMONSTRATION ]-->
-    <link href="../css/demo/nifty-demo.min.css" rel="stylesheet">
+    <link href="/css/demo/nifty-demo.min.css" rel="stylesheet">
 
 
     <!--Magic Checkbox [ OPTIONAL ]-->
-    <link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">
+    <link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">
 
 
 
@@ -64,20 +64,20 @@ aside
     <!--=================================================-->
 
     <!--Pace - Page Load Progress Par [OPTIONAL]-->
-    <link href="../plugins/pace/pace.min.css" rel="stylesheet">
-    <script src="../plugins/pace/pace.min.js"></script>
+    <link href="/css/plug/pace/pace.min.css" rel="stylesheet">
+    <script src="/css/plug/pace/pace.min.js"></script>
 
 
     <!--jQuery [ REQUIRED ]-->
-    <script src="../js/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
 
 
     <!--BootstrapJS [ RECOMMENDED ]-->
-    <script src="../js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 
 
     <!--NiftyJS [ RECOMMENDED ]-->
-    <script src="../js/nifty.min.js"></script>
+    <script src="/js/nifty.min.js"></script>
 
 
 

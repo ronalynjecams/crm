@@ -110,10 +110,11 @@ class PurchaseOrdersController extends AppController {
 
         $this->loadModel('QuotationProduct');
          
-        $this->QuotationProduct->recursive = 3;
+        $this->QuotationProduct->recursive = 2;
         if ($this->Auth->user('role') != 'supply_staff') {
             $quote_products = $this->QuotationProduct->find('all', array(
-                'conditions' => array('QuotationProduct.quotation_id' => $quote_data['Quotation']['id'])
+                'conditions' => array('QuotationProduct.quotation_id' => $quote_data['Quotation']['id'],
+                                      'QuotationProduct.deleted'=>null)
             ));
         } else {
             $quote_products = $this->QuotationProduct->find('all', array(
@@ -198,6 +199,7 @@ class PurchaseOrdersController extends AppController {
     public function process_new_po() {
         $this->autoRender = false;
         $data = $this->request->data;
+        
         $product_combo_id = $data['product_combo_id'];
         $product_id = $data['product_id'];
         $supplier_id = $data['supplier_id'];
@@ -207,12 +209,11 @@ class PurchaseOrdersController extends AppController {
         $additional = $data['additional'];
         $supplier_product_id = $data['supplier_product_id'];
         $inventory_job_order_type = $data['inventory_job_order_type'];
-        // $ref_type = $data['ref_type'];
+        $client = $data['client'];
 
         $discount = 0;
         $ewt_type = "one";
         
-//        pr($inventory_job_order_type);exit;
         //check if with existing ongoing purchase order
         $check_po = $this->PurchaseOrder->find('first', [
             'conditions' => [
@@ -227,8 +228,6 @@ class PurchaseOrdersController extends AppController {
         $this->loadModel('Quotation');
         $this->loadModel('TransactionSource');
 
-
-
         if ($quotation_product_id != 0 && (!empty($quotation_product_id))) {
             $qprod = $this->QuotationProduct->findById($quotation_product_id);
             $product_id = $qprod['QuotationProduct']['product_id'];
@@ -239,32 +238,61 @@ class PurchaseOrdersController extends AppController {
             $pro_qty = $processed_qty + $qty;
             
             if($data['po_raw_request_id'] != 0){
-                $reference_type = 'po_raw_request';  
-                $reference_num = $quotation_product_id;
+                $reference_type = 'po_raw_request';
+                $reference_num = $data['po_raw_request_id'];
             }else{
-                $reference_type = 'quotation';
-                $reference_num = $quotation_product_id; 
-                
+                if(array_key_exists('from_demo',$data)) {
+                    $reference_type = 'demo';
+                }
+                else {
+                    $reference_type = 'quotation';
+                }
             }
-            $reference_type = 'quotation';
+            if(array_key_exists('client_service_product_id', $data)) {
+                $reference_num = $data['client_service_product_id'];
+            }
+            else {
+                $reference_num = $quotation_product_id;
+            }
             $transaction_num = $quotation_id;
         } else {
-            
             $quotation_product_id = 0;
             $quotation_id = 0;
-            $reference_num = 0;
-            $reference_type = 'none';
+            if(array_key_exists('client_service_product_id', $data)) {
+                $reference_num = $data['client_service_product_id'];
+            }
+            else {
+                $reference_num = 0;
+            }
+            if(array_key_exists('from_demo',$data)) {
+                $reference_type = 'demo';
+            }
+            else {
+                $reference_type = 'none';
+            }
             $transaction_num = 0;
         }
 
-
-
         if (count($check_po) == 0) {
-            //create new purchase order
+            // if ($user['User']['department_id'] == 6) {
+            //     $type = 'supply';
+            // } else if ($user['User']['department_id'] == 7) {
+            //     $type = 'raw';
+            // }
+            
             if ($user['User']['department_id'] == 6) {
-                $type = 'supply';
+    			if($user['User']['role'] == 'subcon_purchasing'){
+    				$type = 'jecams_subcon';
+    			}else{
+    				$type = 'supply';
+    			}
+    				
             } else if ($user['User']['department_id'] == 7) {
+    			if($user['User']['role'] == 'subcon_purchasing'){
+    				$type = 'jecams_subcon';
+    			}else{
                 $type = 'raw';
+    			}
             }
 
             $dateToday = date("hmdsi");
@@ -284,7 +312,9 @@ class PurchaseOrdersController extends AppController {
                 //price of item should be from 
                 $this->PurchaseOrderProduct->create();
                 $this->PurchaseOrderProduct->set(array(
+                    'client_id' => $client,
                     'product_combo_id' => $product_combo_id,
+                    'product_id'=>$product_id,
                     'purchase_order_id' => $po_id,
                     'qty' => $qty,
                     'list_price' => $price,
@@ -305,7 +335,9 @@ class PurchaseOrdersController extends AppController {
             $po_id = $check_po['PurchaseOrder']['id'];
             $this->PurchaseOrderProduct->create();
             $this->PurchaseOrderProduct->set(array(
+                'client_id' => $client,
                 'product_combo_id' => $product_combo_id,
+                'product_id'=>$product_id,
                 'purchase_order_id' => $po_id,
                 'qty' => $qty,
                 'list_price' => $price,
@@ -343,18 +375,19 @@ class PurchaseOrdersController extends AppController {
             $this->QuotationProduct->save(); 
             
             }
-                $this->TransactionSource->create;
-                $this->TransactionSource->set(array(
-                    'reference_num'=>$quotation_id,
-                    'reference_type'=>'quotation', 
-                    'mode'=>'po',
-                    'mode_num'=>$po_id,
-                    'product_combo_id'=>$product_combo_id,
-                    'product_source'=>$quotation_product_id,
-                    'type'=>$qprod['Product']['type'], 
-                    'qty' => $qty
-                )); 
-                $this->TransactionSource->save(); 
+                // $this->TransactionSource->create;
+                // $this->TransactionSource->set(array(
+                //     'reference_num'=>$quotation_id,
+                //     'reference_type'=>'quotation', 
+                //     'mode'=>'po',
+                //     'mode_num'=>$po_id,
+                //     'product_combo_id'=>$product_combo_id,
+                //     'product_source'=>$quotation_product_id,
+                //     'type'=>$qprod['Product']['type'], 
+                //     'qty' => $qty
+                // )); 
+                // $this->TransactionSource->save(); 
+                
                 
         }///end of reference type=quotation
         
@@ -387,43 +420,55 @@ class PurchaseOrdersController extends AppController {
                 ]);
             if($this->PoRawRequest->save()){
                 
-                $this->TransactionSource->create;
-                $this->TransactionSource->set(array(
-                    'reference_num'=>$po_raw_request_id,
-                    'reference_type'=>'po_raw_request', 
-                    'mode'=>'po',
-                    'mode_num'=>$po_id,
-                    'product_combo_id'=>$product_combo_id,
-                    'product_source'=>$quotation_product_id,
-                    'type'=>$po_raw_qry['Product']['type'], 
-                    'qty' => $qty
-                )); 
-                $this->TransactionSource->save(); 
+                // $this->TransactionSource->create;
+                // $this->TransactionSource->set(array(
+                //     'reference_num'=>$po_raw_request_id,
+                //     'reference_type'=>'po_raw_request', 
+                //     'mode'=>'po',
+                //     'mode_num'=>$po_id,
+                //     'product_combo_id'=>$product_combo_id,
+                //     'product_source'=>$quotation_product_id,
+                //     'type'=>$po_raw_qry['Product']['type'], 
+                //     'qty' => $qty
+                // )); 
+                // $this->TransactionSource->save(); 
+                
+                
                 
             }
-            
-            
-            
-            
-            
         }
         
+        $transaction_data = [
+            'reference_type' => 'po',
+            'reference_num' => $po_product_id,
+            'type' => $reference_type,
+            'type_num' => $reference_num,
+            'client_id' => $client,
+            'user_id' => $this->Auth->user('id'),
+            'request_qty' => $qty,
+            'status' => 'receive'
+        ];
+        $logs_data = [
+            'inventory_status_id' => 'upcoming',
+            'user_id' => $this->Auth->user('id')
+        ];
+        $details_data = [];
         
-                /////////// this is universal
-                $this->InventoryJobOrder->create;
-                $this->InventoryJobOrder->set(array(
-                    'product_combo_id'=>$product_combo_id,
-                    'qty'=>$qty,
-                    'processed_qty'=>0,
-                    'reference_num'=>$po_id,
-                    'reference_type'=>$inventory_job_order_type,
-                    'mode'=>'receive',
-                    'status'=>'newest'
-                )); 
-                $this->InventoryJobOrder->save();
-                // if($this->InventoryJobOrder->save()){
-                //         echo json_encode($data); 
-                // } 
+        /////////// this is universal
+        // $this->InventoryJobOrder->create;
+        // $this->InventoryJobOrder->set(array(
+        //     'product_combo_id'=>$product_combo_id,
+        //     'qty'=>$qty,
+        //     'processed_qty'=>0,
+        //     'reference_num'=>$po_id,
+        //     'reference_type'=>$inventory_job_order_type,
+        //     'mode'=>'receive',
+        //     'status'=>'newest'
+        // )); 
+        // $this->InventoryJobOrder->save();
+        
+        
+        //////// RECOMPUTE ONLY //////////
         
         $this->loadModel('Supplier');
         $supplier = $this->Supplier->findById($supplier_id);
@@ -476,33 +521,85 @@ class PurchaseOrdersController extends AppController {
         ));
         
         if ($this->PurchaseOrder->save()) {
-            echo json_encode($data);
+            echo "\nPurchase Order saved.";
+            if($reference_type=="demo" && array_key_exists('client_service_product_id', $data)) {
+                $this->loadModel('ClientServiceProduct');
+                $get_existing_processed_qty = $this->ClientServiceProduct->findById($reference_num);
+                $ClientServiceProduct = $get_existing_processed_qty['ClientServiceProduct'];
+                $existing_processed_qty = $ClientServiceProduct['processed_qty'];
+                $DS_ClientServiceProduct = $this->ClientServiceProduct->getDataSource();
+                $DS_ClientServiceProduct->begin();
+                $this->ClientServiceProduct->id = $reference_num;
+                $this->ClientServiceProduct->set(['processed_qty'=>$existing_processed_qty+$qty]);
+                if($this->ClientServiceProduct->save()) {
+                    echo "ClientServiceProduct saved";
+                    $DS_ClientServiceProduct->commit();
+                }
+                else {
+                    echo "ClientServiceProduct error";
+                    $DS_ClientServiceProduct->rollback();
+                }
+            }
+            
+        	$data = [
+        	    'InventoryTransaction' => $transaction_data,
+    			'InventoryProductLog' => $logs_data,
+    			'InventoryProductDetail' => $details_data
+			];
+            $this->add_api($data);
         }
+        else {
+            echo "\nERROR in PO";
+        }
+        
+        //////// RECOMPUTE ONLY //////////
+        
+        return "\nDone";
     }
     
-    
-
     public function design_raw_mats() {
         $this->loadModel('QuotationProduct');
-        $this->loadModel('JrProduct');
+        // $this->loadModel('JrProduct');
+        $this->loadModel('PoRawRequest');
         $this->loadModel('Product');
+        $this->loadModel('JobRequest');
+        $this->loadModel('JobRequestProduct');
+        $this->loadModel('QuotationProductProperty');
+        $this->loadModel('JobRequestFloorplan');
         $id = $this->params['url']['id'];
-        $this->JrProduct->recursive = 2;
-        $qprod = $this->JrProduct->findById($id);
-        $this->set(compact('qprod'));
-
-
+        $job_request_type = $this->params['url']['type'];
+        
+	        // NOTE: 
+	        // jrp == job request product ,
+	        // fp == floorplan
+        	 
         $this->loadModel('Product');
         $products = $this->Product->find('all', array(
-            'conditions' => array('Product.type' => array('supply', 'customized', 'combination', 'raw'))
+            'conditions' => array('Product.type ' => array('supply'))
         ));
         $this->set(compact('products'));
-
-        $this->loadModel('PoRawRequest');
-//        $this->PoRawRequest->recursive = 2;
-        $raws = $this->PoRawRequest->findAllByJrProductId($id);
-        $this->set(compact('raws'));
-
+        
+        if($job_request_type == 'jrp'){ 
+	        $qprod = $this->JobRequestProduct->findById($id); 
+            $raws = $this->PoRawRequest->findAllByJobRequestProductId($id); 
+        }else{
+        	$qprod = $this->JobRequestFloorplan->findById($id);  
+            $raws = $this->PoRawRequest->findAllByJobRequestFloorplanId($id); 
+             
+        }
+        
+        $this->set(compact('qprod','raws','job_request_type'));
+        // $this->JrProduct->recursive = 2;
+        //old codes
+        // $qprod = $this->JrProduct->findById($id);
+        // $this->set(compact('qprod'));
+ 
+        //old coddes
+        
+        // $raws = $this->PoRawRequest->findAllByJrProductId($id);
+        
+        // $this->set(compact('raws'));
+////////////////////////////////////////////////////////////////////////////////////////
 
 //         pr($raws);
 //       
@@ -601,30 +698,91 @@ class PurchaseOrdersController extends AppController {
         $status = $this->params['url']['status'];
 
         $this->loadModel('User');
+        
+        $me = $this->Auth->user('id');  
+        $this->set(compact('me'));
+        
         $user = $this->User->findById($this->Auth->user('id'));
+        
         if ($user['User']['department_id'] == 6) {
-            $type = 'supply';
+            if($this->Auth->user('role') == 'subcon_purchasing'){
+                $type = 'jecams_subcon';
+                $pendings = $this->PurchaseOrder->find('all', array(
+                'conditions' => array(
+                    'PurchaseOrder.status' => $status,
+                    'PurchaseOrder.type' => $type,
+                    'PurchaseOrder.user_id'=>($me)
+                )
+                ));
+             }else{
+                $type = 'supply';
+                $pendings = $this->PurchaseOrder->find('all', array(
+                'conditions' => array(
+                    'PurchaseOrder.status' => $status,
+                    'PurchaseOrder.type' => $type,
+                )
+                ));
+             }
         } else if ($user['User']['department_id'] == 7) {
+            if($this->Auth->user('role') == 'subcon_purchasing'){
+                $type = 'jecams_subcon';
+                $pendings = $this->PurchaseOrder->find('all', array(
+                'conditions' => array(
+                    'PurchaseOrder.status' => $status,
+                    'PurchaseOrder.type' => $type,
+                    'PurchaseOrder.user_id'=>($me)
+                )
+                ));
+             }else{
+                $type = 'raw';
+                $pendings = $this->PurchaseOrder->find('all', array(
+                'conditions' => array(
+                    'PurchaseOrder.status' => $status,
+                    'PurchaseOrder.type' => $type,
+                )
+                 ));
+                    
+            }
+        } else if ($user['User']['role'] == 'purchasing_supervisor') {
             $type = 'raw';
-        }
-        $pendings = $this->PurchaseOrder->find('all', array(
+            $pendings = $this->PurchaseOrder->find('all', array(
             'conditions' => array(
-                'PurchaseOrder.status' => $status,
-                'PurchaseOrder.type' => $type,
+                'PurchaseOrder.status' => $status, 
             )
         ));
+        }
+        // $pendings = $this->PurchaseOrder->find('all', array(
+        //     'conditions' => array(
+        //         'PurchaseOrder.status' => $status,
+        //         'PurchaseOrder.type' => $type,
+        //     )
+        // ));
         
 
         $this->loadModel('Product');
-        $products = $this->Product->find('all');
+        $department_name = $this->Auth->user('Department.name');
+        if($department_name == "Purchasing (Raw)") {
+            $products = $this->Product->find('all', ['conditions'=>['type'=>'raw']]);
+        }
+        elseif($department_name == "Purchasing (Supply)") {
+            $products = $this->Product->find('all', ['conditions'=>['type'=>['supply','customized']]]);
+        }
+        else {
+            $products = $this->Product->find('all');
+        }
+        
         $this->set(compact('products'));
         $this->set(compact('pendings', 'type'));
+        
+        $this->loadModel('Client');
+        $get_clients = $this->Client->find('all');
+        $this->set(compact('get_clients'));
     }
     public function po_product() {
         $id = $this->params['url']['id'];
         $this->PurchaseOrder->recursive = 3;
         $po = $this->PurchaseOrder->findById($id);
-//        pr($po);
+        // pr($po); exit;
         $this->set(compact('po'));
 
         $this->loadModel('User');
@@ -659,6 +817,24 @@ class PurchaseOrdersController extends AppController {
             echo json_encode($data);
         }
     }
+    
+    public function updatePoProductQty() {
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $po_product_id = $data['po_product_id'];
+        $qty = $data['qty'];
+
+        $this->loadModel('PurchaseOrderProduct');
+
+        $this->PurchaseOrderProduct->id = $po_product_id;
+        $this->PurchaseOrderProduct->set(array(
+            'qty' => $qty
+        ));
+        if ($this->PurchaseOrderProduct->save()) {
+            echo json_encode($data);
+        }
+    }
+    
     public function poAmounts() {
 
         $this->autoRender = false;
@@ -696,8 +872,10 @@ class PurchaseOrdersController extends AppController {
         }
         if($ewt_type == 'one'){
             $new_ewt = $new_total_purchased * .01;
-        } else{
+        } else if($ewt_type == 'two'){
             $new_ewt = $new_total_purchased * .02;
+        } else{
+            $new_ewt = 0;
         }
         if ((int)$vat == 0) {
             //computation for vat inc
@@ -927,5 +1105,105 @@ class PurchaseOrdersController extends AppController {
         $DS_PurchaseOrder->commit();
         
         return $empty;
+    }
+    
+    
+    public function view_po() {
+        $id = $this->params['url']['id'];
+        $this->PurchaseOrder->recursive = 3;
+        $po = $this->PurchaseOrder->findById($id);
+//        pr($po);
+        $this->set(compact('po'));
+
+        $this->loadModel('User');
+        $user = $this->User->findById($this->Auth->user('id'));
+        if ($user['User']['department_id'] == 6) {
+            $type = 'supply';
+        } else if ($user['User']['department_id'] == 7) {
+            $type = 'raw';
+        }else{
+            $type = '';
+        }
+        
+        $stat = $po['PurchaseOrder']['status'];
+        $this->loadModel('Product');
+        $products = $this->Product->find('all');
+        $this->set(compact('products', 'type', 'stat'));
+        
+    }
+    
+    public function cancel_po() {
+        $this->autoRender = false;
+        $data = $this->request->data;
+        $poid = $data['poid'];
+        $reason = $data['reason'];
+        $userin = $this->Auth->user('id');
+        
+        $purchase_order_set = ['cancelled_by'=>$userin,
+                               'status'=>'cancelled',
+                               'reason'=>$reason];
+        $DS_PurchaseOrder = $this->PurchaseOrder->getDataSource();
+        $DS_PurchaseOrder->begin();
+        $this->PurchaseOrder->id = $poid;
+        $this->PurchaseOrder->set($purchase_order_set);
+        if($this->PurchaseOrder->save()) {
+            echo "PurchaseOrder saved";
+            
+            // ==============================================================> START OF COMPLICATION
+            $this->loadModel('PurchaseOrderProduct');
+            $this->loadModel('QuotationProduct');
+            $getAllPOProducts = $this->PurchaseOrderProduct->find('all',
+                ['conditions'=>['purchase_order_id'=>$poid,
+                                'deleted'=>null],
+                 'fields'=>['PurchaseOrderProduct.id',
+                            'PurchaseOrderProduct.processed_qty',
+                            'PurchaseOrderProduct.reference_type',
+                            'PurchaseOrderProduct.reference_num',
+                            'PurchaseOrderProduct.additional']]);
+            foreach($getAllPOProducts as $retAllPOProducts) {
+                $PurchaseOrderProducts = $retAllPOProducts['PurchaseOrderProduct'];
+                $PurchaseOrderProducts_id = $PurchaseOrderProducts['id'];
+                $PurchaseOrderProducts_additional = $PurchaseOrderProducts['additional'];
+                $PurchaseOrderProducts_processed_qty = $PurchaseOrderProducts['processed_qty'];
+                $PurchaseOrderProducts_reference_type = $PurchaseOrderProducts['reference_type'];
+                $PurchaseOrderProducts_qp_id = $PurchaseOrderProducts['reference_num'];
+                
+                if($PurchaseOrderProducts_reference_type=="quotation") {
+                    $getAllQuotationProducts = $this->QuotationProduct->findById($PurchaseOrderProducts_qp_id,
+                        ['QuotationProduct.id', 'QuotationProduct.processed_qty']);
+                    
+                    $QuotationProducts_processed_qty = 0;
+                    if(!empty($getAllQuotationProducts)) {
+                        if(array_key_exists('QuotationProduct', $getAllQuotationProducts)) {
+                            if(!empty($getAllQuotationProducts['QuotationProduct'])) {
+                                $QuotationProducts_processed_qty = $getAllQuotationProducts['QuotationProduct']['processed_qty'];
+                            }
+                        }
+                    }
+                    
+                    $total_insert_qty = $QuotationProducts_processed_qty - $PurchaseOrderProducts_processed_qty;
+                    if($PurchaseOrderProducts_additional==0) {
+                        $this->QuotationProduct->id=$PurchaseOrderProducts_qp_id;
+                        $this->QuotationProduct->set(['processed_qty'=>$total_insert_qty,
+                                                      'status'=>'approved']);
+                        $this->QuotationProduct->save();
+                    }
+                }
+                
+                $this->PurchaseOrderProduct->id = $PurchaseOrderProducts_id;
+                $this->PurchaseOrderProduct->set(['deleted'=>date("Y-m-d H:m:s")]);
+                $this->PurchaseOrderProduct->save();
+                // else : demo, transmittal, service_unit, po_raw_request
+            }
+            // ==============================================================> END OF COMPLICATIONS THANKS BATMAN
+            
+            $DS_PurchaseOrder->commit();
+        }
+        else {
+            echo "Error in PurchaseOrder";
+            $DS_PurchaseOrder->rollback();
+        }
+        echo json_encode($data);
+        return "Executed Everything";
     }
 }

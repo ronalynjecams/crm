@@ -72,8 +72,8 @@
 			<?php echo $this->Html->link($productSource['ProdInvLocation']['id'], array('controller' => 'prod_inv_locations', 'action' => 'view', $productSource['ProdInvLocation']['id'])); ?>
 		</td>
 						<td><?php echo h($productSource['ProductSource']['status']); ?>&nbsp;</td>
-						<td><?php echo h($productSource['ProductSource']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productSource['ProductSource']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSource['ProductSource']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSource['ProductSource']['modified']); ?>&nbsp;</td>
 						<td><?php echo h($productSource['ProductSource']['type']); ?>&nbsp;</td>
 						<td><?php echo h($productSource['ProductSource']['processed_qty']); ?>&nbsp;</td>
 						<td class="actions">

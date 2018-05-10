@@ -64,14 +64,14 @@
 <tr>
 		<th><?php echo __('Date Acquired'); ?></th>
 		<td>
-			<?php echo h($deliveryPaper['DeliveryPaper']['date_acquired']); ?>
+			<?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['date_acquired']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date Processed'); ?></th>
 		<td>
-			<?php echo h($deliveryPaper['DeliveryPaper']['date_processed']); ?>
+			<?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['date_processed']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -85,14 +85,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($deliveryPaper['DeliveryPaper']['created']); ?>
+			<?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($deliveryPaper['DeliveryPaper']['modified']); ?>
+			<?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -117,28 +117,30 @@ class ProductionsController extends AppController {
 		
 		$this->loadModel('Production');
 		$this->loadModel('ProductionLog');
-		$this->loadModel('User');
 		$this->loadModel('QuotationProduct');
 		$this->loadModel('Quotation');
 		$this->loadModel('ProductionSection');
 		
-		$productions = $this->Production->find('all', ['conditions'=>
-			['Production.status'=>$status]]);
+		$this->Production->recursive = 2;
+		$productions = $this->Production->find('all',
+		['conditions'=>
+			['Production.status'=>$status,
+			 'DATE(Production.created) >='=>'2018-05-03'],
+		 'fields'=>
+			['Production.id', 'Production.quotation_product_id',
+			 'Production.product_id', 'Product.*',
+			 'Production.job_request_product_id', 'Client.name',
+			 'JobRequestProduct.id', 'JobRequestProduct.job_request_id',
+			 'QuotationProduct.id', 'QuotationProduct.other_info']]);
 		
 		$quotation_ids = [];
 		foreach($productions as $production_obj) {
 			$production = $production_obj['Production'];
 			$production_id = $production['id'];
-			$jr_product = $production_obj['JrProduct'];
-			$jr_product_id = $production['jr_product_id'];
-			$jr_product_user_id = $jr_product['user_id'];
+			$jr_product = $production_obj['JobRequestProduct'];
+			$jr_product_id = $production['job_request_product_id'];
 			$quotation_product_id = $production['quotation_product_id'];
 			$quotation_product = $production_obj['QuotationProduct'];
-			
-			$this->User->recursive = -1;
-			$users[$jr_product_id] = $this->User->find('all', ['conditions'=>
-				['id'=>$jr_product_user_id],
-				 'fields'=>['last_name','first_name']]);
 			
 			$this->ProductionLog->recursive = -1;
 			$production_logs[$production_id] = $this->ProductionLog->find('all',
@@ -163,7 +165,7 @@ class ProductionsController extends AppController {
 		}
 		
 		$production_sections = $this->ProductionSection->find('all');
-		$this->set(compact('status', 'productions', 'production_logs', 'users',
+		$this->set(compact('status', 'productions', 'production_logs',
 						   'quotations', 'quotation_products', 'production_sections'));
 	}
 	
@@ -224,13 +226,6 @@ class ProductionsController extends AppController {
 		$userin = $this->Auth->user('id');
 		
 		$production_set = ['status'=>'ongoing'];
-		$production_process_set = ['production_id'=>$production_id,
-								   'production_section_id'=>$section,
-								   'user_id'=>$userin,
-								   'expected_start'=>$expected_start,
-								   'expected_end'=>$expected_end,
-								   'status'=>'pending'];
-		echo json_encode($production_process_set);
 		
 		$this->loadModel('Production');
 		$this->loadModel('ProductionLog');
@@ -238,7 +233,6 @@ class ProductionsController extends AppController {
 		
 		$DS_Production = $this->Production->getDataSource();
 		$DS_ProductionLog = $this->ProductionLog->getDataSource();
-		$DS_ProductionProcess = $this->ProductionProcess->getDataSource();
 		
 		$DS_Production->begin();
 		$this->Production->id = $production_id;
@@ -246,27 +240,38 @@ class ProductionsController extends AppController {
 		
 		if($this->Production->save()) {
 			echo json_encode("Production saved");
+
+			$production_process_set = ['production_id'=>$production_id,
+									   'production_section_id'=>$section,
+									   'user_id'=>$userin,
+									   'expected_start'=>$expected_start,
+									   'expected_end'=>$expected_end,
+									   'status'=>'pending'];
 			
+			$DS_ProductionProcess = $this->ProductionProcess->getDataSource();
 			$DS_ProductionProcess->begin();
 			$this->ProductionProcess->create();
 			$this->ProductionProcess->set($production_process_set);
-			
 			if($this->ProductionProcess->save()) {
 				echo json_encode("ProductionProcess saved");
-				$prod_process_id = $this->ProductionProcess->getLastInsertId();
-				$production_log_set = ['production_id'=>$production_id,
-												   'production_process_id'=>$prod_process_id,
-												   'type'=>'production_process',
-												   'status'=>'pending',
-												   'user_id'=>$userin];
+				$prodprocessid = $this->ProductionProcess->getLastInsertId();
+				$production_log_set = ['production_process_id'=>$prodprocessid,
+									   'type'=>'production_process',
+									   'status'=>'pending',
+									   'user_id'=>$userin];
 				$DS_ProductionLog->begin();
 				$this->ProductionLog->create();
 				$this->ProductionLog->set($production_log_set);
-				
 				if($this->ProductionLog->save()) {
+					echo json_encode("ProdcutionLog save");
 					$DS_ProductionLog->commit();
 					$DS_ProductionProcess->commit();
 					$DS_Production->commit();
+				}
+				else {
+					echo json_encode("Error in ProductionLog");
+					$DS_ProductionProcess->rollback();
+					$DS_Production->rollback();
 				}
 			}
 			else {

@@ -60,8 +60,8 @@
 		</td>
 						<td><?php echo h($clientService['ClientService']['processed_by']); ?>&nbsp;</td>
 						<td><?php echo h($clientService['ClientService']['service_code']); ?>&nbsp;</td>
-						<td><?php echo h($clientService['ClientService']['created']); ?>&nbsp;</td>
-						<td><?php echo h($clientService['ClientService']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientService['ClientService']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientService['ClientService']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $clientService['ClientService']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $clientService['ClientService']['id']), array('escape' => false)); ?>

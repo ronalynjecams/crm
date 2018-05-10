@@ -48,14 +48,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($invLocation['InvLocation']['created']); ?>
+			<?php echo time_elapsed_string($invLocation['InvLocation']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($invLocation['InvLocation']['modified']); ?>
+			<?php echo time_elapsed_string($invLocation['InvLocation']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -97,8 +97,8 @@
 			<td><?php echo $invLog['released_to']; ?></td>
 			<td><?php echo $invLog['received_from']; ?></td>
 			<td><?php echo $invLog['quotation_product_id']; ?></td>
-			<td><?php echo $invLog['created']; ?></td>
-			<td><?php echo $invLog['modified']; ?></td>
+			<td><?php echo time_elapsed_string($invLog['created']); ?></td>
+			<td><?php echo time_elapsed_string($invLog['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'inv_logs', 'action' => 'view', $invLog['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'inv_logs', 'action' => 'edit', $invLog['id']), array('escape' => false)); ?>

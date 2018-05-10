@@ -52,8 +52,8 @@
 								<td>
 			<?php echo $this->Html->link($deliveryInstaller['User']['id'], array('controller' => 'users', 'action' => 'view', $deliveryInstaller['User']['id'])); ?>
 		</td>
-						<td><?php echo h($deliveryInstaller['DeliveryInstaller']['created']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryInstaller['DeliveryInstaller']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryInstaller['DeliveryInstaller']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryInstaller['DeliveryInstaller']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $deliveryInstaller['DeliveryInstaller']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $deliveryInstaller['DeliveryInstaller']['id']), array('escape' => false)); ?>

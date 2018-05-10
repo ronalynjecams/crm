@@ -51,14 +51,14 @@
 					<tr>
 						<td><?php echo h($collectionPaper['CollectionPaper']['id']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['ref_number']); ?>&nbsp;</td>
-						<td><?php echo h($collectionPaper['CollectionPaper']['ref_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collectionPaper['CollectionPaper']['ref_date']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['amount']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($collectionPaper['AccountingPaper']['name'], array('controller' => 'accounting_papers', 'action' => 'view', $collectionPaper['AccountingPaper']['id'])); ?>
 		</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['status']); ?>&nbsp;</td>
-						<td><?php echo h($collectionPaper['CollectionPaper']['created']); ?>&nbsp;</td>
-						<td><?php echo h($collectionPaper['CollectionPaper']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collectionPaper['CollectionPaper']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collectionPaper['CollectionPaper']['modified']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['user_id']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['quotation_id']); ?>&nbsp;</td>
 						<td><?php echo h($collectionPaper['CollectionPaper']['collection_id']); ?>&nbsp;</td>

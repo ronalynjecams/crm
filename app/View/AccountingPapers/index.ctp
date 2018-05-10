@@ -46,8 +46,8 @@
 						<td><?php echo h($accountingPaper['AccountingPaper']['id']); ?>&nbsp;</td>
 						<td><?php echo h($accountingPaper['AccountingPaper']['name']); ?>&nbsp;</td>
 						<td><?php echo h($accountingPaper['AccountingPaper']['type']); ?>&nbsp;</td>
-						<td><?php echo h($accountingPaper['AccountingPaper']['created']); ?>&nbsp;</td>
-						<td><?php echo h($accountingPaper['AccountingPaper']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($accountingPaper['AccountingPaper']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($accountingPaper['AccountingPaper']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $accountingPaper['AccountingPaper']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $accountingPaper['AccountingPaper']['id']), array('escape' => false)); ?>

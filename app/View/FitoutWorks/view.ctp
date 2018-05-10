@@ -77,7 +77,7 @@
 <tr>
 		<th><?php echo __('Date Accomplished'); ?></th>
 		<td>
-			<?php echo h($fitoutWork['FitoutWork']['date_accomplished']); ?>
+			<?php echo time_elapsed_string($fitoutWork['FitoutWork']['date_accomplished']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -98,14 +98,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($fitoutWork['FitoutWork']['created']); ?>
+			<?php echo time_elapsed_string($fitoutWork['FitoutWork']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($fitoutWork['FitoutWork']['modified']); ?>
+			<?php echo time_elapsed_string($fitoutWork['FitoutWork']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

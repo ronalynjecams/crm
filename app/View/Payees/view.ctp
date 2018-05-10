@@ -91,7 +91,7 @@
 			<td><?php echo $paymentRequestCheque['payment_request_id']; ?></td>
 			<td><?php echo $paymentRequestCheque['cheque_number']; ?></td>
 			<td><?php echo $paymentRequestCheque['payee_id']; ?></td>
-			<td><?php echo $paymentRequestCheque['cheque_date']; ?></td>
+			<td><?php echo time_elapsed_string($paymentRequestCheque['cheque_date']); ?></td>
 			<td><?php echo $paymentRequestCheque['void_reason']; ?></td>
 			<td><?php echo $paymentRequestCheque['bank_id']; ?></td>
 			<td><?php echo $paymentRequestCheque['status']; ?></td>

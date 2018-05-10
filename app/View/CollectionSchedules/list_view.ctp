@@ -1,19 +1,22 @@
  
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
+<link href="http://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>  
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
+
+<link href="/css/plug/bootstrap-datepicker/bootstrap-datepicker.min.css" media="all" rel="stylesheet">
+<script src="/css/plug/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
@@ -32,12 +35,12 @@
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
 
-                    <?php if (($UserIn['User']['role'] == 'collection_officer')) { ?>
-                        <button class="btn btn-mint" id="addLeadBtn" >
+                 <?php if (($UserIn['User']['role'] == 'collection_officer') || ($UserIn['User']['role'] == 'accounting_head') || ($UserIn['User']['role'] == 'accounting_assistant')) { ?>
+                            <button class="btn btn-mint" id="collection-modal" >
                             <i class="fa fa-print"></i>  Print
-                        </button>
+                        </button> 
                     <?php } ?>
-
+                    
                 </h3>
                 <!--<h3 class="panel-title">Basic Data Tables with responsive plugin</h3>-->
             </div>
@@ -71,7 +74,7 @@
                             <tr>
                                 <td> 
                                     <?php
-                                    echo date('F d, Y', strtotime($list['CollectionSchedule']['created']));
+                                    echo time_elapsed_string($list['CollectionSchedule']['created']);
                                     echo '<br/><small>' . date('h:i a', strtotime($list['CollectionSchedule']['created'])) . '</small>';
                                     ?> 
                                 </td>
@@ -112,7 +115,7 @@
 </div>  
 
 <!--===================================================--> 
-<div class="modal fade" id="add-collector" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="add-collector" role="dialog"   aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -144,6 +147,7 @@
     </div>
 </div>
 <!--===================================================-->
+
 <!--===================================================--> 
 <div class="modal fade" id="resched-collection" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
@@ -195,13 +199,63 @@
     </div>
 </div>
 
+<!--===================================================--> 
+<div class="modal fade" id="print-schedule" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header--> 
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Print Collection Schedule</h4>
+            </div>
+            <!--Modal body-->
+            <div class="modal-body">
+                <div id="demo-dp-range"> 
+                    <div class="col-sm-6"> Start </div>
+                    <div class="col-sm-6"> End </div>
+                    <div class="col-sm-6"> <input type="date" class="form-control" id="print_start" /> </div>
+                    <div class="col-sm-6">  <input type="date" class="form-control" id="print_end" /> </div>
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="PrintCollectionBtn">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--===================================================-->
+ 
+    
 
 <script>
-    $(document).ready(function () {
+    $("#PrintCollectionBtn").on("click", function () {  
+        var start = $('#print_start').val(); 
+        var end = $('#print_end').val(); 
+        window.open("/reports/collection_schedule?start="+start+"&&end="+end, '_blank');
+        // window.location.replace("/reports/collection_schedule?start="+start+"&&end="+end);
+    });
+    $(document).ready(function () { 
+        $("#collector_id").select2({
+            placeholder: "Select Collector",
+            width: '100%',
+            allowClear: false
+        });
+        
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
             "stateSave": true
+        });
+        
+        $('#demo-dp-range .input-daterange').datepicker({
+            format: "MM dd, yyyy",
+            todayBtn: "linked",
+            autoclose: true,
+            todayHighlight: true
         });
     }); 
 
@@ -212,6 +266,12 @@
             $('#add-collector').modal('show');
 
         });
+    });
+    
+    $("#collection-modal").on("click", function () {
+        //var id = $(this).data('id');
+        //$('#collector_schedule_id').val(id);
+        $('#print-schedule').modal('show');
     });
     
 

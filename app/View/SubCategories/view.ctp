@@ -59,14 +59,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($subCategory['SubCategory']['created']); ?>
+			<?php echo time_elapsed_string($subCategory['SubCategory']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($subCategory['SubCategory']['modified']); ?>
+			<?php echo time_elapsed_string($subCategory['SubCategory']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -102,8 +102,8 @@
 			<td><?php echo $product['name']; ?></td>
 			<td><?php echo $product['image']; ?></td>
 			<td><?php echo $product['sub_category_id']; ?></td>
-			<td><?php echo $product['created']; ?></td>
-			<td><?php echo $product['modified']; ?></td>
+			<td><?php echo time_elapsed_string($product['created']); ?></td>
+			<td><?php echo time_elapsed_string($product['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'products', 'action' => 'view', $product['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'products', 'action' => 'edit', $product['id']), array('escape' => false)); ?>

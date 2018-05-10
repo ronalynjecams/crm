@@ -70,7 +70,7 @@
 			<?php echo $this->Html->link($paymentInvoice['User']['id'], array('controller' => 'users', 'action' => 'view', $paymentInvoice['User']['id'])); ?>
 		</td>
 						<td><?php echo h($paymentInvoice['PaymentInvoice']['valid_purchase']); ?>&nbsp;</td>
-						<td><?php echo h($paymentInvoice['PaymentInvoice']['reference_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentInvoice['PaymentInvoice']['reference_date']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $paymentInvoice['PaymentInvoice']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $paymentInvoice['PaymentInvoice']['id']), array('escape' => false)); ?>

@@ -1,19 +1,14 @@
+<!--SWEET ALERT-->
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script> 
 
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
-<!--<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">-->
-<!--<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">-->
-<!--<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">-->
+<!--SELECT2-->
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
-<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<!--<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>-->
-<!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
-<script src="../js/sweetalert.min.js"></script>  
-<script src="../plugins/chosen/chosen.jquery.min.js"></script>
+<!--CHOSEN-->
+<link href="/css/plug/chosen/chosen.min.css" rel="stylesheet">
+<script src="/css/plug/chosen/chosen.jquery.min.js"></script>
 
 
 <!--CONTENT CONTAINER-->
@@ -56,28 +51,32 @@
                     ?>
                     
                     <?php
-                    // if ((!is_null($delivery_schedule['Quotation']['ship_address'])) && $delivery_schedule['Quotation']['ship_address'] != "") {
-                        // echo $delivery_schedule['Quotation']['ship_address'] . ', ' . $delivery_schedule['Quotation']['ship_geolocation'];
-                    // } else {
                         echo $delivery_schedule['DeliverySchedule']['shipping_address'];
                         echo '<input type="hidden" id="shipping_address" value="'.$delivery_schedule['DeliverySchedule']['shipping_address'].'">';
-                    // }
-                    ?><a class="btn btn-xs btn-pink" id="bill_ship_direction" href="http://maps.google.com/?q=<?php echo $maps[0] . ',' . $maps[1]; ?>" target="_blank"> <i class="fa fa-external-link"></i> </a>
+                        $map_final = "<font class='text-danger'>Not Specified</font>";
+                        if(!empty($maps)) {
+                            $maps0 = '';
+                            $maps1 = '';
+                            
+                            if(count($maps)>1) {
+                                $maps0 = $maps[0];
+                                $maps1 = $maps[1];
+                            }
+                            
+                            $map_final = $maps0 . ',' . $maps1;
+                        }
+                    ?><a class="btn btn-xs btn-pink" id="bill_ship_direction" href="http://maps.google.com/?q=<?php echo $map_final; ?>" target="_blank"> <i class="fa fa-external-link"></i> </a>
 
                 </div> 
                 <?php
-                // }
                 ?> 
-                <!--    </div>
-                </div>-->
                 <?php
             } else {
-                echo '
-<div class="col-sm-12"><b>Supplier</b></div> 
-<div class="col-sm-12"><b>Pickup Address</b></div>';
+                echo '<div class="col-sm-12"><b>Supplier</b></div> 
+                      <div class="col-sm-12"><b>Pickup Address</b></div>';
             }
             ?>
-            <div class="col-sm-6"><b>DR #: </b> JEC-<?php echo $delivery_schedule['DeliverySchedule']['dr_number']; ?></div>
+            <div class="col-sm-6"><b>DR #: </b> <?php echo $delivery_schedule['DeliverySchedule']['dr_number']; ?></div>
             <div class="col-sm-6"><b>Delivery Request Schedule: </b><?php echo date('F d, Y', strtotime($delivery_schedule['DeliverySchedule']['delivery_date'])) . ' <small> [' . date('h:i a', strtotime($delivery_schedule['DeliverySchedule']['delivery_time'])) . '] </small>'; ?></div>
         </div>
     </div> 
@@ -104,10 +103,10 @@
                         <!--<div class="col-sm-12">--> 
                         <label><b>Select Vehicle</b></label>
                         <select class="form-control" id="vehicle_id">
-                            <option></option>
+                            <option>---- Select Vehicle ----</option> 
                             <?php
                             foreach ($vehicles as $vehicle) {
-                                echo '<option value="' . $vehicle['Vehicle']['id'] . '">' . $vehicle['Vehicle']['brand'] . ' - ' . $vehicle['Vehicle']['brand'] . '</option>';
+                                echo '<option value="' . $vehicle['Vehicle']['id'] . '">' . $vehicle['Vehicle']['plate_number'] . ' - ' . $vehicle['Vehicle']['brand'] . '</option>';
                             }
                             ?>
                         </select>
@@ -115,7 +114,7 @@
 
                         <label><b>Select Driver</b></label>
                         <select class="form-control" id="driver_id">
-                            <option></option>
+                            <option>---- Select Driver ----</option>
                             <?php
                             foreach ($installers as $intaller) {
                                 echo '<option value="' . $intaller['User']['first_name'] . ' ' . $intaller['User']['last_name'] . '">' . $intaller['User']['first_name'] . ' ' . $intaller['User']['last_name'] . '</option>';
@@ -177,8 +176,27 @@
 
     $(document).ready(function () {
 
+        $("#typo").select2({
+            width: '100%',
+            allowClear: false
+        });
+        
+        $("#vehicle_id").select2({
+            width: '100%',
+            allowClear: false
+        });
+        
+        $("#driver_id").select2({
+            width: '100%',
+            allowClear: false
+        });
+        
+        $("#people_ids").select2({
+            width: '100%',
+            allowClear: false
+        });
+
         $("#error_pips").remove();
-        $('#people_ids').chosen({width: '100%'});
 
         $('#transportifyDiv').hide();
         $('#jecamsDiv').hide();
@@ -212,8 +230,12 @@
             
             var people = $('#people_ids').val();
             var typo = $('#typo').val();
-            var vehicle_id = $('#vehicle_id').val();
-            var driver_id = $('#driver_id').val();
+            var vehicle_id = 0;
+            var driver_id = 0;
+            if(typo=="jecams") {
+                vehicle_id = $('#vehicle_id').val();
+                driver_id = $('#driver_id').val();
+            }
             var pickup_date = $('#pickup_date').val();
             var pickup_time = $('#pickup_time').val();
             var expected_start_date = $('#expected_start_date').val();
@@ -251,18 +273,29 @@
                 } else {
                     if (expected_start_time == "") {
                         expected_start_time = null;
-                        document.getElementById('expected_start_date').style.borderColor = "red";
+                        swal({
+                            title: "Oops!",
+                            text: "Time cannot be empty. Please indicate time and try again.",
+                            type: "warning"
+                        });
                     } else {
-
                         if (typo == 'jecams') {
-                            if (vehicle_id == "") {
+                            if (vehicle_id == "---- Select Vehicle ----") {
                                 vehicle_id = 0;
-                                document.getElementById('vehicle_id').style.borderColor = "red";
+                                swal({
+                                    title: "Oops!",
+                                    text: "Vehicle cannot be empty. Please indicate vehicle and try again.",
+                                    type: "warning"
+                                });
                             } else {
 
-                                if (driver_id == "") {
+                                if (driver_id == "---- Select Driver ----") {
                                     driver_id = 0;
-                                    document.getElementById('driver_id').style.borderColor = "red";
+                                    swal({
+                                        title: "Oops!",
+                                        text: "Driver cannot be empty. Please indicate driver and try again.",
+                                        type: "warning"
+                                    });
                                 } else {
                                     ///process jecams
 //                                    console.log('process jecams');
@@ -290,6 +323,7 @@
             }
 
         });
+        
         function saveItenerary(data) {  
             console.log(data);
             
@@ -297,11 +331,11 @@
                     url: "/delivery_iteneraries/addItenerary",
                     type: 'POST',
                     data: {'data': data},
-                    dataType: 'json',
+                    dataType: 'text',
                     success: function (dd) {
 //                        location.reload();
-                window.location.replace("/delivery_iteneraries/list_view?status=scheduled" );
-//            console.log(dd);
+                        window.location.replace("/delivery_iteneraries/list_view?status=scheduled" );
+                            // console.log(dd);
                     },
                     error: function (dd) {
                         console.log('error'+dd);
@@ -309,16 +343,4 @@
                 });
         }
     });
-
-
-
-
-
-
-
-
-
-
-
-
 </script>

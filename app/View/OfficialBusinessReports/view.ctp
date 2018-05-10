@@ -55,14 +55,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($officialBusinessReport['OfficialBusinessReport']['created']); ?>
+			<?php echo time_elapsed_string($officialBusinessReport['OfficialBusinessReport']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($officialBusinessReport['OfficialBusinessReport']['modified']); ?>
+			<?php echo time_elapsed_string($officialBusinessReport['OfficialBusinessReport']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

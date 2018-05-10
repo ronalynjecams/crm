@@ -109,7 +109,7 @@ class BillsController extends AppController {
 	
 	
 	public function view_bills(){
-		$this->Bill->recursive=4;
+// 		$this->Bill->recursive=4;
 		$bills = $this->Bill->find('all');
 		$this->loadModel('InvLocation');
 		$this->loadModel('BillAccount');

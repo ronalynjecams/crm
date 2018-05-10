@@ -71,14 +71,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($prodInvCondition['ProdInvCondition']['created']); ?>
+			<?php echo time_elapsed_string($prodInvCondition['ProdInvCondition']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($prodInvCondition['ProdInvCondition']['modified']); ?>
+			<?php echo time_elapsed_string($prodInvCondition['ProdInvCondition']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -1,12 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>  
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -56,17 +56,24 @@
                                 <td >
                                     <?php
                                     if ($this->params['url']['type'] != 'accomplished') {
-                                        echo date('F d, Y', strtotime($jrprod['JobRequest']['created']));
+                                        echo time_elapsed_string($jrprod['JobRequest']['created']);
                                        echo '<br/><small>' . date('h:i a', strtotime($jrprod['JobRequest']['created'])) . '</small>';
                                     } else {
-                                        echo date('F d, Y', strtotime($jrprod['JobRequest']['modified']));
+                                        echo time_elapsed_string($jrprod['JobRequest']['modified']);
                                         echo '<br/><small>' . date('h:i a', strtotime($jrprod['JobRequest']['modified'])) . '</small>';
+                                    }
+                                    $first_name = '<font class="text-danger">Unknown</font>';
+                                    if(!empty($jrprod['Quotation'][0]['User'])) {
+                                        $first_name_tmp = $jrprod['Quotation'][0]['User']['first_name'];
+                                        if($first_name_tmp!="") {
+                                            $first_name = $jrprod['Quotation'][0]['User']['first_name'];
+                                        }
                                     }
                                    ?>
                                 </td>
                                 <td ><?php echo $jrprod['Quotation'][0]['Client']['name']; ?><br/>
                                     <small>[ <?php echo $jrprod['JobRequest']['jr_number']; ?> ]</small></td>
-                                <td ><?php echo $jrprod['Quotation'][0]['User']['first_name']; ?></td>  
+                                <td ><?php echo $first_name; ?></td>  
 
                                 <td> <?php
                                     if ($this->params['url']['type'] != 'accomplished') {

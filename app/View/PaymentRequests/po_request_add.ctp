@@ -1,16 +1,16 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 <!--END IMPORTS-->
 
 <div id="content-container">
@@ -25,12 +25,25 @@
             <div class="panel-body">
                  <div class="col-lg-6">
     		        <div style="margin-top:13px;">
-                        <input type="checkbox" id="cheque" />
+    		            <?php
+    		            if($type=="cheque") {
+    		                echo '
+                                <input type="checkbox" id="cheque" checked />';
+    		            }
+    		            else { echo '<input type="checkbox" id="cheque" />'; }
+    		            ?>
                     	<label style="margin-bottom:8px;vertical-align:middle;">Cheque</label>
                 	</div>
             	</div>
             	<div class="col-lg-6">
-            	    <div id="hide_show_payee">
+            	    <?php
+            	    if($type=="pettycash") {
+                        echo '<input type="text" class="form-control"
+                                     id="input_control_number"
+                                     placeholder="Control Number" />';            	        
+            	    }
+            	    ?>
+            	    <div id="hide_show_payee" hidden>
             	        <select class="form-control" id="select_payee">
             	            <option>Select Payee</option>
                     		<?php
@@ -69,6 +82,28 @@
                 <div class="col-lg-12" id="div_selected_purchase_order" style="margin-top:20px;">
                     <center><label style="font-weight:bold;font-size:14px;">Selected Purchase Order</label></center><br/>
                 </div>
+                <?php if(
+                    $UserIn['User']['role']=="proprietor" ||
+                    $UserIn['User']['role']=="proprietor_secretary" ||
+                    $UserIn['Department']['name']=="Purchasing (Supply)" ||
+                    $UserIn['Department']['name']=="Purchasing (Raw)" ||
+                    $UserIn['Department']['name']=="Purchasing"
+                    ): ?>
+                    <div class="col-lg-12">
+                        <select class="form-control" id="select_requested_by">
+                    	    <option>Requested By</option>
+                    	    <?php
+                    		foreach($users as $user) {
+                    		    $user_id = $user['User']['id'];
+                    		    $first_name = $user['User']['first_name'];
+                    		    $last_name = $user['User']['last_name'];
+                    		    $whole_name = $first_name." ".$last_name;
+                    		    echo '<option value="'.$user_id.'">'.$whole_name.'</option>';
+                    		}
+                    		?>
+                    	</select>
+                    </div>
+                <?php endif; ?>
                 <center>
                     <button class="btn btn-info" id="btn_send_request_payment"
                         style="margin-top:20px;">
@@ -78,19 +113,25 @@
         	</div>
         </div>
     </div>
+    <input type="hidden" id="input_values" />
 </div>
 
 <!--JAVASCRIPT METHODS-->
 <script>
     $(document).ready(function() {
+        if("<?php echo $type; ?>"=="cheque") {
+            $("#hide_show_payee").show();
+        }
+        else {
+            $("#hide_show_payee").hide();
+        }
+        
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
             "stateSave": true
         });
-        
-        $("#hide_show_payee").hide();
-        
+
         $("#select_payee").select2({
             placeholder: "Select Payee",
             allowClear: true,
@@ -134,28 +175,41 @@
             $(this).select2({ width: 'resolve' });  
             $("#div_select_po_no").removeAttr('hidden');
             
-            $.get('/payment_requests/get_po', {id:id},
-            function (data) {
-                console.log(data);
-                if(data.length!=0) {
-                    for (i = 0; i < data.length; i++) {
-                        $('#select_po_no').append($('<option>', {
-                            value: data[i]['PurchaseOrder']['id'],
-                            text: data[i]['PurchaseOrder']['po_number']
-                        }));
-                    }
-                }
-                else {
+            $.ajax({
+                url: "/payment_requests/get_po",
+                data: {"data": id},
+                type: "POST",
+                dataType: "json",
+                success: function(success) {
+                    console.log(success);
+                    var data = $.makeArray(success);
+                    console.log(data);
                     $('#select_po_no').empty().append('<option></option>');
-                    $("#select_po_no").select2({
-                        placeholder: "No P.O. Number",
-                        allowClear: true,
-                        width: '100%'
-                    });
+                    for (i = 0; i < data.length; i++) {
+                        var passed_po_obj = data[i]['PurchaseOrder'];
+                        if(passed_po_obj.length!=0) {
+                            $('#select_po_no').append($('<option>', {
+                                value: passed_po_obj['id'],
+                                text: passed_po_obj['po_number']
+                            }));
+                        }
+                        else {
+                            $('#select_po_no').empty().append('<option></option>');
+                            $("#select_po_no").select2({
+                                placeholder: "No P.O. Number",
+                                allowClear: true,
+                                width: '100%'
+                            });
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.log("error: "+error);
                 }
             });
         });
         
+        var values=0;
         $("#select_po_no").on("change", function() {
             var id=$(this).val();
             if (id != "") {
@@ -208,7 +262,7 @@
                 $("#div_selected_purchase_order").empty();
             }
         });
-        var values = 0;
+        
         $(document).on('keyup', "input#change_po_amount",function () {
             values = $('.change_po_amount').map(function() {
                 val = $(this).val();
@@ -230,6 +284,19 @@
         });
         
         $("#btn_send_request_payment").on('click', function() {
+            // alert("btn_send_request_payment is clicked");
+            if(values==0) {
+                values = $('.change_po_amount').map(function() {
+                    val = $(this).val();
+                    if(val=="") {
+                        retval = 0;
+                    }
+                    else {
+                        retval = val;
+                    }
+                    return retval;
+                }).get();
+            }
             var cheque = $("#cheque");
             var payee = $("#select_payee");
             var purpose = $("#input_purpose");
@@ -237,7 +304,9 @@
             var po = $("#select_po_no");
             var requested_amount = $("#grand_total");
             var type = "<?php echo $type; ?>";
-            
+            var select_requested_by = $("#select_requested_by");
+            var proprietor = "<?php if(($UserIn['User']['role']=='proprietor') || ($UserIn['User']['role']=='proprietor_secretary') || ($UserIn['Department']['name']=='Purchasing (Supply)') || ($UserIn['Department']['name']=='Purchasing (Raw)') || ($UserIn['Department']['name']=='Purchasing')) { echo 'true'; }else { echo 'false'; } ?>";
+        
             if(cheque.is(":checked") == true) {
                 var type = "cheque";
                 if(payee.val() != "Select Payee") {
@@ -245,28 +314,70 @@
                         if(supplier.val() != "Select Supplier") {
                             if(po.val() != "") {
                                 if(requested_amount.text()!=0) {
-                                    var data = {'cheque':cheque.is(":checked"),
-                                                'payee':payee.val(),
-                                                'purpose':purpose.val(),
-                                                'supplier':supplier.val(),
-                                                'po':po.val(),
-                                                'requested_amount':requested_amount.text(),
-                                                'type':type,
-                                                'values':values};
-                                    
-                                    $.ajax({
-                                        url: '/payment_requests/add_po_request',
-                                        type: 'POST',
-            							data: {'data': data},
-            							dataType: 'text',
-            							success: function(id) {
-            								console.log(id);
-            								window.location="/payment_requests/all_list?type="+type+"&&status=pending"
-            							},
-            							error: function(err) {
-            								console.log("AJAX error: " + JSON.stringify(err, null, 2));
-            							}
-                                    });
+                                    if(proprietor=="true") {
+                                        if(select_requested_by.val()!="Requested By") {
+                                            var data = {'cheque':cheque.is(":checked"),
+                                                        'payee':payee.val(),
+                                                        'purpose':purpose.val(),
+                                                        'supplier':supplier.val(),
+                                                        'po':po.val(),
+                                                        'requested_amount':requested_amount.text(),
+                                                        'type':type,
+                                                        'values':values,
+                                                        'requested_by':select_requested_by.val()
+                                                    };
+                                            console.log(data);
+                                            $.ajax({
+                                                url: '/payment_requests/add_po_request',
+                                                type: 'POST',
+                    							data: {'data': data},
+                    							dataType: 'text',
+                    							success: function(id) {
+                    								console.log(id);
+                    								window.location="/payment_requests/all_list?type="+type+"&&status=pending"
+                    							},
+                    							error: function(err) {
+                    								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                    							}
+                                            });
+                                        }
+                                        else {
+                                            swal({
+                                                title: "Requested By Is Empty",
+                                                text: "Please select Requested By.",
+                                                type: "warning",
+                                                confirmButtonClass: "btn-danger",
+                                                confirmButtonText: "Okay",
+                                                closeOnConfirm: false,
+                                            });
+                                        }
+                                    }
+                                    else {
+                                        var data = {'cheque':cheque.is(":checked"),
+                                                    'payee':payee.val(),
+                                                    'purpose':purpose.val(),
+                                                    'supplier':supplier.val(),
+                                                    'po':po.val(),
+                                                    'requested_amount':requested_amount.text(),
+                                                    'type':type,
+                                                    'values':values,
+                                                    'requested_by':parseInt("<?php $UserIn['User']['id']; ?>")
+                                                };
+                                                
+                                        $.ajax({
+                                            url: '/payment_requests/add_po_request',
+                                            type: 'POST',
+                							data: {'data': data},
+                							dataType: 'text',
+                							success: function(id) {
+                								console.log(id);
+                								window.location="/payment_requests/all_list?type="+type+"&&status=pending"
+                							},
+                							error: function(err) {
+                								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                							}
+                                        });
+                                    }
                                 }
                                 else {
                                    swal({
@@ -322,10 +433,10 @@
                         if(po.val() != "") {
                             if(requested_amount.text()!=0) {
                                 if(type == "cash") {
-                                    if(requested_amount.text()<5000) {
+                                    if(requested_amount.text()<3000) {
                                        swal({
                                             title: "Invalid Requested Amount",
-                                            text: "Request Amount for Cash is ₱ 5000 and above.",
+                                            text: "Request Amount for Cash is ₱ 3000 and above.",
                                             type: "warning",
                                             confirmButtonClass: "btn-danger",
                                             confirmButtonText: "Okay",
@@ -333,31 +444,74 @@
                                         }); 
                                     }
                                     else {
-                                        var data = {'cheque':cheque.is(":checked"),
-                                                'payee':0,
-                                                'purpose':purpose.val(),
-                                                'supplier':supplier.val(),
-                                                'po':po.val(),
-                                                'requested_amount':requested_amount.text(),
-                                                'type':type,
-                                                'values':values};
-                                        $.ajax({
-                                            url: '/payment_requests/add_po_request',
-                                            type: 'POST',
-                							data: {'data': data},
-                							dataType: 'text',
-                							success: function(id) {
-                								console.log(id);
-                								window.location="/payment_requests/all_list?type="+type+"&&status=pending"
-                							},
-                							error: function(err) {
-                								console.log("AJAX error: " + JSON.stringify(err, null, 2));
-                							}
-                                        });
+                                        if(proprietor=="true") {
+                                            if(select_requested_by.val()!="Requested By") {
+                                                var data = {'cheque':cheque.is(":checked"),
+                                                        'payee':0,
+                                                        'purpose':purpose.val(),
+                                                        'supplier':supplier.val(),
+                                                        'po':po.val(),
+                                                        'requested_amount':requested_amount.text(),
+                                                        'type':type,
+                                                        'values':values,
+                                                        'requested_by':select_requested_by.val()
+                                                };
+                                                
+                                                $.ajax({
+                                                    url: '/payment_requests/add_po_request',
+                                                    type: 'POST',
+                        							data: {'data': data},
+                        							dataType: 'text',
+                        							success: function(id) {
+                        								console.log(id);
+                        								window.location="/payment_requests/all_list?type="+type+"&&status=pending"
+                        							},
+                        							error: function(err) {
+                        								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                        							}
+                                                });
+                                            }
+                                            else {
+                                                swal({
+                                                    title: "Invalid Requested By",
+                                                    text: "Please select requested by.",
+                                                    type: "warning",
+                                                    confirmButtonClass: "btn-danger",
+                                                    confirmButtonText: "Okay",
+                                                    closeOnConfirm: false,
+                                                }); 
+                                            }
+                                        }
+                                        else {
+                                            var data = {'cheque':cheque.is(":checked"),
+                                                    'payee':0,
+                                                    'purpose':purpose.val(),
+                                                    'supplier':supplier.val(),
+                                                    'po':po.val(),
+                                                    'requested_amount':requested_amount.text(),
+                                                    'type':type,
+                                                    'values':values,
+                                                    'requested_by':parseInt("<?php echo $UserIn['User']['id']; ?>")
+                                            };
+                                            
+                                            $.ajax({
+                                                url: '/payment_requests/add_po_request',
+                                                type: 'POST',
+                    							data: {'data': data},
+                    							dataType: 'text',
+                    							success: function(id) {
+                    								console.log(id);
+                    								window.location="/payment_requests/all_list?type="+type+"&&status=pending"
+                    							},
+                    							error: function(err) {
+                    								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                    							}
+                                            });
+                                        }
                                     }
                                 }
                                 else if(type == "pettycash") {
-                                    if(requested_amount.text()>5000) {
+                                    if(requested_amount.text()>3000) {
                                         swal({
                                             title: "Invalid Requested Amount",
                                             text: "Request Amount for Petty Cash is ₱ 4999 and below.",
@@ -368,27 +522,85 @@
                                         });
                                     }
                                     else {
-                                        var data = {'cheque':cheque.is(":checked"),
-                                                    'payee':0,
-                                                    'purpose':purpose.val(),
-                                                    'supplier':supplier.val(),
-                                                    'po':po.val(),
-                                                    'requested_amount':requested_amount.text(),
-                                                    'type':type,
-                                                    'values':values};
-                                        $.ajax({
-                                            url: '/payment_requests/add_po_request',
-                                            type: 'POST',
-                							data: {'data': data},
-                							dataType: 'text',
-                							success: function(id) {
-                								console.log(id);
-                    							window.location="/payment_requests/all_list?type="+type+"&&status=pending"
-                							},
-                							error: function(err) {
-                								console.log("AJAX error: " + JSON.stringify(err, null, 2));
-                							}
-                                        });
+                                        var control_number = $("#input_control_number");
+                                        if(control_number.val()!="") {
+                                            if(proprietor=="true") {
+                                                if(select_requested_by.val()!="Requested By") {
+                                                    var data = {'cheque':cheque.is(":checked"),
+                                                                'payee':0,
+                                                                'purpose':purpose.val(),
+                                                                'supplier':supplier.val(),
+                                                                'po':po.val(),
+                                                                'requested_amount':requested_amount.text(),
+                                                                'type':type,
+                                                                'values':values,
+                                                                'control_number':control_number.val(),
+                                                                'requested_by':select_requested_by.val()
+                                                    };
+                                                    console.log(data);
+                                                    $.ajax({
+                                                        url: '/payment_requests/add_po_request',
+                                                        type: 'POST',
+                            							data: {'data': data},
+                            							dataType: 'text',
+                            							success: function(id) {
+                            								console.log(id);
+                                							window.location="/payment_requests/all_list?type="+type+"&&status=pending"
+                            							},
+                            							error: function(err) {
+                            								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                            							}
+                                                    });
+                                                }
+                                                else {
+                                                    swal({
+                                                        title: "Invalid Requested By",
+                                                        text: "Please select requested by.",
+                                                        type: "warning",
+                                                        confirmButtonClass: "btn-danger",
+                                                        confirmButtonText: "Okay",
+                                                        closeOnConfirm: false,
+                                                    }); 
+                                                }
+                                            }
+                                            else {
+                                                var data = {'cheque':cheque.is(":checked"),
+                                                            'payee':0,
+                                                            'purpose':purpose.val(),
+                                                            'supplier':supplier.val(),
+                                                            'po':po.val(),
+                                                            'requested_amount':requested_amount.text(),
+                                                            'type':type,
+                                                            'values':values,
+                                                            'control_number':control_number.val(),
+                                                            'requested_by':parseInt("<?php echo $UserIn['User']['id']; ?>")
+                                                };
+                                                console.log(data);
+                                                $.ajax({
+                                                    url: '/payment_requests/add_po_request',
+                                                    type: 'POST',
+                        							data: {'data': data},
+                        							dataType: 'text',
+                        							success: function(id) {
+                        								console.log(id);
+                            							window.location="/payment_requests/all_list?type="+type+"&&status=pending"
+                        							},
+                        							error: function(err) {
+                        								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                        							}
+                                                });
+                                            }
+                                        }
+                                        else {
+                                            swal({
+                                                title: "Control Number Is Empty",
+                                                text: "Please enter Control Number.",
+                                                type: "warning",
+                                                confirmButtonClass: "btn-danger",
+                                                confirmButtonText: "Okay",
+                                                closeOnConfirm: false,
+                                            });
+                                        }
                                     }
                                 }
                             }

@@ -55,14 +55,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($erpPermission['ErpPermission']['created']); ?>
+			<?php echo time_elapsed_string($erpPermission['ErpPermission']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($erpPermission['ErpPermission']['modified']); ?>
+			<?php echo time_elapsed_string($erpPermission['ErpPermission']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -96,8 +96,8 @@
 			<td><?php echo $permissionUser['id']; ?></td>
 			<td><?php echo $permissionUser['user_id']; ?></td>
 			<td><?php echo $permissionUser['erp_permission_id']; ?></td>
-			<td><?php echo $permissionUser['created']; ?></td>
-			<td><?php echo $permissionUser['modified']; ?></td>
+			<td><?php echo time_elapsed_string($permissionUser['created']); ?></td>
+			<td><?php echo time_elapsed_string($permissionUser['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'permission_users', 'action' => 'view', $permissionUser['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'permission_users', 'action' => 'edit', $permissionUser['id']), array('escape' => false)); ?>

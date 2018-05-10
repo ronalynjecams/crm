@@ -63,13 +63,13 @@
 								<td>
 			<?php echo $this->Html->link($fitoutWork['Client']['name'], array('controller' => 'clients', 'action' => 'view', $fitoutWork['Client']['id'])); ?>
 		</td>
-						<td><?php echo h($fitoutWork['FitoutWork']['date_accomplished']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutWork['FitoutWork']['date_accomplished']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($fitoutWork['User']['id'], array('controller' => 'users', 'action' => 'view', $fitoutWork['User']['id'])); ?>
 		</td>
 						<td><?php echo h($fitoutWork['FitoutWork']['agents_remarks']); ?>&nbsp;</td>
-						<td><?php echo h($fitoutWork['FitoutWork']['created']); ?>&nbsp;</td>
-						<td><?php echo h($fitoutWork['FitoutWork']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutWork['FitoutWork']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutWork['FitoutWork']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $fitoutWork['FitoutWork']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $fitoutWork['FitoutWork']['id']), array('escape' => false)); ?>

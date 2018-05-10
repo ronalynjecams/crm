@@ -49,8 +49,8 @@
 			<?php echo $this->Html->link($jrUpload['JrProduct']['id'], array('controller' => 'jr_products', 'action' => 'view', $jrUpload['JrProduct']['id'])); ?>
 		</td>
 						<td><?php echo h($jrUpload['JrUpload']['file']); ?>&nbsp;</td>
-						<td><?php echo h($jrUpload['JrUpload']['created']); ?>&nbsp;</td>
-						<td><?php echo h($jrUpload['JrUpload']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrUpload['JrUpload']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrUpload['JrUpload']['modified']); ?>&nbsp;</td>
 						<td><?php echo h($jrUpload['JrUpload']['viewed']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $jrUpload['JrUpload']['id']), array('escape' => false)); ?>

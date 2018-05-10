@@ -50,8 +50,8 @@
 								<td>
 			<?php echo $this->Html->link($comment['Category']['name'], array('controller' => 'categories', 'action' => 'view', $comment['Category']['id'])); ?>
 		</td>
-						<td><?php echo h($comment['Comment']['created']); ?>&nbsp;</td>
-						<td><?php echo h($comment['Comment']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($comment['Comment']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($comment['Comment']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $comment['Comment']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $comment['Comment']['id']), array('escape' => false)); ?>

@@ -29,6 +29,13 @@ class Client extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		'ClientIndustry' => array(
+			'className' => 'ClientIndustry',
+			'foreignKey' => 'client_industry_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
 }

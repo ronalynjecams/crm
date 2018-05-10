@@ -24,6 +24,14 @@ class SubCategoriesController extends AppController {
 		$this->SubCategory->recursive = 0;
 		$this->set('subCategories', $this->Paginator->paginate());
 	}
+	
+	public function subcat($id){
+		
+		$this->SubCategory->recursive = -1;
+		$sub_category = $this->SubCategory->find('all', array('conditions' => array('website_category' => $id)));
+		$this->set(compact('sub_category'));
+		$this->set('_serialize', array('sub_category'));
+	}
 
 /**
  * view method

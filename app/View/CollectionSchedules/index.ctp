@@ -67,8 +67,8 @@
 						<td><?php echo h($collectionSchedule['CollectionSchedule']['onhand']); ?>&nbsp;</td>
 						<td><?php echo h($collectionSchedule['CollectionSchedule']['officer_remarks']); ?>&nbsp;</td>
 						<td><?php echo h($collectionSchedule['CollectionSchedule']['agent_instruction']); ?>&nbsp;</td>
-						<td><?php echo h($collectionSchedule['CollectionSchedule']['created']); ?>&nbsp;</td>
-						<td><?php echo h($collectionSchedule['CollectionSchedule']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collectionSchedule['CollectionSchedule']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collectionSchedule['CollectionSchedule']['modified']); ?>&nbsp;</td>
 						<td><?php echo h($collectionSchedule['CollectionSchedule']['status']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $collectionSchedule['CollectionSchedule']['id']), array('escape' => false)); ?>

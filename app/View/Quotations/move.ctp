@@ -1,9 +1,17 @@
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<!--MASKS-->
+<script src="../js/validation/jquery.maskedinput.js"></script>
+<script src="../js/validation/jquery.maskedinput.min.js"></script>
+
+<!--SWEET ALERT-->
+<script src="/js/sweetalert.min.js"></script>  
+<link href="/css/sweetalert.css" rel="stylesheet">
+
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-<script src="../plugins/select2/js/select2.min.js"></script> 
+<script src="/css/plug/select/js/select2.min.js"></script> 
 <div id="content-container" >
     <div id="page-title">
         <h1 class="page-header text-overflow">Move to Purchasing</h1>
@@ -32,12 +40,9 @@
                         <div class="row">
                             <div class="col-sm-6"> 
                                 <div class="form-group  ">
-
-
-
                                     <label class="control-label">Payment Mode</label>  
                                     <select id="payment_mode" class="form-control"> 
-                                        <option value=""> select </option>
+                                        <option value="">select</option>
                                         <option value="cash"> cash </option>
                                         <option value="online"> online </option>
                                         <option value="check"> check </option> 
@@ -114,7 +119,7 @@
                                         <option value=""> select </option>
                                         <?php
                                         foreach ($terms as $term) {
-                                            echo '<option value="' . $term['QuotationTerm']['id'] . '"> ' . $term['QuotationTerm']['name'] . ' </option> ';
+                                            echo '<option value="' . $term['QuotationTerm']['id'] . '"> ' . $term['QuotationTerm']['name'] .' </option> ';
                                         }
                                         ?>
                                     </select>
@@ -182,7 +187,7 @@
                         <div class="row">
                             <div class="col-sm-12"> 
                                 <label class=" control-label"><b>TIN Number</b></label> 
-                                <input type="number" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
+                                <input type="text" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
                                 <div id="require_tin_div"></div>
                             </div>
                         </div>
@@ -278,7 +283,7 @@
 </div>  
 <script>
     $(document).ready(function () {
-
+        $("#tin_number").mask("999-999-999");
         $("#term_id").select2({
             placeholder: "Select Term",
             width: '100%',
@@ -317,7 +322,7 @@
 
 
 
-    $("#payment_mode").change(function () {
+    $("#payment_mode").change(function (e) {
         $(".check_online_mode_div").show();
         $(".check_mode_div").show();
         $(".amount_div").show();
@@ -345,7 +350,8 @@
     });
 
 
-    $(".moveQuote").click(function () {
+    $(".moveQuote").click(function (e) {
+        
         $("#tin_error").remove();
         var payment_mode = $("#payment_mode").val();
         var vat_type = $("#vat_type").val();
@@ -361,7 +367,9 @@
         var quotation_id = $("#quotation_id").val();
         var client_id = $("#client_id").val(); 
         var advance_invoice = $("#advance_invoice").val();
-
+        if(payment_mode == 'cod') {
+            term_id = 'Cash On Delivery';
+        }
         var data = {"quotation_id": quotation_id,
             "client_id": client_id,
             "payment_mode": payment_mode,
@@ -378,14 +386,14 @@
             "advance_invoice": advance_invoice,
         }
 
-
+        // alert(JSON.stringify(data));
 
         if (payment_mode == 'cash') {
             if (vat_type != "") {
                 if (amount_paid != "") {
                     if (with_held != "") {
                         if (term_id != "") {
-                            if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
+                            if (tin_number != "") {
                                 ///process here
                                 approve_quotation(data);
                             } else {
@@ -411,7 +419,7 @@
                     if (with_held != "") {
                         if (bank_id != "") {
                             if (term_id != "") {
-                                if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
+                                if (tin_number != "") {
                                     ///process here
                                     approve_quotation(data);
                                 } else {
@@ -434,26 +442,22 @@
                 document.getElementById('vat_type').style.borderColor = "red";
             }
         } else if (payment_mode == 'cod') {
+            // alert("cod:"+tin_number);
             if (vat_type != "") {
-                if (term_id != "") {
-                    if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
-                        ///process here
-                        approve_quotation(data);
-                    } else {
-                        document.getElementById('tin_number').style.borderColor = "red";
-                        $("#require_tin_div").append('<span class="text-danger" id="tin_error">Tin Number is required</span>')
-                    }
+                if (tin_number != "") {
+                    ///process here
+                    approve_quotation(data);
                 } else {
-                    document.getElementById('term_id').style.borderColor = "red";
+                    document.getElementById('tin_number').style.borderColor = "red";
+                    $("#require_tin_div").append('<span class="text-danger" id="tin_error">Tin Number is required</span>')
                 }
-
             } else {
                 document.getElementById('vat_type').style.borderColor = "red";
             }
         } else if (payment_mode == 'terms') {
             if (vat_type != "") {
                 if (term_id != "") {
-                    if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
+                    if (tin_number != "") {
                         ///process here
                         approve_quotation(data);
                     } else {
@@ -474,7 +478,7 @@
                     if (with_held != "") {
                         if (bank_id != "") {
                             if (term_id != "") {
-                                if (tin_number != "" && tin_number != 00000000000000 && tin_number != 11111111111111 && tin_number >= 1000) {
+                                if (tin_number != "") {
                                     if (check_number != "") {
                                         if (check_date != "") {
                                             ///process here
@@ -504,6 +508,13 @@
             } else {
                 document.getElementById('vat_type').style.borderColor = "red";
             }
+        }
+        else {
+            swal({
+                title: "Error!",
+                text: "Payment mode cannot be empty. \n Please try again.",
+                type: "warning"
+            });
         }
     });
 

@@ -1,4 +1,3 @@
-asdasdasdasdsddddd
 <div style="A_CSS_ATTRIBUTE:all;position: absolute;bottom: 10px; left: 10px; ">THIS IS MY FOOTER</div>
 <div style="A_CSS_ATTRIBUTE:all;position: absolute;top: 10px; left: 10px; ">THIS IS MY HEADER</div>
  

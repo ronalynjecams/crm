@@ -52,8 +52,8 @@
 								<td>
 			<?php echo $this->Html->link($officialBusinessesPerson['OfficialBusiness']['id'], array('controller' => 'official_businesses', 'action' => 'view', $officialBusinessesPerson['OfficialBusiness']['id'])); ?>
 		</td>
-						<td><?php echo h($officialBusinessesPerson['OfficialBusinessesPerson']['created']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusinessesPerson['OfficialBusinessesPerson']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusinessesPerson['OfficialBusinessesPerson']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusinessesPerson['OfficialBusinessesPerson']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $officialBusinessesPerson['OfficialBusinessesPerson']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $officialBusinessesPerson['OfficialBusinessesPerson']['id']), array('escape' => false)); ?>

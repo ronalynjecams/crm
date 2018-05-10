@@ -10,6 +10,8 @@ App::uses('AppModel', 'Model');
  */
 class PurchaseOrderProduct extends AppModel {
 
+
+	public $actsAs = array('Containable');
 /**
  * Validation rules
  *
@@ -17,6 +19,16 @@ class PurchaseOrderProduct extends AppModel {
  */
 	public $validate = array(
 		'product_combo_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'product_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -133,6 +145,13 @@ class PurchaseOrderProduct extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
+		'Product' => array(
+			'className' => 'Product',
+			'foreignKey' => 'product_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
 		'PurchaseOrder' => array(
 			'className' => 'PurchaseOrder',
 			'foreignKey' => 'purchase_order_id',
@@ -150,6 +169,13 @@ class PurchaseOrderProduct extends AppModel {
 		'SupplierProduct' => array(
 			'className' => 'SupplierProduct',
 			'foreignKey' => 'supplier_product_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Client' => array(
+			'className' => 'Client',
+			'foreignKey' => 'client_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

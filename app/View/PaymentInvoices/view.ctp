@@ -114,7 +114,7 @@
 <tr>
 		<th><?php echo __('Reference Date'); ?></th>
 		<td>
-			<?php echo h($paymentInvoice['PaymentInvoice']['reference_date']); ?>
+			<?php echo time_elapsed_string($paymentInvoice['PaymentInvoice']['reference_date']); ?>
 			&nbsp;
 		</td>
 </tr>

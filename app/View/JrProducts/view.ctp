@@ -59,7 +59,7 @@
 <tr>
 		<th><?php echo __('Date Assigned'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['date_assigned']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['date_assigned']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -94,42 +94,42 @@
 <tr>
 		<th><?php echo __('Date Ongoing'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['date_ongoing']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['date_ongoing']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date Declined'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['date_declined']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['date_declined']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date Cancelled'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['date_cancelled']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['date_cancelled']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['created']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['modified']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date Finished'); ?></th>
 		<td>
-			<?php echo h($jrProduct['JrProduct']['date_finished']); ?>
+			<?php echo time_elapsed_string($jrProduct['JrProduct']['date_finished']); ?>
 			&nbsp;
 		</td>
 </tr>

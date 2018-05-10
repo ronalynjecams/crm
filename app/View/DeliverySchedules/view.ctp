@@ -1,143 +1,233 @@
-<div class="deliverySchedules view">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="page-header">
-				<h1><?php echo __('Delivery Schedule'); ?></h1>
+<?php
+$is_authorized=false;
+$authorized_users = ['sales_executive', 'sales_manager',
+					 'proprietor', 'logistics_head',
+					 'sales_coordinator'];
+foreach($authorized_users as $authorized_user) {
+	if($authorized_user==$user_role) {
+		$is_authorized=true;
+	}
+}
+
+if($is_authorized) {
+?>
+
+<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+
+<!--SWEET ALERT-->
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script>
+
+<div id="content-container">
+	<div id="page-title">
+		<h1 class="page-header text-overflow">Delivery Schedules</h1>
+	</div>
+	
+	<div id="page-content">
+		<div class="panel">
+			<div class="panel-body">
+                <div class="table-responsive">
+	                <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+						<thead>
+	                        <tr>
+	                            <th>Delivery Date [Time]</th>  
+	                            <th>DR Number</th>
+	                            <th>Client</th>
+	                           	<?php
+	                           	// if($UserIn['User']['role']!='sales_executive') {
+		                           // echo '<th>Agent</th>';
+	                           	// }
+	                           	// else { echo '<th>Status</th>'; }
+	                        	?>
+	                        	<th>Status</th>
+	                        	<th>Agent</th>
+	                        	<th>Notes</th>
+	                        	<th>Action</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    	<?php
+	                    	foreach($deliverySchedules as $ret_delSched) {
+	                    		$DeliverySchedule = $ret_delSched['DeliverySchedule'];
+	                    		$User = $ret_delSched['User'];
+	                    		$first_name = $User['first_name'];
+	                    		$last_name = $User['last_name'];
+	                    		$full_name_tmp = ucwords($first_name." ".$last_name);
+	                    		$id = $DeliverySchedule['id'];
+	                    		$user_id = $DeliverySchedule['user_id'];
+	                    		$status_tmp = ucwords($DeliverySchedule['status']);
+	                    		$deliver_to_tmp = $DeliverySchedule['deliver_to'];
+	                    		$delivery_date_tmp = $DeliverySchedule['delivery_date'];
+	                    		$delivery_time_tmp = $DeliverySchedule['delivery_time'];
+                    		    $dr_number_tmp = $DeliverySchedule['dr_number'];
+	                    		$note = $DeliverySchedule['agent_note'];
+
+	                    		if($delivery_date_tmp!=null || $delivery_date_tmp!=""
+	                    		   || $delivery_date_tmp!="0000-00-00") {
+	                    			$delivery_date = time_elapsed_string($delivery_date_tmp);  	
+                    		    }
+                    		    else {
+                    		    	$delivery_date = "<p class='text-danger'>Not Specified</p>";
+                    		    }
+                    		    
+                    		    if($dr_number_tmp!="" || $dr_number_tmp!=null) {
+                    		    	$dr_number = "DR-".$dr_number_tmp;
+                    		    }
+                    		    else {
+                    		    	$dr_number = "<p class='text-danger'>Unknown</p>";
+                    		    }
+                    		    
+                    		    if($user_id!=0) {
+	                    		    if($full_name_tmp!="" || $full_name_tmp!=null) {
+	                    		    	$full_name = $full_name_tmp;
+	                    		    }
+	                    		    else {
+	                    		    	$full_name = "<p class='text-danger'>Unknown</p>";
+	                    		    }
+                    		    }
+                    		    else {
+                    		    	$full_name = "<p class='text-danger'>Unknown</p>";
+                    		    }
+                    		    
+                    		    if($deliver_to_tmp!="" || $deliver_to_tmp!=null) {
+                    		    	$deliver_to = ucwords($deliver_to_tmp);
+                    		    }
+                    		    else {
+                    		    	$deliver_to = "<p class='text-danger'>Unknown</p>";
+                    		    }
+                    		    
+                    		    if($delivery_time_tmp!=""
+                    		       || $delivery_time_tmp!=null) {
+                    		       	$formatted_deltime = date("h:i a", strtotime($delivery_time_tmp));
+									$delivery_time = " <small>[ ".$formatted_deltime." ]</small>";
+                		        }
+                		        else {
+                		        	$delivery_time = "";
+                		        }
+                		        
+                		        $delivery_datetime_tmp = $delivery_date." ".$delivery_time;
+                		        
+                		        if($delivery_datetime_tmp!=" ") {
+                		        	$delivery_datetime = $delivery_datetime_tmp;
+                		        }
+                		        else {
+                		        	$delivery_datetime = "<p class='text-danger'>Not Specified</p>";
+                		        }
+                		        
+                		        if($status_tmp!="" || $status_tmp!=null) {
+                		        	$status = $status_tmp;
+                		        }
+                		        else { $status = "<p class='text-danger'>Unknown</p>"; }
+                    			
+                    			$cancel_button = '';
+                    			if($status=="Pending") {
+                    				$cancel_button = "
+                    					<button class='btn btn-danger btn-xs'
+                    							id='btn_cancel'
+                    							data-toggle='tooltip'
+                    							data-placement='top'
+                    							title='Cancel'
+                    							value='".$id."'>
+                    						<span class='fa fa-close'></span>
+                    					</button>
+                    				";
+                    			}
+                    			
+                				echo '
+                    			<tr>
+                    				<td>'.$delivery_datetime.'</td>
+                    				<td>'.$dr_number.'</td>
+                    				<td>'.$deliver_to.'</td>
+                    				<td>'.$full_name.'</td>
+                    				<td>
+                    					<div class="col-lg-6">'.$status.'</div>
+                    					<div class="col-lg-6" align="right">
+                    						'.$cancel_button.'
+                    					</div>
+                    				</td>
+                    				<td>'.$note.'</td>
+                    				<td></td>
+                    			</tr>
+                    			';
+	                    	}
+	                    	?>
+	                    </tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="row">
+<!--JAVASCRIPT FUNCTIONS-->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("[data-toggle='tooltip']").tooltip();
+		
+		$('#example').DataTable({
+	        "lengthMenu": [[100, 200, 500, -1], [100, 200, 500, "All"]],
+	        "orderable": true,
+	        "order": [[0,"desc"]],
+	        "stateSave": false
+	    });
+	    
+	    $("button#btn_cancel").on('click', function() {
+	    	var del_sched_id = $(this).val();
+	    	swal({
+                title: "Are you sure?",
+                text: "This will cancel Delivery Schedule.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+                    var data = {'delivery_schedule_id': del_sched_id};
+                    $.ajax({
+                        url: '/delivery_schedules/cancel_delivery_schedule',
+                        type: 'POST',
+						data: {'data': data},
+						dataType: 'text',
+						success: function(id) {
+							console.log(id);
+							location.reload();
+						},
+						error: function(err) {
+							console.log("AJAX error: " + JSON.stringify(err, null, 2));
+							swal({
+				                title: "Oops!",
+				                text: "There was an error in cancelling delivery schedule.\n"+
+				                	  "Please try again.",
+				                type: "warning"
+							});
+						}
+                    });
+                }
+            });
+	    });
+	});
+</script>
+<!--END OF JAVASCRIPT FUNCTIONS-->
 
-		<div class="col-md-3">
-			<div class="actions">
-				<div class="panel panel-default">
-					<div class="panel-heading">Actions</div>
-						<div class="panel-body">
-							<ul class="nav nav-pills nav-stacked">
-									<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>&nbsp&nbsp;Edit Delivery Schedule'), array('action' => 'edit', $deliverySchedule['DeliverySchedule']['id']), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Form->postLink(__('<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete Delivery Schedule'), array('action' => 'delete', $deliverySchedule['DeliverySchedule']['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $deliverySchedule['DeliverySchedule']['id'])); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp&nbsp;List Delivery Schedules'), array('action' => 'index'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp;New Delivery Schedule'), array('action' => 'add'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp&nbsp;List Quotations'), array('controller' => 'quotations', 'action' => 'index'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp;New Quotation'), array('controller' => 'quotations', 'action' => 'add'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp&nbsp;List Delivery Sched Products'), array('controller' => 'delivery_sched_products', 'action' => 'index'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp;New Delivery Sched Product'), array('controller' => 'delivery_sched_products', 'action' => 'add'), array('escape' => false)); ?> </li>
-							</ul>
-						</div><!-- end body -->
-				</div><!-- end panel -->
-			</div><!-- end actions -->
-		</div><!-- end col md 3 -->
-
-		<div class="col-md-9">	
-		<div class="table-responsive">
-			<table cellpadding="0" cellspacing="0" class="table table-striped">
-				<tbody>
-				<tr>
-		<th><?php echo __('Id'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['id']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Delivery Date'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['delivery_date']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Requested Qty'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['requested_qty']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Actual Qty'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['actual_qty']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Quotation'); ?></th>
-		<td>
-			<?php echo $this->Html->link($deliverySchedule['Quotation']['id'], array('controller' => 'quotations', 'action' => 'view', $deliverySchedule['Quotation']['id'])); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Approved By'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['approved_by']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Created'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['created']); ?>
-			&nbsp;
-		</td>
-</tr>
-<tr>
-		<th><?php echo __('Modified'); ?></th>
-		<td>
-			<?php echo h($deliverySchedule['DeliverySchedule']['modified']); ?>
-			&nbsp;
-		</td>
-</tr>
-				</tbody>
-			</table>
+<?php
+}
+else {
+	echo '
+		<div id="content-container">
+			<div id="page-content">
+				Access Denied. Restricted Area.
 			</div>
-
-		</div><!-- end col md 9 -->
-
-	</div>
-</div>
-
-<div class="related row">
-	<div class="col-md-12">
-	<h3><?php echo __('Related Delivery Sched Products'); ?></h3>
-	<?php if (!empty($deliverySchedule['DeliverySchedProduct'])): ?>
-	<div class="table-responsive">
-	<table cellpadding = "0" cellspacing = "0" class="table table-striped">
-	<thead>
-	<tr>
-		<th><?php echo __('Id'); ?></th>
-		<th><?php echo __('Delivery Schedule Id'); ?></th>
-		<th><?php echo __('Quotation Product Id'); ?></th>
-		<th><?php echo __('Status'); ?></th>
-		<th><?php echo __('Created'); ?></th>
-		<th><?php echo __('Modified'); ?></th>
-		<th class="actions"></th>
-	</tr>
-	<thead>
-	<tbody>
-	<?php foreach ($deliverySchedule['DeliverySchedProduct'] as $deliverySchedProduct): ?>
-		<tr>
-			<td><?php echo $deliverySchedProduct['id']; ?></td>
-			<td><?php echo $deliverySchedProduct['delivery_schedule_id']; ?></td>
-			<td><?php echo $deliverySchedProduct['quotation_product_id']; ?></td>
-			<td><?php echo $deliverySchedProduct['status']; ?></td>
-			<td><?php echo $deliverySchedProduct['created']; ?></td>
-			<td><?php echo $deliverySchedProduct['modified']; ?></td>
-			<td class="actions">
-				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'delivery_sched_products', 'action' => 'view', $deliverySchedProduct['id']), array('escape' => false)); ?>
-				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'delivery_sched_products', 'action' => 'edit', $deliverySchedProduct['id']), array('escape' => false)); ?>
-				<?php echo $this->Form->postLink(__('<span class="glyphicon glyphicon-remove"></span>'), array('controller' => 'delivery_sched_products', 'action' => 'delete', $deliverySchedProduct['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $deliverySchedProduct['id'])); ?>
-			</td>
-		</tr>
-	<?php endforeach; ?>
-	</tbody>
-	</table>
-	</div>
-<?php endif; ?>
-
-	<div class="actions">
-		<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Delivery Sched Product'), array('controller' => 'delivery_sched_products', 'action' => 'add'), array('escape' => false, 'class' => 'btn btn-default')); ?> 
-	</div>
-	</div><!-- end col md 12 -->
-</div>
+		</div>
+	';
+}
+?>

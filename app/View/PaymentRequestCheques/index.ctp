@@ -57,7 +57,7 @@
 								<td>
 			<?php echo $this->Html->link($paymentRequestCheque['Payee']['name'], array('controller' => 'payees', 'action' => 'view', $paymentRequestCheque['Payee']['id'])); ?>
 		</td>
-						<td><?php echo h($paymentRequestCheque['PaymentRequestCheque']['cheque_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentRequestCheque['PaymentRequestCheque']['cheque_date']); ?>&nbsp;</td>
 						<td><?php echo h($paymentRequestCheque['PaymentRequestCheque']['void_reason']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($paymentRequestCheque['Bank']['name'], array('controller' => 'banks', 'action' => 'view', $paymentRequestCheque['Bank']['id'])); ?>

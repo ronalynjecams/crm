@@ -60,8 +60,8 @@
 						<td><?php echo h($supplierProduct['SupplierProduct']['supplier_code']); ?>&nbsp;</td>
 						<td><?php echo h($supplierProduct['SupplierProduct']['supplier_price']); ?>&nbsp;</td>
 						<td><?php echo h($supplierProduct['SupplierProduct']['note']); ?>&nbsp;</td>
-						<td><?php echo h($supplierProduct['SupplierProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($supplierProduct['SupplierProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($supplierProduct['SupplierProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($supplierProduct['SupplierProduct']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $supplierProduct['SupplierProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $supplierProduct['SupplierProduct']['id']), array('escape' => false)); ?>

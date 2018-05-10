@@ -71,14 +71,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($productValue['ProductValue']['created']); ?>
+			<?php echo time_elapsed_string($productValue['ProductValue']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($productValue['ProductValue']['modified']); ?>
+			<?php echo time_elapsed_string($productValue['ProductValue']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

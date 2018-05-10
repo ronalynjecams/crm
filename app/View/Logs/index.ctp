@@ -46,8 +46,8 @@
 						<td><?php echo h($log['Log']['details']); ?>&nbsp;</td>
 						<td><?php echo h($log['Log']['device']); ?>&nbsp;</td>
 						<td><?php echo h($log['Log']['ip_address']); ?>&nbsp;</td>
-						<td><?php echo h($log['Log']['created']); ?>&nbsp;</td>
-						<td><?php echo h($log['Log']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($log['Log']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($log['Log']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $log['Log']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $log['Log']['id']), array('escape' => false)); ?>

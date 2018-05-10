@@ -49,14 +49,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($category['Category']['created']); ?>
+			<?php echo time_elapsed_string($category['Category']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($category['Category']['modified']); ?>
+			<?php echo time_elapsed_string($category['Category']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

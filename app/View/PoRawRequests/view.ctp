@@ -98,14 +98,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($poRawRequest['PoRawRequest']['created']); ?>
+			<?php echo time_elapsed_string($poRawRequest['PoRawRequest']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($poRawRequest['PoRawRequest']['modified']); ?>
+			<?php echo time_elapsed_string($poRawRequest['PoRawRequest']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -141,8 +141,8 @@
 			<td><?php echo $poRawRequestProperty['po_raw_request_id']; ?></td>
 			<td><?php echo $poRawRequestProperty['property']; ?></td>
 			<td><?php echo $poRawRequestProperty['value']; ?></td>
-			<td><?php echo $poRawRequestProperty['created']; ?></td>
-			<td><?php echo $poRawRequestProperty['modified']; ?></td>
+			<td><?php echo time_elapsed_string($poRawRequestProperty['created']); ?></td>
+			<td><?php echo time_elapsed_string($poRawRequestProperty['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'po_raw_request_properties', 'action' => 'view', $poRawRequestProperty['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'po_raw_request_properties', 'action' => 'edit', $poRawRequestProperty['id']), array('escape' => false)); ?>

@@ -63,19 +63,19 @@
 								<td>
 			<?php echo $this->Html->link($jrProduct['User']['id'], array('controller' => 'users', 'action' => 'view', $jrProduct['User']['id'])); ?>
 		</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_assigned']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['date_assigned']); ?>&nbsp;</td>
 						<td><?php echo h($jrProduct['JrProduct']['deadline']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($jrProduct['JobRequest']['id'], array('controller' => 'job_requests', 'action' => 'view', $jrProduct['JobRequest']['id'])); ?>
 		</td>
 						<td><?php echo h($jrProduct['JrProduct']['floor_plan_details']); ?>&nbsp;</td>
 						<td><?php echo h($jrProduct['JrProduct']['status']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_ongoing']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_declined']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_cancelled']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['modified']); ?>&nbsp;</td>
-						<td><?php echo h($jrProduct['JrProduct']['date_finished']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['date_ongoing']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['date_declined']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['date_cancelled']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrProduct['JrProduct']['date_finished']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $jrProduct['JrProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $jrProduct['JrProduct']['id']), array('escape' => false)); ?>

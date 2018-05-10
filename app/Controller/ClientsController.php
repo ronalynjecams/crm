@@ -146,6 +146,11 @@ class ClientsController extends AppController {
             $options = array('conditions' => array('Client.lead' => 1, 'Client.team_id'=>$stats['AgentStatus']['team_id']));
             $this->set('leads', $this->Client->find('all', $options));
         }
+        
+        
+        $this->loadModel('ClientIndustry');
+        $industries = $this->ClientIndustry->find('all');
+        $this->set(compact('industries')); 
 //            else if(sales coordinator dapat per team din)
 //            else if(sales manager dapat per team din)
 //            else if(marketing head , accounting and proprietor dapat lahat)
@@ -180,6 +185,7 @@ class ClientsController extends AppController {
         $email = $data['email'];
         $contact_number = $data['contact_number'];
         $tin_number = $data['tin_number'];
+        $client_industry_id = $data['client_industry_id'];
 
         if ($data['type'] == 'lead') {
             $lead = 1;
@@ -203,20 +209,25 @@ class ClientsController extends AppController {
                 "tin_number" => $tin_number,
                 "lead" => $lead,
                 "owner_marketing" => $owner_marketing,
-                "team_id" => $team_id
+                "team_id" => $team_id,
+                "client_industry_id" => $client_industry_id,
             ));
             if ($this->Client->save()) {
                 echo json_encode($this->request->data);
             }
+            else {
+                echo "Client Did not saved";
+            }
+            
         }
     }
 
     public function clients() {
+        $this->loadModel('User');
         if ($this->Auth->user('role') == 'sales_executive') {
             $options = array('conditions' => array('Client.lead' => 0, 'Client.user_id'=>$this->Auth->user('id')));
             $this->set('clients', $this->Client->find('all', $options));
-        }
-        if ($this->Auth->user('role') == 'sales_manager') {
+        }else if ($this->Auth->user('role') == 'sales_manager') {
             $this->loadModel('AgentStatus');
             $stats = $this->AgentStatus->find('first',[
                 'conditions'=>[
@@ -227,8 +238,15 @@ class ClientsController extends AppController {
                 ]);
             $options = array('conditions' => array('Client.lead' => 0, 'Client.team_id'=>$stats['AgentStatus']['team_id']));
             $this->set('clients', $this->Client->find('all', $options));
+            // pr($this->Client->User->find('all', $options));
+        }else if ($this->Auth->user('role') == 'admin_staff' || $this->Auth->user('role') == 'marketing_staff') {
+            $this->set('clients', $this->Client->find('all'));
+            // pr($this->Client->find('all'));
         }
         
+        $this->loadModel('ClientIndustry');
+        $industries = $this->ClientIndustry->find('all');
+        $this->set(compact('industries')); 
 //            else if(marketing dapat per user din)
 //            else if(sales coordinator dapat per team din)
 //            else if(sales manager dapat per team din)
@@ -293,33 +311,43 @@ class ClientsController extends AppController {
         exit;
     }
     
+    
     public function check_client_existence(){
         $this->autoRender = false;
         $this->response->type('json'); 
         $dd = $this->request->data;
-//        $name = $dd['name'];
+        $name = $dd['name'];
+        // $name = 'mae';
         
-        
+        // pr($name);
         $check = $this->Client->find('all', array(
-            'contain' => array(
-                'User'=> array(
-                    'conditions' => array('User.active'=>1, 'User.id !='=>$this->Auth->user('id')), 
-                )
-            ),
+            // 'contain' => array(
+            //     'User'=> array(
+            //         'conditions' => array('User.active'=>1, 'User.id !='=>$this->Auth->user('id')), 
+            //     )
+            // ),
             'conditions'=>array(
 //                'Client.name'=>'1'
-                'Client.name'=>$name
-            )
+                // 'Client.name LIKE '=>'%'.$name.'%',
+                'Client.name LIKE '=>$name.'%',
+                // 'Client.name'=>$name,
+                'Client.user_id !='=>$this->Auth->user('id')
+            ),
+            // 'fields' => array('User.first_name'),
         ));
+        // pr($check);exit;
         $a = [];
         foreach($check as $agents){
-            array_push($a,$agents['User']['first_name']);
+            $detail = $agents['User']['first_name'].' : '.$agents['Client']['name'];
+            array_push($a,$detail);
         }
 //        
-//        
+        $a = array_unique($a);
         $cc = implode(", ", $a);
-//         pr($cc); exit;
+        // pr($cc); exit;
          return (json_encode($cc)); 
     }
+    
+    
 
 }

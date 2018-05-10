@@ -69,14 +69,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($productSourceProperty['ProductSourceProperty']['created']); ?>
+			<?php echo time_elapsed_string($productSourceProperty['ProductSourceProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($productSourceProperty['ProductSourceProperty']['modified']); ?>
+			<?php echo time_elapsed_string($productSourceProperty['ProductSourceProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

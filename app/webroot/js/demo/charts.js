@@ -493,7 +493,7 @@
         { label: "Drama", data: 344120000, color: "#f84f9a" }
     ];
 
-    $.plot('#demo-flot-donut', dataSet, {
+    $.plot('#PiePendingApproved', dataSet, {
         series: {
             pie: {
                 show: true,

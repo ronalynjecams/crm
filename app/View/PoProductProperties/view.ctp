@@ -62,14 +62,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($poProductProperty['PoProductProperty']['created']); ?>
+			<?php echo time_elapsed_string($poProductProperty['PoProductProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($poProductProperty['PoProductProperty']['modified']); ?>
+			<?php echo time_elapsed_string($poProductProperty['PoProductProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

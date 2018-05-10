@@ -50,8 +50,8 @@
 		</td>
 						<td><?php echo h($poRawRequestProperty['PoRawRequestProperty']['property']); ?>&nbsp;</td>
 						<td><?php echo h($poRawRequestProperty['PoRawRequestProperty']['value']); ?>&nbsp;</td>
-						<td><?php echo h($poRawRequestProperty['PoRawRequestProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($poRawRequestProperty['PoRawRequestProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($poRawRequestProperty['PoRawRequestProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($poRawRequestProperty['PoRawRequestProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $poRawRequestProperty['PoRawRequestProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $poRawRequestProperty['PoRawRequestProperty']['id']), array('escape' => false)); ?>

@@ -55,14 +55,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($jrUpload['JrUpload']['created']); ?>
+			<?php echo time_elapsed_string($jrUpload['JrUpload']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($jrUpload['JrUpload']['modified']); ?>
+			<?php echo time_elapsed_string($jrUpload['JrUpload']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

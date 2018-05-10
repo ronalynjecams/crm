@@ -92,37 +92,37 @@
 		</td>
 </tr>
 <tr>
-		<th><?php echo __('Expected Demo Data'); ?></th>
+		<th><?php echo __('Expected Demo Date'); ?></th>
 		<td>
-			<?php echo h($clientServiceProduct['ClientServiceProduct']['expected_demo_data']); ?>
+			<?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['expected_demo_date']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Expected Pullout Date'); ?></th>
 		<td>
-			<?php echo h($clientServiceProduct['ClientServiceProduct']['expected_pullout_date']); ?>
+			<?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['expected_pullout_date']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
-		<th><?php echo __('Pullout Data'); ?></th>
+		<th><?php echo __('Pullout Date'); ?></th>
 		<td>
-			<?php echo h($clientServiceProduct['ClientServiceProduct']['pullout_data']); ?>
+			<?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['pullout_date']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($clientServiceProduct['ClientServiceProduct']['created']); ?>
+			<?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($clientServiceProduct['ClientServiceProduct']['modified']); ?>
+			<?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

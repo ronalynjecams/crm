@@ -88,14 +88,14 @@
 <tr>
 		<th><?php echo __('Actual Start'); ?></th>
 		<td>
-			<?php echo h($deliveryItenerary['DeliveryItenerary']['actual_start']); ?>
+			<?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['actual_start']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('End Work'); ?></th>
 		<td>
-			<?php echo h($deliveryItenerary['DeliveryItenerary']['end_work']); ?>
+			<?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['end_work']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -137,14 +137,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($deliveryItenerary['DeliveryItenerary']['created']); ?>
+			<?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($deliveryItenerary['DeliveryItenerary']['modified']); ?>
+			<?php echo time_elapsed_string($deliveryItenerary['DeliveryItenerary']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -206,8 +206,8 @@
 			<td><?php echo $deliveryInstaller['id']; ?></td>
 			<td><?php echo $deliveryInstaller['delivery_itenerary_id']; ?></td>
 			<td><?php echo $deliveryInstaller['user_id']; ?></td>
-			<td><?php echo $deliveryInstaller['created']; ?></td>
-			<td><?php echo $deliveryInstaller['modified']; ?></td>
+			<td><?php echo time_elapsed_string($deliveryInstaller['created']); ?></td>
+			<td><?php echo time_elapsed_string($deliveryInstaller['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'delivery_installers', 'action' => 'view', $deliveryInstaller['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'delivery_installers', 'action' => 'edit', $deliveryInstaller['id']), array('escape' => false)); ?>

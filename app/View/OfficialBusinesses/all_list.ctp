@@ -1,21 +1,21 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>
 
 <!-- REQUIRED FOR MULTIPLE SELECT ON QUOTATION -->
-<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">
-<script src="../plugins/chosen/chosen.jquery.min.js"></script>
+<link href="/css/plug/chosen/chosen.min.css" rel="stylesheet">
+<script src="/css/plug/chosen/chosen.jquery.min.js"></script>
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -70,7 +70,7 @@
                     <tbody>
                         <?php foreach($all_official_business_lists as $all_official_business_list){ ?>
                         <tr>
-                            <td><?php echo h(date('F d, Y h:i:a', strtotime($all_official_business_list['OfficialBusiness']['created']))); ?></td>
+                            <td><?php echo time_elapsed_string($all_official_business_list['OfficialBusiness']['created']); ?></td>
                             <td>
                             <?php echo h($all_official_business_list['OfficialBusiness']['User']['first_name'])." ".h($all_official_business_list['OfficialBusiness']['User']['last_name']) ?>
                             </td>

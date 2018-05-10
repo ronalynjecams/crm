@@ -55,14 +55,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($accountingPaper['AccountingPaper']['created']); ?>
+			<?php echo time_elapsed_string($accountingPaper['AccountingPaper']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($accountingPaper['AccountingPaper']['modified']); ?>
+			<?php echo time_elapsed_string($accountingPaper['AccountingPaper']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -102,8 +102,8 @@
 			<td><?php echo $collectionPaper['amount']; ?></td>
 			<td><?php echo $collectionPaper['accounting_paper_id']; ?></td>
 			<td><?php echo $collectionPaper['status']; ?></td>
-			<td><?php echo $collectionPaper['created']; ?></td>
-			<td><?php echo $collectionPaper['modified']; ?></td>
+			<td><?php echo time_elapsed_string($collectionPaper['created']); ?></td>
+			<td><?php echo time_elapsed_string($collectionPaper['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'collection_papers', 'action' => 'view', $collectionPaper['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'collection_papers', 'action' => 'edit', $collectionPaper['id']), array('escape' => false)); ?>

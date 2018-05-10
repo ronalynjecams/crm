@@ -42,8 +42,8 @@
 					<tr>
 						<td><?php echo h($drPaper['DrPaper']['id']); ?>&nbsp;</td>
 						<td><?php echo h($drPaper['DrPaper']['name']); ?>&nbsp;</td>
-						<td><?php echo h($drPaper['DrPaper']['created']); ?>&nbsp;</td>
-						<td><?php echo h($drPaper['DrPaper']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($drPaper['DrPaper']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($drPaper['DrPaper']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $drPaper['DrPaper']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $drPaper['DrPaper']['id']), array('escape' => false)); ?>

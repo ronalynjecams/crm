@@ -96,14 +96,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($productSource['ProductSource']['created']); ?>
+			<?php echo time_elapsed_string($productSource['ProductSource']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($productSource['ProductSource']['modified']); ?>
+			<?php echo time_elapsed_string($productSource['ProductSource']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

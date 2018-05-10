@@ -50,8 +50,8 @@
 						<td><?php echo h($transactionSource['TransactionSource']['mode']); ?>&nbsp;</td>
 						<td><?php echo h($transactionSource['TransactionSource']['mode_num']); ?>&nbsp;</td>
 						<td><?php echo h($transactionSource['TransactionSource']['product_combo_id']); ?>&nbsp;</td>
-						<td><?php echo h($transactionSource['TransactionSource']['created']); ?>&nbsp;</td>
-						<td><?php echo h($transactionSource['TransactionSource']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($transactionSource['TransactionSource']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($transactionSource['TransactionSource']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $transactionSource['TransactionSource']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $transactionSource['TransactionSource']['id']), array('escape' => false)); ?>

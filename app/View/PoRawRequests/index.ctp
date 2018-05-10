@@ -72,8 +72,8 @@
 						<td><?php echo h($poRawRequest['PoRawRequest']['qty']); ?>&nbsp;</td>
 						<td><?php echo h($poRawRequest['PoRawRequest']['status']); ?>&nbsp;</td>
 						<td><?php echo h($poRawRequest['PoRawRequest']['date_needed']); ?>&nbsp;</td>
-						<td><?php echo h($poRawRequest['PoRawRequest']['created']); ?>&nbsp;</td>
-						<td><?php echo h($poRawRequest['PoRawRequest']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($poRawRequest['PoRawRequest']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($poRawRequest['PoRawRequest']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $poRawRequest['PoRawRequest']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $poRawRequest['PoRawRequest']['id']), array('escape' => false)); ?>

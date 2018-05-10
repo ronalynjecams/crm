@@ -62,14 +62,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($vehicle['Vehicle']['created']); ?>
+			<?php echo time_elapsed_string($vehicle['Vehicle']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($vehicle['Vehicle']['modified']); ?>
+			<?php echo time_elapsed_string($vehicle['Vehicle']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -122,15 +122,15 @@
 			<td><?php echo $deliveryItenerary['amount']; ?></td>
 			<td><?php echo $deliveryItenerary['driver']; ?></td>
 			<td><?php echo $deliveryItenerary['expected_start']; ?></td>
-			<td><?php echo $deliveryItenerary['actual_start']; ?></td>
-			<td><?php echo $deliveryItenerary['end_work']; ?></td>
+			<td><?php echo time_elapsed_string($deliveryItenerary['actual_start']); ?></td>
+			<td><?php echo time_elapsed_string($deliveryItenerary['end_work']); ?></td>
 			<td><?php echo $deliveryItenerary['type']; ?></td>
 			<td><?php echo $deliveryItenerary['status']; ?></td>
 			<td><?php echo $deliveryItenerary['remarks']; ?></td>
 			<td><?php echo $deliveryItenerary['departure']; ?></td>
 			<td><?php echo $deliveryItenerary['arrival']; ?></td>
-			<td><?php echo $deliveryItenerary['created']; ?></td>
-			<td><?php echo $deliveryItenerary['modified']; ?></td>
+			<td><?php echo time_elapsed_string($deliveryItenerary['created']); ?></td>
+			<td><?php echo time_elapsed_string($deliveryItenerary['modified']); ?></td>
 			<td><?php echo $deliveryItenerary['client_id']; ?></td>
 			<td><?php echo $deliveryItenerary['requested_by']; ?></td>
 			<td><?php echo $deliveryItenerary['request_note']; ?></td>

@@ -1,21 +1,28 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>
 
 <!-- REQUIRED FOR MULTIPLE SELECT ON QUOTATION -->
-<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">
-<script src="../plugins/chosen/chosen.jquery.min.js"></script>
+<link href="/css/plug/chosen/chosen.min.css" rel="stylesheet">
+<script src="/css/plug/chosen/chosen.jquery.min.js"></script>
+
+<!--SWEET ALERT-->
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script>
+
+<!--TINYMCE-->
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
 
 <div id="content-container">
 	<div class="products form">
@@ -37,9 +44,9 @@
 					<div class="col-lg-12">
 						<div class="row">
 							<div class="col-lg-3">
-								<div class="form-group" style="width:260px;height:175px;">
-									<img class="img-responsive" src="../product_uploads/image_placeholder.jpg"
-										id="prod_image_preview" style="width:100%;height:100%;" /><br/>
+								<div class="form-group" class="img-responsive">
+									<img class="img-responsive" src="/img/product-uploads/image_placeholder.jpg"
+										id="prod_image_preview" /><br/>
 								</div>
 								<div>
 									<input type="file" class="form-control" id="prod_image" />
@@ -83,10 +90,11 @@
 												<option value="raw">Raw</option>
 												<option value="chopped">Chopped</option>
 												<option value="office">Office</option>
+												<option value="swatches">swatches</option>
 											</select>
 										</div>
 										<div class="col-lg-6">
-											<input type="text" class="form-control" pattern="[0-9]+" id="prod_sale_price" placeholder="Sale Price" />
+											<input type="number" step="any" min="0" pattern="/^[0-9.](?:\.[0-9])$/" class="form-control" id="prod_sale_price" placeholder="Sale Price" />
 										</div>
 									</div> <br/>
 									
@@ -122,14 +130,13 @@
 												<label style="margin-bottom:8px;vertical-align:middle;">Default</label>
 											</div>
 											<div class="col-lg-10">
-												<input type="text" class="form-control" pattern="[0-9]+" id="prod_price" placeholder="Price" />
+												<input type="number" step="any" min="0" pattern="/^[0-9.](?:\.[0-9])$/" class="form-control" id="prod_price" placeholder="Price" />
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						
 						
 						<div class="row" id="field_for_properties_and_values" hidden="true">
 						</div>
@@ -150,6 +157,22 @@
 </div>
 
 <!--JAVASCTRIPT FUNCTIONS-->
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        height: 500,
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
 <script>
 $(document).ready(function(){
 	var count_for_add_properties_and_values = 0;
@@ -175,7 +198,7 @@ $(document).ready(function(){
 						'<label style="margin-bottom:8px;vertical-align:middle;">Default</label>'+
 					'</div>'+
 					'<div class="col-lg-7">'+
-						'<input type="text" class="form-control appended_prod_price" pattern="[0-9]+" id="appended_prod_price" placeholder="Price" />'+
+						'<input type="number" step="any" min="0" pattern="/^[0-9.](?:\.[0-9])$/" class="form-control appended_prod_price" id="appended_prod_price" placeholder="Price" />'+
 					'</div>'+
 					'<div class="col-lg-3" style="text-align:center">'+
 						'<button class="btn btn-danger btn-sm remove_properties_and_values" style="margin-top:3px;" data-toggle="tooltip"'+
@@ -220,7 +243,7 @@ $(document).ready(function(){
     });
     
     function readURL(input) {
-        if (input.files && input.files[0]) {
+        if(input.files && input.files[0] && input.files[0].name.match(/\.(jpg|jpeg)$/)) {
             var reader = new FileReader();
             
             reader.onload = function (e) {
@@ -228,6 +251,9 @@ $(document).ready(function(){
             }
             
             reader.readAsDataURL(input.files[0]);
+        } else{
+        	alert('Uploaded image must be JPG or JPEG.');
+        	$('#prod_image').val("");
         }
     }
     
@@ -238,13 +264,11 @@ $(document).ready(function(){
     var image_file = $("#prod_image").prop('files');
 	console.log(image_file);
 	
-	var formdata = new FormData();
-    
     $('#addproduct-top, #addproduct-bottom').click(function() {
     	console.log('addproduct is clicked');
     	
 	    var name =  $('#prod_name').val();
-	    var other_info = $('#prod_other_info').val();
+	    var other_info = tinyMCE.get('prod_other_info').getContent();
 	    var image = $('#prod_image').val();
 	    var category = $('#prod_category').val();
 	    var sub_category = $("#prod_sub_category").val();
@@ -252,29 +276,31 @@ $(document).ready(function(){
 	    var values = $('#prod_values').val();
 	    var price = $("#prod_price").val();
 	    var type = $("#prod_type").val();
-	    var sale_price = $("#prod_sale_price").val();
-	    var deflt = '';
+	    var sale_price_tmp = $("#prod_sale_price").val();
+	    var deflt = 'false';
 		if ($('#prod_default').is(":checked")) {
 			deflt = 'true';
 	    }
-	    else {
-	    	deflt = 'false';
+	    var sale_price = 0;
+	    if(sale_price_tmp!="") {
+	    	sale_price = sale_price_tmp;
 	    }
-	    
 	    var image_tmp = image.split('\\');
 	    var image_filename = image_tmp[image_tmp.length-1];
 	    
 	    var prod_default_array = [];
-	    $(".appended_prod_default").each(function(index) {
-	        var prod_default = '';
-	    		if ($(".appended_prod_default").is(":checked")) {
-				prod_default = 'true';	
+	    var defff = $(".appended_prod_default").map(function() {
+            var val = $(this).is(":checked");
+            if(val==true) {
+                prod_default = 1;	
 		    }
 		    else {
-		    	prod_default = 'false';
+		    	prod_default = 0
 		    }
 		    prod_default_array.push(prod_default);
-	    });
+            
+            return prod_default_array;
+        }).get();
 	    
 	    var array_prod_price = [];
 	    $('.appended_prod_price').each(function (index) {
@@ -292,16 +318,21 @@ $(document).ready(function(){
             appended_value.push($(this).val());
         });
         
-        var appended_obj = {};
-        var array_obj = {};
-        var prop; var val; var price; var def;
-        for (var i = 0, count = appended_prop.length; i < count; i++) {
-        	prop = appended_prop[i];
-        	val = appended_value[i];
-        	price = array_prod_price[i];
-        	def = prod_default_array[i];
-        	array_obj[i] = {"prop":prop, "val":val, "price":price, "def":def};
-        	appended_obj["appended"] = array_obj;
+        if(appended_prop.length!=0) {
+	    	var appended_obj = {};
+	        var array_obj = {};
+	        var prop; var val; var price1; var def;
+	        for (var i = 0, count = appended_prop.length; i < count; i++) {
+	        	prop = appended_prop[i];
+	        	val = appended_value[i];
+	        	price1 = array_prod_price[i];
+	        	def = prod_default_array[i];
+	        	array_obj[i] = {"prop":prop, "val":val, "price":price1, "def":def};
+	        	appended_obj["appended"] = array_obj;
+	        }
+        }
+        else {
+        	var appended_obj = 0;
         }
         
 		var data = new FormData();
@@ -320,88 +351,153 @@ $(document).ready(function(){
 			contentType: false, 
 			context: $('input:file'),
 			success: function (msg) {
-				console.log(msg);
+				console.log(msg+"---Image was uploaded");
 		    	
 			    if(name != "") {
+			    	console.log("name passed");
 			    	if(category != "Select Category") {
+			    		console.log("category passed");
 			    		if(sub_category != "Select Sub Category") {
+			    			console.log("sub category passed");
 				    		if(type != "Select Type") {
-					    		if(sale_price != "" && parseInt(sale_price)) {
-					    			if(other_info != "") {
-					    				if(image != "") {
-					    					if(properties != "") {
-					    						if(values != "") {
-					    							if(price != "") {
-														var data = {
-													    	"name": name,
-													    	"other_info": other_info,
-													    	"sub_category": sub_category,
-													    	"image": image_filename,
-													    	"properties": properties,
-													    	"values": values,
-													    	"price": price,
-													    	"required_default": deflt,
-															"required_properties": properties,
-															"required_values": values,
-															"required_price": price,
-															"required_default": def,
-															"sale_price": sale_price,
-															"type": type,
-															"appended_obj": appended_obj
-													    };
-														$.ajax({
-															url: "/products/add_product",
-															type: 'Post',
-															data: {'data': data},
-															dataType: 'text',
-															success: function(id) {
-																console.log(id);
-																window.location="/products/index";
-															},
-															error: function(err) {
-																console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-																console.log("error in ajax add");
+			    				console.log("type passed");
+				    			if(other_info != "") {
+			    					console.log("other info passed");
+				    				if(image != "") {
+			    						console.log("image passed");
+				    					if(properties != "") {
+			    							console.log("properties passed");
+				    						if(values != "") {
+			    								console.log("values passed");
+				    							if(price != "") {
+			    									console.log("price passed");
+													var data = {
+												    	"name": name,
+												    	"other_info": other_info,
+												    	"sub_category": sub_category,
+												    	"image": image_filename,
+												    	"required_default": deflt,
+														"required_properties": properties,
+														"required_values": values,
+														"required_price": price,
+														"sale_price": sale_price,
+														"appended_obj": appended_obj,
+														"type": type
+												    };
+													$.ajax({
+														url: "/products/add_product",
+														type: 'Post',
+														data: {'data': data},
+														dataType: 'text',
+														success: function(id) {
+															console.log(id);
+															if(id=="Error:Already_Existing") {
+																console.log("ERROR~");
+																$('#prod_name').css({'border-color': 'red'});
+																swal({
+														            title: "Oops!",
+														            text: "This name already exist. Try again.",
+														            type: "warning"
+																});
 															}
-														});
-					    							}
-					    							else {
-					    								$("#prod_price").css({'border-color': 'red'});
-					    							}
-					    						}
-					    						else {
-					    							$("#prod_values").css({'border-color': 'red'});
-					    						}
-					    					}
-					    					else {
-					    						$("#prod_properties").css({'border-color': 'red'});
-					    					}
-					    				}
-					    				else {
-					    					$("#prod_image").css({'border-color': 'red'});
-					    				}
-					    			}
-					    			else {
-					    				$("#prod_other_info").css({'border-color': 'red'});
-					    			}
-					    		}
-					    		else {
-					    			$("#prod_sale_price").css({'border-color': 'red'});
-					    		}
+															else {
+																console.log(id);
+																location.reload();
+															}
+														},
+														error: function(err) {
+															console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+															console.log("error in ajax add");
+														}
+													});
+				    							}
+				    							else {
+				    								$("#prod_price").css({'border-color': 'red'});
+								    				swal({
+								    					title: "Oops!",
+								    					text: "Price cannot be empty.\n"+
+								    						  "Please add price and try again.",
+								    					type: "warning"
+								    				});
+				    							}
+				    						}
+				    						else {
+				    							$("#prod_values").css({'border-color': 'red'});
+							    				swal({
+							    					title: "Oops!",
+							    					text: "Product value cannot be empty.\n"+
+							    						  "Please add product value and try again.",
+							    					type: "warning"
+							    				});
+				    						}
+				    					}
+				    					else {
+				    						$("#prod_properties").css({'border-color': 'red'});
+						    				swal({
+						    					title: "Oops!",
+						    					text: "Product properties cannot be empty.\n"+
+						    						  "Please add product properties and try again.",
+						    					type: "warning"
+						    				});
+				    					}
+				    				}
+				    				else {
+				    					$("#prod_image").css({'border-color': 'red'});
+					    				swal({
+					    					title: "Oops!",
+					    					text: "Image cannot be empty.\n"+
+					    						  "Please add image and try again.",
+					    					type: "warning"
+					    				});
+				    				}
+				    			}
+				    			else {
+				    				swal({
+				    					title: "Oops!",
+				    					text: "Other information cannot be empty.\n"+
+				    						  "Please add other information and try again.",
+				    					type: "warning"
+				    				});
+				    			}
 				    		}
 				    		else {
 				    			$("#prod_type").css({'border-color': 'red'});
+			    				swal({
+			    					title: "Oops!",
+			    					text: "Product type cannot be empty.\n"+
+			    						  "Please add product type and try again.",
+			    					type: "warning"
+			    				});
 				    		}
 			    		}
 			    		else {
 			    			$('#prod_sub_category').css({'border-color': 'red'});
+		    				swal({
+		    					title: "Oops!",
+		    					text: "Product sub-category cannot be empty.\n"+
+		    						  "Please add product sub-category and try again.",
+		    					type: "warning"
+		    				});
 			    		}
 			    	}
 			    	else {
 			    		$('#prod_category').css({'border-color': 'red'});
+	    				swal({
+	    					title: "Oops!",
+	    					text: "Category cannot be empty.\n"+
+	    						  "Please add category and try again.",
+	    					type: "warning"
+	    				});
 			    	}
 			    }
 			    else {
 			    	$('#prod_name').css({'border-color': 'red'});
+    				swal({
+    					title: "Oops!",
+    					text: "Product name cannot be empty.\n"+
+    						  "Please add product name and try again.",
+    					type: "warning"
+    				});
 			    }
 		     },
 		     error: function (err) {

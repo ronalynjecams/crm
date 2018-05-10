@@ -4,7 +4,7 @@
                 <!--Page Title-->
                 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
                 <div id="page-title">
-                    <h1 class="page-header text-overflow">404. Page not found.</h1>
+                    <h1 class="page-header text-overflow">404. Page Not Found.</h1>
 
                     <!--Searchbox-->
                     <!--

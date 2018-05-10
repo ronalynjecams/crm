@@ -56,14 +56,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($quotationUpdateLog['QuotationUpdateLog']['created']); ?>
+			<?php echo time_elapsed_string($quotationUpdateLog['QuotationUpdateLog']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($quotationUpdateLog['QuotationUpdateLog']['modified']); ?>
+			<?php echo time_elapsed_string($quotationUpdateLog['QuotationUpdateLog']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

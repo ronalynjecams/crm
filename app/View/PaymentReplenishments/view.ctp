@@ -54,7 +54,7 @@
 <tr>
 		<th><?php echo __('Acknowledged Date'); ?></th>
 		<td>
-			<?php echo h($paymentReplenishment['PaymentReplenishment']['acknowledged_date']); ?>
+			<?php echo time_elapsed_string($paymentReplenishment['PaymentReplenishment']['acknowledged_date']); ?>
 			&nbsp;
 		</td>
 </tr>

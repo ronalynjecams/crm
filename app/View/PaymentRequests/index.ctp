@@ -67,12 +67,12 @@
 						<td><?php echo h($paymentRequest['PaymentRequest']['liquidated_amount']); ?>&nbsp;</td>
 						<td><?php echo h($paymentRequest['PaymentRequest']['reimbursed_amount']); ?>&nbsp;</td>
 						<td><?php echo h($paymentRequest['PaymentRequest']['returned_amount']); ?>&nbsp;</td>
-						<td><?php echo h($paymentRequest['PaymentRequest']['ewt_released']); ?>&nbsp;</td>
-						<td><?php echo h($paymentRequest['PaymentRequest']['ewt_returned']); ?>&nbsp;</td>
-						<td><?php echo h($paymentRequest['PaymentRequest']['replenished_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentRequest['PaymentRequest']['ewt_released']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentRequest['PaymentRequest']['ewt_returned']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentRequest['PaymentRequest']['replenished_date']); ?>&nbsp;</td>
 						<td><?php echo h($paymentRequest['PaymentRequest']['status']); ?>&nbsp;</td>
-						<td><?php echo h($paymentRequest['PaymentRequest']['created']); ?>&nbsp;</td>
-						<td><?php echo h($paymentRequest['PaymentRequest']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentRequest['PaymentRequest']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentRequest['PaymentRequest']['modified']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($paymentRequest['Supplier']['name'], array('controller' => 'suppliers', 'action' => 'view', $paymentRequest['Supplier']['id'])); ?>
 		</td>

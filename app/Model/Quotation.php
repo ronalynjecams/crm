@@ -16,6 +16,9 @@ class Quotation extends AppModel {
  *
  * @var array
  */
+ 
+    public $actsAs = array('Containable');
+    
 	public $validate = array(
 		'quote_number' => array(
 			'notBlank' => array(

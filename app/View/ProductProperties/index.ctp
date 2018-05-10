@@ -52,8 +52,8 @@
 								<td>
 			<?php echo $this->Html->link($productProperty['Product']['name'], array('controller' => 'products', 'action' => 'view', $productProperty['Product']['id'])); ?>
 		</td>
-						<td><?php echo h($productProperty['ProductProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productProperty['ProductProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productProperty['ProductProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productProperty['ProductProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $productProperty['ProductProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $productProperty['ProductProperty']['id']), array('escape' => false)); ?>

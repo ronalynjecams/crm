@@ -202,7 +202,12 @@ class DeliveryItenerariesController extends AppController {
         $this->loadModel("User");
         $this->User->recursive = -1;
         $users = $this->User->find('all');
-        $this->set(compact('iteneraries', 'status', 'vehicles', 'users'));
+        $drivers = $this->User->find('all',[
+            'conditions'=>['User.role' => 'diver']
+            ]);
+        
+        
+        $this->set(compact('iteneraries', 'status', 'vehicles', 'users','drivers'));
         
         // $this->loadModel('DeliverySchedProduct');
         //  $drpeods = $this->DeliverySchedProduct->findAllByDeliveryScheduleId(14);
@@ -254,11 +259,10 @@ class DeliveryItenerariesController extends AppController {
         exit;
     }
     
-        public function process_update_end() {
-            $this->loadModel('DeliverySchedule');
-            $this->loadModel('DeliverySchedProduct');
+    public function process_update_end() {
+        $this->loadModel('DeliverySchedule');
+        $this->loadModel('DeliverySchedProduct');
         $this->autoRender = false;
-        $this->response->type('json');
         $data = $this->request->data;
         
         $end_id = $data['end_id'];
@@ -282,22 +286,18 @@ class DeliveryItenerariesController extends AppController {
         
         if($this->DeliveryItenerary->save()){
             $this->DeliverySchedule->id = $DIinfo['DeliveryItenerary']['delivery_schedule_id'];
-            if($status == 'delivered'){
-            $this->DeliverySchedule->set(array(
-                        'status' => 'delivered', 
-                    ));
-                    if ($this->DeliverySchedule->save()) {
-                        
-                        //kapag galing quotation
-                        if($DIinfo['DeliveryItenerary']['type']=='dr'){
-                            
+            if($status == 'delivered') {
+                $this->DeliverySchedule->set(array('status' => 'delivered'));
+                if ($this->DeliverySchedule->save()) {
+                    //kapag galing quotation
+                    if($DIinfo['DeliveryItenerary']['type']=='dr'){
                         $this->loadModel('DeliverySchedProduct');
                         $this->loadModel('QuotationProduct');
                         $drpeods = $this->DeliverySchedProduct->findAllByDeliveryScheduleId($DIinfo['DeliveryItenerary']['delivery_schedule_id']);
                        
                         foreach($drpeods as $drpeod){
-                             pr($drpeod['DeliverySchedProduct']['id']);
-                            if($drpeod['DeliverySchedProduct']['actual_qty'] !=0 ){
+                            // pr($drpeod['DeliverySchedProduct']['id']);
+                            if($drpeod['DeliverySchedProduct']['actual_qty'] != 0 ){
                             $this->DeliverySchedProduct->id = $drpeod['DeliverySchedProduct']['id'];
                             $this->DeliverySchedProduct->set(array(
                                 'delivered_qty' => $drpeod['DeliverySchedProduct']['actual_qty']
@@ -315,20 +315,32 @@ class DeliveryItenerariesController extends AppController {
                             $this->QuotationProduct->save();
                             }
                         }
-                        
-                            //update quotation product based on delivered quantity from delivery sched product delivered_qty
-                            //as of now kung ano ang actual qty yun na muna ang delivered qty
-                              
+                        //update quotation product based on delivered quantity from delivery sched product delivered_qty
+                        //as of now kung ano ang actual qty yun na muna ang delivered qty
+                    }
+                    elseif($DIinfo['DeliveryItenerary']['type']=='demo') {
+                        $this->loadModel('DeliverySchedProduct');
+                        $this->loadModel('QuotationProduct');
+                        $drpeods = $this->DeliverySchedProduct->findAllByDeliveryScheduleId($DIinfo['DeliveryItenerary']['delivery_schedule_id']);
+                       
+                        foreach($drpeods as $drpeod) {
+                            if($drpeod['DeliverySchedProduct']['actual_qty'] !=0 ){
+                            $this->DeliverySchedProduct->id = $drpeod['DeliverySchedProduct']['id'];
+                            $this->DeliverySchedProduct->set(array(
+                                'delivered_qty' => $drpeod['DeliverySchedProduct']['actual_qty']
+                                ));
+                            $this->DeliverySchedProduct->save();
                         }
-                    } 
+                    }
+                } 
             }
-                // echo json_encode($end_id);
         }
-        exit;
+            // echo json_encode($end_id);
+        }
+        return "Everything done for del itenerary";
     }
     
     public function process_update_vehicle(){
-        
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
@@ -403,32 +415,61 @@ class DeliveryItenerariesController extends AppController {
     			while (($row = fgetcsv($csvFile, 1000, ",")) !== FALSE) 
     			{
     			$matrix[] = $row;
-    			}
-    			           
-    // 			pr($matrix);  exit;          
+    			}         
     			$matrix_count = count($matrix) - 1;
-    			 
+    			$count_vehicle = 0;
     			for($i=1; $i<=$matrix_count; $i++){ 
     			    $ctr = 0; 
     				$booking_code = $matrix[$i][0];
-    				$amount = floatval($matrix[$i][8]);
-    				$arrival = $matrix[$i][1];
+    				$brand = $matrix[$i][5];
+    				$driver = $matrix[$i][6];
+    				$str = $matrix[$i][8];
+    				// echo $str.' priceeee  = ';
+                    $str = ltrim($str, '?');
+                    // echo $str.' priceeee2';
+                    // echo floatval(str_replace(",","",$str));
+    				$amount = floatval(str_replace(",","",$str));
+    				$formatted = date_format(date_create($matrix[$i][1]),"Y-m-d H:i:s");
+    				$arrival = $formatted;
     				$status = $matrix[$i][9];
-    				
+    				// echo $booking_code.' this is booking code <br>'.$status.' status <br>';
     				$this->DeliveryItenerary->recursive = -1;
     				$di = $this->DeliveryItenerary->findByBookingCode($booking_code);
-    				
-    				if($di && $status == 'Delivery Completed'){
-    				    // pr($di); 
+    				// var_dump($di); 
+    				// echo "new date and time ".$arrival;
+    				if($di){
+    				    // var_dump($di);
+    				    // if($vehicle != ""){
+    				    //     $this->loadModel('Vehicle');
+    				    //     $this->Vehicle->recursive = -1;
+    				    //     $vehicle = $this->Vehicle->findByBrand($vehicle);
+    				        
+    				    //     if(!$vehicle){
+    				    //         $this->Vehicle->create();
+    				    //         $this->Vehicle->set(array('brand' => $brand, 'type' => 'transpotify'));
+    				    //         if($this->Vehicle->save()){
+    				    //             $count_vehicle++;
+    				    //             $vehicle_id = $this->Vehicle->getLastInsertID();
+    				    //         }
+    				    //     } else{
+    				    //         $vehicle_id = $vehicle['Vehicle']['id']
+    				    //     }
+    				    // }
+    				    
     				    $this->DeliveryItenerary->id = $di['DeliveryItenerary']['id'];
-    				    $this->DeliveryItenerary->set(array('ammount' => $amount, 'arrival' => $arrival));
+    				    $this->DeliveryItenerary->set(array('amount' => $amount, 'arrival' => $arrival, 'driver' => $driver));
     				    $this->DeliveryItenerary->save();
-    				}
+    				    
+    				} 
                 }
                 fclose($csvFile);
                 $qstring = '?status=succ';
                 // $this->Session->setFlash(__('Import completed.'), 'default', array('class' => 'alert alert-success'));
-                return $this->redirect('/delivery_iteneraries/list_view?status='.$stat);
+                if($count_vehicle==0){
+                    return $this->redirect('/delivery_iteneraries/list_view?status='.$stat);
+                } else{
+                    
+                }
                 // return $this->redirect(array('action' => 'list_view'));
             }else{
                 $qstring = '?status=err';
@@ -440,4 +481,150 @@ class DeliveryItenerariesController extends AppController {
         exit;
 	}
 
+    public function update_demo() {
+        echo "hello";
+        $this->autoRender = false;
+        $id = $this->request->data['id'];
+        $del_itenerary = $this->DeliveryItenerary->findById($id);
+        $del_sched_id = $del_itenerary['DeliveryItenerary']['delivery_schedule_id'];
+        $reference_number = $del_itenerary['DeliverySchedule']['reference_number'];
+        $reference_type = $del_itenerary['DeliverySchedule']['reference_type'];
+        $today = date("Y-m-d H:m:s");
+        $userin = $this->Auth->user('id');
+        
+        $isAllSaved = [];
+        
+        $this->loadModel('ClientServiceProduct');
+        $DS_ClientServiceProduct = $this->ClientServiceProduct->getDataSource();
+        $DS_ClientServiceProduct->begin();
+        if($reference_type=="client_services") {
+            $getClientServiceProduct = $this->ClientServiceProduct->findAllByClientServiceId($reference_number);
+            foreach($getClientServiceProduct as $retClientServiceProduct) {
+                $ClientServiceProduct = $retClientServiceProduct['ClientServiceProduct'];
+                
+                if($ClientServiceProduct['status']!="cancelled") {
+                   $ClientServiceProduct_id = $ClientServiceProduct['id']; 
+                
+                    $this->ClientServiceProduct->id = $ClientServiceProduct_id;
+                    $this->ClientServiceProduct->set(['date_delivered'=>$today,
+                                                      'status'=>'delivered']);
+                    if($this->ClientServiceProduct->save()) {
+                        echo "ClientServiceProduct saved";
+                        $isAllSaved[] = "yes";
+                    }
+                    else { $isAllSaved[] = "no"; }
+                }
+            }
+            
+            if(in_array("no", $isAllSaved)) {
+                $DS_ClientServiceProduct->rollback();
+                echo "Error in Client Service Product";
+            }
+            else {
+                $this->loadModel('ClientService');
+                $DS_ClientService = $this->ClientService->getDataSource();
+                $DS_ClientService->begin();
+                $this->ClientService->id = $reference_number;
+                $this->ClientService->set(['status'=>'delivered']);
+                if($this->ClientService->save()) {
+                    echo "Client Service saved";
+                    $this->loadModel('ClientServiceLog');
+                    $DS_ClientServiceLog = $this->ClientServiceLog->getDataSource();
+                    $DS_ClientServiceLog->begin();
+                    $this->ClientServiceLog->create();
+                    $this->ClientServiceLog->set(['client_service_id'=>$reference_number,
+                                                  'user_id'=>$userin,
+                                                  'status'=>'delivered']);
+                    if($this->ClientServiceLog->save()) {
+                        $DS_ClientServiceLog->commit();
+                        $DS_ClientService->commit();
+                        $DS_ClientServiceProduct->commit();
+                    }
+                    else {
+                        $DS_ClientServiceLog->rollback();
+                        $DS_ClientService->rollback();
+                        $DS_ClientServiceLog->rollback();
+                    }
+                }
+                else {
+                    echo "Error in Client Service";
+                    $DS_ClientService->rollback();
+                }
+            }
+        }
+        else {
+            $getClientServiceProduct = $this->ClientServiceProduct->findAllByClientServiceId($reference_number);
+            foreach($getClientServiceProduct as $retClientServiceProduct) {
+                $ClientServiceProduct = $retClientServiceProduct['ClientServiceProduct'];
+                
+                if($ClientServiceProduct['status']!="cancelled") {
+                   $ClientServiceProduct_id = $ClientServiceProduct['id']; 
+                
+                    $this->ClientServiceProduct->id = $ClientServiceProduct_id;
+                    $this->ClientServiceProduct->set(['date_delivered'=>$today,
+                                                      'status'=>'pullout_successful']);
+                    if($this->ClientServiceProduct->save()) {
+                        echo "ClientServiceProduct saved";
+                        $isAllSaved[] = "yes";
+                    }
+                    else { $isAllSaved[] = "no"; }
+                }
+            }
+            
+            if(in_array("no", $isAllSaved)) {
+                $DS_ClientServiceProduct->rollback();
+                echo "Error in Client Service Product";
+            }
+            else {
+                $this->loadModel('ClientService');
+                $DS_ClientService = $this->ClientService->getDataSource();
+                $DS_ClientService->begin();
+                $this->ClientService->id = $reference_number;
+                $this->ClientService->set(['status'=>'pullout_successful']);
+                if($this->ClientService->save()) {
+                    echo "Client Service saved";
+                    $this->loadModel('ClientServiceLog');
+                    $DS_ClientServiceLog = $this->ClientServiceLog->getDataSource();
+                    $DS_ClientServiceLog->begin();
+                    $this->ClientServiceLog->create();
+                    $this->ClientServiceLog->set(['client_service_id'=>$reference_number,
+                                                  'user_id'=>$userin,
+                                                  'status'=>'pullout_successful']);
+                                                  
+                    if($this->ClientServiceLog->save()) {
+                        echo "clientservicelog save";
+                        $DS_ClientServiceLog->commit();
+                        $DS_ClientService->commit();
+                        $DS_ClientServiceProduct->commit();
+                    }
+                    else {
+                        echo "error clientservicelog";
+                        $DS_ClientServiceLog->rollback();
+                        $DS_ClientService->rollback();
+                        $DS_ClientServiceLog->rollback();
+                    }
+                }
+                else {
+                    echo "Error in Client Service";
+                    $DS_ClientService->rollback();
+                }
+            }
+        }
+        return "Everything executed!";
+    }
+    
+    public function create_duplicate(){
+        $det = $this->request->data['det'];
+        if($det){
+            unset($det['id']);
+            
+            $this->DeliveryItenerary->create();
+            if ($this->DeliveryItenerary->save($det)) {
+                echo "succesfull";
+            } else {
+                echo "error";
+            }
+        }
+        exit;
+    }
 }

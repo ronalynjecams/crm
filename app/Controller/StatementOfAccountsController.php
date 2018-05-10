@@ -89,10 +89,17 @@ class StatementOfAccountsController extends AppController {
 	}
 	
 	public function all_list() {
-		$this->loadModel('StatementOfAccount');
+		$this->loadModel('Client');
 		
 		$soas = $this->StatementOfAccount->find('all');
-		$this->set(compact('soas'));
+		$agentnames=[];
+		foreach($soas as $soa) {
+			$client_id = $soa['StatementOfAccount']['client_id'];
+			$getClient = $this->Client->findById($client_id);
+			$agentnames[$client_id] = $getClient['User']['first_name']." ".$getClient['User']['last_name'];
+		}
+		
+		$this->set(compact('soas', 'agentnames'));
 	}
 	
 	public function quotation_list() {
@@ -101,11 +108,17 @@ class StatementOfAccountsController extends AppController {
 		$this->loadModel('Client');
 		$this->loadModel('StatementOfAccount');
 		
-		$this->Client->recursive = -1;
-		$client = $this->Client->findById($client_id, ['name']);
+		$this->Client->recursive = 2;
+		$client = $this->Client->findById($client_id, ['name', 'user_id', 'User.id', 'User.first_name', 'User.last_name']);
 		$client_name = $client['Client']['name'];
-		$this->set(compact('client_name'));
+		$agent = "";
+		if(!empty($client['User'])) {
+    		$agent = ucwords("[".$client['User']['first_name']." ".$client['User']['last_name']."]");
+		}
+		$this->set(compact('client_name', 'agent'));
 		
+		
+		$this->StatementOfAccount->recursive = 1;
 		$soas =  $this->StatementOfAccount->find('all', ['conditions'=>
 				['StatementOfAccount.client_id'=>$client_id]]);
 		$this->set(compact('soas'));
@@ -113,9 +126,9 @@ class StatementOfAccountsController extends AppController {
 	
 	public function add() {
 		$this->autoRender = false;
-		$this->response->type('text');
 		
-		$quotation_id = $this->request->query['id'];
+		$quotation_id = $this->request->data['id'];
+		echo json_encode($quotation_id);
 		
 		$this->loadModel('Quotation');
 		$this->loadModel('Collection');
@@ -136,13 +149,13 @@ class StatementOfAccountsController extends AppController {
         $this->Collection->recursive = -1;
         $collections_with_held = $this->Collection->find('all', ['conditions'=>
         								['quotation_id'=>$quotation_id],
-        								['fields'=>['with_held']]]);//dito dapat verified
+        								['fields'=>['with_held']]]);
         $with_held_amount = 0;
 		foreach($collections_with_held as $collection) {
 			$with_held_amount += $collection['Collection']['with_held'];
 		}
 		
-		$this->Collection->recursive = -1;	// andito ate ron ang verified
+		$this->Collection->recursive = -1;
 		$collections_collected_amount = $this->Collection->find('all',
 									['conditions'=>
 									['quotation_id'=>$quotation_id,
@@ -164,14 +177,13 @@ class StatementOfAccountsController extends AppController {
 		$balance = $quotation['grand_total'] - $collected_amount;
 		
 		$user_id = $this->Auth->user('id');
-		
 		$set = ['quotation_id'=>intval($quotation_id),
-				'client_id'=> intval($client_id),
-				'contract_amount'=> floatval($contract_amount),
-				'collected_amount'=> floatval($collected_amount),
-				'with_held_amount'=> $with_held_amount,
-				'balance'=> $balance,
-				'user_id'=> intval($user_id)];
+				'client_id'=>intval($client_id),
+				'contract_amount'=>floatval($contract_amount),
+				'collected_amount'=>floatval($collected_amount),
+				'with_held_amount'=>floatval($with_held_amount),
+				'balance'=>floatval($balance),
+				'user_id'=>intval($user_id)];
 		$final_set = ['soa_number'=>$soa_number]+$set;
 		
 		$this->StatementOfAccount->recursive = -1;
@@ -180,13 +192,13 @@ class StatementOfAccountsController extends AppController {
 		$existing_soa_array = [];
 		foreach($soas as $soa) {
 			$existing_soa = $soa['StatementOfAccount'];
-			$soa_quotation_id = $existing_soa['quotation_id'];
-			$soa_client_id = $existing_soa['client_id'];
-			$soa_contract_amount = $existing_soa['contract_amount'];
-			$soa_collected_amount = $existing_soa['collected_amount'];
-			$soa_with_held_amount = $existing_soa['with_held_amount'];
-			$soa_balance = $existing_soa['balance'];
-			$soa_user_id = $existing_soa['user_id'];
+			$soa_quotation_id = intval($existing_soa['quotation_id']);
+			$soa_client_id = intval($existing_soa['client_id']);
+			$soa_contract_amount = floatval($existing_soa['contract_amount']);
+			$soa_collected_amount = floatval($existing_soa['collected_amount']);
+			$soa_with_held_amount = floatval($existing_soa['with_held_amount']);
+			$soa_balance = floatval($existing_soa['balance']);
+			$soa_user_id = intval($existing_soa['user_id']);
 			
 			$existing_soa_array[] = ['quotation_id'=>$soa_quotation_id,
 								   'client_id'=>$soa_client_id,
@@ -197,9 +209,14 @@ class StatementOfAccountsController extends AppController {
 								   'user_id'=>$soa_user_id];
 		}
 		
+			
 		$check_existing = [false];
 		foreach($existing_soa_array as $each_existing_soa) {
-			if($set == $each_existing_soa) {
+			echo "\nexisting_soa_array:";
+			echo json_encode($existing_soa_array[0]);
+			echo "\nset";
+			echo json_encode($set);
+			if($set === $each_existing_soa) {
 				$check_existing[] = true;
 			}
 			else {
@@ -207,6 +224,7 @@ class StatementOfAccountsController extends AppController {
 			}
 		}
 		
+		echo json_encode($check_existing);
 		if(in_array(true, $check_existing, true)) {
 			$this->Session->setFlash('Statement of Accounts already exists.',
 							'default', array('class' => 'alert alert-danger'), 'alertforexisting');
@@ -218,13 +236,45 @@ class StatementOfAccountsController extends AppController {
 			
 			$this->StatementOfAccount->create();
 			$this->StatementOfAccount->set($final_set);
-			
 			if($this->StatementOfAccount->save()) {
+				echo "\nSOA saved";
 				$DS_SOA->commit();
+			}
+			else {
+				echo "\nERROR in SOA\n";
+				$DS_SOA->rollback();
 			}
 			return json_encode($final_set);
  		}
- 		
- 		$DS_SOA->commit();
+	}
+	
+	public function updateCollectionDue(){
+		
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $soa_id = $data['soa_id'];
+        $collection_due = date('Y-m-d',strtotime($data['collection_due'])); 
+        $this->StatementOfAccount->recursive = 0;
+        $soa_detail = $this->StatementOfAccount->findById($soa_id);
+         
+         
+         
+        $this->Quotation->id = $soa_detail['StatementOfAccount']['quotation_id'];
+        $this->Quotation->set(array(
+        	'collection_due' => $collection_due, 
+        ));
+        if ($this->Quotation->save()) {
+            	$this->StatementOfAccount->id = $soa_detail['StatementOfAccount']['id'];
+            	$this->StatementOfAccount->set(array(
+        			'collection_due' => $collection_due, 
+            		));
+        		if ($this->StatementOfAccount->save()) {
+                	echo json_encode($data);
+        		}else{
+        			echo json_encode('error');
+        		}
+        }
 	}
 }

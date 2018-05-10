@@ -62,8 +62,8 @@
 								<td>
 			<?php echo $this->Html->link($bill['InvLocation']['name'], array('controller' => 'inv_locations', 'action' => 'view', $bill['InvLocation']['id'])); ?>
 		</td>
-						<td><?php echo h($bill['Bill']['created']); ?>&nbsp;</td>
-						<td><?php echo h($bill['Bill']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($bill['Bill']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($bill['Bill']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $bill['Bill']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $bill['Bill']['id']), array('escape' => false)); ?>

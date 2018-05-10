@@ -48,14 +48,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($quotationTerm['QuotationTerm']['created']); ?>
+			<?php echo time_elapsed_string($quotationTerm['QuotationTerm']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($quotationTerm['QuotationTerm']['modified']); ?>
+			<?php echo time_elapsed_string($quotationTerm['QuotationTerm']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -141,12 +141,12 @@
 			<td><?php echo $quotation['ship_latitude']; ?></td>
 			<td><?php echo $quotation['ship_longitude']; ?></td>
 			<td><?php echo $quotation['target_delivery']; ?></td>
-			<td><?php echo $quotation['date_moved']; ?></td>
-			<td><?php echo $quotation['date_processed']; ?></td>
+			<td><?php echo time_elapsed_string($quotation['date_moved']); ?></td>
+			<td><?php echo time_elapsed_string($quotation['date_processed']); ?></td>
 			<td><?php echo $quotation['delivery_mode']; ?></td>
-			<td><?php echo $quotation['created']; ?></td>
-			<td><?php echo $quotation['modified']; ?></td>
-			<td><?php echo $quotation['date_deleted_lost']; ?></td>
+			<td><?php echo time_elapsed_string($quotation['created']); ?></td>
+			<td><?php echo time_elapsed_string($quotation['modified']); ?></td>
+			<td><?php echo time_elapsed_string($quotation['date_deleted_lost']); ?></td>
 			<td><?php echo $quotation['vat_type']; ?></td>
 			<td><?php echo $quotation['quotation_term_id']; ?></td>
 			<td class="actions">

@@ -120,6 +120,7 @@ class CollectionsController extends AppController {
         $this->loadModel('QuotationTerm');
         $this->loadModel('AccountingPaper');
         $this->loadModel('CollectionPaper');
+        $this->Quotation->recursive = 2;
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
@@ -363,6 +364,12 @@ class CollectionsController extends AppController {
 
             if ($type == 'full') {
 //                collection_status = paid
+                $this->loadModel('Quotation');
+                $this->Quotation->id = $data['quotation_id'];
+                $this->Quotation->set([
+                    'collection_status'=>'paid'
+                    ]);
+                $this->Quotation->save();
             }
             return (json_encode($data['payment_mode']));
         }
@@ -445,7 +452,7 @@ class CollectionsController extends AppController {
                 $this->Quotation->id = $quotation_id;
                 if ($balance >= 1) {
                     $this->Quotation->set(array(
-                        'collection_status' => 'pending'
+                        'collection_status' => 'undelivered'
                     ));
                 } else if ($balance <= 0) {
                     $this->Quotation->set(array(
@@ -472,9 +479,12 @@ class CollectionsController extends AppController {
 //            
 //        }
         $this->loadModel('Quotation');
+        $this->Quotation->recursive = 1;
         $collections = $this->Quotation->find('all', ['conditions' => [
                 'Quotation.collection_status' => $status
         ]]);
+        // pr($collections);
+        
         $this->set(compact('collections'));
     }
 
@@ -521,6 +531,21 @@ class CollectionsController extends AppController {
             }
             echo json_encode($data);
         }
+    }
+    
+    
+    public function all_list(){
+        $status = $this->params['url']['status'];
+        $this->Collection->recursive = 2;
+        $collections = $this->Collection->find('all',[
+            'conditions'=>['Collection.status'=>$status],
+            'fields'=>['Collection.*','Quotation.grand_total','Quotation.quote_number','Quotation.client_id','User.first_name','Bank.*']
+            ]);
+        
+        // pr($collections);exit;
+        
+        $this->set(compact('collections'));
+        
     }
 
 }

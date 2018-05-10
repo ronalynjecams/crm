@@ -62,14 +62,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($clientServiceProperty['ClientServiceProperty']['created']); ?>
+			<?php echo time_elapsed_string($clientServiceProperty['ClientServiceProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($clientServiceProperty['ClientServiceProperty']['modified']); ?>
+			<?php echo time_elapsed_string($clientServiceProperty['ClientServiceProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

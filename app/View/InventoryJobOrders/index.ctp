@@ -58,8 +58,8 @@
 						<td><?php echo h($inventoryJobOrder['InventoryJobOrder']['reference_type']); ?>&nbsp;</td>
 						<td><?php echo h($inventoryJobOrder['InventoryJobOrder']['mode']); ?>&nbsp;</td>
 						<td><?php echo h($inventoryJobOrder['InventoryJobOrder']['status']); ?>&nbsp;</td>
-						<td><?php echo h($inventoryJobOrder['InventoryJobOrder']['created']); ?>&nbsp;</td>
-						<td><?php echo h($inventoryJobOrder['InventoryJobOrder']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($inventoryJobOrder['InventoryJobOrder']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($inventoryJobOrder['InventoryJobOrder']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $inventoryJobOrder['InventoryJobOrder']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $inventoryJobOrder['InventoryJobOrder']['id']), array('escape' => false)); ?>

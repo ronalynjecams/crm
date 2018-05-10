@@ -1,12 +1,15 @@
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
+
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 
 <div id="content-container">
     <div id="page-title">
@@ -25,9 +28,12 @@
     
     <div id="page-content">
         <?php if($UserIn['User']['role']=="accounting_head" ||
-                 $UserIn['User']['role']=="accounting_assistant" ||
+                 $UserIn['User']['role']=="accounting_assistant" || 
                  $UserIn['User']['role']=="proprietor" ||
-                 $UserIn['User']['role']=="proprietor_secretary") { ?>
+                 $UserIn['User']['role']=="proprietor_secretary" ||
+                 $UserIn['Department']['name']=="Purchasing (Supply)" ||
+                 $UserIn['Department']['name']=="Purchasing (Raw)" ||
+                 $UserIn['Department']['name']=="Purchasing") { ?>
             <div class="panel">
                 <div class="panel-heading">
                     <h3 class="panel-title" align="right">
@@ -43,26 +49,28 @@
                         </button>
                         
                         <?php
-                        if($status=="verified" && $type=="pettycash") {
-                            if($UserIn['User']['role']=="accounting_head" || $UserIn['User']['role']=="accounting_assistant") {
-                                ?>
-                                <button class="btn btn-danger"
-                                        id="btn_replenish"
-                                        data-action="replenished">
-                                    <span class="fa fa-check-square"></span>
-                                    Replenish
-                                </button>
-
-                                <input type="checkbox" id="check_all" />
-                            	<label style="margin-bottom:8px;vertical-align:middle;"
-                            	       id="label_for_check">Select All</label>
-                                <?php
+                        if(!empty($payment_requests)) {
+                            if($status=="verified" && $type=="pettycash") {
+                                if($UserIn['User']['role']=="accounting_head" || $UserIn['User']['role']=="accounting_assistant") {
+                                    ?>
+                                    <button class="btn btn-danger"
+                                            id="btn_replenish"
+                                            data-action="replenished">
+                                        <span class="fa fa-check-square"></span>
+                                        Replenish
+                                    </button>
+    
+                                    <input type="checkbox" id="check_all" />
+                                	<label style="margin-bottom:8px;vertical-align:middle;"
+                                	       id="label_for_check">Select All</label>
+                                    <?php
+                                }
                             }
                         }
                         ?>
                     </h3>
                 </div>
-                
+                <?php //pr($payment_requests); ?>
                 <div class="panel-body">
                     <div class="table-responsive">
                         <table id="example"
@@ -70,34 +78,47 @@
     					       cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                    <th>Date <?php echo ucwords($type); ?></th>
-                                    <th>Requested By</th>
-                                    <th>Requested Amount</th>
-                                    <th>Released Details</th>
                                     <?php
-                                    if($status=="pending" || $status=="acknowledged"
-                                        || $status=="approved" || $status=="released") {
-                                        echo '<th>Purpose</th>';
+                                    if($type=="pettycash") {
+                                        echo '<th>Control Number</th>
+                                              <th>Invoices</th>';
+                                    } ?>
+                                    <th>Date <?php echo "(".ucwords($type).")"; ?></th>
+                                    <th>Processed By</th>
+                                    <th>Requested Amount</th>
+                                    <th width="170">Amount Released</th>
+                                    <?php
+                                    if($type=="pettycash") { ?>
+                                    <th>Total Expense</th>
+                                    <th>Returned Cash</th>
+                                    <th>Reimbursed Cash</th>
+                                    <?php
+                                    }
+                                    if($type=="cheque") {
+                                      ?>
+                                      <th>Payee</th>
+                                      <?php
                                     }
                                     ?>
-                                    <th>Actions</th>
+                                    <th>Released Details</th>
+                                    <th width="190">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 foreach($payment_requests as $payment_request) {
                                     $payment_request_obj=$payment_request['PaymentRequest'];
-                                    $user = $payment_request['User'];
-                                    $payment_request_id=$payment_request_obj['id'];
+                                    $user = $payment_request['Payee'];
+                                    $payment_request_id = $payment_request_obj['id'];
                                     
-                                    $created='';
-                                    if($status=="pending") {
-                                        $created= date('F d, Y [h:i a]', strtotime($payment_request_obj['created']));
+                                    $created = '';
+                                    if($status == "pending") {
+                                        $created = time_elapsed_string($payment_request_obj['created']);
                                     }
                                     else {
                                         if(!empty($payment_request_logs[$payment_request_id])) {
                                             foreach($payment_request_logs[$payment_request_id] as $payment_request_log) {
-                                                $created = date('F d, Y [h:i a]',strtotime($payment_request_log['PaymentRequestLog']['created']));
+                                                $created = time_elapsed_string($payment_request_log['PaymentRequestLog']['created']);
                                             }
                                         }
                                     }
@@ -106,7 +127,7 @@
                                     if($type!='cheque') {
                                         foreach($payment_request_logs_released[$payment_request_id] as $payment_request_log_released) {
                                             $created_released_date = $payment_request_log_released['PaymentRequestLog']['created'];
-                                            $created_released = "[ ".date('F d, Y [h:i a]', strtotime($created_released_date))." ]";
+                                            $created_released = "[ ".time_elapsed_string($created_released_date)." ]";
                                         }
                                     }
                                     
@@ -116,20 +137,62 @@
                                         $bank = $each_payment_request_cheque['Bank'];
                                         $bank_name = $bank['display_name'];
                                         $cheque_number = $payment_request_cheque['cheque_number'];
-                                        $cheque_date = $payment_request_cheque['cheque_date'];
+                                        $cheque_date = time_elapsed_string($payment_request_cheque['cheque_date']);
                                         $bank_info = ucwords($bank_name)." ".$cheque_number." [ ".$cheque_date." ]";
                                     }
+
+                                    $total_expense_each_tmp = 0;
+                                    $payment_invoice_display = "";
+                                    $PaymentInvoice = $payment_request['PaymentInvoice'];
+                                    if(!empty($PaymentInvoice)) {
+                                        foreach($PaymentInvoice as $returnPaymentInvoice) {
+                                            $reference_type = $returnPaymentInvoice['reference_type'];
+                                            $reference_number = $returnPaymentInvoice['reference_number'];
+                                            $total_expense_each_tmp += $returnPaymentInvoice['amount'];
+                                            $payment_invoice_display .= "<p>$reference_type-$reference_number</p>";
+                                        }
+                                    }
+                                    else {
+                                        $payment_invoice_display = "<font class='text-danger'>No Payment Invoice.</font>";
+                                    }
+                                    
+                                    $total_expense_each = "&#8369; ".number_format((float)$total_expense_each_tmp, 2, ".", ",");
+                                    
+                                    $returned_amount = "&#8369; ".number_format((float)$payment_request_obj['returned_amount'], 2, ".", ",");
+                                    $reimbursed_amount= "&#8369; ".number_format((float)$payment_request_obj['reimbursed_amount'], 2, ".", ",");
                                 ?>
                                 <tr>
-                                    <td><?php echo $created; ?></td>
-                                    <td><?php echo $user['first_name']." ".$user['last_name']; ?></td>
+                                    <?php
+                                    if($type=="pettycash") {
+                                        echo '<td>'.$payment_request_obj['control_number'].'</td>
+                                        <td>'.$payment_invoice_display.'</td>';
+                                    }
+                                    ?>
+                                    <td data-order="<?php echo $payment_request_obj['created']; ?>"><?php echo $created; ?></td>
+                                    <?php
+                                    if($UserIn['User']['role']=='proprietor' ||
+                                       $UserIn['Department']['name']=='Purchasing (Supply)' ||
+                                       $UserIn['Department']['name']=='Purchasing (Raw)' ||
+                                       $UserIn['Department']['name']=='Purchasing') {
+                                        // echo "<td>".ucwords($payment_request['User']['first_name'].' '.$payment_request['User']['last_name'])."</td>";
+                                        echo "<td>".ucwords($payment_request['InsertedBy']['first_name'].' '.$payment_request['InsertedBy']['last_name'])."</td>";
+                                    }
+                                    else {
+                                        echo "<td>".ucwords($payment_request['InsertedBy']['first_name'].' '.$payment_request['InsertedBy']['last_name'])."</td>";
+                                    } ?>
                                     <td><?php echo "₱ ".number_format((float)$payment_request_obj['requested_amount'],2,'.',','); ?></td>
                                     <td>
                                         <?php
-                                        if($type!="cheque") {
-                                            echo "₱ ".number_format((float)$payment_request_obj['released_amount'],2,'.',',')." ".$created_released;
-                                        }
-                                        else { ?>
+                                        if($status!="pending" &&
+                                           $status!="approved" &&
+                                           $status!="acknowledged") {
+                                               if($type=="cheque") {
+                                                    echo "₱ ".number_format((float)$payment_request_obj['requested_amount'],2,'.',',')." ".$created_released;
+                                               }
+                                               else {
+                                                    echo "₱ ".number_format((float)$payment_request_obj['released_amount'],2,'.',',')." ".$created_released;
+                                               }
+                                        ?>
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <p><?php echo $created; ?></p>
@@ -141,18 +204,63 @@
                                             </div>
                                         <?php
                                         }
+                                        else {
+                                            echo
+                                            "<p>(".ucwords($status).")</p>";
+                                        }
                                         ?>
                                     </td>
+                                    <?php 
+                                    if($type=='cheque') {
+                                        echo '
+                                        <td>'.ucwords($payment_request['Payee']['name']).'</td>
+                                        ';
+                                    }
+                                    ?>
                                     <?php
-                                    if($status=="pending" || $status=="acknowledged"
-                                        || $status=="approved" || $status=="released") {
-                                        echo '<td>'.$payment_request_obj['purpose'].'</td>';
+                                    if($type=="pettycash") {
+                                        echo '<td>'.$total_expense_each.'</td>
+                                              <td>'.$returned_amount.'</td>
+                                              <td>'.$reimbursed_amount.'</td>';
+                                    }
+                                    // if($status=="pending" || $status=="acknowledged"
+                                    //     || $status=="approved" || $status=="released") {
+                                        echo '<td>'.$payment_request_obj['purpose'];
+                                        if($payment_request_obj['supplier_id']!=0) {
+                                            echo '<p>&nbsp;</p>';
+                                            if(array_key_exists($payment_request_id, $ppos_obj)) {
+                                                $payment_pos = $ppos_obj[$payment_request_id];
+                                                if(!empty($payment_pos)) {
+                                                    foreach($payment_pos as $payment_po) {
+                                                        $eppo = $payment_po['PurchaseOrder'];
+                                                        $epo_id = $eppo['id'];
+                                                        $po_no = $eppo['po_number'];
+                                                        $po_type = ucwords($eppo['type']);
+                                                        
+                                                    echo ' 
+                                                    <p>
+                                                        '.$po_type.' PO #: '.$po_no.'
+                                                        <a href="/purchase_orders/view_po?id='.$epo_id.'"
+                                                        target="_blank"
+                                                           data-toggle="tooltip"
+                                                           data-placement="top"
+                                                           title="Go to PO"
+                                                           class="btn btn-xs btn-primary">
+                                                            <span class="fa fa-eye"></span>
+                                                        </a>
+                                                    </p>
+                                                    ';
+                                                    }
+                                                }
+                                            }
+                                        // }
+                                        echo '</td>';
                                     }
                                     ?>
                                     <td id="checkBoxes">
                                         <a href="/payment_requests/view?id=<?php echo $payment_request_obj['id']; ?>"
                                            style="color:white">
-                                            <button class="btn btn-primary btn-sm"
+                                            <button class="btn btn-primary"
                                                 data-toggle="tooltip"
                                                 date-placement="left"
                                                 title="View Details Available for All Status">
@@ -161,30 +269,51 @@
                                         </a>
                                         
                                         <?php
+                                        if($role=="proprietor" || $role=="proprietor_secretary" ||
+                                           $role=="accounting_head" || $role=="accouting_assistant") {
+                                        ?>
+                                        
+                                        <?php
                                         if($status=="pending" || $status=="acknowledged" ||
                                             $status=="approved") { ?>
-                                            <button class="btn btn-warning btn-sm"
-                                                data-toggle="tooltip"
-                                                data-placement="top"
-                                                title="Reject Request"
-                                                value="<?php echo $payment_request_obj['id']; ?>"
-                                                data-action="rejected"
-                                                id="btn_reject_request">
-                                                <span class="fa fa-close"></span>
-                                            </button>
+                                            <?php
+                                            $epo_id = [];
+                                            if($payment_request_obj['supplier_id']!=0) {
+                                                if(array_key_exists($payment_request_id, $ppos_obj)) {
+                                                    $payment_pos = $ppos_obj[$payment_request_id];
+                                                    if(!empty($payment_pos)) {
+                                                        foreach($payment_pos as $payment_po) {
+                                                            $eppo = $payment_po['PurchaseOrder'];
+                                                            $epo_id[$payment_request_obj['id']] = $eppo['id'];
+                                                        }
+                                                    }
+                                                }
+                                            } ?>
+                                        
+                                        <button class="btn btn-warning"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Reject Request"
+                                            value="<?php echo $payment_request_obj['id']; ?>"
+                                            data-supplierid="<?php echo $payment_request_obj['id']; ?>"
+                                            data-action="rejected"
+                                            id="btn_reject_request">
+                                            <span class="fa fa-close"></span>
+                                        </button>
                                         <?php
                                         }
-                                        
                                         if($status=="pending") {
                                             if($type=="cash") {
                                                 if($UserIn['User']['role']=="accounting_head" ||
                                                    $UserIn['User']['role']=="accounting_assistant") {
                                                        ?>
-                                                   <button class="btn btn-danger btn-sm" id="btn_acknowledge"
+                                                   <button class="btn btn-default" id="btn_acknowledge"
                                                            value="<?php echo $payment_request_obj['id']; ?>"
-                                                           data-action="acknowledged">
-                                                       <span class="fa fa-check"></span>
-                                                       Acknowledge
+                                                           data-action="acknowledged"
+                                                           data-toggle="tooltip"
+                                                           data-placement="top"
+                                                           title="Acknowledge">
+                                                       <span style="color:gold" class="fa fa-certificate"></span>
                                                    </button>
                                                    <?php
                                                }
@@ -193,12 +322,14 @@
                                                 if($UserIn['User']['role']=="proprietor" ||
                                                    $UserIn['User']['role']=="proprietor_secretary") {
                                                     ?>
-                                                    <button class="btn btn-danger btn-sm"
+                                                    <button class="btn btn-success"
                                                             id="btn_approve"
                                                             value="<?php echo $payment_request_obj['id']; ?>"
-                                                            data-action="approved">
+                                                            data-action="approved"
+                                                            data-toggle="tooltip"
+                                                            data-placement="top"
+                                                            title="Approve">
                                                         <span class="fa fa-check"></span>
-                                                        Approve
                                                     </button>
                                                     <?php
                                                 }
@@ -208,12 +339,14 @@
                                                    $UserIn['User']['role']=="accounting_assistant" ||
                                                    $UserIn['User']['role']=="proprietor") {
                                                     ?>
-                                                    <button class="btn btn-danger btn-sm"
+                                                    <button class="btn btn-success"
                                                             id="btn_approve"
                                                             value="<?php echo $payment_request_obj['id']; ?>"
-                                                            data-action="approved">
+                                                            data-action="approved"
+                                                            data-toggle="tooltip"
+                                                            data-placement="top"
+                                                            title="Approve">
                                                         <span class="fa fa-check"></span>
-                                                        Approve
                                                     </button>
                                                     <?php
                                                }
@@ -224,30 +357,53 @@
                                                 if($UserIn['User']['role']=="proprietor" ||
                                                    $UserIn['User']['role']=="proprietor_secretary") {
                                                    ?>
-                                                   <button class="btn btn-danger btn-sm"
+                                                    <button class="btn btn-success"
                                                            id="btn_approve"
                                                            value="<?php echo $payment_request_obj['id']; ?>"
-                                                           data-action="approved">
+                                                           data-action="approved"
+                                                           data-toggle="tooltip"
+                                                           data-placement="top"
+                                                           title="Approve">
                                                        <span class="fa fa-check"></span>
-                                                       Approve
-                                                   </button>
+                                                    </button>
+                                                   
+                                                    <button
+                                                        data-toggle="tooltip"
+                                                        data-placement="top"
+                                                        title="Approve and Release"
+                                                        id="btn_approve_release"
+                                                        class="btn btn-danger"
+                                                        style="color:white;font-weight:bold;"
+                                                        data-id="<?php echo $payment_request_obj['id']; ?>"
+                                                        data-payee="<?php echo $payment_request_obj['user_id']; ?>"
+                                                        data-tostatus="approved_released"
+                                                        data-toreleaseamnt="<?php echo $payment_request_obj['requested_amount']; ?>"
+                                                        data-requestedby="<?php echo ucwords($payment_request['InsertedBy']['first_name'].' '.$payment_request['InsertedBy']['last_name']); ?>">
+                                                        <span class="fa fa-unlink"></span>
+                                                    </button>
                                                    <?php
                                                }
                                             }
                                         }
                                         else if($status=="approved") {
                                             if($UserIn['User']['role']=="accounting_head" ||
+                                            $UserIn['User']['role']=="proprietor_secretary" ||
                                                $UserIn['User']['role']=="accounting_assistant") {
                                                 ?>
-                                                <a ng-href=""
-                                                    data-target="#release-modal"
-                                                    data-toggle="modal"
-                                                    class="btn btn-danger btn-sm"
+                                                <button
+                                                    data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    title="Release"
+                                                    id="btn_release_text"
+                                                    class="btn btn-danger"
                                                     style="color:white;font-weight:bold;"
                                                     data-id="<?php echo $payment_request_obj['id']; ?>"
-                                                    data-requestedby="<?php echo ucwords($user['first_name']." ".$user['last_name']); ?>">
-                                                    Release
-                                                </a>
+                                                    data-payee="<?php echo $payment_request_obj['payee_id']; ?>"
+                                                    data-tostatus="released"
+                                                    data-toreleaseamnt="<?php echo $payment_request_obj['requested_amount']; ?>"
+                                                    data-requestedby="<?php echo ucwords($payment_request['InsertedBy']['first_name'].' '.$payment_request['InsertedBy']['last_name']); ?>">
+                                                    <span class="fa fa-unlink"></span>
+                                                </button>
                                                 <?php
                                             }
                                         }
@@ -255,11 +411,14 @@
                                             if($UserIn['User']['role']=="accounting_head" ||
                                                $UserIn['User']['role']=="accounting_head") {
                                                 ?>
-                                                <button class="btn btn-danger btn-sm"
+                                                <button class="btn btn-success"
                                                         id="btn_verify"
                                                         value="<?php echo $payment_request_obj['id']; ?>"
-                                                        data-action="verified">
-                                                    Verify
+                                                        data-action="verified"
+                                                        data-toggle="tooltip"
+                                                        data-placement="top"
+                                                        title="Verify">
+                                                    <span class="fa fa-thumbs-up"></span>
                                                 </button>
                                                 <?php
                                            }
@@ -268,11 +427,14 @@
                                             if($type=="cash") {
                                                 if($UserIn['User']['role']=="proprietor" || $UserIn['User']['role']=="proprietor_secretary") {
                                                     ?>
-                                                    <button class="btn btn-sm btn-danger"
+                                                    <button class="btn btn-success"
                                                             id="btn_close"
                                                             value="<?php echo $payment_request_obj['id']; ?>"
-                                                            data-action="closed">
-                                                        Close
+                                                            data-action="closed"
+                                                            data-toggle="tooltip"
+                                                            data-placement="top"
+                                                            title="Close">
+                                                        <span class="fa fa-lock"></span>
                                                     </button>
                                                     <?php
                                                 }
@@ -280,11 +442,14 @@
                                             else if($type=="cheque") {
                                                 if($UserIn['User']['role']=="proprietor") {
                                                     ?>
-                                                    <button class="btn btn-sm btn-danger"
+                                                    <button class="btn btn-success"
                                                             id="btn_close"
                                                             value="<?php echo $payment_request_obj['id']; ?>"
-                                                            data-action="closed">
-                                                        Close
+                                                            data-action="closed"
+                                                            data-toggle="tooltip"
+                                                            data-placement="top"
+                                                            title="Close">
+                                                        <span class="fa fa-lock"></span>
                                                     </button>
                                                     <?php
                                                 }
@@ -303,6 +468,7 @@
                                             }
                                         }
                                         ?>
+                                        <?php } ?>
                                     </td>
                                 </tr>
                                 <?php } ?>
@@ -333,53 +499,62 @@
 	          </h4>
 			</div>
 			<!--Modal body-->
-			<div class="modal-body">
-			    <div class="row">
-    			    <div class="col-lg-12">
-    			        <p id="label_requested"></p>
-    			    </div>
+            <div class="modal-body">
+    		    <div class="form-group">
+    		        <p id="label_requested"></p>
+    		    </div>
     			    
-    		         <?php
-                        if($type!='cheque') {
-                            ?>
-                            <div class="col-lg-12" style="margin-bottom:20px;">
-                                <input type="number" step="any" class="form-control"
-                                   id="released_amount" placeholder="Released Amount"
-                                   onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57" />
-                            </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <input type="number" step="any" class="form-control"
+                       id="released_amount" placeholder="Amount"
+                      />
+                      <!--dapat nakakapag encode ng my decimal si user-->
+                        <!--onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57"-->
+                </div>
+                <?php
+                if($type=='cheque') { ?>
+                	<div class="form-group">
+            	        <select class="form-control" id="select_payee_release">
+                            <option>Select Payee</option>
+                    		<option style="font-size:0.9pt;background-color: grey;" disabled>&nbsp;</option>
+                    		<?php
+                    		foreach($payees as $payee) {
+                    		    $payee_id = $payee['Payee']['id'];
+                    		    $payee_name = $payee['Payee']['name'];
+                    		    echo '<option value="'.$payee_id.'">'.$payee_name.'</option>';
+                    		}
+                    		?>
+                    	</select>
+                	</div>
+
+                    <div class="form-group" style="margin-bottom:20px;">
+                        <select class="form-control" id="select_bank">
+                            <option>Select Bank</option>
                             <?php
-                        }
-                        else if($type=='cheque') {
-                        ?>
-                        <div class="col-lg-12" style="margin-bottom:20px;">
-                            <select class="form-control" id="select_bank">
-                                <option>Select Bank</option>
-                                <?php
-                                foreach($banks as $bank) {
-                                    echo '<option value="'.$bank['Bank']['id'].'">
-                                    '.$bank['Bank']['display_name'].'
-                                    </option>';
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="input_cheque_number"
-                                       placeholder="Cheque Number" />
-                                </div>
-                                <div class="col-lg-6">
-                                    <input type="date" class="form-control" id="input_cheque_date" />
-                                </div>
+                            foreach($banks as $bank) {
+                                echo '<option value="'.$bank['Bank']['id'].'">
+                                '.$bank['Bank']['display_name'].'
+                                </option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <input type="text" class="form-control" id="input_cheque_number"
+                                   placeholder="Cheque Number" />
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="date" class="form-control" id="input_cheque_date" />
                             </div>
                         </div>
-                    <?php
-                    }
-                    ?>
-    			
-			    </div>
-			</div>
+                    </div>
+                <?php
+                }
+                ?>
+    		</div>
 			<!--Modal footer-->
 			<div class="modal-footer">
 			  <button data-dismiss="modal" class="btn btn-default"
@@ -394,7 +569,7 @@
 
 <!--Add Request Modal Start-->
 <!--===================================================-->
-<div class="modal fade" id="add-request-modal" role="dialog" tabindex="-1"
+<div class="modal fade" id="add-request-modal" role="dialog"
      aria-labelledby="add-request-default-modal" aria-hidden="true">
     <div class="modal-dialog">
 		<div class="modal-content">
@@ -410,15 +585,29 @@
 			<!--Modal body-->
 			<div class="modal-body">
 			    <div class="row">
-    			    <div class="col-lg-6">
+    			    <div class="form-group col-lg-6">
     			        <div style="margin-top:13px;">
-                            <input type="checkbox" id="cheque" />
+        		            <?php
+        		            if($type=="cheque") {
+        		                echo '
+                                    <input type="checkbox" id="cheque" checked />';
+        		            }
+        		            else { echo '<input type="checkbox" id="cheque" />'; }
+        		            ?>
                         	<label style="margin-bottom:8px;vertical-align:middle;">Cheque</label>
                     	</div>
                 	</div>
-                	<div class="col-lg-6">
+                	<?php
+                	if($type=="pettycash") {
+                	    echo '
+                	    <div class="form-group col-lg-6">
+                	        <input type="text" class="form-control" id="input_control_number" placeholder="Control Number" />
+                	    </div>';
+                	}
+                	?>
+                	<div class="form-group col-lg-6">
             	        <select class="form-control" id="select_payee">
-                            <option>Select Payee</option>
+                            <option>---- Select Payee ----</option>
                     		<option style="font-size:0.9pt;background-color: grey;" disabled>&nbsp;</option>
                     		<?php
                     		foreach($payees as $payee) {
@@ -428,28 +617,41 @@
                     		}
                     		?>
                     	</select>
-                	</div><br/><br/><br/>
-                	<?php
-                	if($UserIn['User']['role']=="proprietor" || $UserIn['User']['role']=="proprietor_secretary") {
-            	        echo '<div class="col-lg-6" >';
-                	}
-                	else {
-                	    echo '<div class="col-lg-12">';
-                	}
-        	        ?>
-            	        <input type="number"
-                	       step="any"
+                	</div>
+                    <div class="form-group col-lg-12">
+                        <select class="form-control" id="select_payment_request_category">
+                            <option>----Select Category----</option>
+                    		<option style="font-size:0.9pt;background-color: grey;" disabled>&nbsp;</option>
+                            <?php
+                                foreach($get_categories as $ret_categories) {
+                                    // echo pr($ret_categories);
+                                    $category_obj = $ret_categories['PaymentRequestCategory'];
+                                    $category_id = $category_obj['id'];
+                                    $category_name = ucwords($category_obj['name']);
+
+                                    echo '
+                                        <option value="'.$category_id.'">'.$category_name.'</option>
+                                    ';
+                                }
+                            ?>
+                        </select>
+                    </div>
+                	<div class="form-group col-lg-12">
+            	        <input type="text"
                 	       class="form-control"
                 	       placeholder="Amount" id="input_amount" />
                     </div>
-                	
-        	        <div class="col-lg-6">
+        	        <div class="form-group col-lg-12">
                        <?php
-                        if($UserIn['User']['role']=="proprietor" || $UserIn['User']['role']=="proprietor_secretary") {
+                        if($UserIn['User']['role']=="proprietor" ||
+                           $UserIn['User']['role']=="proprietor_secretary" ||
+                           $UserIn['Department']['name']=="Accounting Department" ||
+                           $UserIn['Department']['name']=="Purchasing (Supply)" ||
+                           $UserIn['Department']['name']=="Purchasing (Raw)" ||
+                           $UserIn['Department']['name']=="Purchasing"){
                         ?>
                     	<select class="form-control" id="select_requested_by">
                     	    <option>Requested By</option>
-                    	    <option style="font-size:0.9pt;background-color:grey" disabled>&nbsp;</option>
                     	    <?php
                     		foreach($users as $user) {
                     		    $user_id = $user['User']['id'];
@@ -464,10 +666,11 @@
                         }
                         ?>
                     </div>
+                    <div class="form-group col-lg-12">
+                        <textarea placeholder="Purpose" class="form-control"
+                              id="input_purpose"></textarea><br/>
+                    </div>
                 </div>
-                <br/>
-                <textarea placeholder="Purpose" class="form-control"
-                      id="input_purpose"></textarea><br/>
             </div>
             
 			<!--Modal footer-->
@@ -568,32 +771,51 @@ var passed_pr_id = 0;
 var passed_po = 0;
 
 $(document).ready(function() {
+    var cheque_check = $("#cheque").val();
+    if(cheque_check=='on') {
+        $("#hide_show_payee").show();
+    }
+    else {
+        $("#hide_show_payee").hide();
+    }
+    
     $('[data-toggle="tooltip"]').tooltip();
     
     $('#example').DataTable({
         "lengthMenu": [[100, 200, 500, -1], [100, 200, 500, "All"]],
         "orderable": true,
-        "order": [[0,"asc"]],
-        "stateSave": false
+        "order": [[0,"desc"]],
+        "stateSave": true
     });
     
-    $('#release-modal').on('shown.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var payment_request_id = button.data('id');
-        var requested_by = button.data('requestedby');
+    var tostatus = 'released';
+    var company_fund_id = 0;
+    $("button#btn_release_text, button#btn_approve_release").on('click', function() {
+        $("button#btn_release").removeAttr('disabled');
+        var payment_request_id = $(this).data('id');
+        var requested_by = $(this).data('requestedby');
+        var pr_payee = $(this).data('payee');
+        tostatus = $(this).data('tostatus');
+        var toreleaseamnt = $(this).data('toreleaseamnt');
+        
         
         all_list_pr_id_release = payment_request_id;
-        
         $("#label_requested").text("Requested: "+requested_by);
+        $("#select_payee_release").val(pr_payee);
+        $("#released_amount").val(toreleaseamnt);
+        console.log(pr_payee);
+        $('#release-modal').modal('show');
     });
     
     $("#cheque").change(function() {
         var cheque_check = $(this).is(":checked");
         if(cheque_check==true) {
             $("#select_payee").show();
+            $("#input_control_number").hide();
         }
         else {
             $("#select_payee").hide();
+            $("#input_control_number").show();
         }
     });
      
@@ -610,8 +832,10 @@ $(document).ready(function() {
             $("#select_payee").hide();
         }
     });
-     
+        
     $("#send_request").on('click', function() {
+        $("#send_request").prop("disabled", true);
+        var select_payment_request_category = $("#select_payment_request_category");
         var cheque_obj = $("#cheque");
         var select_payee = $("#select_payee");
         var input_amount = $("#input_amount");
@@ -619,18 +843,58 @@ $(document).ready(function() {
         var input_purpose = $("#input_purpose");
         var type = "<?php echo $type; ?>";
         var status = "<?php echo $status; ?>";
-        var proprietor = "<?php if(($UserIn['User']['role']=="proprietor") || ($UserIn['User']['role']=="proprietor_secretary")) { echo 'true'; }else { echo 'false'; } ?>";
-        
+        var proprietor = "<?php if(($UserIn['User']['role']=='proprietor') || ($UserIn['User']['role']=='proprietor_secretary') || ($UserIn['Department']['name']=='Purchasing (Supply)') || ($UserIn['Department']['name']=='Purchasing (Raw)') || ($UserIn['Department']['name']=='Purchasing')) { echo 'true'; }else { echo 'false'; } ?>";
         if(cheque_obj.is(":checked")==true) {
            if(select_payee.val() != "Select Payee") {
-                if(input_amount.val() != "") {
-                    if(proprietor=="true") {
-                        if(select_requested_by.val() != "Requested By") {
+                if(select_payment_request_category.val() != '----Select Category----') {
+                    if(parseFloat(input_amount.val()) != "") {
+                        if(proprietor=="true") {
+                            console.log("proprietor = true");
+                            if(select_requested_by.val() != "Requested By") {
+                                if(input_purpose.val() != "") {
+                                    var data = {
+                                        'payee_id':select_payee.val(),
+                                        'category': select_payment_request_category.val(),
+                                        'amount':parseFloat(input_amount.val()),
+                                        'requested_by':select_requested_by.val(),
+                                        'purpose':input_purpose.val(),
+                                        'type':'cheque',
+                                        'status':status
+                                    }
+                                    console.log(data);
+                                    $.ajax({
+                                        url: '/payment_requests/add_request',
+                                        type: 'POST',
+            							data: {'data': data},
+            							dataType: 'text',
+            							success: function(id) {
+            								console.log(id);
+            								location.reload();
+            							},
+            							error: function(err) {
+            							    $('#send_request').removeAttr('disabled');
+            								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+            							}
+                                    });
+                                }
+                                else {
+    							    $('#send_request').removeAttr('disabled');
+                                    input_purpose.css({'border-color':'red'});
+                                }
+                            }
+                            else {
+							    $('#send_request').removeAttr('disabled');
+                                select_requested_by.css({'border-color':'red'});
+                            }
+                        }
+                        else {
+                            console.log("proprietor = false");
                             if(input_purpose.val() != "") {
                                 var data = {
                                     'payee_id':select_payee.val(),
-                                    'amount':input_amount.val(),
-                                    'requested_by':select_requested_by.val(),
+                                    'category': select_payment_request_category.val(),
+                                    'amount':parseFloat(input_amount.val()),
+                                    'requested_by': parseInt(),
                                     'purpose':input_purpose.val(),
                                     'type':'cheque',
                                     'status':status
@@ -643,227 +907,384 @@ $(document).ready(function() {
         							dataType: 'text',
         							success: function(id) {
         								console.log(id);
-        								location.reload();
+        								// location.reload();
         							},
         							error: function(err) {
+        							    $('#send_request').removeAttr('disabled');
         								console.log("AJAX error: " + JSON.stringify(err, null, 2));
         							}
                                 });
                             }
                             else {
+                                $('#send_request').removeAttr('disabled');
+                                input_purpose.css({'border-color':'red'});
+                            }
+                        }
+                    }
+                    else {
+                        $('#send_request').removeAttr('disabled');
+                        input_amount.css({'border-color':'red'});
+                    }
+                }
+                else {
+                    $('#send_request').removeAttr('disabled');
+                    select_payment_request_category.css({'border-color':'red'});
+                }
+            }
+            else {
+                $('#send_request').removeAttr('disabled');
+                swal({
+                    title: "Payee Is Empty",
+                    text: "Please select Payee. If you do not want to select a payee, please uncheck cheque.",
+                    type: "warning",
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Okay",
+                    closeOnConfirm: false,
+                });
+            }
+        }
+        else {
+            if(select_payment_request_category.val()!="----Select Category----") {
+                if(parseFloat(input_amount.val()) != "") {
+                    if(proprietor=="true") {
+                        if(select_requested_by.val() != "Requested By") {
+                            if(input_purpose.val() != "") {
+                                if(type=="pettycash") {
+                                    var control_number = $("#input_control_number");
+                                    if(control_number.val()=="") {
+                                        control_number.css({'border-color':'red'});
+                                    }
+                                    else {
+                                        var data = {
+                                            'control_number':control_number.val(),
+                                            'payee_id':0,
+                                            'category': select_payment_request_category.val(),
+                                            'amount':parseFloat(input_amount.val()),
+                                            'purpose':input_purpose.val(),
+                                            'requested_by':select_requested_by.val(),
+                                            'type':type,
+                                            'status':status
+                                        }
+                                        console.log("data:");
+                                        console.log(data);
+                                        $.ajax({
+                                            url: '/payment_requests/add_request',
+                                            type: 'POST',
+                							data: {'data': data},
+                							dataType: 'text',
+                							success: function(id) {
+                								console.log(id);
+                								location.reload();
+                							},
+                							error: function(err) {
+                							    $('#send_request').removeAttr('disabled');
+                								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                							}
+                                        });
+                                    }
+                                }
+                                else {
+                                    var data = {
+                                        'payee_id':0,
+                                        'category': select_payment_request_category.val(),
+                                        'amount':parseFloat(input_amount.val()),
+                                        'purpose':input_purpose.val(),
+                                        'requested_by':select_requested_by.val(),
+                                        'type':type,
+                                        'status':status
+                                    }
+                                    console.log("data:");
+                                    console.log(data);
+                                    $.ajax({
+                                        url: '/payment_requests/add_request',
+                                        type: 'POST',
+            							data: {'data': data},
+            							dataType: 'text',
+            							success: function(id) {
+            								console.log(id);
+            								location.reload();
+            							},
+            							error: function(err) {
+            							    $('#send_request').removeAttr('disabled');
+            								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+            							}
+                                    });
+                                }
+                            }
+                            else {
+                                $('#send_request').removeAttr('disabled');
                                 input_purpose.css({'border-color':'red'});
                             }
                         }
                         else {
+                            $('#send_request').removeAttr('disabled');
                             select_requested_by.css({'border-color':'red'});
                         }
                     }
                     else {
                         if(input_purpose.val() != "") {
-                            var data = {
-                                'payee_id':select_payee.val(),
-                                'amount':input_amount.val(),
-                                'requested_by':0,
-                                'purpose':input_purpose.val(),
-                                'type':'cheque',
-                                'status':status
+                            if(type=="pettycash"&&parseFloat(input_amount.val())>=3000) {
+                                $('#send_request').removeAttr('disabled');
+                                swal({
+                                    title: "Invalid Petty Cash Amount",
+                                    text: "You can only avail ₱ 2999 and below.",
+                                    type: "warning",
+                                    confirmButtonClass: "btn-danger",
+                                    confirmButtonText: "Okay",
+                                    closeOnConfirm: false,
+                                });
                             }
-                            
-                            $.ajax({
-                                url: '/payment_requests/add_request',
-                                type: 'POST',
-    							data: {'data': data},
-    							dataType: 'text',
-    							success: function(id) {
-    								console.log(id);
-    								location.reload();
-    							},
-    							error: function(err) {
-    								console.log("AJAX error: " + JSON.stringify(err, null, 2));
-    							}
-                            });
+                            else if(type=="cash"&&parseFloat(input_amount.val())<3000) {
+                                $('#send_request').removeAttr('disabled');
+                                swal({
+                                    title: "Invalid Cash Amount",
+                                    text: "You go to Petty Cash for below ₱ 3000 request.",
+                                    type: "warning",
+                                    confirmButtonClass: "btn-danger",
+                                    confirmButtonText: "Okay",
+                                    closeOnConfirm: false,
+                                });
+                            }
+                            else {
+                                if(type=="pettycash") {
+                                    var control_number = $("#input_control_number");
+                                    if(control_number.val()=="") {
+                                        $('#send_request').removeAttr('disabled');
+                                        control_number.css({'border-color':'red'});
+                                    }
+                                    else {
+                                        var data = {
+                                            'control_number':control_number.val(),
+                                            'payee_id':0,
+                                            'category': select_payment_request_category.val(),
+                                            'amount':parseFloat(input_amount.val()),
+                                            'requested_by':select_requested_by.val(),
+                                            'purpose':input_purpose.val(),
+                                            'type':type,
+                                            'status':status
+                                        }
+                                        console.log("data:");
+                                        console.log(data);
+                                        $.ajax({
+                                            url: '/payment_requests/add_request',
+                                            type: 'POST',
+                							data: {'data': data},
+                							dataType: 'text',
+                							success: function(id) {
+                								console.log(id);
+                								location.reload();
+                							},
+                							error: function(err) {
+                							    $('#send_request').removeAttr('disabled');
+                								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                							}
+                                        });
+                                    }
+                                }
+                                else {
+                                    var data = {
+                                        'payee_id':0,
+                                        'category': select_payment_request_category.val(),
+                                        'amount':parseFloat(input_amount.val()),
+                                        'requested_by':select_requested_by.val(),
+                                        'purpose':input_purpose.val(),
+                                        'type':type,
+                                        'status':status
+                                    }
+                                    console.log("data:");
+                                    console.log(data);
+                                    $.ajax({
+                                        url: '/payment_requests/add_request',
+                                        type: 'POST',
+            							data: {'data': data},
+            							dataType: 'text',
+            							success: function(id) {
+            								console.log(id);
+            								location.reload();
+            							},
+            							error: function(err) {
+            							    $('#send_request').removeAttr('disabled');
+            								console.log("AJAX error: " + JSON.stringify(err, null, 2));
+            							}
+                                    });
+                                }
+                            }
                         }
                         else {
+                            $('#send_request').removeAttr('disabled');
                             input_purpose.css({'border-color':'red'});
                         }
                     }
                 }
                 else {
+                    $('#send_request').removeAttr('disabled');
                     input_amount.css({'border-color':'red'});
                 }
             }
             else {
-                select_payee.css({'border-color':'red'});
-            }
-        }
-        else {
-            if(input_amount.val() != "") {
-                if(proprietor=="true") {
-                    if(select_requested_by.val() != "Requested By") {
-                        if(input_purpose.val() != "") {
-                            var data = {
-                                'payee_id':0,
-                                'amount':input_amount.val(),
-                                'requested_by':select_requested_by.val(),
-                                'purpose':input_purpose.val(),
-                                'type':type,
-                                'status':status
-                            }
-                            
-                            $.ajax({
-                                url: '/payment_requests/add_request',
-                                type: 'POST',
-    							data: {'data': data},
-    							dataType: 'text',
-    							success: function(id) {
-    								console.log(id);
-    								location.reload();
-    							},
-    							error: function(err) {
-    								console.log("AJAX error: " + JSON.stringify(err, null, 2));
-    							}
-                            });
-                        }
-                        else {
-                            input_purpose.css({'border-color':'red'});
-                        }
-                    }
-                    else {
-                        select_requested_by.css({'border-color':'red'});
-                    }
-                }
-                else {
-                    if(input_purpose.val() != "") {
-                        if(type=="pettycash"&&input_amount.val()>=5000) {
-                            swal({
-                                title: "Invalid Petty Cash Amount",
-                                text: "You can only avail ₱ 4999 and below.",
-                                type: "warning",
-                                confirmButtonClass: "btn-danger",
-                                confirmButtonText: "Okay",
-                                closeOnConfirm: false,
-                            });
-                        }
-                        else if(type=="cash"&&input_amount.val()<5000) {
-                            swal({
-                                title: "Invalid Cash Amount",
-                                text: "You go to Petty Cash for below ₱ 5000 request.",
-                                type: "warning",
-                                confirmButtonClass: "btn-danger",
-                                confirmButtonText: "Okay",
-                                closeOnConfirm: false,
-                            });
-                        }
-                        else {
-                            var data = {
-                                'payee_id':0,
-                                'amount':input_amount.val(),
-                                'requested_by':0,
-                                'purpose':input_purpose.val(),
-                                'type':type,
-                                'status':status
-                            }
-                            
-                            $.ajax({
-                                url: '/payment_requests/add_request',
-                                type: 'POST',
-    							data: {'data': data},
-    							dataType: 'text',
-    							success: function(id) {
-    								console.log(id);
-    								location.reload();
-    							},
-    							error: function(err) {
-    								console.log("AJAX error: " + JSON.stringify(err, null, 2));
-    							}
-                            });
-                        }
-                    }
-                    else {
-                        input_purpose.css({'border-color':'red'});
-                    }
-                }
-            }
-            else {
-                input_amount.css({'border-color':'red'});
+                $('#send_request').removeAttr('disabled');
+                select_payment_request_category.css({'border-color': 'red'});
             }
         }
     });
     
     $("#btn_release").on('click', function() {
+        $(this).attr('disabled','disabled');
         var released_amount = $("#released_amount");
         var select_bank = $("#select_bank");
-        var input_cheque_number = $("#input_cheque_number");
         var input_cheque_date = $("#input_cheque_date");
+        var input_cheque_number = $("#input_cheque_number");
         var type = "<?php echo $type; ?>";
+        var selected_payee = $("#select_payee_release");
+
+        if(tostatus=="approved_released") { tostatus_final = "released"; }
+        else { tostatus_final = tostatus; }
         
         var data_release = {"id":all_list_pr_id_release,
                             "type":type,
+                            "status": tostatus_final,
                             "released_amount":released_amount.val(),
                             "select_bank":select_bank.val(),
                             "input_cheque_number":input_cheque_number.val(),
+                            "selected_payee":selected_payee.val(),
                             "input_cheque_date":input_cheque_date.val()};
         
         if(type != "cheque") {
             if(released_amount.val()!="") {
                 // RELEASE AJAX HERE
-                $.ajax({
-                    url: '/payment_requests/release',
-                    type: 'POST',
-					data: {'data': data_release},
-					dataType: 'text',
-					success: function(id) {
-						console.log(id);
-						location.reload();
-					},
-					error: function(err) {
-						console.log("AJAX error: " + JSON.stringify(err, null, 2));
-					}
-                });
+                
+                if(tostatus=='approved_released') {
+                    var data = {"id":all_list_pr_id_release, "action":"approved"};
+                    $.ajax({
+                        url: '/payment_requests/action',
+                        type: 'POST',
+            			data: {'data': data},
+            			dataType: 'text',
+            			success: function(id) {
+            			    console.log(data);
+            			    $.ajax({
+                                url: '/payment_requests/release',
+                                type: 'POST',
+            					data: {'data': data_release},
+            					dataType: 'text',
+            					success: function(id) {
+            					    $("#btn_release").removeAttr('disabled');
+                					console.log(id);
+                					location.reload();
+            					},
+            					error: function(err) {
+            					    $("#btn_release").removeAttr('disabled');
+            						console.log("AJAX error: " + JSON.stringify(err, null, 2));
+            					}
+                            });
+            			},
+            			error: function(err) {
+            			    $("#btn_release").removeAttr('disabled');
+            				console.log("AJAX error: " + JSON.stringify(err, null, 2));
+            			}
+                    });
+			    }
+			    else {
+			        $.ajax({
+                        url: '/payment_requests/release',
+                        type: 'POST',
+    					data: {'data': data_release},
+    					dataType: 'text',
+    					success: function(id) {
+    					    $("#btn_release").removeAttr('disabled');
+        					console.log(id);
+        					location.reload();
+    					},
+    					error: function(err) {
+    					    $("#btn_release").removeAttr('disabled');
+    						console.log("AJAX error: " + JSON.stringify(err, null, 2));
+    					}
+                    });
+			    }
             }
             else {
+                $("#btn_release").removeAttr('disabled');
                 released_amount.css({'border-color':'red'});
             }
         }
         else {
-            if(select_bank.val()!="Select Bank") {
-                if(input_cheque_number.val()!="") {
-                    if(input_cheque_date.val()!="") {
-                        // RELEASE AJAX HERE
-                         $.ajax({
-                            url: '/payment_requests/release',
-                            type: 'POST',
-            				data: {'data': data_release},
-            				dataType: 'text',
-            				success: function(id) {
-            					console.log(id);
-            					location.reload();
-            				},
-            				error: function(err) {
-            					console.log("AJAX error: " + JSON.stringify(err, null, 2));
-            				}
-                        });
+            if(released_amount.val()!="") {
+                if(select_bank.val()!="Select Bank") {
+                    if(input_cheque_number.val()!="") {
+                        if(input_cheque_date.val()!="") {
+                            $.ajax({
+                                url: "/payment_request_cheques/check_existing",
+                                type: "POST",
+                                data: {"data": input_cheque_number.val()},
+                                dataType: "text",
+                                success: function(success) {
+                                    console.log(success);
+                                    // RELEASE AJAX HERE
+                                    if(success=="no") {
+                                        $.ajax({
+                                            url: '/payment_requests/release',
+                                            type: 'POST',
+                            				data: {'data': data_release},
+                            				dataType: 'text',
+                            				success: function(id) {
+                            					console.log(id);
+                            					window.location.replace("/payment_requests/all_list?type=cheque&&status=released");
+                            				},
+                            				error: function(err) {
+                            				    $("#btn_release").removeAttr('disabled');
+                            					console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                            				}
+                                        });
+                                    }
+                                    else {
+                                        $("#btn_release").removeAttr('disabled');
+                                        swal({
+                                            title: "Oops!",
+                                            text: "Cheque Number already exists in the database.\n"+
+                                                  "Please indicate another cheque number and try again.",
+                                            type: "warning"
+                                        });
+                                    }
+                                },
+                                error: function(error) {
+                                    $("#btn_release").removeAttr('disabled');
+                                    console.log(error);
+                                    swal({
+                                        title: "Oops!",
+                                        text: "An error occurred. Please try again later.",
+                                        type: "warning"
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            $("#btn_release").removeAttr('disabled');
+                            input_cheque_date.css({'border-color':'red'});
+                        }
                     }
                     else {
-                        input_cheque_date.css({'border-color':'red'});
+                        $("#btn_release").removeAttr('disabled');
+                        input_cheque_number.css({'border-color':'red'});
                     }
                 }
                 else {
-                    input_cheque_number.css({'border-color':'red'});
+                    $("#btn_release").removeAttr('disabled');
+                    select_bank.css({'border-color':'red'});
                 }
             }
             else {
-                select_bank.css({'border-color':'red'});
+                $("#btn_release").removeAttr('disabled');
+                released_amount.css({'border-color':'red'});
             }
         }
     });
     
-    $("button#btn_acknowledge, button#btn_reject_request, button#btn_approve, button#btn_close, button#btn_verify").on('click',function() {
+    $("button#btn_acknowledge, button#btn_approve, button#btn_close, button#btn_verify").on('click',function(e) {
         var id = $(this).val();
         var action = $(this).data('action');
         swal({
             title: "Are you sure?",
-            text: "",
+            text: "This request will be "+action+".",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
@@ -874,19 +1295,87 @@ $(document).ready(function() {
         },
         function (isConfirm) {
             if (isConfirm) {
-                var data = {"id":id, "action":action};
-                 $.ajax({
+                var data = {"id":id, "action":action, "supplier_id": 0};
+                
+                $.ajax({
                     url: '/payment_requests/action',
                     type: 'POST',
-        			data: {'data': data},
-        			dataType: 'text',
-        			success: function(id) {
-        				console.log(id);
-                        location.reload();
-        			},
-        			error: function(err) {
-        				console.log("AJAX error: " + JSON.stringify(err, null, 2));
-        			}
+                	data: {'data': data},
+                	dataType: 'text',
+                	success: function(id) {
+                		console.log(id);
+                		swal({
+                		    title: "Success!",
+                		    text: "Successfully "+action+" payment request.",
+                		    type: "success"
+                		},
+                		function(isConfirm1) {
+                		    if(isConfirm1) {
+                                location.reload();
+                		    }
+                		});
+                	},
+                	error: function(err) {
+                		console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                		swal({
+                		    title: "Oops!",
+                		    text: "An error occurred. Please try again later.",
+                		    type: "warning"
+                		});
+                	}
+                });
+            } else {
+                swal("Cancelled", "", "error");
+            }
+        });
+    });
+    
+    var supplier_id = 0;
+    $("button#btn_reject_request").on('click',function(e) {
+        var id = $(this).val();
+        var action = $(this).data('action');
+        supplier_id = $(this).data('supplierid');
+        swal({
+            title: "Are you sure?",
+            text: "This request will be "+action+".",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function (isConfirm) {
+            if (isConfirm) {
+                var data = {"id":id, "action":action, "supplier_id": supplier_id};
+                
+                $.ajax({
+                    url: '/payment_requests/action',
+                    type: 'POST',
+                	data: {'data': data},
+                	dataType: 'text',
+                	success: function(id) {
+                		console.log(id);
+                		swal({
+                		    title: "Success!",
+                		    text: "Successfully "+action+" payment request.",
+                		    type: "success"
+                		},
+                		function(isConfirm1) {
+                		    if(isConfirm1) {
+                                location.reload();
+                		    }
+                		});
+                	},
+                	error: function(err) {
+                		console.log("AJAX error: " + JSON.stringify(err, null, 2));
+                		swal({
+                		    title: "Oops!",
+                		    text: "An error occurred. Please try again later.",
+                		    type: "warning"
+                		});
+                	}
                 });
             } else {
                 swal("Cancelled", "", "error");
@@ -1064,10 +1553,16 @@ $(document).ready(function() {
     $("input.check_replenish").on('click', function() {
        var c_checked = $("td#checkBoxes input[type='checkbox']:checked").length;
        var c_all = $("td#checkBoxes input[type='checkbox']").length;
-       
+       var check_all = $("#check_all");
+       var label = $("#label_for_check");
+   
        if(c_checked==c_all) {
             check_all.prop('checked', true);
             label.text("Diselect All");
+       }
+       else {
+           check_all.prop('checked', false);
+           label.text("Select All");
        }
     });
 });

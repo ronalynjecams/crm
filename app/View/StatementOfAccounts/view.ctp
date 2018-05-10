@@ -92,14 +92,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($statementOfAccount['StatementOfAccount']['created']); ?>
+			<?php echo time_elapsed_string($statementOfAccount['StatementOfAccount']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($statementOfAccount['StatementOfAccount']['modified']); ?>
+			<?php echo time_elapsed_string($statementOfAccount['StatementOfAccount']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

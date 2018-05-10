@@ -1,18 +1,18 @@
  
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="http://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>  
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>  
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
@@ -48,7 +48,9 @@
                             <th>Name</th>
                             <th>Contact Person / Position</th>
                             <th>Contact Number</th>
-                            <th>Email</th> 
+                            <th>Email</th>  
+                            <th>Address</th> 
+                            <th>Industry</th> 
                             <th> </th> 
                         </tr>
                     </thead>
@@ -58,6 +60,8 @@
                             <th>Contact Person / Position</th>
                             <th>Contact Number</th>
                             <th>Email</th>  
+                            <th>Address</th> 
+                            <th>Industry</th> 
                             <th> </th>  
                         </tr>
                     </tfoot>
@@ -68,6 +72,14 @@
                                 <td><?php echo $lead['Client']['contact_person'] . '<small><br/>' . $lead['Client']['position'] . '</small>'; ?></td>
                                 <td><?php echo $lead['Client']['contact_number']; ?></td>
                                 <td><?php echo $lead['Client']['email']; ?></td> 
+                                  <td><?php echo $lead['Client']['address']; ?></td> 
+                                  <td><?php 
+                                    if(!is_null($lead['ClientIndustry']['name'])){
+                                        echo $lead['ClientIndustry']['name'];
+                                    }else{
+                                        echo '<font color="red">Unavailable</font>';
+                                    }
+                                  ?></td> 
                                 <td>
                                     <?php
                                     if (($UserIn['User']['role'] == 'sales_executive') || ($UserIn['User']['role'] == 'marketing_staff')) {
@@ -89,7 +101,7 @@
 </div>  
 <!--Add New Lead Modal Start-->
 <!--===================================================-->
-<div class="modal fade" id="add-lead-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="add-lead-modal" role="dialog"   aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -126,6 +138,17 @@
                     <input type="text" class="form-control"  id="contact_number">
                 </div>
                 <div class="form-group">
+                    <label>Industry <span class="text-danger">*</span></label>
+                    <select  class="form-control"  id="client_industry_id">
+                        <option></option>
+                        <?php 
+                        foreach($industries as $industry){
+                            echo '<option value="'.$industry['ClientIndustry']['id'].'">'.$industry['ClientIndustry']['name'].'</option>';
+                        }
+                        ?> 
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>TIN</label>
                     <input type="text" class="form-control"  id="tin_number">
                 </div>
@@ -143,7 +166,7 @@
 <!--Add New Lead Modal End--> 
 <!--Update Lead Modal Start-->
 <!--===================================================-->
-<div class="modal fade" id="update-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+<div class="modal fade" id="update-modal" role="dialog"   aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
@@ -179,6 +202,17 @@
                 <div class="form-group">
                     <label>Contact Number <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" placeholder="Contact Number" id="ucontact_number">
+                </div>
+                <div class="form-group">
+                    <label>Industry <span class="text-danger">*</span></label>
+                    <select  class="form-control"  id="uclient_industry_id">
+                        <option></option>
+                        <?php 
+                        foreach($industries as $industry){
+                            echo '<option value="'.$industry['ClientIndustry']['id'].'">'.$industry['ClientIndustry']['name'].'</option>';
+                        }
+                        ?> 
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>TIN</label>
@@ -242,6 +276,16 @@
             "order": [[0, "asc"]],
             "stateSave": true
         });
+            $("#client_industry_id").select2({
+                placeholder: "Select Industry",
+                width: '100%',
+                allowClear: false
+            });
+            $("#uclient_industry_id").select2({
+                placeholder: "Select Industry",
+                width: '100%',
+                allowClear: false
+            });
 
 
         ///// check if lead already exist on other sales executive who are also an active user /////
@@ -279,12 +323,14 @@
         var email = $('#email').val();
         var contact_number = $('#contact_number').val();
         var tin_number = $('#tin_number').val();
+        var client_industry_id = $('#client_industry_id').val();   
 
         if ((name != "")) {
             if (contact_person != "") {
                 if (address != "") {
                     if (email != "") {
                         if (contact_number != "") {
+                                if(client_industry_id!=""){
                             var data = {"name": name,
                                 "contact_person": contact_person,
                                 "position": position,
@@ -292,6 +338,7 @@
                                 "email": email,
                                 "contact_number": contact_number,
                                 "tin_number": tin_number,
+                                "client_industry_id":client_industry_id, 
                                 "type": 'lead'
                             }
                             $.ajax({
@@ -306,6 +353,10 @@
                                     alert('error!');
                                 }
                             });
+                                    
+                                }else{
+                                    alert('Required Industry');
+                                }
                         } else {
                             document.getElementById('contact_number').style.borderColor = "red";
                         }
@@ -344,6 +395,7 @@
                 $('#uemail').val(data['email']);
                 $('#ucontact_number').val(data['contact_number']);
                 $('#utin_number').val(data['tin_number']);
+                 $('#uclient_industry_id').val(data['client_industry_id']);   
             });
 
 
@@ -359,30 +411,36 @@
         var contact_number = $('#ucontact_number').val();
         var tin_number = $('#utin_number').val();
         var update_lead_id = $('#update_lead_id').val();
+      var client_industry_id = $('#uclient_industry_id').val();   
 
         if ((name != "")) {
             if (contact_person != "") {
                 if (address != "") {
                     if (email != "") {
                         if (contact_number != "") {
-                            var data = {"name": name,
-                                "contact_person": contact_person,
-                                "position": position,
-                                "address": address,
-                                "email": email,
-                                "contact_number": contact_number,
-                                "id": update_lead_id,
-                                "tin_number": tin_number
-                            }
-                            $.ajax({
-                                url: "/clients/update_leads",
-                                type: 'POST',
-                                data: {'data': data},
-                                dataType: 'json',
-                                success: function (id) {
-                                    location.reload();
+                            if(client_industry_id>=1){
+                                var data = {"name": name,
+                                    "contact_person": contact_person,
+                                    "position": position,
+                                    "address": address,
+                                    "email": email,
+                                    "contact_number": contact_number,
+                                    "id": update_lead_id,
+                                    "tin_number": tin_number,
+                                    "client_industry_id":client_industry_id, 
                                 }
-                            });
+                                $.ajax({
+                                    url: "/clients/update_leads",
+                                    type: 'POST',
+                                    data: {'data': data},
+                                    dataType: 'json',
+                                    success: function (id) {
+                                        location.reload();
+                                    }
+                                });
+                            }else{
+                                    alert('Required Industry');
+                            }
                         } else {
                             document.getElementById('ucontact_number').style.borderColor = "red";
                         }

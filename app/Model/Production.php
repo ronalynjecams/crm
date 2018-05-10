@@ -36,6 +36,16 @@ class Production extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'job_request_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'client_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
@@ -86,6 +96,13 @@ class Production extends AppModel {
 		'JrProduct' => array(
 			'className' => 'JrProduct',
 			'foreignKey' => 'jr_product_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'JobRequestProduct' => array(
+			'className' => 'JobRequestProduct',
+			'foreignKey' => 'job_request_product_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

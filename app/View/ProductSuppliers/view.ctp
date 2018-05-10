@@ -64,14 +64,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($productSupplier['ProductSupplier']['created']); ?>
+			<?php echo time_elapsed_string($productSupplier['ProductSupplier']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($productSupplier['ProductSupplier']['modified']); ?>
+			<?php echo time_elapsed_string($productSupplier['ProductSupplier']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

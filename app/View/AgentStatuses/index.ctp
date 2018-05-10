@@ -60,8 +60,8 @@
 		</td>
 						<td><?php echo h($agentStatus['AgentStatus']['date_from']); ?>&nbsp;</td>
 						<td><?php echo h($agentStatus['AgentStatus']['date_to']); ?>&nbsp;</td>
-						<td><?php echo h($agentStatus['AgentStatus']['created']); ?>&nbsp;</td>
-						<td><?php echo h($agentStatus['AgentStatus']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($agentStatus['AgentStatus']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($agentStatus['AgentStatus']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $agentStatus['AgentStatus']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $agentStatus['AgentStatus']['id']), array('escape' => false)); ?>

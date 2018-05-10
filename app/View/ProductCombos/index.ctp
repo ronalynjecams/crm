@@ -66,8 +66,8 @@
 			<?php echo $this->Html->link($productCombo['Unit']['name'], array('controller' => 'units', 'action' => 'view', $productCombo['Unit']['id'])); ?>
 		</td>
 						<td><?php echo h($productCombo['ProductCombo']['min_stock_level']); ?>&nbsp;</td>
-						<td><?php echo h($productCombo['ProductCombo']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productCombo['ProductCombo']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productCombo['ProductCombo']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productCombo['ProductCombo']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $productCombo['ProductCombo']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $productCombo['ProductCombo']['id']), array('escape' => false)); ?>

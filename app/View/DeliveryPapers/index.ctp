@@ -55,11 +55,11 @@
 			<?php echo $this->Html->link($deliveryPaper['Quotation']['id'], array('controller' => 'quotations', 'action' => 'view', $deliveryPaper['Quotation']['id'])); ?>
 		</td>
 						<td><?php echo h($deliveryPaper['DeliveryPaper']['date_needed']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryPaper['DeliveryPaper']['date_acquired']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryPaper['DeliveryPaper']['date_processed']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['date_acquired']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['date_processed']); ?>&nbsp;</td>
 						<td><?php echo h($deliveryPaper['DeliveryPaper']['status']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryPaper['DeliveryPaper']['created']); ?>&nbsp;</td>
-						<td><?php echo h($deliveryPaper['DeliveryPaper']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliveryPaper['DeliveryPaper']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $deliveryPaper['DeliveryPaper']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $deliveryPaper['DeliveryPaper']['id']), array('escape' => false)); ?>

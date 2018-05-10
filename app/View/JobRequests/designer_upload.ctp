@@ -1,9 +1,9 @@
  
-<link href="../plugins/dropzone/dropzone.min.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/dropzone/dropzone.min.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 <!--Dropzone [ OPTIONAL ]-->
-<script src="../plugins/dropzone/dropzone.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<script src="/css/plug/dropzone/dropzone.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 <div id="content-container" >
     <div id="page-title">
         <h1 class="page-header text-overflow">Job Request <small>[<?php echo $data['QuotationProduct']['Quotation']['Client']['name']; ?>]</small></h1>

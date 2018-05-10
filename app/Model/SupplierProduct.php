@@ -14,6 +14,9 @@ class SupplierProduct extends AppModel {
  *
  * @var array
  */
+ 
+	public $actsAs = array('Containable');
+	
 	public $validate = array(
 		'product_combo_id' => array(
 			'numeric' => array(

@@ -1,10 +1,10 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <div id="content-container">
 	<div id="page-title">
@@ -25,6 +25,7 @@
 	                        <thead>
 	                            <tr>
 	                                <th>#</th>
+	                                <th>Date Issued</th>
 	                                <th>Client Name</th>
 	                                <th>Sales Executive</th>
 	                                <th>Actions</th>
@@ -40,8 +41,10 @@
 	                        		?>
 	                        		<tr>
 	                        			<td><?php echo $count; ?></td>
+	                        			<td data-order="<?php echo $soa['StatementOfAccount']['created']; ?>">
+	                        				<?php echo time_elapsed_string($soa['StatementOfAccount']['created']); ?></td>
 	                        			<td><?php echo $client['name']; ?></td>
-	                        			<td><?php echo $user['username']; ?></td>
+	                        			<td><?php echo $agentnames[$client['id']]; ?></td>
 	                        			<td align="center">
 	                        				<a href="/statement_of_accounts/quotation_list?id=<?php echo $client['id']; ?>">
 	                        					<button class="btn btn-info">

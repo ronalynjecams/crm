@@ -44,9 +44,9 @@
 						<th><?php echo $this->Paginator->sort('processed_qty'); ?></th>
 						<th><?php echo $this->Paginator->sort('delivered_qty'); ?></th>
 						<th><?php echo $this->Paginator->sort('pullout_qty'); ?></th>
-						<th><?php echo $this->Paginator->sort('expected_demo_data'); ?></th>
+						<th><?php echo $this->Paginator->sort('expected_demo_date'); ?></th>
 						<th><?php echo $this->Paginator->sort('expected_pullout_date'); ?></th>
-						<th><?php echo $this->Paginator->sort('pullout_data'); ?></th>
+						<th><?php echo $this->Paginator->sort('pullout_date'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
 						<th class="actions"></th>
@@ -69,11 +69,11 @@
 						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['processed_qty']); ?>&nbsp;</td>
 						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['delivered_qty']); ?>&nbsp;</td>
 						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['pullout_qty']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['expected_demo_data']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['expected_pullout_date']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['pullout_data']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($clientServiceProduct['ClientServiceProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['expected_demo_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['expected_pullout_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['pullout_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($clientServiceProduct['ClientServiceProduct']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $clientServiceProduct['ClientServiceProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $clientServiceProduct['ClientServiceProduct']['id']), array('escape' => false)); ?>

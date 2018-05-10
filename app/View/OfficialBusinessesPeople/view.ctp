@@ -57,14 +57,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($officialBusinessesPerson['OfficialBusinessesPerson']['created']); ?>
+			<?php echo time_elapsed_string($officialBusinessesPerson['OfficialBusinessesPerson']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($officialBusinessesPerson['OfficialBusinessesPerson']['modified']); ?>
+			<?php echo time_elapsed_string($officialBusinessesPerson['OfficialBusinessesPerson']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

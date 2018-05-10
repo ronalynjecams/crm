@@ -62,8 +62,8 @@
 								<td>
 			<?php echo $this->Html->link($quotationProductProperty['ProductValue']['id'], array('controller' => 'product_values', 'action' => 'view', $quotationProductProperty['ProductValue']['id'])); ?>
 		</td>
-						<td><?php echo h($quotationProductProperty['QuotationProductProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($quotationProductProperty['QuotationProductProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationProductProperty['QuotationProductProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationProductProperty['QuotationProductProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $quotationProductProperty['QuotationProductProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $quotationProductProperty['QuotationProductProperty']['id']), array('escape' => false)); ?>

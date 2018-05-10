@@ -26,12 +26,12 @@
 		</div><!-- end col md 3 -->
 
 		<div class="col-md-9">
-			<div class="table-responsive">
 			<table cellpadding="0" cellspacing="0" class="table table-striped">
 				<thead>
 					<tr>
 						<th><?php echo $this->Paginator->sort('id'); ?></th>
 						<th><?php echo $this->Paginator->sort('name'); ?></th>
+						<th><?php echo $this->Paginator->sort('abbreviation'); ?></th>
 						<th><?php echo $this->Paginator->sort('created'); ?></th>
 						<th><?php echo $this->Paginator->sort('modified'); ?></th>
 						<th class="actions"></th>
@@ -42,6 +42,7 @@
 					<tr>
 						<td><?php echo h($unit['Unit']['id']); ?>&nbsp;</td>
 						<td><?php echo h($unit['Unit']['name']); ?>&nbsp;</td>
+						<td><?php echo h($unit['Unit']['abbreviation']); ?>&nbsp;</td>
 						<td><?php echo h($unit['Unit']['created']); ?>&nbsp;</td>
 						<td><?php echo h($unit['Unit']['modified']); ?>&nbsp;</td>
 						<td class="actions">
@@ -53,7 +54,7 @@
 				<?php endforeach; ?>
 				</tbody>
 			</table>
-			</div>
+
 			<p>
 				<small><?php echo $this->Paginator->counter(array('format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')));?></small>
 			</p>

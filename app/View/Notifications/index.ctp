@@ -58,8 +58,8 @@
 		</td>
 						<td><?php echo h($notification['Notification']['title']); ?>&nbsp;</td>
 						<td><?php echo h($notification['Notification']['viewed']); ?>&nbsp;</td>
-						<td><?php echo h($notification['Notification']['created']); ?>&nbsp;</td>
-						<td><?php echo h($notification['Notification']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($notification['Notification']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($notification['Notification']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $notification['Notification']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $notification['Notification']['id']), array('escape' => false)); ?>

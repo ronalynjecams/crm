@@ -62,14 +62,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($poRawRequestProperty['PoRawRequestProperty']['created']); ?>
+			<?php echo time_elapsed_string($poRawRequestProperty['PoRawRequestProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($poRawRequestProperty['PoRawRequestProperty']['modified']); ?>
+			<?php echo time_elapsed_string($poRawRequestProperty['PoRawRequestProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -46,14 +46,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($drPaper['DrPaper']['created']); ?>
+			<?php echo time_elapsed_string($drPaper['DrPaper']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($drPaper['DrPaper']['modified']); ?>
+			<?php echo time_elapsed_string($drPaper['DrPaper']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

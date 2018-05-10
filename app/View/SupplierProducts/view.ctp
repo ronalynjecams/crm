@@ -80,14 +80,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($supplierProduct['SupplierProduct']['created']); ?>
+			<?php echo time_elapsed_string($supplierProduct['SupplierProduct']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($supplierProduct['SupplierProduct']['modified']); ?>
+			<?php echo time_elapsed_string($supplierProduct['SupplierProduct']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -139,8 +139,8 @@
 			<td><?php echo $purchaseOrderProduct['additional']; ?></td>
 			<td><?php echo $purchaseOrderProduct['processed_qty']; ?></td>
 			<td><?php echo $purchaseOrderProduct['supplier_product_id']; ?></td>
-			<td><?php echo $purchaseOrderProduct['created']; ?></td>
-			<td><?php echo $purchaseOrderProduct['modified']; ?></td>
+			<td><?php echo time_elapsed_string($purchaseOrderProduct['created']); ?></td>
+			<td><?php echo time_elapsed_string($purchaseOrderProduct['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'purchase_order_products', 'action' => 'view', $purchaseOrderProduct['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'purchase_order_products', 'action' => 'edit', $purchaseOrderProduct['id']), array('escape' => false)); ?>

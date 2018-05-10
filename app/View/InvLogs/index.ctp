@@ -64,8 +64,8 @@
 								<td>
 			<?php echo $this->Html->link($invLog['QuotationProduct']['id'], array('controller' => 'quotation_products', 'action' => 'view', $invLog['QuotationProduct']['id'])); ?>
 		</td>
-						<td><?php echo h($invLog['InvLog']['created']); ?>&nbsp;</td>
-						<td><?php echo h($invLog['InvLog']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($invLog['InvLog']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($invLog['InvLog']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $invLog['InvLog']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $invLog['InvLog']['id']), array('escape' => false)); ?>

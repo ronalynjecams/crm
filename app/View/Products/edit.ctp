@@ -1,21 +1,24 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>
 
 <!-- REQUIRED FOR MULTIPLE SELECT ON QUOTATION -->
-<link href="../plugins/chosen/chosen.min.css" rel="stylesheet">
-<script src="../plugins/chosen/chosen.jquery.min.js"></script>
+<link href="/css/plug/chosen/chosen.min.css" rel="stylesheet">
+<script src="/css/plug/chosen/chosen.jquery.min.js"></script>
+
+<!--TINYMCE-->
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
 
 <div id="content-container">
 	<div class="products form">
@@ -28,6 +31,13 @@
             	<div class="panel-heading" align="center">
 	                <h3 class="panel-title" align="center">
 	                    <button class="btn btn-primary" id="updateproduct-top">Update</button>
+	                    
+	                    <a  style="color:white;" class="btn btn-info"
+							data-toggle="tooltip"
+							data-placement="top" title="Product Combo"
+							href="/product_combos/view?id=<?php echo $this->params['url']['id']; ?>">
+							Update Product Combo
+						</a>
 	                </h3>
 	            </div>
 	        </div>
@@ -37,20 +47,20 @@
 					<div class="col-lg-12">
 						<div class="row">
 							<div class="col-lg-3">
-								<div class="form-group" style="width:260px;height:175px;">
+								<div class="form-group" class="img-responsive">
 									<?php
 										$image_name = $current_product['Product']['image'];
-										$image_from_app = WWW_ROOT.'product_uploads/'.$image_name;
+										$image_from_app = WWW_ROOT.'img/product-uploads/'.$image_name;
 										
 										$file = new File($image_from_app);
 										
 										if ($file->exists()) { ?>
-											<img class="img-responsive" src="../product_uploads/<?php echo $image_name; ?>"
-											id="prod_image_preview" style="width:100%;height:100%;" /><br/>
+											<img class="img-responsive" src="/img/product-uploads/<?php echo $image_name; ?>"
+											id="prod_image_preview" /><br/>
 										<?php }
 										else { ?>
-											<img class="img-responsive" src="../product_uploads/image_placeholder.jpg"
-											id="prod_image_preview" style="width:100%;height:100%;" /><br/>
+											<img class="img-responsive" src="/img/product-uploads/image_placeholder.jpg"
+											id="prod_image_preview" /><br/>
 										<?php }
 										
 										$file->close();
@@ -59,7 +69,7 @@
 								<div id="image_input">
 									<?php
 										$image_name = $current_product['Product']['image'];
-										$image_from_app = WWW_ROOT.'product_uploads/'.$image_name;
+										$image_from_app = WWW_ROOT.'img/product-uploads/'.$image_name;
 										
 										$file = new File($image_from_app);
 										
@@ -72,7 +82,7 @@
 										$file->close();
 									?>
 									
-									<input type="file" class="form-control" id="prod_image" value="../product_uploads/<?php echo $image_name ?>" />
+									<input type="file" class="form-control" id="prod_image" value="/img/product-uploads/<?php echo $image_name ?>" />
 								</div>
 								<div id="image_here"></div>
 							</div>
@@ -81,54 +91,59 @@
 								<div class="form-group">
 								    <input type="hidden" id="prod_id" value="<?php echo $product_id; ?>" />
 									<input class="form-control" type="text" placeholder="Name" id="prod_name"
-									    value="<?php echo $current_product['Product']['name']; ?>" disabled="true" /> <br/>
+									    value="<?php echo $current_product['Product']['name']; ?>" /> <br/>
 									
 									<div class="row">
-										<div class="col-lg-6">
-											<select class="form-control" id="prod_category">
-												<option value="<?php echo $sub_category['Category']['id']; ?>">
-												    <?php echo $sub_category['Category']['name']; ?>
-											    </option>
-												<?php
-													foreach($categories as $category) {
-														?>
-														<option value="<?php echo $category['Category']['id']; ?>">
-															<?php echo $category['Category']['name']; ?>
-														</option>
-														<?php
-													}
-												?>
-											</select>
-										</div>
-										<div class="col-lg-6">
-											<select class="form-control" id="prod_sub_category">
-												<option value="<?php echo $current_product['SubCategory']['id']; ?>">
-											        <?php echo $current_product['SubCategory']['name']; ?>
-											    </option>
-											</select>
+										<div class="form-group">
+											<div class="col-lg-6">
+												<select class="form-control" id="prod_category">
+													<option value="<?php echo $sub_category['Category']['id']; ?>">
+													    <?php echo $sub_category['Category']['name']; ?>
+												    </option>
+													<?php
+														foreach($categories as $category) {
+															?>
+															<option value="<?php echo $category['Category']['id']; ?>">
+																<?php echo $category['Category']['name']; ?>
+															</option>
+															<?php
+														}
+													?>
+												</select>
+											</div>
+											<div class="col-lg-6">
+												<select class="form-control" id="prod_sub_category">
+													<option value="<?php echo $current_product['SubCategory']['id']; ?>">
+												        <?php echo $current_product['SubCategory']['name']; ?>
+												    </option>
+												</select>
+											</div>
 										</div>
 									</div>
 									
 									<div class="row">
-										<div class="col-lg-6">
-											<select class="form-control" id="prod_type">
-												<?php if ($current_product['Product']['type']!=null) {
-													echo '<option value="'.$current_product['Product']['type'].'">'.$current_product['Product']['type'].'</option>';
-												}
-												else {
-													echo '<option>Select Type</option>';
-												} ?>
-												<option style="font-size: 0.9pt; background-color: grey;" disabled>&nbsp;</option>
-												<option value="supply">Supply</option>
-												<option value="customized">Customized</option>
-												<option value="combination">Combination</option>
-												<option value="raw">Raw</option>
-												<option value="chopped">Chopped</option>
-												<option value="office">Office</option>
-											</select>
-										</div>
-										<div class="col-lg-6">
-											<input type="text" class="form-control" pattern="[0-9]+" id="prod_sale_price" placeholder="Sale Price" value="<?php echo $current_product['Product']['sale_price']; ?>"/>
+										<div class="form-group">
+											<div class="col-lg-6">
+												<select class="form-control" id="prod_type">
+													<?php if ($current_product['Product']['type']!=null) {
+														echo '<option value="'.$current_product['Product']['type'].'">'.$current_product['Product']['type'].'</option>';
+													}
+													else {
+														echo '<option>Select Type</option>';
+													} ?>
+													<option style="font-size: 0.9pt; background-color: grey;" disabled>&nbsp;</option>
+													<option value="supply">Supply</option>
+													<option value="customized">Customized</option>
+													<option value="combination">Combination</option>
+													<option value="raw">Raw</option>
+													<option value="chopped">Chopped</option>
+													<option value="office">Office</option>
+													<option value="swatches">swatches</option>
+												</select>
+											</div>
+											<div class="col-lg-6">
+												<input type="text" class="form-control" pattern="[0-9]+" id="prod_sale_price" placeholder="Sale Price" value="<?php echo $current_product['Product']['sale_price']; ?>"/>
+											</div>
 										</div>
 									</div> <br/>
 									
@@ -167,6 +182,22 @@
 </div>
 
 <!--JAVASCTRIPT FUNCTIONS-->
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        height: 500,
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
 <script>
 $(document).ready(function(){
     var id = $("#prod_id").val();
@@ -242,10 +273,10 @@ $(document).ready(function(){
                 		'<div class="col-lg-3">'+
                 		    '<input type="hidden" id="appended_prod_properties_id" value="'+prod_property[i]['id']+'" />'+
                 			'<input type="hidden" id="appended_prod_value_id" value="'+prod_value[v]['id']+'" />'+
-                			'<input type="text" class="form-control appended_prod_properties" id="appended_prod_properties" value="'+prod_property[i]['name']+'" />'+
+                			'<input type="text" class="form-control appended_prod_properties" id="appended_prod_properties" value="'+prod_property[i]['name']+'" placeholder="Properties" />'+
                 		'</div>'+
                 		'<div class="col-lg-3">'+
-            				'<input type="text" class="form-control appended_prod_values" id="appended_prod_values" value="' + prod_value[v]['value'] + '"/>'+
+            				'<input type="text" class="form-control appended_prod_values" id="appended_prod_values" value="' + prod_value[v]['value'] + '" placeholder="Values"/>'+
             			'</div>'+
             			'<div class="col-lg-6">'+
             				'<div class="row">'+
@@ -255,7 +286,7 @@ $(document).ready(function(){
             						'<label style="margin-bottom:8px;vertical-align:middle;">Default</label>'+
             					'</div>' +
 			                	'<div class="col-lg-7">'+
-            						'<input type="text" class="form-control appended_prod_price" pattern="[0-9]+" id="appended_prod_price" value="' + prod_value[v]['price'] + '" />'+
+            						'<input type="text" class="form-control appended_prod_price" pattern="[0-9]+" id="appended_prod_price" value="' + prod_value[v]['price'] + '" placeholder="Price" />'+
             					'</div>'+
             					'<div class="col-lg-3" style="text-align:center">'+
             						'<button class="btn btn-danger btn-sm remove_properties_and_values" style="margin-top:3px;" data-toggle="tooltip"'+
@@ -385,7 +416,7 @@ $(document).ready(function(){
 	    var image_keep_temp = "<?php echo $image_name ?>";
 	    var id = $("#prod_id").val();
     	var name =  $('#prod_name').val();
-	    var other_info = $('#prod_other_info').val();
+	    var other_info = tinyMCE.get('prod_other_info').getContent();
 	    var category = $('#prod_category').val();
 	    var sub_category = $("#prod_sub_category").val();
 	    var type = $("#prod_type").val();
@@ -404,17 +435,19 @@ $(document).ready(function(){
 	    var image_filename = image_tmp[image_tmp.length-1];
 	    
 	    var prod_default_array = [];
-	    $(".appended_prod_default").each(function(index) {
-	        var prod_default = '';
-	    		if ($(".appended_prod_default").is(":checked")) {
-				prod_default = 'true';	
+	    var defff = $(".appended_prod_default").map(function() {
+            var val = $(this).is(":checked");
+            if(val==true) {
+                prod_default = 1;	
 		    }
 		    else {
-		    	prod_default = 'false';
+		    	prod_default = 0
 		    }
 		    prod_default_array.push(prod_default);
-	    });
-	    
+            
+            return prod_default_array;
+        }).get();
+        
 	    var array_prod_price = [];
 	    $('.appended_prod_price').each(function (index) {
             var value = $(this).val();
@@ -456,7 +489,8 @@ $(document).ready(function(){
 					    	"keep_image": keep_image,
 					    	"sale_price": sale_price,
 					    	"type": type,
-							"appended_obj": appended_obj
+							"appended_obj": appended_obj,
+							"name":name
 					    };
 						$.ajax({
 							url: "/products/update_product",
@@ -465,10 +499,17 @@ $(document).ready(function(){
 							dataType: 'text',
 							success: function(id) {
 								console.log(id);
+								console.log(data);
+								location.reload();
 							},
 							error: function(err) {
 								console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
 								console.log("error in ajax update");
+								swal({
+					                title: "Oops!",
+					                text: "There was an error in updating product.",
+					                type: "warning"
+								});
 							}
 						});
 	    			}

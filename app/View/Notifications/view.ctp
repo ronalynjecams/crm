@@ -78,14 +78,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($notification['Notification']['created']); ?>
+			<?php echo time_elapsed_string($notification['Notification']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($notification['Notification']['modified']); ?>
+			<?php echo time_elapsed_string($notification['Notification']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

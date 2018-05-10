@@ -66,14 +66,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($companyFundLog['CompanyFundLog']['created']); ?>
+			<?php echo time_elapsed_string($companyFundLog['CompanyFundLog']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($companyFundLog['CompanyFundLog']['modified']); ?>
+			<?php echo time_elapsed_string($companyFundLog['CompanyFundLog']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

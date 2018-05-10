@@ -44,12 +44,12 @@
 					<tr>
 						<td><?php echo h($category['Category']['id']); ?>&nbsp;</td>
 						<td><?php echo h($category['Category']['name']); ?>&nbsp;</td>
-						<td><?php echo h($category['Category']['created']); ?>&nbsp;</td>
-						<td><?php echo h($category['Category']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($category['Category']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($category['Category']['modified']); ?>&nbsp;</td>
 						<td class="actions">
-							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $category['Category']['id']), array('escape' => false)); ?>
-							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $category['Category']['id']), array('escape' => false)); ?>
-							<?php echo $this->Form->postLink('<span class="glyphicon glyphicon-remove"></span>', array('action' => 'delete', $category['Category']['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $category['Category']['id'])); ?>
+							<?php echo $this->Html->link('<span class="fa fa-search"></span>', array('action' => 'view', $category['Category']['id']), array('escape' => false)); ?>
+							<?php echo $this->Html->link('<span class="fa fa-edit"></span>', array('action' => 'edit', $category['Category']['id']), array('escape' => false)); ?>
+							<?php echo $this->Form->postLink('<span class="fa fa-remove"></span>', array('action' => 'delete', $category['Category']['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $category['Category']['id'])); ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>

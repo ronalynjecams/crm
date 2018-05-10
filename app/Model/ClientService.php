@@ -24,6 +24,16 @@ class ClientService extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'agent_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
 		'user_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
@@ -74,6 +84,13 @@ class ClientService extends AppModel {
 		'User' => array(
 			'className' => 'User',
 			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Agent' => array(
+			'className' => 'User',
+			'foreignKey' => 'agent_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

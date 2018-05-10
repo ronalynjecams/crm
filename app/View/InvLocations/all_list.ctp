@@ -1,10 +1,10 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
@@ -26,13 +26,13 @@
     });
 </script>
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>
+<!--<script src="/js/erp_scripts.js"></script>-->
 <style>
     #add_work{
         margin-top: 10px;
@@ -99,7 +99,7 @@
                                 #if(( $UserIn['User']['role'] == 'fitout_facilitator' )){
                                     echo"<div class='row'>";
                                         echo"<div class='col-sm-1'>";
-                                            echo '<a class="btn btn-default btn-icon add-tooltip viewBtn btn-xs" data-toggle="tooltip" href="/InventoryProducts/warehouse_list?id='.$location['InvLocation']['id'].'" data-original-title="view" ><i class="fa fa-eye"></i></a>';
+                                            echo '<a class="btn btn-default btn-icon add-tooltip viewBtn btn-xs" data-toggle="tooltip" href="/inventory_products/warehouse_list?id='.$location['InvLocation']['id'].'" data-original-title="view" ><i class="fa fa-eye"></i></a>';
                                          echo"</div>";
                                     echo"</div";
                                 #}

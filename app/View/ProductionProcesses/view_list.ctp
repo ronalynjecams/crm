@@ -1,79 +1,69 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
 <!--SWEET ALERT-->
-<link href="../css/sweetalert.css" rel="stylesheet">
-<script src="../js/sweetalert.min.js"></script>
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script>
 
 <!--TABLE-->
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <!--CONTENT-->
 <div id="content-container">
-    <div id="page-title">
-        <h1 class="page-header text-overflow">
-            Production Detail for 
-            <?php
-                if(!empty($production['Product'])) {
-                    echo $production['Product']['name'];
-                }
-                else {
-                    echo 'UNKNOWN';
-                }
-            ?>
-        </h1>
-    </div>
-    
     <div id="page-content">
         <?php
         if(!empty($production_processes)) {
-            // echo json_encode($QuotationProductProperty).'<br/><br/>';
-            // echo json_encode($production['JrProduct']).'<br/><br/><br/><br/>';
-            // echo json_encode($production_processes).'<br/><br/><br/><br/>';
-            
             $jrprodid = 0;
-            $jrprod = $production['JrProduct'];
+            $jrprod = $production['JobRequestProduct'];
             $jrprodid = $jrprod['id'];
             $production_process_id = 0;
-            $production_id = $production['Product']['id'];
-            
-            foreach($production_processes as $production_process) {
-                $production = $production_process['Production'];
-                $ProductionProcess = $production_process['ProductionProcess'];
-                $ProductionSection = $production_process['ProductionSection'];
-                $productioncarpenter_obj = $production_process['ProductionCarpenter'];
-                
+            if(!empty($production_processes)) {
+                $productions = $production_processes[0]['Production'];
+                $production_id = $productions['id'];
+                $ProductionProcess = $production_processes[0]['ProductionProcess'];
                 $production_process_id = $ProductionProcess['id'];
-                $production_client_id = $production['client_id'];
+                $ProductionSection = $production_processes[0]['ProductionSection'];
+                $productioncarpenter_obj = $production_processes[0]['ProductionCarpenter'];
+                $production_client_id = $productions['client_id'];
                 $client_name = ucwords($client[$production_client_id]['Client']['name']);
-                $sales_executive_name = ucwords($sales_executive['User']['first_name'].
-                    " ".$sales_executive['User']['last_name']);
-                $designer_name = ucwords($designer['User']['first_name']." ".$designer['User']['last_name']);
+                if(!empty($sales_executive)) {
+                    $sales_executive_name = ucwords($sales_executive['User']['first_name'].
+                        " ".$sales_executive['User']['last_name']);
+                    $target_delivery = date("F d, Y", strtotime($sales_executive['Quotation']['target_delivery']));
+                }
+                else {
+                    $target_delivery = "<font style='color:red'>Not specified</font>";
+                    $sales_executive_name = "<font style='color:red'>Unknown</font>";
+                }
+                
                 $section_head_name = ucwords($section_head['User']['first_name']." ".$section_head['User']['last_name']);
-                $target_delivery = date("F d, Y", strtotime($sales_executive['Quotation']['target_delivery']));
                 $ProductionSection_name = ucwords($ProductionSection['name']);
                 $expected_start_tmp = date("F d, Y", strtotime($ProductionProcess['expected_start']));
                 $expected_end_tmp = date("F d, Y", strtotime($ProductionProcess['expected_end']));
-                $start_tmp = date("F d, Y", strtotime($ProductionProcess['start_work']));
-                $end_tmp = date("F d, Y", strtotime($ProductionProcess['end_work']));
+                $start_tmp = time_elapsed_string($ProductionProcess['start_work']);
+                $end_tmp = time_elapsed_string($ProductionProcess['end_work']);
                 
-                if($ProductionProcess['expected_start']==null) { $expected_start = "Date is not specified"; }
+                if($ProductionProcess['expected_start']=="0000-00-00"
+                || $ProductionProcess['expected_start']==null) { $expected_start = "<font style='color:red'>Not specified</font>"; }
                 else { $expected_start = $expected_start_tmp; }
                 
-                if($ProductionProcess['expected_end']==null) { $expected_end = "Date is not specified"; }
+                if($ProductionProcess['expected_end']=="0000-00-00"
+                || $ProductionProcess['expected_end']==null) { $expected_end = "<font style='color:red'>Not specified</font>"; }
                 else { $expected_end = $expected_end_tmp; }
                 
-                if($ProductionProcess['start_work']==null) { $start = "Date is not specified"; }
+                if($ProductionProcess['start_work']=="0000-00-00"
+                || $ProductionProcess['start_work']==null) { $start = "<font style='color:red'>Not specified</font>"; }
                 else { $start = $start_tmp; }
                 
-                if($ProductionProcess['end_work']==null) { $end = "Date is not specified"; }
+                if($ProductionProcess['end_work']=="0000-00-00"
+                || $ProductionProcess['end_work']==null) { $end = "<font style='color:red'>Not specified</font>"; }
                 else { $end = $end_tmp; }
                 
         ?>
@@ -87,29 +77,39 @@
                     </div>
                     <div class="col-lg-6">
                         <p>Target Delivery: <?php echo $target_delivery; ?></p>
-                        <p>Designer: <?php echo $designer_name; ?></p>
+                        <p><?php //echo $designer; ?></p>
                     </div>
                 </div>
                 
                 <?php
                 if(!empty($QuotationProductProperty)) {
                 ?>
-                <div style="margin-top:40px;">
+                <div class="col-lg-6" style="margin-top:40px;">
                     <p style="font-weight:bold;">Product Property</p>
                     <?php
+                    echo '<ul class="list-group">';
                     foreach($QuotationProductProperty as $qprod_prop_obj) {
+                        $qp = $qprod_prop_obj['QuotationProduct'];
                         $qprod_prop = $qprod_prop_obj['QuotationProductProperty'];
                         $prop = ucwords($qprod_prop['property']);
                         $val = ucwords($qprod_prop['value']);
-                    ?>
-                        <div class="col-lg-6">
-                            <?php echo $prop; ?>
-                        </div>
-                        <div class="col-lg-6">
-                            <?php echo $val; ?>
-                        </div>
-                    <?php
+                        $other_info = $qp['other_info'];
+                        echo '<li class="list-group-item">'.$prop.': '.$val.'</li>';
                     }
+                    echo '<li class="list-group-item">'.$QuotationProductProperty[0]['QuotationProduct']['other_info'].'</li></ul>';
+                    ?>
+                </div>
+                
+                <div class="col-lg-6" style="margin-top:40px;">
+                    <p style="font-weight:bold;">Designers</p>
+                    <?php
+                    $designer_name = [];
+                    $JobRequestAssignments = $production['JobRequestProduct']['JobRequestAssignment'];
+                    foreach($JobRequestAssignments as $JobRequestAssignment) {
+                        $designer_name[] = $JobRequestAssignment['designer_name'];
+                    }
+                    
+                    echo '<ul class="list-group"><li class="list-group-item">'.implode(array_unique($designer_name)).'</li></ul>';
                     ?>
                 </div>
                 <?php
@@ -123,7 +123,6 @@
                 <p style="font-weight:bold;">Processes</p>
                 <div class="col-lg-12">
                     <div class="col-lg-6">
-                        <p><?php echo $ProductionSection_name; ?></p>
                         <div class="col-lg-12" style="margin-top:20px;">
                             <p>Expected Start: <?php echo $expected_start; ?></p>
                             <p>Actual Start: <?php echo $start; ?></p>
@@ -150,62 +149,103 @@
                 </div>
                 
                 <div class="col-lg-12" style="margin-top:20px;">
-                    <p style="font-weight:bold;"><span class="fa fa-circle"></span> Workers </p>
-                    
                     <?php
-                    $count = 0;
-                    foreach($ProductionCarpenter as $carpenters) {
-                            $count++;
-			                $carpenter = $carpenters['ProductionCarpenter'];
-			                $carpenter_id = $carpenter['id'];
-			                $user = $carpenters['User'];
-			                $carpenter_name = ucwords($user['first_name']." ".$user['last_name']);
-			                $carpenter_qty = $carpenter['qty_assigned'];
-			                $carpstatus = ucwords($carpenter['status']);
-                    ?>
-                    <p>
-                        <?php
-                        echo "( ".$count." ) ".$carpenter_name." - ".
-                             $carpenter_qty."&nbsp;&nbsp;";
-                        
-                        if($carpstatus=="Pending") {
-                            echo '<button class="btn btn-info btn-xs" id="btn_start"
-                                   value="'.$carpenter_id.'">Start</button>';
-                        }
-                        else if($carpstatus=="Ongoing") {
-                            echo '<button class="btn btn-danger btn-xs"
-                                   id="btn_accomplish"
-                                   value="'.$carpenter_id.'">Accomplish</button>';
-                        }
-                        
-                        if($carpstatus!="Accomplished") { ?>
-                            <button class="btn btn-xs btn-danger"
-                                id="btn_del_section_head"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                title="Delete"
-                                value="<?php echo $carpenter_id; ?>">
-                                <span class="fa fa-close"></span>
-                            </button>
-                        <?php } ?>
-                    </p>
-                    <?php
+                    if(!empty($ProductionCarpenter)) {
+                        echo '<p style="font-weight:bold;"><span class="fa fa-circle"></span> Workers </p>';
                     }
                     ?>
+                    <p>
+                        <table class="table table-striped table-bordered"
+                               width="100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Worker</th>
+                                    <th>Quantity</th>
+                                    <th>Date Started</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $count = 0;
+                                foreach($ProductionCarpenter as $carpenters) {
+                                        $count++;
+            			                $carpenter = $carpenters['ProductionCarpenter'];
+            			                $ProductionLog = $carpenters['ProductionLog'];
+            			                $started = "<font class='text-danger'>Not yet started.</font>";
+            			                $ended = "<font class='text-danger'>Work ongoing.</font>";
+            			                foreach($ProductionLog as $eachProductionLog) {
+                			                $production_carpenter = $eachProductionLog['type'];
+                			                $status = $eachProductionLog['status'];
+                			                $created = $eachProductionLog['created'];
+                			                
+                			                if($production_carpenter == "production_carpenter") {
+                			                    if($status == "ongoing") {
+                			                        $started = "Date Started: ".time_elapsed_string($created);
+                			                    }
+                			                    if($status == "accomplished") {
+                			                        $ended = "Date Ended: ".time_elapsed_string($created);
+                			                    }
+                			                }
+            			                }
+            			                $carpenter_id = $carpenter['id'];
+            			                $user = $carpenters['User'];
+            			                $carpenter_name = ucwords($user['first_name']." ".$user['last_name']);
+            			                $carpenter_qty = $carpenter['qty_assigned'];
+            			                $carpstatus = ucwords($carpenter['status']); ?>
+                                <tr>
+                                    <td><?php echo $count; ?></td>
+                                    <td><?php echo $carpenter_name; ?></td>
+                                    <td><?php echo $carpenter_qty; ?></td>
+                                    <td><?php echo $started; ?></td>
+                                    <td>
+                                    <?php
+                                        if($carpstatus=="Pending") {
+                                            echo '<button class="btn btn-info btn-sm" id="btn_start"
+                                                   value="'.$carpenter_id.'">Start</button>';
+                                        }
+                                        else if($carpstatus=="Ongoing") {
+                                            echo '<button class="btn btn-danger btn-sm"
+                                                   id="btn_accomplish"
+                                                   value="'.$carpenter_id.'">Accomplish</button>';
+                                        }
+                                        
+                                        if($carpstatus!="Accomplished") { ?>
+                                            <button class="btn btn-sm btn-danger"
+                                                id="btn_del_section_head"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="Delete"
+                                                value="<?php echo $carpenter_id; ?>">
+                                                <span class="fa fa-close"></span>
+                                            </button>
+                                        <?php }
+                                        else { echo $ended; }?>
+                                    </td>
+                                </tr>
+                                <?php
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </p>
                 </div>
             </div>
         </div>
         
         <div class="panel">
             <div class="panel-body" align="center">
-                <button class="btn btn-info"
-                        id="btn_attached_docs">
-                    Attached Documents
-                </button>
-                <button class="btn btn-primary"
-                        id="btn_materials">
+                <!--<button class="btn btn-info"-->
+                <!--        id="btn_attached_docs">-->
+                <!--    Attached Documents-->
+                <!--</button>-->
+                <a
+                    type="button"
+                    class="btn btn-primary"
+                    href="/purchase_orders/design_raw_mats?type=jrp&&id=<?php echo $jrprodid; ?>">
                     Materials
-                </button>
+                </a>
             </div>
         </div>
         <?php
@@ -266,14 +306,14 @@
 			  <button data-dismiss="modal" class="btn btn-default"
 			    type="button">Close</button>
 			  <button class="btn btn-primary" id="btn_send_add_worker">Add</button>
-			  <!--add data to procduction carpenter where status  == pending with logs-->
-			  <!--uppdate production process.status to ongoing with logs-->
+			  <!--add data to production carpenter where status  == pending with logs-->
+			  <!--update production process.status to ongoing with logs-->
 			</div>
 		</div>
 	</div>
 </div>
 <!--===================================================-->
-<!--Update Details Modal End-->
+<!--Add Worker Modal End-->
 
 <!--JAVASCRIPT FUNCTIONS-->
 <script>
@@ -303,15 +343,12 @@ $(document).ready(function() {
         var production_process_id = "<?php echo $production_process_id; ?>";
         var production_id = "<?php echo $production_id; ?>";
         
-        if(select_worker.val()!="Select Worker" ||
-           select_worker.val()!="" ||
-           select_worker.val()!=null) {
+        if(select_worker.val()!="Select Worker") {
             if(input_qty_assigned.val()!="") {
                 var data = {'production_process_id':production_process_id,
                             'user_id':select_worker.val(),
                             'qty_assigned':input_qty_assigned.val(),
-                            'production_id':production_id
-                            };
+                            'production_id':production_id};
                 $.ajax({
                     url: '/production_processes/add_worker',
                     type: 'POST',
@@ -323,6 +360,12 @@ $(document).ready(function() {
 					},
 					error: function(err) {
 						console.log("AJAX error: " + JSON.stringify(err, null, 2));
+					
+					    swal({
+                            title: "Oops!",
+                            text: "Error in Adding Worker.",
+                            type: "warning"
+                        });
 					}
                 });
             }  
@@ -331,13 +374,10 @@ $(document).ready(function() {
             }
        }
        else {
-           swal({
+            swal({
                 title: "Cannot be empty!",
                 text: "Please Select Worker.",
-                type: "warning",
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Okay",
-                closeOnConfirm: false,
+                type: "warning"
             });
        }
     });
@@ -367,7 +407,7 @@ $(document).ready(function() {
         });
     });
     
-    $("#btn_start").on('click', function() {
+    $("button#btn_start").on('click', function() {
         var carp_id = $(this).val();
         var production_process_id = "<?php echo $production_process_id; ?>";
         var production_id = "<?php echo $production_id; ?>";
@@ -409,7 +449,7 @@ $(document).ready(function() {
         });
     });
     
-    $("#btn_accomplish").on('click', function() {
+    $("button#btn_accomplish").on('click', function() {
         var carp_id = $(this).val();
         var production_process_id = "<?php echo $production_process_id; ?>";
         var production_id = "<?php echo $production_id; ?>";
@@ -442,7 +482,11 @@ $(document).ready(function() {
 						location.reload();
 					},
 					error: function(err) {
-						console.log("AJAX error: " + JSON.stringify(err, null, 2));
+						swal({
+                            title: "Oops!",
+                            text: "There was an error in accomplishment!",
+                            type: "warning",
+    					});
 					}
                 });
             } else {
@@ -451,9 +495,9 @@ $(document).ready(function() {
         });
     });
     
-    $("#btn_attached_docs, #btn_materials").on('click', function() {
-        var id = "<?php echo $jrprodid; ?>";
-       window.location = "http://crm-epr-ronalynjecams.c9users.io/job_requests/designer_upload?id="+id; 
-    });
+    // $("#btn_attached_docs, #btn_materials").on('click', function() {
+    //     var id = "<?php //echo $jrprodid; ?>";
+    //   window.location = "/job_requests/designer_upload?id="+id; 
+    // });
 });
 </script>

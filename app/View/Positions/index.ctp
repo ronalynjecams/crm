@@ -46,8 +46,8 @@
 					<tr>
 						<td><?php echo h($position['Position']['id']); ?>&nbsp;</td>
 						<td><?php echo h($position['Position']['name']); ?>&nbsp;</td>
-						<td><?php echo h($position['Position']['created']); ?>&nbsp;</td>
-						<td><?php echo h($position['Position']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($position['Position']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($position['Position']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $position['Position']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $position['Position']['id']), array('escape' => false)); ?>

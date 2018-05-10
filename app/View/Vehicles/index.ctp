@@ -48,8 +48,8 @@
 						<td><?php echo h($vehicle['Vehicle']['plate_number']); ?>&nbsp;</td>
 						<td><?php echo h($vehicle['Vehicle']['brand']); ?>&nbsp;</td>
 						<td><?php echo h($vehicle['Vehicle']['type']); ?>&nbsp;</td>
-						<td><?php echo h($vehicle['Vehicle']['created']); ?>&nbsp;</td>
-						<td><?php echo h($vehicle['Vehicle']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($vehicle['Vehicle']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($vehicle['Vehicle']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $vehicle['Vehicle']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $vehicle['Vehicle']['id']), array('escape' => false)); ?>

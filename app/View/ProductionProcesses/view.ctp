@@ -69,14 +69,14 @@
 <tr>
 		<th><?php echo __('Start Work'); ?></th>
 		<td>
-			<?php echo h($productionProcess['ProductionProcess']['start_work']); ?>
+			<?php echo time_elapsed_string($productionProcess['ProductionProcess']['start_work']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('End Work'); ?></th>
 		<td>
-			<?php echo h($productionProcess['ProductionProcess']['end_work']); ?>
+			<?php echo time_elapsed_string($productionProcess['ProductionProcess']['end_work']); ?>
 			&nbsp;
 		</td>
 </tr>

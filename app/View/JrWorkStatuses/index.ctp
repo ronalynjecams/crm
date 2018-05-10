@@ -47,8 +47,8 @@
 						<td><?php echo h($jrWorkStatus['JrWorkStatus']['id']); ?>&nbsp;</td>
 						<td><?php echo h($jrWorkStatus['JrWorkStatus']['status']); ?>&nbsp;</td>
 						<td><?php echo h($jrWorkStatus['JrWorkStatus']['minutes']); ?>&nbsp;</td>
-						<td><?php echo h($jrWorkStatus['JrWorkStatus']['created']); ?>&nbsp;</td>
-						<td><?php echo h($jrWorkStatus['JrWorkStatus']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrWorkStatus['JrWorkStatus']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($jrWorkStatus['JrWorkStatus']['modified']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($jrWorkStatus['JrProduct']['id'], array('controller' => 'jr_products', 'action' => 'view', $jrWorkStatus['JrProduct']['id'])); ?>
 		</td>

@@ -1,10 +1,10 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
 <div id="content-container">
     <div id="page-title">
@@ -17,7 +17,7 @@
         <div class="panel">
             <div class="panel-body">
                 <?php 
-                if ($dept_of_authuser == "Proprietor") { ?>
+                if ($dept_of_authuser == "Proprietor" || $userRole == "purchasing_supervisor") { ?>
                 <div rowspan="2">
                 <select class="form-control" id="select_purchasing_dept">
                     <option>Select Purchasing Department</option>
@@ -35,67 +35,48 @@
                 <div class="table-responsive">
                     <table id="example"
                            class="table table-striped table-bordered"
-					       cellspacing="0" width="100%"
-    					   data-sort-name="no_pur" data-sort-order="asc">
+					       cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                                <!--<th>#</th>-->
                                 <th>Product</th>
-                                <th>Description</th>
                                 <th data-field="no_pur" data-sortable="true">Number of times Purchased</th>
+                                <th>Grand Total</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="here">
                             <?php
-                                $count = 0;
+                            // echo pr($unique_array_of_products);
+                            foreach($get_product as $ret_product) {
+                                $product_obj = $ret_product['Product'];
+                                $product_id = $product_obj['id'];
+                                $product_name = '<font class="text-danger">Unknown</font>';
+                                if($unique_array_of_products[$product_id]['name']!="") {
+                                    $product_name = $unique_array_of_products[$product_id]['name'];
+                                }
+                                $count = $unique_array_of_products[$product_id]['count'];
+                                $grand_total = "&#8369; ".number_format((float)$unique_array_of_products[$product_id]['grand_total'], 2, '.', ',');
                                 
-                                foreach ($products as $product) {
-                                $count++;
-                                $pc_id = 0;
-                                $product_name = $product['Product']['name'];
-                                $product_id = $product['Product']['id'];
+                                echo '<tr>';
+                                echo '<td>'.$product_name.'</td>';
+                                echo '<td>'.$count.'</td>';
+                                echo '<td align="right">'.$grand_total.'</td>';
                                 ?>
-                                <tr>
-                                    <!--<td><?php //echo $count; ?></td>-->
-                                    <td><?php echo $product_name.' <div class="ordering"></div>'; ?></td>
-                                    <?php
-                                        if(!empty($product_combos[$product_id])) {
-                                            foreach($product_combos[$product_id] as $product_combo) {
-                                                $pc_id = $product_combo['ProductCombo']['id'];
-                                                $ordering = $product_combo['ProductCombo']['ordering'];
-                                                $desc = [];
-                                                foreach($product_combo['ProductComboProperty'] as $product_combo_prop) {
-                                                    $product_combo_prop_prop = $product_combo_prop['property'];
-                                                    $product_combo_prop_val = $product_combo_prop['value'];
-                                                    $desc[] = "<font style='font-weight:bold'>".ucwords($product_combo_prop_prop)."</font>".' : '.ucwords($product_combo_prop_val);
-                                                }
-                                            }
-                                        }
-                                        
-                                        if(empty($po_counts[$product_id][$pc_id])) {
-                                            $c = 0;
-                                        }
-                                        else {
-                                            $c = count($po_counts[$product_id][$pc_id]);
-                                        }
-                                        
-                                        echo '<td>';
-                                        if(!empty($desc)) {
-                                            for($i=0;$i<count($desc);$i++) {
-                                                if($desc[$i]!="") {
-                                                    echo "<p>".$desc[$i]."</p>";
-                                                }
-                                            }
-                                        }
-                                        else {
-                                            echo 'No Data';
-                                        }
-                                        echo '</td>';
-                                        
-                                        echo '<td>'.$c.'</td>';
-                                    ?>
-                                </tr>
-                            <?php } ?>
+                                <td>
+                                    <a target="_blank" href="/purchase_order_products/ordered_history?id=<?php echo $product_id; ?>"
+                                       style="color:white">
+                                        <button class="btn btn-primary"
+                                            data-toggle="tooltip"
+                                            date-placement="left"
+                                            title="View Ordered History">
+                                            <span class="fa fa-eye"></span>
+                                        </button>
+                                    </a>
+                                </td>
+                                <?php
+                                echo '</tr>';
+                            }
+                            ?>
                         </tbody>
                     </table>
                 </div>
@@ -110,7 +91,7 @@
         $('#example').DataTable({
             "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
             "orderable": true,
-            "order": [[2,"desc"]],
+            "order": [[1,"desc"]],
             "stateSave": false
         });
         

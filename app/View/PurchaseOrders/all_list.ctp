@@ -1,18 +1,36 @@
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<!--<link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">-->
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
 
 <!--SWEET ALERT-->
-<link href="../css/sweetalert.css" rel="stylesheet">
-<script src="../js/sweetalert.min.js"></script>
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script>
+
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        height: 150,
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -45,58 +63,80 @@
                         <tr>
                             <th>Date Created</th>
                             <th>Supplier</th>
-                            <th>PO Number</th> 
-                            <th> </th> 
+                            <th>Requested Amount / PO Amount</th>
+                            <th>PO Number</th>  
+                            <th>Action</th> 
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th>Date Created</th>
                             <th>Supplier</th>
+                            <th>Requested Amount / PO Amount</th>
                             <th>PO Number</th> 
-                            <th> </th> 
+                            <th>Action</th> 
                         </tr>
                     </tfoot>
                     <tbody>
                         <?php foreach ($pendings as $pending) { ?> 
                             <tr>
-                                <td>
+                                <td data-order="<?php echo $pending['PurchaseOrder']['created']; ?>">
                                     <?php
-                                    echo date('F d, Y', strtotime($pending['PurchaseOrder']['created']));
+                                    echo time_elapsed_string($pending['PurchaseOrder']['created']);
                                     echo '<br/><small>' . date('h:i a', strtotime($pending['PurchaseOrder']['created'])) . '</small>';
                                     ?>
                                 </td>
                                 <td>
                                     <?php echo $pending['Supplier']['code']; ?>
+                                    <br/>
+                                    <small>[<?php echo $pending['Supplier']['type']; ?>]</small>
+                                </td>
+                                <td>
+                                    <?php
+                                        echo "&#8369; ".number_format((float)$pending['PurchaseOrder']['payment_request'], 2, '.', ',').
+                                             " / &#8369; ".number_format((float)$pending['PurchaseOrder']['grand_total'], 2, '.', ',');
+                                    ?>
                                 </td>
                                 <td>
                                     <?php echo $pending['PurchaseOrder']['po_number']; ?>
                                 </td> 
-                                <td> 
+                                <td>
                                     <?php
                                     if ($type == 'supply') {
                                         // echo 'request payment';
                                         // echo 'print po';
                                         // echo 'set schedule';
-                                        if ($pending['PurchaseOrder']['status'] == 'ongoing') {
-                                            echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="Update Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
+                                        if ($pending['PurchaseOrder']['status'] == 'ongoing') { 
+                                            echo '<a class="btn btn-mint btn-sm btn-icon add-tooltip " target="_blank" data-toggle="tooltip" href="/purchase_orders/po_product?id=' . $pending['PurchaseOrder']['id'] . '" data-original-title="Update Purchase Order"><i class="demo-psi-pen-5 icon-lg"></i></a>';
                                         } else {
-                                            echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="View Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="fa fa-eye"></i></a>';
+                                            echo '<a class="btn btn-info btn-sm btn-icon add-tooltip " target="_blank" data-toggle="tooltip" href="/purchase_orders/view_po?id=' . $pending['PurchaseOrder']['id'] . '" data-original-title="View Purchase Order"  ><span class="fa fa-eye"></span></a>';
+                                           // echo '<a class="btn btn-mint btn-icon add-tooltip " data-toggle="tooltip" href="#" data-original-title="View Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="fa fa-eye"></i></a>';
                                         }
                                     } else if ($type == 'raw') {
                                         if ($pending['PurchaseOrder']['status'] == 'ongoing') {
-                                            echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="Update Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
+                                              echo '<a class="btn btn-mint btn-sm btn-icon add-tooltip " target="_blank" data-toggle="tooltip" href="/purchase_orders/po_product?id=' . $pending['PurchaseOrder']['id'] . '" data-original-title="Update Purchase Order"><span class="fa fa-edit"></span></a>';
+                                          // echo '<a class="btn btn-mint btn-icon add-tooltip " data-toggle="tooltip" href="#" data-original-title="Update Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="demo-psi-pen-5 icon-lg"></i></a>';
                                         } else {
-                                            echo '<a class="btn btn-mint btn-icon add-tooltip updatePOBtn" data-toggle="tooltip" href="#" data-original-title="View Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="fa fa-eye"></i></a>';
+                                            echo '<a class="btn btn-info btn-sm btn-icon add-tooltip " target="_blank" data-toggle="tooltip" href="/purchase_orders/view_po?id=' . $pending['PurchaseOrder']['id'] . '" data-original-title="View Purchase Order"  ><span class="fa fa-eye"></span></a>';
+                                            //echo '<a class="btn btn-mint btn-icon add-tooltip " data-toggle="tooltip"  href="/purchase_orders/view_po?id=' . $pending['PurchaseOrder']['id'] . '" data-original-title="View Purchase Order" data-id="' . $pending['PurchaseOrder']['id'] . '" ><i class="fa fa-eye"></i></a>';
                                         }
+                                    }else{
+                                        echo '<a class="btn btn-info btn-icon btn-sm add-tooltip " target="_blank" data-toggle="tooltip" href="/purchase_orders/view_po?id=' . $pending['PurchaseOrder']['id'] . '" data-original-title="View Purchase Order"  ><span class="fa fa-eye"></span></a>';
                                     }
                                     
+                                    if ($pending['PurchaseOrder']['status'] != 'ongoing') {
+                                        echo '<button class="btn btn-primary btn-sm btn-icon add-tooltip print_po" data-toggle="tooltip"  data-original-title="Print Purchase Order?" data-printpoid="'.$pending['PurchaseOrder']['id'].'"><span class="fa fa-print"></span> </button>';
+                                    }
                                     
-                                        if ($pending['PurchaseOrder']['status'] != 'ongoing') {
-                                    ?>
-                                    <button class="btn btn-primary btn-icon add-tooltip print_po" data-toggle="tooltip"  data-original-title="Print Purchase Order?" data-printpoid="<?php echo $pending['PurchaseOrder']['id']; ?>"><i class="fa fa-print"></i> </button>
-                                        <?php }
-                                    ?>
+                                    if($pending['PurchaseOrder']['payment_request']==0 || $pending['PurchaseOrder']['payment_request']==null ||
+                                       $pending['PurchaseOrder']['payment_request']=="") {
+                                        echo '
+                                        <button class="btn btn-danger btn-sm btn-icon add-tooltip" data-toggle="tooltip"  data-original-title="Cancel P.O."
+                                                id="btn_cancel_po"
+                                                data-poid="'.$pending['PurchaseOrder']['id'].'">
+                                            <span class="fa fa-ban"></span>
+                                        </button>';
+                                   } ?>
                                 </td> 
                             </tr> 
                         <?php } ?>
@@ -224,9 +264,32 @@
                             <input type="hidden"  id="supplier_product_id"  >
                         </div>
                     </div>
+                    <div class="col-sm-12"id="last_price"></div>
                     <div class="col-sm-12"id="last_supplier"></div>
-                    <div class="col-sm-6"id="rqrd_fld"></div>
 
+                    <!--MAE's MODIFICATION-->
+                    <div class="col-sm-12">
+                        <select class="form-control" id="select_client">
+                            <option>---- Select Client ----</option>
+                            <?php
+                            foreach($get_clients as $ret_clients) {
+                                $client_obj = $ret_clients['Client'];
+                                $client_id = $client_obj['id'];
+                                $name = $client_obj['name'];
+                                
+                                if($name!="") {
+                                    echo '
+                                    <option value="'.$client_id.'">'.$name.'</option>
+                                    ';
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <!--END OF MODIFICATION-->
+                    
+                    <div class="col-sm-6"id="rqrd_fld"></div>
+                    
                     <div class="col-sm-12">
                         <div id="product_combo_properties_div">
                             <h4 align="center">Product Description</h4>
@@ -246,12 +309,40 @@
         </div>
     </div>
 </div> 
-
 <!--CREATE PURCHASE ORDER MODAL END-->
+
+<!--CANCEL PO MODAL STARTS HERE-->
+<div class="modal fade" id="cancel-po-modal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Cancel Purchase Order</h4>
+            </div>
+            <div class="modal-body">
+                <label>Reason for cancellation <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="textarea_cancel_reason" aria-label="Other Info"></textarea>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="send_cancel_po">Submit</button>
+            </div>
+        </div>
+    </div>
+</div> 
+<!--CANCEL PO MODAL ENDS HERE-->
 <script>
     $(document).ready(function () { 
         $('[data-toggle="tooltip"]').tooltip();
-
+        $("#select_client").select2({
+            placeholder: "---- Select Client ----",
+            width: '100%',
+            allowClear: false
+        });
         $("#slctd_prdct").select2({
             placeholder: "Select Product Code",
             width: '100%',
@@ -275,7 +366,7 @@
 
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
-            "order": [[0, "asc"]],
+            "order": [[0, "desc"]],
             "stateSave": true
         }); 
         $('.print_po').each(function (index) {
@@ -284,13 +375,45 @@
                 window.open("/pdfs/print_po?id=" + qid, '_blank'); 
             });
         });
-
-
-        $('.updatePOBtn').each(function (index) {
-            $(this).click(function () {
-                var id = $(this).data("id");
-                window.open("/purchase_orders/po_product?id=" + id, '_blank');
-            });
+        
+        var clicked_po_id = 0;
+        $("button#btn_cancel_po").on('click', function() {
+            clicked_po_id = $(this).data('poid');
+            $("#cancel-po-modal").modal('show');
+        });
+        
+        $("button#send_cancel_po").on('click', function() {
+            var textarea_cancel_reason = tinymce.get('textarea_cancel_reason').getContent();
+            if(textarea_cancel_reason!="") {
+                $("button#send_cancel_po").prop('disabled', true);
+                var data = {"poid": clicked_po_id, 
+                            "reason": textarea_cancel_reason};
+                $.ajax({
+                    url: "/purchase_orders/cancel_po",
+                    type: "POST",
+                    data: {"data": data},
+                    dataType: "text",
+                    success: function(success) {
+                        console.log(success);
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        swal({
+                            title: "Oops!",
+                            text: "An error occured. Please try again later.",
+                            type: "warning"
+                        });
+                    }
+                });
+            }
+            else {
+                swal({
+                    title: "Oops!",
+                    text: "Reason for cancellation is required.\n Please add reason and try again.",
+                    type: "warning"
+                });
+            }
         });
     });
     
@@ -343,22 +466,31 @@
 
                         //GET LAST PURCHASED SUPPLIER
                         $.get('/supplier_products/get_po_product_last_supplier', {
-                            id: selected_product_id,
+                            id: selected_product_combo_id,
                         }, function (data) {
                             $("#added_last_supplier").remove();
-                            $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data[0]['PurchaseOrder']['Supplier']['name'] + '  [<small>' + data[0]['PurchaseOrder']['created'] + '</small>]</div>')
+                            $("#added_last_price").remove();
+                            if($.isEmptyObject(data['PurchaseOrderProduct'])!=true) {
+                                if(data['PurchaseOrderProduct']['list_price']!=null) {
+                                    var price = data['PurchaseOrderProduct']['list_price'];
+                                    $('#last_supplier').append('<div id="added_last_price" class="text-primary"> Last Purchased Price:  &#8369;'+ price + ' </div>');
+                                }
+                            }
+                            if(data['Supplier']!=null) {
+                                $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data['Supplier']['name'] + '  [<small>' + data['created'] + '</small>]</div>');
+                            }
                         }); //end of ajax get /supplier_products/get_po_product_last_supplier
 
-                        $.get('/supplier_products/get_supplier_product_combo', {
-                            id: selected_product_id,
-                        }, function (data) {
-                            for (i = 0; i < data.length; i++) {
-                                $('#slctd_prdctcombo').append($('<option>', {
-                                    value: data[i]['ProductCombo']['id'],
-                                    text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
-                                }));
-                            }
-                        }); //end of ajax get /supplier_products/get_product_combination
+                        // $.get('/supplier_products/get_supplier_product_combo', {
+                        //     id: selected_product_id,
+                        // }, function (data) {
+                        //     for (i = 0; i < data.length; i++) {
+                        //         $('#slctd_prdctcombo').append($('<option>', {
+                        //             value: data[i]['ProductCombo']['id'],
+                        //             text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
+                        //         }));
+                        //     }
+                        // }); //end of ajax get /supplier_products/get_product_combination
 
                         $('#slctd_prdct_supplier').empty().append('<option></option>');
                         $('.added_product_combo_properties_div').each(function (index) {
@@ -367,17 +499,44 @@
                         $.get('/supplier_products/get_supplier_product_combo', {
                             id: selected_product_combo_id,
                         }, function (data) {
-                            $('.added_product_combo_properties_div').each(function (index) {
-                                $(".added_product_combo_properties_div").remove();
-                            });
+                            // $('.added_product_combo_properties_div').each(function (index) {
+                            //     $(".added_product_combo_properties_div").remove();
+                            // });
                             $('#slctd_prdct_supplier').empty().append('<option></option>');
                             for (i = 0; i < data.length; i++) {
                                 $('#slctd_prdct_supplier').append($('<option>', {
                                     value: data[i]['Supplier']['id'],
                                     text: data[i]['Supplier']['name']
                                 }));
-                                $('#list_price').val(data[i]['ProductCombo']['SupplierProduct'][0]['supplier_price']);
+                                // $('#list_price').val(data[i]['ProductCombo']['SupplierProduct'][0]['supplier_price']);
                                 $('#supplier_product_id').val(data[i]['ProductCombo']['SupplierProduct'][0]['id']);
+                                // var prod_combo_property = data[i]['ProductCombo']['ProductComboProperty'];
+
+                                // for (v = 0; v < prod_combo_property.length; v++) {
+                                //     $('#product_combo_properties_div').append('<div class="col-sm-12 added_product_combo_properties_div">' +
+                                //             '<div class="col-sm-6" align="center">' + prod_combo_property[v]['property'] + '</div>' +
+                                //             '<div class="col-sm-6" align="center">' + prod_combo_property[v]['value'] + '</div></div>');
+                                // }
+                            }
+                        }); //end of ajax get /supplier_products/get_supplier_product_combo 
+                    }); //end of onchange slctd_prdctcombo 
+                }); // end of onchange slctd_prdct 
+            }); //end of each po_product_btn
+        // });
+      ////in here get products for selected profct combo
+                    $("#slctd_prdct_supplier").change(function () {
+                        var selected_pcid = $("#slctd_prdctcombo").val();
+                        var slctd_prdct_supplier_id = $("#slctd_prdct_supplier").val();
+                        $.get('/supplier_products/get_prodct_supplier', {
+                            id: selected_pcid,
+                            supplier_id:slctd_prdct_supplier_id
+                        }, function (data) {
+                            $('.added_product_combo_properties_div').each(function (index) {
+                                $(".added_product_combo_properties_div").remove();
+                            }); 
+                            for (i = 0; i < data.length; i++) { 
+                            console.log(data[i]['ProductCombo']['ProductComboProperty']);
+                                $('#list_price').val(data[i]['SupplierProduct']['supplier_price']); 
                                 var prod_combo_property = data[i]['ProductCombo']['ProductComboProperty'];
 
                                 for (v = 0; v < prod_combo_property.length; v++) {
@@ -387,11 +546,8 @@
                                 }
                             }
                         }); //end of ajax get /supplier_products/get_supplier_product_combo 
-                    }); //end of onchange slctd_prdctcombo 
-                }); // end of onchange slctd_prdct 
-            }); //end of each po_product_btn
-        // });
-    
+                    });
+
     
 
 ///SAVE PURCHASE ORDER PRODUCT
@@ -404,43 +560,47 @@
             var po_qty = $("#po_qty").val();
             var list_price = $("#list_price").val();
             var supplier_product_id = $("#supplier_product_id").val();
-
+            var client = $("#select_client").val();
 
             if (product_id != "") {
                 if (product_combo_id != "") {
                     if (supplier_id != "") {
                         if (po_qty != "" && po_qty != 0 && po_qty >= 1) {
-                            if (list_price != "" && list_price != 0 && list_price >= 1) {
+                            if (list_price != "") {
                                 $('#added_rqrd_fld').remove();
-                                var data = {
-                                    "product_combo_id": product_combo_id,
-                                    "product_id": product_id,
-                                    "supplier_id": supplier_id,
-                                    "quote_product_id": 0,
-                                    "po_qty": po_qty,
-                                    "list_price": list_price,
-                                    "additional": 2,
-                                    "supplier_product_id": supplier_product_id,
-                                    "inventory_job_order_type": 'po',
-                                    "po_raw_request_id":0,
-                                    "po_raw_request_qty":0
-                                    
-                                }
-                                $.ajax({
-                                    url: "/purchase_orders/process_new_po",
-                                    type: 'POST',
-                                    data: {'data': data},
-                                    dataType: 'json',
-                                    success: function (dd) {
-                                        // location.reload();
-//                    console.log(dd);
-                                    },
-                                    error: function (dd) {
-                                        // console.log('error' + dd);
-                                        
-                                        // location.reload();
+                                if(client!="---- Select Client ----") {
+                                    var data = {
+                                        "product_combo_id": product_combo_id,
+                                        "product_id": product_id,
+                                        "supplier_id": supplier_id,
+                                        "quote_product_id": 0,
+                                        "po_qty": po_qty,
+                                        "list_price": list_price,
+                                        "additional": 2,
+                                        "supplier_product_id": supplier_product_id,
+                                        "inventory_job_order_type": 'po',
+                                        "po_raw_request_id":0,
+                                        "po_raw_request_qty":0,
+                                        "client": client
                                     }
-                                });
+                                    $.ajax({
+                                        url: "/purchase_orders/process_new_po",
+                                        type: 'POST',
+                                        data: {'data': data},
+                                        dataType: 'text',
+                                        success: function (dd) {
+                                            location.reload();
+                                            // console.log(dd);
+                                        },
+                                        error: function (dd) {
+                                            // console.log('error' + dd);
+                                            location.reload();
+                                        }
+                                    });
+                                }
+                                else {
+                                    $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Client is required</font></div>');
+                                }
                             } else {
                                 $('#rqrd_fld').append('<div id="added_rqrd_fld"><font color="red">Price is required</font></div>')
                             }
@@ -616,4 +776,6 @@
 //         });
 
 //     });
+
+
 </script>

@@ -25,8 +25,7 @@
 			</div><!-- end actions -->
 		</div><!-- end col md 3 -->
 
-		<div class="col-md-9">	
-		<div class="table-responsive">
+		<div class="col-md-9">			
 			<table cellpadding="0" cellspacing="0" class="table table-striped">
 				<tbody>
 				<tr>
@@ -40,6 +39,13 @@
 		<th><?php echo __('Name'); ?></th>
 		<td>
 			<?php echo h($unit['Unit']['name']); ?>
+			&nbsp;
+		</td>
+</tr>
+<tr>
+		<th><?php echo __('Abbreviation'); ?></th>
+		<td>
+			<?php echo h($unit['Unit']['abbreviation']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -59,7 +65,7 @@
 </tr>
 				</tbody>
 			</table>
-			</div>
+
 		</div><!-- end col md 9 -->
 
 	</div>

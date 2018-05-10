@@ -362,13 +362,10 @@ class FitoutWorksController extends AppController {
 
 	public function view_works() {
 		
-		$this->loadModel('FitoutWork');
-    	$this->loadModel('Client');
     	$this->loadModel('User');
     	$this->loadModel('DeliverySchedule');
     	$this->loadModel('FitoutPerson');
     	$this->loadModel('FitoutTodo');
-    	$this->loadModel('FitoutQoute');
     	$this->loadModel('JrProduct');
     	$this->loadModel('JobRequest');
     	$this->loadModel('Quotation');
@@ -376,108 +373,59 @@ class FitoutWorksController extends AppController {
 		$this->loadModel('DeliveryPaper');   
     		
     	$fitout_work_id = $this->params['url']['id'];
-    	$this->FitoutWork->recursive=4;
+    	// $this->FitoutWork->recursive=2;
     	$works = $this->FitoutWork->findById($fitout_work_id);
-    	
-    	//now get all quotation on fitout quote to get all quotations na selected for this fitout work
-    
     	
     	$arr = [];
     	foreach($works['FitoutQoute'] as $work){
     		array_push($arr, $work['quotation_id']);
-    		// pr($arr);
     	}
 
     	
-    	$this->Quotation->recursive=4; 
+    	// $this->Quotation->recursive=2; 
     	$selected_quotations = $this->JobRequest->Quotation->find('all',[
     		'conditions'=>['Quotation.id'=>$arr]]);
-    		//based sa query ng $selected_quotations makukuha mo na designers and name ng sales agent
-    		
-    		//since hirap  na tayo na kuhanin ang jrproduct and mabagal kapag deep recursive na pwede natin gawin na ganito
-    		
     	$jr_arr = [];
     	foreach($selected_quotations as $sel_quote){ 
     		if(!in_array($sel_quote['JobRequest']['id'], $jr_arr)){
     		array_push($jr_arr, $sel_quote['JobRequest']['id']); 
     		#pr($jr_arr);
     		}
-    	} //eto kinuha natin lahat ng jobrequest id at nilagay sa array;now we can query sa j
-    	//call ako carl
+    	} 
     	
     	$designers = $this->JrProduct->find('all', [
     		'conditions'=>['JrProduct.job_request_id'=>$jr_arr],
     		'fields' => ['DISTINCT User.first_name, User.last_name']
     		
-    	]);//eto na yun carl idistinct mo nalang
-    
-    	
-    
-    // associations in linking models 
-    	
-    	//eto yung delivery schedules
+    	]);
     	
         $delivery_schedules = $this->DeliverySchedule->find('all',['conditions'=>[
             'DeliverySchedule.quotation_id'=>$arr
         ]]);
         
-    	//$peoples = $works['FitoutPerson'];
-    	
     	 $prr = [];
     	foreach($works['FitoutPerson'] as $sel_fitout_id){
     		array_push($prr , $sel_fitout_id['fitout_work_id']);
     	}
-    	$this->FitoutPerson->recursive=4;
+    	$this->FitoutPerson->recursive=2;
     	$peoples = $this->FitoutPerson->find('all', ['conditions'=>['FitoutPerson.fitout_work_id'=>$prr]]);
-    	
-    	
-    	// $todo = $works['FitoutTodo'];
-    	
-    	// foreach($people as $team_person){
-    	// 	pr($team_person['FitoutWork']['User']);
-    	// 	//eto yung sa fitout team pag dating sa view 
-    	// }
-    	
-    	// pr($works['FitoutWork']);
     	
     	$client = $works['Client'];
     	$project_head = $works['User'];
     	$fitout_quotations = $works['FitoutQoute'];
-    	
-    	//$fitout_todos = $works['FitoutTodo'];
     	
     	$wrr = [];
     	foreach($works['FitoutTodo'] as $selected_fitout_work){
     		array_push($wrr , $selected_fitout_work['fitout_work_id']);
     	}
     	
-    	$this->FitoutTodo->recursive=4;
+    	$this->FitoutTodo->recursive=2;
     	$fitout_todos = $this->FitoutTodo->find('all', 
     	['conditions'=> ['FitoutTodo.fitout_work_id'=>$wrr] ]
     	);
-    	
-
-    	 //carl add ka nga ng data kasi walang laman ang array
-    	// pr($designers);//n
-    	
-    	//kapag my ganyan need iforeach yan, nilagyan ko lang ng 0 para maidebug ko kasi nakaarray yan kinuha ko lang yung unan
-    	
-    	//hmmm bumagal ata
-    	
-    	// //based on the query above makukuha mo na client detail then yung agent.
-    
-    	
-    	//wait lang try ko dito sakin, basta yung pag kuha ng user,fitout person tsaka fitout todo dyan na sa works
-    	// for example
-
-    	//yung agent name makukuha mo under ng quotation,adjust mo nalng recursive; 
-    	// meanwhile gawin ko muna yung sa crm then after idebug ko kung bakit hindi nagana ang fitout work.then mukang mneed mo magrevise kasi yung queries mo mali?
-    	
-    	//iadjust mo lang yung recursive para makuha mo yung deep queriesor connected tables pa sa kanya
         
-        $users = $this->User->find('all');  // add team, list all users
-        $papers = $this->DrPaper->find('all'); // add documents required, list all documents name
-        #$quotations = $this->Quotation->find('all'); //add documents required, list all quotation number
+        $users = $this->User->find('all'); 
+        $papers = $this->DrPaper->find('all');
 
 		$required_docs = $this->DeliveryPaper->find('all',
         	['conditions'=>['DeliveryPaper.quotation_id'=>$arr]]

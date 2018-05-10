@@ -1,16 +1,36 @@
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+
+<!--SWEET ALERT-->
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script>
+
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        height: 50,
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -71,7 +91,7 @@
                             <tr>
                                 <td>
                                     <?php echo $request['PoRawRequest']['id'];
-                                    echo date('F d, Y', strtotime($request['PoRawRequest']['created']));
+                                    echo time_elapsed_string($request['PoRawRequest']['created']);
                                     echo '<br/><small>' . date('h:i a', strtotime($request['PoRawRequest']['created'])) . '</small>';
                                     ?>
                                 </td>
@@ -83,7 +103,13 @@
                                 </td>
                                 <td> <?php
                                     if ($request['PoRawRequest']['quotation_product_id'] != 0) {
-                                        echo $request['QuotationProduct']['Quotation']['Client']['name'];
+                                        $client_name = "<font class='text-danger'>Not Specified</font>";
+                                        if(array_key_exists('Quotation', $request['QuotationProduct'])) {
+                                            if(array_key_exists('Client', $request['QuotationProduct']['Quotation'])) {
+                                                $client_name = $request['QuotationProduct']['Quotation']['Client']['name'];
+                                            }
+                                        }
+                                        echo ucwords($client_name);
                                     } else {
                                         echo 'none';
                                     }
@@ -91,31 +117,77 @@
                                     ?>  </td> 
                                 <td> <?php
                                     if ($request['PoRawRequest']['quotation_product_id'] != 0) {
-                                        echo $request['JrProduct']['QuotationProduct']['Product']['name'];
+                                        $product_name = "<font class='text-danger'>Unknown</font>";
+                                        if(array_key_exists('QuotationProduct', $request['JrProduct'])) {
+                                            if(array_key_exists('Product', $request['QuotationProduct'])) {
+                                                $product_name_tmp = $request['JrProduct']['QuotationProduct']['Product']['name'];
+                                                if($product_name_tmp!="") {
+                                                    $product_name = $product_name_tmp;
+                                                }
+                                            }
+                                        }
+                                        
+                                        echo $product_name;
                                     }
                                     ?>  </td>  
                                 <td> <?php echo $request['Product']['name']; ?>  </td> 
-                                <td> <?php 
-                                    foreach($request['PoRawRequestProperty'] as $rawprop){
-                                           echo $rawprop['property'].':'.$rawprop['value'].'<br/> ';
-                                    }
-                                      ?>  
+                                <td>
+                                    <?php 
+                                        echo "<p>";
+                                        foreach($request['PoRawRequestProperty'] as $rawprop){
+                                            echo $rawprop['property'].':'.$rawprop['value'].'<br/> ';
+                                        }
+                                        echo "</p>";
+                                        
+                                        if(!empty($request['Product'])) {
+                                            if($request['Product']['other_info']!="") {
+                                                echo "<p><b>Other Info:</b><p>".$request['Product']['other_info']."</p></p>";
+                                            }
+                                        }
+                                    ?>
                                 </td> 
                                 <td> <?php echo abs($request['PoRawRequest']['processed_qty']) . '/' . abs($request['PoRawRequest']['qty']); ?>  </td> 
                                 <td>  
-                                    <?php if ($status == 'pending') { 
+                                    <?php 
+                                    $date_processed = "";
+                                    if(!is_null($request['PoRawRequest']['date_processed'])){ 
+                                        $date_processed = date('F d, Y', strtotime($request['PoRawRequest']['date_processed'])).'<br/><small>' . date('h:i a', strtotime($request['PoRawRequest']['date_processed'])) . '</small>';  
+                                    }  
                                     
                                     
-                                    ?>
-                                        <button class="btn btn-sm btn-primary set_supplier" data-porawrequestid="<?php echo $request['PoRawRequest']['id']; ?>" data-porawrequestqty="<?php echo $request['PoRawRequest']['processed_qty']; ?>" data-rawquoteprodid="<?php echo $request['PoRawRequest']['quotation_product_id']; ?>">Select Supplier</button>
-                                        <!--<button class="btn btn-sm btn-warning warehouse_product_btn add-tooltip" data-toggle="tooltip"  data-original-title="Get Product From Warehouse" data-qprdctids="<?php echo $request['PoRawRequest']['id']; ?>" data-qprdctqty="<?php echo $request['PoRawRequest']['qty']; ?>"><i class="fa fa-cubes"></i></button>-->
-                                        <button class="btn btn-sm btn-warning inventory_product_btn add-tooltip" data-toggle="tooltip"  data-original-title="Get Product From Inventory" data-porawrequestids="<?php echo $request['PoRawRequest']['id']; ?>"data-porawrequestqtys="<?php echo $request['PoRawRequest']['processed_qty']; ?>" data-rawquoteprodids="<?php echo $request['PoRawRequest']['quotation_product_id']; ?>"><i class="fa fa-cubes"></i></button>
+                                    if($userRole != 'accounting_head'){
+                                        if ($status == 'approved' || $status == 'processed' ) {  ?>
+                                            <button class="btn btn-sm btn-primary set_supplier"
+                                                    data-client="<?php echo $request['PoRawRequest']['client_id']; ?>"
+                                                    data-quotationid="<?php echo $request['PoRawRequest']['quotation_id']; ?>"
+                                                    data-porawrequestid="<?php echo $request['PoRawRequest']['id']; ?>"
+                                                    data-porawrequestqty="<?php echo $request['PoRawRequest']['processed_qty']; ?>"
+                                                    data-rawquoteprodid="<?php echo $request['PoRawRequest']['quotation_product_id']; ?>">Select Supplier</button>
+                                            <!--<button class="btn btn-sm btn-warning warehouse_product_btn add-tooltip" data-toggle="tooltip"  data-original-title="Get Product From Warehouse" data-qprdctids="<?php echo $request['PoRawRequest']['id']; ?>" data-qprdctqty="<?php echo $request['PoRawRequest']['qty']; ?>"><i class="fa fa-cubes"></i></button>-->
+                                            <button class="btn btn-sm btn-warning inventory_product_btn add-tooltip"
+                                            data-toggle="tooltip"  data-original-title="Get Product From Inventory"
+                                            data-porawrequestids="<?php echo $request['PoRawRequest']['id']; ?>"
+                                            data-porawrequestclients="<?php echo $request['PoRawRequest']['client_id']; ?>"
+                                            data-porawrequestquotationids="<?php echo $request['PoRawRequest']['quotation_id']; ?>"
+                                            data-porawrequestqtys="<?php echo $request['PoRawRequest']['processed_qty']; ?>" 
+                                            data-rawquoteprodids="<?php echo $request['PoRawRequest']['quotation_product_id']; ?>"><i class="fa fa-cubes"></i></button>
+                                            <?php
+                                        } else {
+    
+                                            echo $date_processed; 
+                                        }
+                                    }else{
+                                        if ($status == 'pending') {
+                                        ?>
+                                        <button class="btn btn-danger btn-icon add-tooltip approve_po_raw_request" data-toggle="tooltip" data-original-title="Approve Request?" data-porawrequestid="<?php echo $request['PoRawRequest']['id']; ?>" data-usr="accounting">Approve</button>
+                             
                                         <?php
-                                    } else {
-
-                                        echo date('F d, Y', strtotime($request['PoRawRequest']['date_processed']));
-                                        echo '<br/><small>' . date('h:i a', strtotime($request['PoRawRequest']['date_processed'])) . '</small>';
+                                        }else{
+                                            
+                                            echo $date_processed; 
+                                        }
                                     }
+                                    
                                     ?>
 
                                 </td> 
@@ -260,7 +332,9 @@
                 <div class="row"> 
                     <input type="hidden" id="quote_product_id"/>   
                     <input type="hidden" id="po_raw_request_id"/>   
-                    <input type="hidden" id="po_raw_request_qty"/>    
+                    <input type="hidden" id="po_raw_request_qty"/>  
+                    <input type="hidden" id="po_raw_request_client_id"/>  
+                    <input type="hidden" id="po_raw_request_quotation_id"/>    
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label class="control-label" id="labelSupplier">Select Product</label> 
@@ -349,6 +423,8 @@
                     <input type="hidden" id="inv_quote_product_id"/>   
                     <input type="hidden" id="inv_po_raw_request_id"/>   
                     <input type="hidden" id="inv_po_raw_request_qty"/> 
+                    <input type="hidden" id="inv_po_raw_request_client_id"/> 
+                    <input type="hidden" id="inv_po_raw_request_quotation_id"/> 
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label class="control-label" id="labelSupplier">Select Location</label> 
@@ -416,49 +492,366 @@
     </div>
 </div> 
 
-<!--GET FROM INVENTORY MODAL END-->
+
+<!--===================================================-->
+<!--Add New Raw Materials Modal Start-->
+<!--===================================================--> 
+<div class="modal fade" id="addProductModal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Add New Raw Materials</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <select id="client_id" class="form-control">
+                                <option>---- Select Client ----</option>
+                                <?php
+                                foreach($get_clients as $ret_clients) {
+                                    $client_obj = $ret_clients['Client'];
+                                    $client_id = $client_obj['id'];
+                                    $client_name = ucwords(strtolower($client_obj['name']));
+                                    
+                                    if($client_name!="") {
+                                        echo '
+                                        <option value="'.$client_id.'">'.$client_name.'</option>
+                                        ';
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group" id="div_product_id" hidden>
+                            <select id="product_id" class="form-control"> 
+                                <option>---- Select Product ----</option>
+                                <?php foreach ($products as $product) { ?>
+                                    <option value="<?php echo $product['Product']['id']; ?>"> <?php echo ucwords($product['Product']['name']); ?></option>
+                                <?php } ?>
+                            </select>
+                        </div> 
+                        <div class="form-group">
+                            <div class="product_details_div"></div>
+                        </div> 
+                        <div class="form-group">
+                            <div id="prod_exp"></div>
+                        </div>  
+                        
+                        <div class="form-group" id="div_select_requestor" hidden>
+                            <select id="select_requestor" class="form-control">
+                                <option>---- Select Requestor</option>
+                                <?php
+                                foreach($get_users as $ret_users) {
+                                    $user_obj = $ret_users['User'];
+                                    $uid = $user_obj['id'];
+                                    $fname = $user_obj['first_name'];
+                                    $lname = $user_obj['last_name'];
+                                    
+                                    echo '
+                                    <option value="'.$uid.'">'.$fname.' '.$lname.'</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>          
+                    <div class="col-sm-4">
+                        <div class="border" id="prod_image_add_div"> </div>
+                    </div>
+                    <div class="col-sm-12" id="div_ta_purpose" hidden>
+                        <textarea id="ta_purpose"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="saveProduct" disabled>Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--END OF NEW MATERIALS MODAL-->
+
 <script>
-    $(document).ready(function () {
-
-        $("#slctd_prdct").select2({
-            placeholder: "Select Product Code",
-            width: '100%',
-            allowClear: false
-        });
-        $("#slctd_prdctcombo").select2({
-            placeholder: "Select Product Combo",
-            width: '100%',
-            allowClear: false
-        });
-        $("#slctd_prdct_supplier").select2({
-            placeholder: "Select Product Supplier",
-            width: '100%',
-            allowClear: false
-        });
-        $("#slctd_inv_lcation").select2({
-            placeholder: "Select Location",
-            width: '100%',
-            allowClear: false
-        });
-        $('#example').DataTable({
-            "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
-            "order": [[0, "asc"]],
-            "stateSave": true
-        });
-
-
+$(document).ready(function () {
+    $("#slctd_prdct").select2({
+        placeholder: "Select Product Code",
+        width: '100%',
+        allowClear: false
     });
 
+    $("#slctd_prdctcombo").select2({
+        placeholder: "Select Product Combo",
+        width: '100%',
+        allowClear: false
+    });
+
+    $("#slctd_prdct_supplier").select2({
+        placeholder: "Select Product Supplier",
+        width: '100%',
+        allowClear: false
+    });
+
+    $("#slctd_inv_lcation").select2({
+        placeholder: "Select Location",
+        width: '100%',
+        allowClear: false
+    });
+
+    $('#example').DataTable({
+        "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
+        "order": [[0, "asc"]],
+        "stateSave": true
+    });
+    
+    $("#product_id").select2({
+        placeholder: "---- Select Product ----",
+        width: '100%',
+        allowClear: false
+    });
+    
+    $("#client_id").select2({
+        placeholder: "---- Select Client ----",
+        width: '100%',
+        allowClear: false
+    });
+    
+    $("#select_requestor").select2({
+        placeholder: "---- Select Requestor ----",
+        width: '100%',
+        allowClear: false
+    });
+
+    $("#client_id").on('change', function() {
+        $("#div_product_id").show();
+        $("#div_ta_purpose").show();
+        $("#div_select_requestor").show();
+    });
+    
+    $('.additional_po_product').each(function (index) {
+        $(this).click(function () {
+            $('#addProductModal').modal('show');
+        });
+    });
+    
+    $("#product_id").change(function () {
+        $("#saveProduct").prop("disabled", false);
+        $(".prod_details").remove();
+        var id = $("#product_id").val();
+        $.get('/quotations/product_info', {
+            id: id,
+        }, function (data) {
+            var i;
+            var v;
+            var prod_property = data['ProductProperty'];
+            var prod_amount = 0;
+            var prod_amount_default = 0;
+            for (i = 0; i < prod_property.length; i++) {
+                var prod_value = data['ProductProperty'][i]['ProductValue'];
+                for (v = 0; v < prod_value.length; v++) {
+                    prod_amount = prod_amount + parseFloat(prod_value[v]['price']);
+                    if (prod_value[v]['default'] == 1) {
+                        prod_amount_default = prod_amount_default + parseFloat(prod_value[v]['price']);
+                    }
+
+                    $(".product_details_div").append('<div class="prod_details"><div class="col-sm-5"><input type="text" class="form-control property" value="' + prod_property[i]['name'] + '" readonly>' +
+                            ' </div>' +
+                            '<div class="col-sm-6"><input type="text" class="form-control value" value="' + prod_value[v]['value'] + '" readonly>' +
+                            ' </div>' +
+                            '<div class="col-sm-1"><a class="btn btn-xs btn-danger deldetail" > <i class="fa fa-minus"></i> </a></div>' +
+                            '</div>');
+                }
+            }
+
+            $('.deldetail').each(function (index) {
+                $(this).click(function () {
+                    //should update price upon removing specific value 
+                    $(this).closest(".prod_details").remove();
+                });
+            });
+
+            $("#prod_exp_add").remove();
+            $("#prod_exp").append('<div id="prod_exp_add" class="row"><div class="col-sm-4">' +
+                    '<label>Quantity</label>' +
+                    '<input type="number" id="qty" step="any" class="form-control"/></div>' +
+                    '<div class="col-sm-8">' +
+                    '<label>Date Needed</label>' +
+                    '<input type="date" id="date_needed" class="form-control"/></div>' +
+                    '</div>');
+            $("#prod_img").remove();
+            $(".initial_product_type_div").remove();
+            $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="/img/product-uploads/' + data['Product']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['Product']['image'] + '"></div>' +
+                    '<div class="initial_product_type_div form-group"><br/><label>Product Type</label><input type="text" readonly value="' + data['Product']['type'] + '" class="form-control" id="initial_prod_type"></div>');
+            $(".add_prod_detail_div").remove();
+            $(".product_details_div").append('<div class="add_prod_detail_div"><div class="col-sm-11" > </div><div class="col-sm-1" align="right"><a class="btn btn-xs btn-primary" id="add_prod_detail_btn"> <i class="fa fa-plus"></i> </a></div></div>');
+            $('#add_prod_detail_btn').click(function () {
+                $(".product_type_div").remove();
+                $(".initial_product_type_div").hide();
+                var product_type = $("#initial_prod_type").val();
+                if (product_type == 'supply') {
+                    var new_type = 'combination';
+                } else {
+                    var new_type = $("#initial_prod_type").val();
+                }
+                $(".initial_product_type_div").hide();
+                $("#prod_image_add_div").append('<div class="product_type_div form-group"><br/><label>Product Type</label><input type="text" readonly value="' + new_type + '" class="form-control" id="prod_type"></div>');
+                $(".product_details_div").append('<div class="prod_details_new"><div class="col-sm-5"><input type="text" class="form-control property"   >' +
+                        '<input type="hidden"></div>' +
+                        '<div class="col-sm-6"><input type="text" class="form-control value"    >' +
+                        '<input type="hidden"></div>' +
+                        '<div class="col-sm-1"><a class="btn btn-xs btn-danger deldetail_new" > <i class="fa fa-minus"></i> </a></div></div>');
+                $('.deldetail_new').each(function (index) {
+                    $(this).click(function () {
+                        $(this).closest(".prod_details_new").remove();
+                        if ($('.deldetail_new').length == 0) {
+                            $(".initial_product_type_div").show();
+                            $(".product_type_div").remove();
+                        }
+                    });
+                });
+
+            });
+        });
+    }); // <========= END OF PRODUCT CHANGE
+    
+    $("#saveProduct").on('click', function () {
+        var product_id = $("#product_id").val();
+        var client_id = $("#client_id").val();
+        var select_requestor = $("#select_requestor").val();
+        var purpose = tinymce.get('ta_purpose').getContent();
+        var date_needed = $("#date_needed");
+        var qty = $("#qty");
+
+        var property = [];
+        $('.property').each(function (index) {
+            property.push($(this).val());
+        });
+        
+        var value = [];
+        $('.value').each(function (index) {
+            value.push($(this).val());
+        });
+        var obj = {};
+
+        for (var i = 0, len = property.length; i < len; i++) {
+            obj[property[i]] = value[i];
+        }
+
+        var counter = $('.property').length;
+        var ctr = counter - 1;
+
+        var data = {
+            "user_id": select_requestor,
+            "client_id": client_id,
+            "quotation_id": quotation_id,
+            "purpose": purpose,
+            "product_id": product_id,
+            "date_needed": date_needed.val(),
+            "qty": qty.val(),
+            "property": property,
+            "value": value,
+            "counter": ctr
+        }
+
+        if(client_id!="---- Select Client ----") {
+            if(product_id!="---- Select Product ----") {
+                if(qty.val()!="") {
+                    if(date_needed.val()!="") {
+                        if(select_requestor!="---- Select Requestor ----") {
+                            $.ajax({
+                                url: "/po_raw_requests/addRaw",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'text',
+                                success: function (success) {
+                                    console.log("success:"+success);
+                                    swal({
+                                        title: "Success",
+                                        text: "Successfully added product.",
+                                        type: "success"
+                                    },
+                                    function(isConfirm) {
+                                        if(isConfirm) {
+                                            location.reload();
+                                        }
+                                    });
+                                },
+                                error: function (error) {
+                                    console.log("error:"+error);
+                                    swal({
+                                        title: "Oops!",
+                                        text: "An error occured while adding product. \n Please try again.",
+                                        type: "warning"
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "Oops!",
+                                text: "Requestor cannot be empty. \n Please try again.",
+                                type: "warning"
+                            });
+                        }
+                    }
+                    else {
+                        swal({
+                            title: "Oops!",
+                            text: "Date cannot be empty. \n Please try again.",
+                            type: "warning"
+                        });
+                    }
+                }  
+                else {
+                    swal({
+                        title: "Oops!",
+                        text: "Quantity cannot be empty. \n Please try again.",
+                        type: "warning"
+                    });
+                }
+            }
+            else {
+                swal({
+                    title: "Oops!",
+                    text: "Product cannot be empty. \n Please try again.",
+                    type: "warning"
+                });
+            }
+        }
+        else {
+            swal({
+                title: "Oops!",
+                text: "Client cannot be empty. \n Please try again.",
+                type: "warning"
+            });
+        }
+    });
+});
+
+
+// ===========================================> END OF MAE CODE FOR NEW RAW MATS
+
+    var get_passed_client = 0;
+    var get_passed_quotation = 0;
     $('.set_supplier').each(function (index) {
         $(this).click(function () {
+                var get_passed_client = $(this).data('client');
                 var qoute_prod_id = $(this).data("rawquoteprodid");
                 var porawrequestqty = $(this).data("porawrequestqty");
                 var porawrequestid = $(this).data("porawrequestid");
+                var get_passed_quotation = $(this).data("quotationid");
                 
                 $('#purchase-order-product-modal').modal('show');
                 $('#quote_product_id').val(qoute_prod_id);
                 $('#po_raw_request_qty').val(porawrequestqty);
                 $('#po_raw_request_id').val(porawrequestid);
+                $('#po_raw_request_client_id').val(get_passed_client);
+                $('#po_raw_request_quotation_id').val(get_passed_quotation);
                  
 
                 $("#slctd_prdct").change(function () {
@@ -501,22 +894,31 @@
 
                         //GET LAST PURCHASED SUPPLIER
                         $.get('/supplier_products/get_po_product_last_supplier', {
-                            id: selected_product_id,
+                            id: selected_product_combo_id,
                         }, function (data) {
                             $("#added_last_supplier").remove();
-                            $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data[0]['PurchaseOrder']['Supplier']['name'] + '  [<small>' + data[0]['PurchaseOrder']['created'] + '</small>]</div>')
+                            $("#added_last_price").remove();
+                            if($.isEmptyObject(data['PurchaseOrderProduct'])!=true) {
+                                if(data['PurchaseOrderProduct']['list_price']!=null) {
+                                    var price = data['PurchaseOrderProduct']['list_price'];
+                                    $('#last_supplier').append('<div id="added_last_price" class="text-primary"> Last Purchased Price:  &#8369;'+ price + ' </div>');
+                                }
+                            }
+                            if(data['Supplier']!=null) {
+                                $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data['Supplier']['name'] + '  [<small>' + data['created'] + '</small>]</div>');
+                            }
                         }); //end of ajax get /supplier_products/get_po_product_last_supplier
 
-                        $.get('/supplier_products/get_supplier_product_combo', {
-                            id: selected_product_id,
-                        }, function (data) {
-                            for (i = 0; i < data.length; i++) {
-                                $('#slctd_prdctcombo').append($('<option>', {
-                                    value: data[i]['ProductCombo']['id'],
-                                    text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
-                                }));
-                            }
-                        }); //end of ajax get /supplier_products/get_product_combination
+                        // $.get('/supplier_products/get_supplier_product_combo', {
+                        //     id: selected_product_id,
+                        // }, function (data) {
+                        //     for (i = 0; i < data.length; i++) {
+                        //         $('#slctd_prdctcombo').append($('<option>', {
+                        //             value: data[i]['ProductCombo']['id'],
+                        //             text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
+                        //         }));
+                        //     }
+                        // }); //end of ajax get /supplier_products/get_product_combination
 
                         $('#slctd_prdct_supplier').empty().append('<option></option>');
                         $('.added_product_combo_properties_div').each(function (index) {
@@ -568,6 +970,8 @@
             var supplier_product_id = $("#supplier_product_id").val();
             var po_raw_request_qty = $("#po_raw_request_qty").val();
             var po_raw_request_id = $("#po_raw_request_id").val(); 
+            var po_raw_request_client_id = $("#po_raw_request_client_id").val(); 
+            var po_raw_request_quotation_id = $("#po_raw_request_quotation_id").val(); 
 
 
             if (product_id != "") {
@@ -576,7 +980,9 @@
                         if (po_qty != "" && po_qty != 0 && po_qty >= 1) {
                             if (list_price != "" && list_price != 0 && list_price >= 1) {
                                 $('#added_rqrd_fld').remove();
-                                var data = { 
+                                var data = {
+                                    "client": po_raw_request_client_id,
+                                    "quotation_id": po_raw_request_quotation_id,
                                     "product_combo_id": product_combo_id,
                                     "product_id": product_id,
                                     "supplier_id": supplier_id,
@@ -592,20 +998,17 @@
                                     "po_raw_request_qty":po_raw_request_qty
                                     
                                 }
+                                // console.log(data);exit();
                                 $.ajax({
                                     url: "/purchase_orders/process_new_po",
                                     type: 'POST',
                                     data: {'data': data},
-                                    dataType: 'json',
-                                    success: function (dd) {
+                                    dataType: 'text',
+                                    success: function (success) {
                                         location.reload();
-//                    console.log(dd);
                                     },
-                                    error: function (dd) {
-                                        // console.log('error' + dd); 
+                                    error: function (error) {
                                         location.reload();
-                                        
-                                        // location.reload();
                                     }
                                 });
                             } else {
@@ -637,11 +1040,15 @@
                 var qoute_prod_id = $(this).data("rawquoteprodids");
                 var porawrequestqty = $(this).data("porawrequestqtys");
                 var porawrequestid = $(this).data("porawrequestids");
+                var porawrequestclientid = $(this).data("porawrequestclients");
+                var porawrequestquotationid = $(this).data("porawrequestquotationids");
                 $('#get-from-inventory-product-modal').modal('show');
                 
                 $('#inv_quote_product_id').val(qoute_prod_id);
                 $('#inv_po_raw_request_qty').val(porawrequestqty);
                 $('#inv_po_raw_request_id').val(porawrequestid);
+                $('#inv_po_raw_request_client_id').val(porawrequestclientid);
+                $('#inv_po_raw_request_quotation_id').val(porawrequestquotationid);
                 
                  
 
@@ -767,6 +1174,8 @@
             var inv_quote_product_id = $("#inv_quote_product_id").val();
             var inv_po_raw_request_qty = $("#inv_po_raw_request_qty").val();
             var inv_po_raw_request_id = $("#inv_po_raw_request_id").val();
+            var inv_po_raw_request_client_id = $("#inv_po_raw_request_client_id").val();
+            var inv_po_raw_request_quotation_id = $("#inv_po_raw_request_quotation_id").val();
             
              
             
@@ -785,6 +1194,8 @@
                                     "inventory_job_order_type": 'dr',
                                     "inv_po_raw_request_qty": inv_po_raw_request_qty,
                                     "inv_po_raw_request_id": inv_po_raw_request_id,
+                                    "inv_po_raw_request_client_id": inv_po_raw_request_client_id,
+                                    "inv_po_raw_request_quotation_id": inv_po_raw_request_quotation_id,
                                 }
             // console.log('asdads');
                                 $.ajax({
@@ -1021,6 +1432,47 @@
 
 
 //     });
+
+
+
+    $('.approve_po_raw_request').each(function(index) {
+        $(this).click(function() {
+            var id = $(this).data("porawrequestid"); 
+
+            swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to revert action in this Request!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm) {
+                    if (isConfirm) {
+
+                        $(".confirm").attr('disabled', 'disabled');
+                        $.ajax({
+                            url: "/po_raw_requests/approve_request",
+                            type: 'POST',
+                            data: { 'id': id },
+                            dataType: 'json',
+                            success: function(dd) {
+                                location.reload();
+                            },
+                            error: function(dd) {
+                                console.log(type);
+                            }
+                        });
+                    } else {
+                        swal("Cancelled", "", "error");
+                    }
+                });
+        });
+    });
+
     
 </script>
     

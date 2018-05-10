@@ -57,14 +57,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($deliveryInstaller['DeliveryInstaller']['created']); ?>
+			<?php echo time_elapsed_string($deliveryInstaller['DeliveryInstaller']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($deliveryInstaller['DeliveryInstaller']['modified']); ?>
+			<?php echo time_elapsed_string($deliveryInstaller['DeliveryInstaller']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

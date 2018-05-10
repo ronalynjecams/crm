@@ -1,12 +1,12 @@
 <!--Morris.js [ OPTIONAL ]-->
-<link href="../plugins/morris-js/morris.min.css" rel="stylesheet">
+<link href="/css/plug/morris-js/morris.min.css" rel="stylesheet">
 
 <!--Morris.js [ OPTIONAL ]-->
-<script src="../plugins/morris-js/morris.min.js"></script>
-<script src="../plugins/morris-js/raphael-js/raphael.min.js"></script>
+<script src="/css/plug/morris-js/morris.min.js"></script>
+<script src="/css/plug/morris-js/raphael-js/raphael.min.js"></script>
 
 <!--Sparkline [ OPTIONAL ]-->
-<script src="../plugins/sparkline/jquery.sparkline.min.js"></script> 
+<script src="/css/plug/sparkline/jquery.sparkline.min.js"></script> 
 
 <!--<div class="boxed">-->     
 <!--CONTENT CONTAINER-->

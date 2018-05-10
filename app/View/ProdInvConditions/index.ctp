@@ -56,8 +56,8 @@
 		</td>
 						<td><?php echo h($prodInvCondition['ProdInvCondition']['qty']); ?>&nbsp;</td>
 						<td><?php echo h($prodInvCondition['ProdInvCondition']['conditions']); ?>&nbsp;</td>
-						<td><?php echo h($prodInvCondition['ProdInvCondition']['created']); ?>&nbsp;</td>
-						<td><?php echo h($prodInvCondition['ProdInvCondition']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($prodInvCondition['ProdInvCondition']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($prodInvCondition['ProdInvCondition']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $prodInvCondition['ProdInvCondition']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $prodInvCondition['ProdInvCondition']['id']), array('escape' => false)); ?>

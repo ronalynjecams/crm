@@ -118,10 +118,10 @@ class InventoryProductsController extends AppController {
 		
 
 		$inv_location_id = $this->params['url']['id'];
-		$this->InvLocation->recursive=4;
+		$this->InvLocation->recursive=2;
 		$invs = $this->InvLocation->findById($inv_location_id);
 		
-		$this->InventoryProduct->recursive=4;
+		$this->InventoryProduct->recursive=2;
 		$selected_prods = $this->ProductCombo->InventoryProduct->find('all', array(
 			'conditions'=>['InventoryProduct.inv_location_id'=>$inv_location_id]
 			));
@@ -210,6 +210,7 @@ class InventoryProductsController extends AppController {
         $quantity_repair = $data1['quantity_repair'];
         $quantity_chop = $data1['quantity_chop'];
         $min_stock_level = $data1['min_stock_level'];
+        $max_stock_level = $data1['max_stock_level'];
         
         $check_duplicates = $this->InventoryProduct->find('first', array(
             	'conditions' => array(
@@ -231,6 +232,7 @@ class InventoryProductsController extends AppController {
 				'product_combo_id' => $selected_product_combo,
 				'inv_location_id' => $inv_location_id,
 				'min_stock_level' => $min_stock_level,
+				'max_stock_level' => $max_stock_level,
 				'qty' => $quantity,
 				'qty_for_repair' => $quantity_repair,
 				'qty_chopped' => $quantity_chop

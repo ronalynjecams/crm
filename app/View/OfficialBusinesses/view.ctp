@@ -108,7 +108,7 @@
 <tr>
 		<th><?php echo __('Approved Date'); ?></th>
 		<td>
-			<?php echo h($officialBusiness['OfficialBusiness']['approved_date']); ?>
+			<?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['approved_date']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -122,28 +122,28 @@
 <tr>
 		<th><?php echo __('Hr Approved Date'); ?></th>
 		<td>
-			<?php echo h($officialBusiness['OfficialBusiness']['hr_approved_date']); ?>
+			<?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['hr_approved_date']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Arrived Jecams'); ?></th>
 		<td>
-			<?php echo h($officialBusiness['OfficialBusiness']['arrived_jecams']); ?>
+			<?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['arrived_jecams']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($officialBusiness['OfficialBusiness']['created']); ?>
+			<?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($officialBusiness['OfficialBusiness']['modified']); ?>
+			<?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -176,8 +176,8 @@
 			<td><?php echo $officialBusinessReport['id']; ?></td>
 			<td><?php echo $officialBusinessReport['report']; ?></td>
 			<td><?php echo $officialBusinessReport['official_business_id']; ?></td>
-			<td><?php echo $officialBusinessReport['created']; ?></td>
-			<td><?php echo $officialBusinessReport['modified']; ?></td>
+			<td><?php echo time_elapsed_string($officialBusinessReport['created']); ?></td>
+			<td><?php echo time_elapsed_string($officialBusinessReport['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'official_business_reports', 'action' => 'view', $officialBusinessReport['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'official_business_reports', 'action' => 'edit', $officialBusinessReport['id']), array('escape' => false)); ?>

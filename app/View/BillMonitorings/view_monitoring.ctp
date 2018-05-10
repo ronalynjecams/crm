@@ -1,20 +1,20 @@
  
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="http://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="http://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>  
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>  
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
@@ -34,6 +34,9 @@
                 <h3 class="panel-title">
 
                     <?php if (($UserIn['User']['role'] == 'admin_staff') || ($UserIn['User']['role'] == 'admin_staff')) { ?>
+                        <button class="btn btn-primary" id="printBillsMonitoringBtn" >
+                            <i class="fa fa-plus"></i>  Retrieve bills monitoring
+                        </button>
                         <button class="btn btn-mint" id="addBillsMonitoringBtn" >
                             <i class="fa fa-plus"></i>  Add new bills monitoring
                         </button>
@@ -52,7 +55,7 @@
                         <tr>
                             <th>Billing date from</th> 
                             <th>Billing date to</th> 
-                            <th>user</th> 
+                            <th>User</th> 
                             <th>Bill account</th> 
                             <th>bill amount</th> 
                             <th>Billing receipt reference</th> 
@@ -67,7 +70,7 @@
                         <tr>
                             <th>Billing date from</th> 
                             <th>Billing date to</th> 
-                            <th>user</th> 
+                            <th>User</th> 
                             <th>Bill account</th> 
                             <th>Bill amount</th> 
                             <th>Billing receipt reference</th> 
@@ -81,16 +84,16 @@
                     <tbody>
                         <?php foreach($monitorings as $monitoring){ ?>
                             <tr>
-                                <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['billing_date_from']))); ?></td>
-                                <td><?php echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['billing_date_to']))); ?></td>
+                                <td><?php echo time_elapsed_string($monitoring['BillMonitoring']['billing_date_from']); ?></td>
+                                <td><?php echo time_elapsed_string($monitoring['BillMonitoring']['billing_date_to']); ?></td>
                                 <td><?php echo h($monitoring['User']['first_name'])." ".h($monitoring['User']['last_name']); ?></td>
-                                <td><?php echo h($monitoring['Bill']['id']); ?></td>
+                                <td><?php echo h($monitoring['Bill']['BillAccount']['name']); ?></td>
                                 <td><?php echo '&#8369; ' . number_format($monitoring['BillMonitoring']['bill_amount'],2); ?></td>
                                 <td><?php echo h($monitoring['BillMonitoring']['receipt_reference_num']); ?></td>
                                 <td><?php echo h($monitoring['BillMonitoring']['payment_mode']); ?></td>
                                 <td>
                                 <?php 
-                                echo h($monitoring['BillMonitoring']['paid_by']); 
+                                echo h($monitoring['User']['first_name'].' '.$monitoring['User']['last_name']); 
                                 
                                 ?>
                                 </td>
@@ -110,7 +113,7 @@
                                 if($monitoring['BillMonitoring']['receipt_date'] == ""){
                                     echo"<p>not available</p>";
                                 }else{
-                                    echo h(date('F d, Y', strtotime($monitoring['BillMonitoring']['receipt_date']))); 
+                                    echo time_elapsed_string($monitoring['BillMonitoring']['receipt_date']); 
                                 }
                                 ?></td>
                                 
@@ -126,7 +129,7 @@
                                             echo"</div>"; 
                                         }else{
                                             echo"<div class='col-sm-6'>";
-                                                echo'<a class="btn btn-default btn-icon add-tooltip editBtn" data-toggle="tooltip" data-placement="top" href="#" data-original-title="Edit payment" data-id="'.$monitoring['BillMonitoring']['id'].'"><i class="glyphicon glyphicon-edit"></i></a>';
+                                                echo'<a class="btn btn-default btn-icon add-tooltip editBtn" data-toggle="tooltip" data-placement="top" href="#" data-original-title="Edit payment" data-id="'.$monitoring['BillMonitoring']['id'].'" data-ref="'.$monitoring['BillMonitoring']['receipt_reference_num'].'"><i class="glyphicon glyphicon-edit"></i></a>';
                                             echo"</div>"; 
                                         }
 
@@ -180,12 +183,30 @@
                         <?php 
                             foreach($billaccounts as $billaccount){
                         ?>
-                        <option value="<?php echo h($billaccount['Bill']['id']); ?>"><?php echo h($billaccount['Bill']['bill_account_id']); ?></option>
+                        <option value="<?php echo h($billaccount['Bill']['id']); ?>"><?php echo h($billaccount['BillAccount']['name']); ?></option>
                         <?php 
                             } 
                         ?>
                     </select>
                 </div>
+                <!-- MARK: OFFLINE MODIFICATION -->
+                <div class="form-group">
+                    <select id="select_payment_request_category" class="form-control">
+                        <option>----Select Category----</option>
+                        <?php
+                        foreach($get_categories as $ret_categories) {
+                            $category_obj = $ret_categories['PaymentRequestCategory'];
+                            $category_id = $category_obj['id'];
+                            $category_name = ucwords($category_obj['name']);
+
+                            echo '
+                            <option value="'.$category_id.'">'.$category_name.'</option>
+                            ';
+                        }
+                        ?>
+                    </select>
+                </div>
+                <!-- MARK: END OF OFFLINE MODIFICATION -->
                 <div class='form-group' id="name_validation">
                     <label>Bill Amount<span class="text-danger">*</span></label>
                     <input type='number' class="form-control" id="billamount" />
@@ -214,7 +235,45 @@
     </div>
 </div>
 <!--===================================================-->
-<!--New Bill Accounts Modal End !-->
+<!--Print Bill Accounts Modal End !--><!--Add New Bill Accounts Modal Start-->
+<!--===================================================-->
+<div class="modal fade" id="print-monitoring-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Print Bill Monitoring</h4>
+            </div>
+            <!--Modal body-->
+            <div class="modal-body">
+                <form action="/pdfs/print_bill_monitoring" method="POST" id="print-form">
+                    <div class="col-md-6">
+                        <div class='form-group' id='name_validation'>
+                        <label>From<span class="text-danger">*</span></label>
+                        <input type='date' class="form-control" name="datefrom" id="pdatefrom" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class='form-group' id='name_validation'>
+                            <label>To<span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="dateto" id="pdateto">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="printMonitoring">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--===================================================-->
+<!--Print Bill Accounts Modal End !-->
 <!--Modal edit bill start-->
 <div class="modal fade" id="edit-modal" role="dialog" tabindex="-1" aria-labelledby="demo-default-modal" aria-hidden="true">
     <div class="modal-dialog">
@@ -230,17 +289,17 @@
             <div class="modal-body">
                 
                 <div class="form-group" id="name_validation">
-                     <input type="hidden" class="form-control"  id="uid">
+                    <input type="hidden" class="form-control"  id="uid">
                     <label>Bill receipt reference number<span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="ubill_ref_no" onkeyup="validate('ubill_ref_no')" onkeydown="validate('ubill_ref_no')">
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Payment method<span class="text-danger">*</span></label>
                     <select class="form-control" id="upayment_mode">
-                    <option value="none">Please Select a payment mode</option>
-                    <option value="cash">cash</option>
-                    <option value="check">check</option>
-                    <option value="online">online</option>
+                        <option value="none">Please Select a payment mode</option>
+                        <option value="cash">cash</option>
+                        <option value="check">check</option>
+                        <option value="online">online</option>
                     </select>
                 </div>
                 <div class="form-group" id="name_validation">
@@ -291,6 +350,10 @@
         $('#add-monitoring-modal').modal('show');
     });
     
+    $('#printBillsMonitoringBtn').on("click", function () {
+        $('#print-monitoring-modal').modal('show');
+    });
+    
     $(document).ready(function () {
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
@@ -300,14 +363,13 @@
         });
         
         
-       $(".editBtn").each(function (index) {
-        $(this).on("click", function () {
-           
-            var u_id = $(this).data('id'); //this line gets value of data-id from delete button
-            $('#uid').val(u_id); // this line passes the value from data id to modal, to be able to manipulate id of the selected row
-            $('#edit-modal').modal('show'); // this line shows modal, make sure to assign values first before showing modal
-
-        });
+    $("a.editBtn").on('click', function () {
+        var u_id = $(this).data('id'); //this line gets value of data-id from edit button
+        var ref_no = $(this).data('ref');
+        var ubill_ref_no = $("#ubill_ref_no");
+        ubill_ref_no.val(ref_no);
+        $('#uid').val(u_id); // this line passes the value from data id to modal, to be able to manipulate id of the selected row
+        $('#edit-modal').modal('show'); // this line shows modal, make sure to assign values first before showing modal
     });
     
     
@@ -364,47 +426,59 @@
         var billamount = $('#billamount').val();
         var bill_ref_no = $('#bill_ref_no').val();
         var payment_mode = $('#payment_mode').val();
+        var category = $('#select_payment_request_category');
        
         
-         if ((datefrom != "" )) {
-             if((dateto != "" )){
-                 if((billaccount != 0 )){
-                     if((billamount != "")){
-                         
-                            var data = {
-                                "datefrom": datefrom,
-                                "dateto": dateto, 
-                                "billaccount": billaccount, 
-                                "billamount": billamount, 
-                                "bill_ref_no": bill_ref_no,
-                                "payment_mode": payment_mode
-                            }
-                            
-                            $.ajax({
-                                url: "/bill_monitorings/add_monitoring",
-                                type: 'POST',
-                                data: {'data': data},
-                                dataType: 'json',
-                                
-                                success: function (data) {
-                                    location.reload();
-                                },
-                                error: function () {
-                                   alert('error')
-                                }
-                            });
-                            
+        if ((datefrom != "" )) {
+            if((dateto != "" )){
+                if((billaccount != 0 )){
+                    if(category.val()!="----Select Category----") {
+                        if((billamount != "")){
+                                var data = {
+                                    "datefrom": datefrom,
+                                    "dateto": dateto, 
+                                    "billaccount": billaccount,
+                                    "category": category.val(),
+                                    "billamount": billamount, 
+                                    "bill_ref_no": bill_ref_no,
+                                    "payment_mode": payment_mode
+                                };
+                                // MARK: OFFLINE MODIFICATION
+                                $.ajax({
+                                    url: "/bill_monitorings/add_monitoring",
+                                    type: 'POST',
+                                    data: {'data': data},
+                                    dataType: 'text',
+                                    success: function (data) {
+                                        // console.log(data);
+                                        location.reload();
+                                    },
+                                    error: function (error) {
+                                       alert("Error in saving Bill Monitoring");
+                                    }
+                                });
+                                // MARK: END OF OFFLINE MODIFICATION
 
-        } else {
-            document.getElementById('billamount').style.borderColor = "red";
-            
-            swal({
-                type: 'warning',
-                text: 'message',
-                title: 'Please enter a bill amount',
-                timer: 1000
-            })
-        }
+                        } else {
+                            document.getElementById('billamount').style.borderColor = "red";
+                            
+                            swal({
+                                type: 'warning',
+                                text: 'message',
+                                title: 'Please enter a bill amount',
+                                timer: 1000
+                            });
+                        }
+                    }
+                    else {
+                        category.css({'border-color':'red'});
+                        swal({
+                            type: 'warning',
+                            text: 'message',
+                            title: 'Please enter a category',
+                            timer: 1000
+                        });
+                    }
                             
                  } else {
             document.getElementById('billaccount').style.borderColor = "red";
@@ -440,7 +514,63 @@
         
         
      });
+       
+       
+    $('#printMonitoring').on("click", function () {
+        var datefrom = $('#pdatefrom').val();
+        var dateto = $('#pdateto').val();
         
+        if ((datefrom != "" )) {
+            if((dateto != "" )){
+                var data = {
+                    "datefrom": datefrom,
+                    "dateto": dateto, 
+                };
+                // MARK: OFFLINE MODIFICATION
+                $.ajax({
+                    url: "/bill_monitorings/check_print_monitoring",
+                    type: 'POST',
+                    data: {'data': data},
+                    dataType: 'text',
+                    success: function (data) {
+                        // console.log(data);
+                        if(data=='success'){
+                            document.getElementById("print-form").submit();
+                        } else{
+                            swal({
+                                type: 'warning',
+                                text: 'message',
+                                title: 'No data for selected range',
+                                timer: 1000
+                            })
+                        }
+                    },
+                    error: function (error) {
+                       alert("Error in saving Bill Monitoring");
+                    }
+                });
+                // MARK: END OF OFFLINE MODIFICATION
+             }else {
+                document.getElementById('dateto').style.borderColor = "red";
+                swal({
+                    type: 'warning',
+                    text: 'message',
+                    title: 'Please enter date to value',
+                    timer: 1000
+                })
+             }
+        }else {
+            document.getElementById('datefrom').style.borderColor = "red";
+            swal({
+                type: 'warning',
+                text: 'message',
+                title: 'Please complete enter date from value',
+                timer: 1000
+            })
+        }
+        
+        
+     }); 
      
     });
 </script>

@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-<!-- Mirrored from www.themeon.net/nifty/v2.6/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 11 Jul 2017 09:52:01 GMT -->
-<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+ <meta http-equiv="content-type" content="text/html;charset=UTF-8" /> 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,32 +12,33 @@
     <!--=================================================-->
 
     <!--Open Sans Font [ OPTIONAL ]-->
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
 
 
     <!--Bootstrap Stylesheet [ REQUIRED ]-->
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
     
     <!--<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
 
 
     <!--Nifty Stylesheet [ REQUIRED ]-->
-    <link href="../css/nifty.min.css" rel="stylesheet">
+    <link href="/css/nifty.min.css" rel="stylesheet">
 
 
     <!--Nifty Premium Icon [ DEMONSTRATION ]-->
-    <link href="../css/demo/nifty-demo-icons.min.css" rel="stylesheet">
+    <link href="/css/demo/nifty-demo-icons.min.css" rel="stylesheet">
 
 
     <!--Demo [ DEMONSTRATION ]-->
-    <link href="../css/demo/nifty-demo.min.css" rel="stylesheet">
+    <link href="/css/demo/nifty-demo.min.css" rel="stylesheet">
 
 
         
     <!--Magic Checkbox [ OPTIONAL ]-->
-    <link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">
+    <link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">
+ <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="../plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!--<link href="/css/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet">-->
 
     
     <!--JAVASCRIPT-->
@@ -47,20 +46,20 @@
     <!--=================================================-->
 
     <!--Pace - Page Load Progress Par [OPTIONAL]-->
-    <link href="../plugins/pace/pace.min.css" rel="stylesheet">
-    <script src="../plugins/pace/pace.min.js"></script>
+    <link href="/css/plug/pace/pace.min.css" rel="stylesheet">
+    <script src="/css/plug/pace/pace.min.js"></script>
 
 
     <!--jQuery [ REQUIRED ]-->
-    <script src="../js/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
 
 
     <!--BootstrapJS [ RECOMMENDED ]-->
-    <script src="../js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 
 
     <!--NiftyJS [ RECOMMENDED ]-->
-    <script src="../js/nifty.min.js"></script>
+    <script src="/js/nifty.min.js"></script>
 
 
 
@@ -70,7 +69,7 @@
     <!--=================================================-->
     
     <!--Demo script [ DEMONSTRATION ]-->
-    <script src="../js/demo/nifty-demo.min.js"></script>
+    <script src="/js/demo/nifty-demo.min.js"></script>
 
     
 
@@ -79,7 +78,7 @@
     <!--<script src="../js/demo/dashboard.js"></script>-->
     
     <!--Ion Icons [ OPTIONAL ]-->
-    <link href="../plugins/ionicons/css/ionicons.min.css" rel="stylesheet">
+    <link href="/css/plug/ionicons/css/ionicons.min.css" rel="stylesheet">
     
     
 

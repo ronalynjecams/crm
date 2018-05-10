@@ -72,12 +72,12 @@
 						<td><?php echo h($officialBusiness['OfficialBusiness']['company_name']); ?>&nbsp;</td>
 						<td><?php echo h($officialBusiness['OfficialBusiness']['service_request']); ?>&nbsp;</td>
 						<td><?php echo h($officialBusiness['OfficialBusiness']['approved_by']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusiness['OfficialBusiness']['approved_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['approved_date']); ?>&nbsp;</td>
 						<td><?php echo h($officialBusiness['OfficialBusiness']['hr_approved_by']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusiness['OfficialBusiness']['hr_approved_date']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusiness['OfficialBusiness']['arrived_jecams']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusiness['OfficialBusiness']['created']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusiness['OfficialBusiness']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['hr_approved_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['arrived_jecams']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusiness['OfficialBusiness']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $officialBusiness['OfficialBusiness']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $officialBusiness['OfficialBusiness']['id']), array('escape' => false)); ?>

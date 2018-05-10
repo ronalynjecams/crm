@@ -88,8 +88,8 @@
 			<td><?php echo $productionProcess['production_id']; ?></td>
 			<td><?php echo $productionProcess['production_section_id']; ?></td>
 			<td><?php echo $productionProcess['user_id']; ?></td>
-			<td><?php echo $productionProcess['start_work']; ?></td>
-			<td><?php echo $productionProcess['end_work']; ?></td>
+			<td><?php echo time_elapsed_string($productionProcess['start_work']); ?></td>
+			<td><?php echo time_elapsed_string($productionProcess['end_work']); ?></td>
 			<td><?php echo $productionProcess['expected_start']; ?></td>
 			<td><?php echo $productionProcess['expected_end']; ?></td>
 			<td><?php echo $productionProcess['status']; ?></td>

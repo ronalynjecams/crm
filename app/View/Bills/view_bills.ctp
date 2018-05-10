@@ -1,20 +1,20 @@
  
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="http://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
 
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.css"; rel="stylesheet">
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.0/sweetalert2.min.js"></script>
 
 <!--Select2 [ OPTIONAL ]-->
-<script src="../plugins/select2/js/select2.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>  
+<script src="/css/plug/select/js/select2.min.js"></script>
+<script src="/js/erp_scripts.js"></script>  
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
 <div id="content-container">
@@ -73,19 +73,20 @@
                             <tr>
                                 <td><?php echo h($bill['Bill']['account_number']); ?></td>
                                 <td><?php echo h($bill['Bill']['billing_status']); ?></td>
-                                <td><?php echo '&#8369; ' . number_format($bill['Bill']['jecams_amount']),2; ?></td>
+                                <td><?php echo '&#8369; ' .$bill['Bill']['jecams_amount']; ?></td> 
+                                <!-- tinanggal ko po yung number format na 2 ksi po dun po sa input ni mam jovel n 70799.24 ngdadagdag ng 2 po -->
                                 <td><?php echo h($bill['Bill']['payment_type']); ?></td>
                                 <td><?php echo h($bill['BillAccount']['name']); ?></td>
-                                <td><?php echo h($bill['InvLocation']['name']); ?></td>
+                                <td><?php echo h($bill['InvLocation']['name']); ?></td> 
                                 <td>
                             <?php 
-                                #if($UserIn['User']['role'] == 'admin_staff'){ if($UserIn['User']['role'] == 'admin_staff'){ 
+                                #if($UserIn['User']['role'] == 'admin_staff'){ 
                                     echo"<div class='row'>";
                                         echo"<div class='col-sm-1'>";
                                             echo '<a class="btn btn-default btn-icon add-tooltip editBillsBtn" data-toggle="tooltip" href="#" data-original-title="Update bill account" data-id="'.$bill['Bill']['id'].'" data-accountnumber="'.$bill['Bill']['account_number'].'" data-billingstatus="'.$bill['Bill']['billing_status'].'" data-amount="'.$bill['Bill']['jecams_amount'].'" data-paymenttype="'.$bill['Bill']['payment_type'].'" data-billid="'.$bill['Bill']['bill_account_id'].'" data-locationid="'.$bill['Bill']['inv_location_id'].'"><i class="demo-psi-pen-5 icon-lg"></i></a>';
                                          echo"</div>"; 
                                     echo"</div";
-                                #} } 
+                                #}
                             ?>
                                 </td>
                             </tr>
@@ -95,6 +96,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 <!--Add New Bill Modal Start-->
 <!--===================================================-->
@@ -125,7 +127,7 @@
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Amount<span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" id="amount">
+                    <input type="text" class="form-control" id="amount" onkeyup="clean('amount')" onkeydown="clean('amount')">
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Payment type<span class="text-danger">*</span></label>
@@ -203,7 +205,7 @@
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Amount<span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" id="uamount">
+                    <input type="text" class="form-control" id="uamount" onkeyup="clean('uamount')" onkeydown="clean('uamount')">
                 </div>
                 <div class="form-group" id="name_validation">
                     <label>Payment type<span class="text-danger">*</span></label>
@@ -256,7 +258,7 @@
         $('#add-bills-modal').modal('show');
     });
     
-    $(document).ready(function () {
+    // $(document).ready(function () {
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
             "order": [[0, "asc"]],
@@ -430,7 +432,7 @@
         
     });
     
-});
+// });
     
 </script>
 <script>
@@ -450,6 +452,26 @@ function validate(uaccountnumber){
 	
 	if(uaccountnumber.value.search(uact_regex) > -1) {
 		uaccountnumber.value = uaccountnumber.value.replace(uact_regex, "");
+    }
+
+}
+
+function clean(amount){
+    var amount = document.getElementById(amount);
+    var act_regex = /[^0-9.,-]/gi;
+    
+    if(amount.value.search(act_regex) > -1) {
+        amount.value = amount.value.replace(act_regex, "");
+    }
+
+}
+
+function clean(uamount){
+    var uamount = document.getElementById(uamount);
+    var act_regex = /[^0-9.,-]/gi;
+    
+    if(uamount.value.search(act_regex) > -1) {
+        uamount.value = uamount.value.replace(act_regex, "");
     }
 
 }

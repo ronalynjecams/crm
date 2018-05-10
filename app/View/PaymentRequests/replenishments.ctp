@@ -1,12 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 
 <div id="content-container">
     <div id="page-title">
@@ -49,9 +49,9 @@
                                 $replenishment = $payment_replenishment['PaymentReplenishment'];
                                 ?>
                                 <tr>
-                                    <td><?php echo date("F d, Y [h:i a]", strtotime($replenishment['created'])); ?></td>
-                                    <td><?php echo $user['first_name']." ".$user['last_name']; ?></td>
-                                    <td><?php echo $replenishment['amount']; ?></td>
+                                    <td><?php echo time_elapsed_string($replenishment['created']); ?></td>
+                                    <td><?php echo ucwords($user['first_name']." ".$user['last_name']); ?></td>
+                                    <td align="right"><?php echo "&#8369; ".number_format((float)$replenishment['amount'], 2, ".", ","); ?></td>
                                     <td>
                                         <a href="/payment_requests/view_replenishments?id=<?php echo $replenishment['id']; ?>">
                                             <button class="btn btn-info"
@@ -114,10 +114,23 @@ $(document).ready(function() {
         },
         function (isConfirm) {
             if (isConfirm) {
-				$.get('/payment_requests/acknowledge_replenishment', {id: id}, function(data) {
-					alert(data);
-					location.reload();
-				})
+                $.ajax({
+                    url: '/payment_requests/acknowledge_replenishment',
+                    type: "POST",
+                    data: {"data": id},
+                    dataType: "text",
+                    success: function(success) {
+                        console.log(success);
+                        swal({
+                            title: "Success!",
+                            text: "Successfully acknowledged replenishment.",
+                            type: "success"
+                        },
+                        function(isConfirm2) {
+                            location.reload();
+                        });
+                    }
+                });
             } else {
                 swal("Cancelled", "", "error");
             }

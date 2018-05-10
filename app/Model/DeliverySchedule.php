@@ -70,6 +70,20 @@ class DeliverySchedule extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
+		'Client' => array(
+			'className' => 'Client',
+			'foreignKey' => 'client_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Quotation' => array(
+			'className' => 'Quotation',
+			'foreignKey' => 'quotation_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
 	);
 
 /**

@@ -68,8 +68,8 @@
 						<td><?php echo h($quotationProduct['QuotationProduct']['other_info']); ?>&nbsp;</td>
 						<td><?php echo h($quotationProduct['QuotationProduct']['edited_amount']); ?>&nbsp;</td>
 						<td><?php echo h($quotationProduct['QuotationProduct']['sale']); ?>&nbsp;</td>
-						<td><?php echo h($quotationProduct['QuotationProduct']['created']); ?>&nbsp;</td>
-						<td><?php echo h($quotationProduct['QuotationProduct']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationProduct['QuotationProduct']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationProduct['QuotationProduct']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $quotationProduct['QuotationProduct']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $quotationProduct['QuotationProduct']['id']), array('escape' => false)); ?>

@@ -1,12 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/erp_js/erp_scripts.js"></script>  
+<link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/erp_scripts.js"></script>  
 
 
 <!--CONTENT CONTAINER-->
@@ -55,7 +55,7 @@
                     <tbody>
                         <?php foreach ($products_inv as $inv) { ?>
                             <tr>
-                                <td><?php echo '<img class="img-responsive" src="../product_uploads/' . $inv['Product']['image'] . '" width="70" height="70">'; ?></td>
+                                <td><?php echo '<img class="img-responsive" src="/img/product-uploads/' . $inv['Product']['image'] . '" width="70" height="70">'; ?></td>
                                 <td><?php echo $inv['Product']['name']; ?></td>
                                 <td><?php
                                     $total_qty = 0;

@@ -53,8 +53,8 @@
 			<?php echo $this->Html->link($paymentPurchaseOrder['PurchaseOrder']['id'], array('controller' => 'purchase_orders', 'action' => 'view', $paymentPurchaseOrder['PurchaseOrder']['id'])); ?>
 		</td>
 						<td><?php echo h($paymentPurchaseOrder['PaymentPurchaseOrder']['po_amount_request']); ?>&nbsp;</td>
-						<td><?php echo h($paymentPurchaseOrder['PaymentPurchaseOrder']['created']); ?>&nbsp;</td>
-						<td><?php echo h($paymentPurchaseOrder['PaymentPurchaseOrder']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentPurchaseOrder['PaymentPurchaseOrder']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($paymentPurchaseOrder['PaymentPurchaseOrder']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $paymentPurchaseOrder['PaymentPurchaseOrder']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $paymentPurchaseOrder['PaymentPurchaseOrder']['id']), array('escape' => false)); ?>

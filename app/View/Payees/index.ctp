@@ -43,8 +43,8 @@
 					<tr>
 						<td><?php echo h($payee['Payee']['id']); ?>&nbsp;</td>
 						<td><?php echo h($payee['Payee']['name']); ?>&nbsp;</td>
-						<td><?php echo h($payee['Payee']['created']); ?>&nbsp;</td>
-						<td><?php echo h($payee['Payee']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($payee['Payee']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($payee['Payee']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $payee['Payee']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $payee['Payee']['id']), array('escape' => false)); ?>

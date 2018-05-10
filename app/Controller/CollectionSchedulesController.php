@@ -118,6 +118,7 @@ class CollectionSchedulesController extends AppController {
         $this->loadModel('QuotationTerm');
         $this->loadModel('Quotation');
         $this->loadModel('AgentStatus');
+        $this->Quotation->recursive = 2; 
         $quote_data = $this->Quotation->findById($id);
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
@@ -166,19 +167,32 @@ class CollectionSchedulesController extends AppController {
         ));
         $this->Client->save();
 
-        $dateToday = date("Y-m-d H:i:s");
-        $quotation_id = $data['quotation_id'];
-        $this->Quotation->id = $quotation_id;
-        $this->Quotation->set(array(
-            'status' => 'moved',
-            'vat_type' => $data['vat_type'],
-            'quotation_term_id' => $data['term_id'],
-            'delivery_mode' => $data['delivery_mode'],
-            'target_delivery' => $data['target_delivery'],
-            'date_moved' => $dateToday,
-            'advance_invoice' => $data['advance_invoice'],
-        ));
-        $this->Quotation->save();
+        // $dateToday = date("Y-m-d H:i:s");
+        // $quotation_id = $data['quotation_id'];
+        // $this->Quotation->id = $quotation_id;
+        // $this->Quotation->set(array(
+        //     'status' => 'moved',
+        //     'vat_type' => $data['vat_type'],
+        //     'quotation_term_id' => $data['term_id'],
+        //     'delivery_mode' => $data['delivery_mode'],
+        //     'target_delivery' => $data['target_delivery'],
+        //     'date_moved' => $dateToday,
+        //     'advance_invoice' => $data['advance_invoice'],
+        // ));
+        // $this->Quotation->save();
+        
+
+        //     $this->loadModel('QuotationUpdateLog');
+            
+        //     $this->QuotationUpdateLog->create();
+        //     $this->QuotationUpdateLog->set([
+        //         "user_id"=>$this->Auth->user('id'),
+        //         "quotation_id"=>$quotation_id,
+        //         "status"=>'moved'
+        //         ]);
+        //     $this->QuotationUpdateLog->save();
+            
+            
         echo json_encode($data);
     }
 
@@ -273,6 +287,45 @@ class CollectionSchedulesController extends AppController {
             echo json_encode($data);
         }
         
+    }
+    
+    public function add_schedule(){ 
+        $this->loadModel('User');
+        $this->loadModel('Quotation');
+        $this->Quotation->recursive=1;
+        $quotations = $this->Quotation->find('all',['fields'=>['Quotation.*, Client.*']]);
+        
+        $collectors = $this->User->find('all');
+        
+        $this->set(compact('quotations','collectors'));
+        
+    }
+    
+    
+    
+    public function add_schedule_process() {
+
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $time = date("H:i:s", strtotime($data['collection_date_time']));
+        $collection_date = $data['collection_date'] . ' ' . $time;
+
+        $this->CollectionSchedule->create();
+        $this->CollectionSchedule->set(array(
+            'created_by' => $this->Auth->user('id'),
+            'agent_instruction' => $data['agent_instruction'],
+            'collection_date' => $collection_date,
+            'status' => 'for_collection',
+            'quotation_id' => $data['quotation_id'],
+            'expected_amount' => $data['expected_amount'],
+            'user_id' => $data['user_id'],
+        ));
+        $this->CollectionSchedule->save();
+ 
+ 
+        echo json_encode($data);
     }
 
 }

@@ -47,8 +47,8 @@
 						<td><?php echo h($companyFundLog['CompanyFundLog']['amount']); ?>&nbsp;</td>
 						<td><?php echo h($companyFundLog['CompanyFundLog']['process']); ?>&nbsp;</td>
 						<td><?php echo h($companyFundLog['CompanyFundLog']['source_num']); ?>&nbsp;</td>
-						<td><?php echo h($companyFundLog['CompanyFundLog']['created']); ?>&nbsp;</td>
-						<td><?php echo h($companyFundLog['CompanyFundLog']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($companyFundLog['CompanyFundLog']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($companyFundLog['CompanyFundLog']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $companyFundLog['CompanyFundLog']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $companyFundLog['CompanyFundLog']['id']), array('escape' => false)); ?>

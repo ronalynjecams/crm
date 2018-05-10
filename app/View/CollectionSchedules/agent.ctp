@@ -1,11 +1,11 @@
 
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<link href="../plugins/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-<script src="../plugins/select2/js/select2.min.js"></script>  
-<script src="../plugins/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>  
+<script src="/css/plug/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
 <div id="content-container" >
     <div id="page-title">
         <h1 class="page-header text-overflow">Collection schedule</h1>

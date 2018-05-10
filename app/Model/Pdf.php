@@ -11,6 +11,9 @@ class Pdf extends AppModel {
  *
  * @var array
  */
+ 
+    public $actsAs = array('Containable');
+    
 	public $validate = array(
 		'name' => array(
 			'numeric' => array(

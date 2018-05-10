@@ -1,10 +1,14 @@
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<link href="../plugins/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+<!--MASKS-->
+<script src="/js/validation/jquery.maskedinput.js"></script>
+<script src="/js/validation/jquery.maskedinput.min.js"></script>
+
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-<script src="../plugins/select2/js/select2.min.js"></script>  
-<script src="../plugins/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
+<script src="/css/plug/select/js/select2.min.js"></script>  
+<script src="/css/plug/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
 <div id="content-container" >
     <div id="page-title">
         <h1 class="page-header text-overflow">Collection schedule</h1>
@@ -164,7 +168,7 @@
                                 <label class=" control-label"><b>Assigned TIN Number</b></label> 
                             </div>
                             <div class="col-sm-6"> 
-                                <input type="number" readonly id="my_tin" value="<?php echo $agent_status['AgentStatus']['tin_number']; ?>" class="form-control">
+                                <input type="text" readonly id="my_tin" value="<?php echo $agent_status['AgentStatus']['tin_number']; ?>" class="form-control">
                             </div>
                         </div> 
                         <div class="row">
@@ -174,7 +178,7 @@
                         <div class="row">
                             <div class="col-sm-12"> 
                                 <label class=" control-label"><b>TIN Number</b></label> 
-                                <input type="number" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
+                                <input type="text" id="tin_number" value="<?php echo $quote_data['Client']['tin_number']; ?>" class="form-control">
                                 <div id="require_tin_div"></div>
                             </div>
                         </div>
@@ -270,7 +274,7 @@
 </div>  
 <script>
     $(document).ready(function () {
-
+        $("#tin_number").mask("999-999-999");
         $("#term_id").select2({
             placeholder: "Select Term",
             width: '100%',
@@ -334,7 +338,7 @@
                 if (collection_date != "") {
                     if (collection_date_time != "") {
                         if (agent_instruction != "") {
-                            if (tin_number != "" && tin_number != 00000000000000 && tin_number >= 1000) {
+                            if (tin_number != "") {
                                 ///process here
                                 approve_quotation(data);
                             } else {

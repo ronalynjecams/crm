@@ -50,8 +50,8 @@
 			<?php echo $this->Html->link($prodInvCombo['ProdInvLocation']['id'], array('controller' => 'prod_inv_locations', 'action' => 'view', $prodInvCombo['ProdInvLocation']['id'])); ?>
 		</td>
 						<td><?php echo h($prodInvCombo['ProdInvCombo']['qty']); ?>&nbsp;</td>
-						<td><?php echo h($prodInvCombo['ProdInvCombo']['created']); ?>&nbsp;</td>
-						<td><?php echo h($prodInvCombo['ProdInvCombo']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($prodInvCombo['ProdInvCombo']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($prodInvCombo['ProdInvCombo']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $prodInvCombo['ProdInvCombo']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $prodInvCombo['ProdInvCombo']['id']), array('escape' => false)); ?>

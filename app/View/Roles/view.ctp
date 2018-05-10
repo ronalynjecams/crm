@@ -46,14 +46,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($role['Role']['created']); ?>
+			<?php echo time_elapsed_string($role['Role']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($role['Role']['modified']); ?>
+			<?php echo time_elapsed_string($role['Role']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

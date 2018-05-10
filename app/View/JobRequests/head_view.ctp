@@ -1,12 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>  
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -41,44 +41,83 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php //pr($pending_jrs);exit; ?>
-                         <?php foreach ($pending_jrs as $pending_jr) { ?> 
-                        
+                        <?php foreach ($pending_jrs as $pending_jr) {
+                            $Quotation = $pending_jr['Quotation'];
+                            $not_specified = "<font class='text-danger'>Not Specified</font>";
+                            $unknown = "<font class='text-danger'>Unknown</font>";
+                            $type = $unknown;
+                            $Quotation_id = 0;
+                            if(!empty($Quotation)) {
+                                $type = $pending_jr['Quotation'][0]['type'];
+                                $Quotation_id = $pending_jr['Quotation'][0]['id'];
+                            }
+                        ?>
                         <tr>
-                            <td >
+                            <td data-order="<?php echo $pending_jr['JobRequest']['created']; ?>">
                                 <?php 
-                                     echo date('F d, Y', strtotime($pending_jr['JobRequest']['created']));
+                                     echo time_elapsed_string($pending_jr['JobRequest']['created']);
                                      echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';
-                                     ?> 
+                                    $clntname = '<font class="text-danger">Unknown</font>';
+                                    if(!empty($pending_jr['Quotation'][0]['Client']['name'])) {
+                                        $clntname_tmp = $pending_jr['Quotation'][0]['Client']['name'];
+                                        if($clntname_tmp!="") {
+                                            $clntname = $pending_jr['Quotation'][0]['Client']['name'];
+                                        }
+                                    }
+                                ?>
                             </td> 
-                            <td align="center"><?php echo $pending_jr['Quotation'][0]['type']; ?></td> 
-                            <td align="center"><?php echo $pending_jr['Quotation'][0]['Client']['name'].'<br/>'.$pending_jr['JobRequest']['jr_number']; ?></td>
-                            <td align="center"><?php echo $pending_jr['Quotation'][0]['User']['first_name'].' '.$pending_jr['Quotation'][0]['User']['last_name']; ?></td>   
+                            <td align="center"><?php echo $type; ?></td> 
+                            <td align="center"><?php echo $clntname.'<br/>'.$pending_jr['JobRequest']['jr_number']; ?></td>
+                            <?php
+                                $fname = '';
+                                $lname = '';
+                                
+                                if(!empty($pending_jr['Quotation'][0]['User'])) {
+                                    $fname = $pending_jr['Quotation'][0]['User']['first_name'];
+                                    $lname = $pending_jr['Quotation'][0]['User']['last_name'];
+                                }
+                                
+                                if($fname == "" && $lname == "") {
+                                    $fullname = "Unknown";
+                                }
+                                else {
+                                    $fullname = $fname." ".$lname;
+                                }
+                            ?>
+                            <td align="center"><?= $fullname; ?></td>   
                             <td align="center"> 
                             <?php
-                            echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation'][0]['id'] . '"><i class="fa fa-edit"></i></button>';
+                            // echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $Quotation_id . '"><i class="fa fa-edit"></i></button>';
                             ?>
+                            <a href="/job_requests/joupdate?id=<?php echo $Quotation_id; ?>"
+                               class="btn btn-mint  btn-icon  add-tooltip"
+                               data-toggle="tooltip"
+                               data-original-title="Update Job Request"
+                               type="button">
+                                <i class="fa fa-edit"></i>
+                            </a>
                             </td> 
                         </tr>
                         <?php } ?>
                         <?php //foreach ($pending_jrs as $pending_jr) { ?> 
                             <!--<tr>-->
                             <!--    <td >-->
-                            <!--        <?php-->
-                            <!--        echo date('F d, Y', strtotime($pending_jr['JobRequest']['created']));-->
-                            <!--        echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';-->
-                            <!--        ?>-->
+                                    <?php
+                            // <!--        echo time_elapsed_string($pending_jr['JobRequest']['created']);-->
+                            // <!--        echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';-->
+                                   ?>
                             <!--    </td>-->
                             <!--    <td>-->
-                            <!--        <?php-->
-                            <!--        echo $pending_jr['Quotation']['type'];-->
-                            <!--        ?> -->
+                                   <?php
+                                //   echo $pending_jr['Quotation']['type']
+                                   ?>
                             <!--    </td> -->
-                            <!--    <td ><?php echo $pending_jr['Client']['name']; ?><br/><small>[ <?php echo $pending_jr['JobRequest']['jr_number']; ?> ]</small></td>-->
-                            <!--    <td ><?php echo $pending_jr['User']['first_name']; ?></td>  -->
-                            <!--    <td> <?php-->
-                            <!--        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation']['id'] . '"><i class="fa fa-edit"></i></button>';-->
-                            <!--        ?>-->
+                            <!--    <td ><?php //echo $pending_jr['Client']['name']; ?><br/><small>[ <?php echo $pending_jr['JobRequest']['jr_number']; ?> ]</small></td>-->
+                            <!--    <td ><?php //echo $pending_jr['User']['first_name']; ?></td>  -->
+                                <!--<td> -->
+                                    <?php
+                            // <!--        echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation']['id'] . '"><i class="fa fa-edit"></i></button>';-->
+                                    ?>
                             <!--    </td> -->
                             <!--</tr>-->
                         <?php //} ?>
@@ -108,12 +147,12 @@
             "stateSave": true
         });
 
-        $('.jrupdateBtn').each(function (index) {
-            $(this).click(function () {
-                var quote_id = $(this).data("jobrid");
-                window.location.replace("/job_requests/joupdate?id=" + quote_id);
-            });
-        });
+        // $('.jrupdateBtn').each(function (index) {
+        //     $(this).click(function () {
+        //         var quote_id = $(this).data("jobrid");
+        //         window.location.replace("/job_requests/joupdate?id=" + quote_id);
+        //     });
+        // });
 
 //        $('.jobRequeBtn').each(function (index) {
 //            $(this).click(function () {

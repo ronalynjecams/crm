@@ -108,14 +108,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($quotationProduct['QuotationProduct']['created']); ?>
+			<?php echo time_elapsed_string($quotationProduct['QuotationProduct']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($quotationProduct['QuotationProduct']['modified']); ?>
+			<?php echo time_elapsed_string($quotationProduct['QuotationProduct']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -155,8 +155,8 @@
 			<td><?php echo $quotationProductProperty['value']; ?></td>
 			<td><?php echo $quotationProductProperty['product_property_id']; ?></td>
 			<td><?php echo $quotationProductProperty['product_value_id']; ?></td>
-			<td><?php echo $quotationProductProperty['created']; ?></td>
-			<td><?php echo $quotationProductProperty['modified']; ?></td>
+			<td><?php echo time_elapsed_string($quotationProductProperty['created']); ?></td>
+			<td><?php echo time_elapsed_string($quotationProductProperty['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'quotation_product_properties', 'action' => 'view', $quotationProductProperty['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'quotation_product_properties', 'action' => 'edit', $quotationProductProperty['id']), array('escape' => false)); ?>

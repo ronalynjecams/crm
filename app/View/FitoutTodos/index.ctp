@@ -51,9 +51,9 @@
 			<?php echo $this->Html->link($fitoutTodo['User']['id'], array('controller' => 'users', 'action' => 'view', $fitoutTodo['User']['id'])); ?>
 		</td>
 						<td><?php echo h($fitoutTodo['FitoutTodo']['deadline']); ?>&nbsp;</td>
-						<td><?php echo h($fitoutTodo['FitoutTodo']['date_started']); ?>&nbsp;</td>
-						<td><?php echo h($fitoutTodo['FitoutTodo']['created']); ?>&nbsp;</td>
-						<td><?php echo h($fitoutTodo['FitoutTodo']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutTodo['FitoutTodo']['date_started']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutTodo['FitoutTodo']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutTodo['FitoutTodo']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $fitoutTodo['FitoutTodo']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $fitoutTodo['FitoutTodo']['id']), array('escape' => false)); ?>

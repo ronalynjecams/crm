@@ -1,17 +1,32 @@
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 <!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />-->
 
-<link href="../css/sweetalert.css" rel="stylesheet">
-<!--<link href="plugins/bootstrap-validator/bootstrapValidator.min.css" rel="stylesheet">-->
+<link href="/css/sweetalert.css" rel="stylesheet">
+
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-<script src="../plugins/select2/js/select2.min.js"></script>   
-   <!--<script src="plugins/masked-input/jquery.maskedinput.min.js"></script>-->
-   <!--<script src="plugins/bootstrap-validator/bootstrapValidator.min.js"></script>-->
-<!--<script src="../js/erp_js/quotation.js"></script>--> 
-<!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
+<script src="/css/plug/select/js/select2.min.js"></script>    
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
+
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        height: 100,
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
+
 <!--===================================================-->
 <div id="content-container" >
     <div id="page-title">
@@ -21,39 +36,56 @@
             <div class="col-sm-12">
                 <div class="col-sm-12">
                     <h3 class="page-header text-overflow"> 
-                        <?php
-                        echo $qprod['QuotationProduct']['Product']['name'];
-                        echo '&nbsp;&nbsp;&nbsp;&nbsp;<small>['.abs($qprod['QuotationProduct']['qty']).' pcs]</small>';
+                        <?php 
 
-                        echo '<input type="hidden" id="quotation_product_id" value="' . $qprod['QuotationProduct']['id'] . '">';
-                        echo '<input type="hidden" id="jr_product_id" value="' . $qprod['JrProduct']['id'] . '">';
-//                            echo '<input type="hidden" id="product_id" value="'.$qprod['QuotationProduct']['Product']['id'].'">'; 
+                        
+                        if($job_request_type == 'jrp'){
+                            
+                            echo '<input type="hidden" id="jr_product_id" value="' . $qprod['JobRequestProduct']['id'] . '">'; 
+                            echo '<input type="hidden" id="jr_floorplan_id" value="0">'; 
+                            echo '<input type="hidden" id="quotation_product_id" value="' . $qprod['JobRequestProduct']['quotation_product_id'] . '">';
+                            echo '<input type="hidden" id="quotation_id" value="' . $qprod['JobRequestProduct']['quotation_id'] . '">';
+                            echo '<input type="hidden" id="client_id" value="' . $qprod['JobRequestProduct']['client_id'] . '">';
+                            $qprod_data = $qprod['JobRequestProduct'];
+                        }else{
+                            
+                            echo '<input type="hidden" id="jr_product_id" value="0">'; 
+                            echo '<input type="hidden" id="jr_floorplan_id" value="' . $qprod['JobRequestFloorplan']['id'] . '">'; 
+                            echo '<input type="hidden" id="quotation_product_id" value="0">';
+                            echo '<input type="hidden" id="quotation_id" value="' . $qprod['JobRequestFloorplan']['quotation_id'] . '">';
+                            echo '<input type="hidden" id="client_id" value="' . $qprod['JobRequestFloorplan']['client_id'] . '">'; 
+                            $qprod_data = $qprod['JobRequestFloorplan'];
+                        }
                         ?>
                     </h3> 
                     <div class="panel">
                         <div class="panel-heading">
                             <div class="panel-control">
-                                <button class="btn btn-sm btn-primary" id="addProduct">Add Product</button>
-                                <!--<button class="btn btn-default" data-target="#products-panel-collapse" data-toggle="collapse"><i class="demo-pli-arrow-down"></i></button>-->
+                                <button class="btn btn-sm btn-primary" id="addProduct">Add Product</button> 
                             </div>
-                            <h3 class="panel-title"> Raw Materials </h3>
+                            <h3 class="panel-title"> Request Raw Materials </h3>
                         </div>
                         <div id="products-panel-collapse" class="collapse in">
                             <div class="panel-body"> 
                                 <div class="table-responsive">
                                     <table class="table table-striped"> 
-                                        <th>#</th>
+                                        <th>Date Requested</th>
+                                        <th>Image</th>
                                         <th>Product Code</th>
                                         <th>Description</th>
                                         <th>Qty</th>    
                                         <th>Action</th>  
                                         <tbody> 
                                             <?php
-//                                            pr($raws);
                                             foreach ($raws as $raw) {
                                                 ?>
                                                 <tr>
-                                                    <td><img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $raw['Product']['image']; ?>"></td>
+                                                    <td><?php 
+                                                        echo time_elapsed_string($raw['PoRawRequest']['created']);
+                                                        echo '<br/><small>' . date('h:i a', strtotime($raw['PoRawRequest']['created'])) . '</small>';
+                                                        ?>
+                                                    </td>
+                                                    <td><img class="img-responsive" height="70" width="70" src="/img/product-uploads/<?php echo $raw['Product']['image']; ?>"></td>
                                                     <td><?php echo $raw['Product']['name']; ?></td>
                                                     <td>
                                                         <?php
@@ -64,9 +96,31 @@
                                                     </td>
                                                     <td><?php echo $raw['PoRawRequest']['qty']; ?></td>  
                                                     <td>
-                                                        <?php if ($qprod['JrProduct']['status'] == 'ongoing' || $qprod['JrProduct']['status'] == 'pending' || $qprod['JrProduct']['status'] == 'onhold') { ?>
-                                                            <button class="btn btn-danger btn-icon btn-xs add-tooltip deleteProduct" data-rowid=<?php echo $raw['PoRawRequest']['id']; ?> data-toggle="tooltip" data-original-title="Delete Item  "><i class="fa fa-window-close "></i></button>
-                                                        <?php } ?>
+                                                        <?php
+                                                        if($raw['PoRawRequest']['status']!="cancelled") {
+                                                            if($raw['PoRawRequest']['processed_qty']!=0) {  
+                                                                echo '<button class="btn btn-danger btn-icon btn-xs add-tooltip deleteProduct"
+                                                                              data-rowid="'.$raw['PoRawRequest']['id'].'"
+                                                                              data-toggle="tooltip" data-original-title="Delete Item">
+                                                                            <i class="fa fa-trash "></i>
+                                                                        </button>';
+                                                            }
+                                                            else {
+                                                                echo '
+                                                                    <button class="btn btn-warning btn-icon btn-xs add-tooltip cancelProduct"
+                                                                            data-rowid="'.$raw['PoRawRequest']['id'].'"
+                                                                            data-toggle="tooltip"
+                                                                            data-placement="top"
+                                                                            data-original-title="Cancel Item">
+                                                                        <i class="fa fa-window-close"></i>
+                                                                    </button>
+                                                                    ';
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo "<font class='text-danger'>Cancelled</font>";
+                                                        }
+                                                        ?>
                                                     </td> 
                                                 </tr>
                                             <?php } ?>
@@ -138,9 +192,89 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
 
+<div class="modal fade" id="cancelProductModal" role="dialog"  aria-labelledby="demo-default-modal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!--Modal header-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="pci-cross pci-circle"></i>
+                </button>
+                <h4 class="modal-title">Cancel Product</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    </p><label>Remarks</label> <span class="text-danger">*</span></p>
+                    <textarea id="cancel_remarks"></textarea>
+                </div>
+            </div>
+            <!--Modal footer-->
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                <button class="btn btn-primary" id="cancelProduct">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
     $(document).ready(function () {
+        var cancel_product_id = 0;
+        $("button.cancelProduct").on('click', function() {
+            cancel_product_id = $(this).data('rowid');
+            $("#cancelProductModal").modal('show');
+        });
+        
+        $("#cancelProduct").on('click', function() {
+            $("button#cancelProduct").prop('disabled');
+            var cancel_remarks = tinymce.get("cancel_remarks").getContent();
+            
+            if(cancel_remarks!="" && cancel_remarks!=null) {
+                $("#cancelProductModal").modal('hide');
+                var data = {"id": cancel_product_id,
+                            "status": "cancelled",
+                            "remarks": cancel_remarks };
+                swal({
+                    title: "Are you sure?",
+                    text: "This will cancel product.",
+                    type: "warning",
+                    showCancelButton: true,
+                    closeOnCancel: true,
+                    closeOnConfirm: true
+                },
+                function (isConfirm) {
+                    if(isConfirm) {
+                        $.ajax({
+                            url: "/po_raw_requests/cancel_product",
+                            type: "POST",
+                            data: {"data": data},
+                            dataType: "text",
+                            success: function(success) {
+                                console.log(success);
+                                location.reload();
+                            },
+                            error: function(error) {
+                                swal({
+                                    title: "Oops!",
+                                    text: "An error occurred. Please try again later.",
+                                    type: "warning"
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                $("button#cancelProduct").removeAttr('disabled');
+                swal({
+                    title: "Oops!",
+                    text: "Please add remarks and try again.",
+                    type: "warning"
+                });
+            }
+        });
+        
         $("#product_id").select2({
             placeholder: "Select Product Code",
             width: '100%',
@@ -209,7 +343,7 @@
 
                 $("#prod_img").remove();
                 $(".initial_product_type_div").remove();
-                $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="../product_uploads/' + data['Product']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['Product']['image'] + '"></div>' +
+                $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="/img/product-uploads/' + data['Product']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['Product']['image'] + '"></div>' +
                         '<div class="initial_product_type_div form-group"><br/><label>Product Type</label><input type="text" readonly value="' + data['Product']['type'] + '" class="form-control" id="initial_prod_type"></div>');
 
 
@@ -260,11 +394,15 @@
 
 
     $("#saveProduct").click(function () {
+        $("#saveProduct").prop("disabled", true);
         var qty = $("#qty").val();
         var date_needed = $("#date_needed").val();
         var quotation_product_id = $("#quotation_product_id").val();
         var jr_product_id = $("#jr_product_id").val();
+        var jr_floorplan_id = $("#jr_floorplan_id").val();
         var product_id = $("#product_id").val();
+        var quotation_id = $("#quotation_id").val();
+        var client_id = $("#client_id").val();
 
 
         var property = [];
@@ -275,10 +413,27 @@
         $('.value').each(function (index) {
             value.push($(this).val());
         });
+        
+        
+        var added_property = [];
+        // $('.added_property').each(function (index) {
+        //     added_property.push($(this).val());
+        // });
+        
+        var added_value = [];
+        // $('.added_value').each(function (index) {
+        //     added_value.push($(this).val());
+        // });
         var obj = {};
 
         for (var i = 0, len = property.length; i < len; i++) {
             obj[property[i]] = value[i];
+        }
+        
+        var objj = {};
+
+        for (var i = 0, len = added_property.length; i < len; i++) {
+            objj[added_property[i]] = added_value[i];
         }
 
 
@@ -287,12 +442,15 @@
 
         var data = {
             "quotation_product_id": quotation_product_id,
+            "quotation_id": quotation_id,
+            "client_id": client_id,
             "product_id": product_id,
             "jr_product_id": jr_product_id,
+            "jr_floorplan_id": jr_floorplan_id,
             "date_needed": date_needed,
             "qty": qty,
             "property": property,
-            "value": value,
+            "value": value, 
             "counter": ctr
         }
 
@@ -304,13 +462,27 @@
                 url: "/po_raw_requests/addProduct",
                 type: 'POST',
                 data: {'data': data},
-                dataType: 'json',
-                success: function (dd) {
-//                    console.log(dd);
-                    location.reload();
+                dataType: 'text',
+                success: function (success) { 
+                    console.log("success:"+success);
+                    swal({
+                        title: "Success",
+                        text: "Successfully added product.",
+                        type: "success"
+                    },
+                    function(isConfirm) {
+                        if(isConfirm) {
+                            location.reload();
+                        }
+                    });
                 },
-                error: function (dd) {
-                    console.log('error' + dd);
+                error: function (error) {
+                    console.log("error:"+error);
+                    swal({
+                        title: "Oops!",
+                        text: "An error occured while adding product. \n Please try again.",
+                        type: "warning"
+                    });
                 }
             });
         }

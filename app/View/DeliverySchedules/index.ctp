@@ -49,15 +49,15 @@
 				<?php foreach ($deliverySchedules as $deliverySchedule): ?>
 					<tr>
 						<td><?php echo h($deliverySchedule['DeliverySchedule']['id']); ?>&nbsp;</td>
-						<td><?php echo h($deliverySchedule['DeliverySchedule']['delivery_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliverySchedule['DeliverySchedule']['delivery_date']); ?>&nbsp;</td>
 						<td><?php echo h($deliverySchedule['DeliverySchedule']['requested_qty']); ?>&nbsp;</td>
 						<td><?php echo h($deliverySchedule['DeliverySchedule']['actual_qty']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($deliverySchedule['Quotation']['id'], array('controller' => 'quotations', 'action' => 'view', $deliverySchedule['Quotation']['id'])); ?>
 		</td>
 						<td><?php echo h($deliverySchedule['DeliverySchedule']['approved_by']); ?>&nbsp;</td>
-						<td><?php echo h($deliverySchedule['DeliverySchedule']['created']); ?>&nbsp;</td>
-						<td><?php echo h($deliverySchedule['DeliverySchedule']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliverySchedule['DeliverySchedule']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($deliverySchedule['DeliverySchedule']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $deliverySchedule['DeliverySchedule']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $deliverySchedule['DeliverySchedule']['id']), array('escape' => false)); ?>

@@ -66,14 +66,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($fitoutReport['FitoutReport']['created']); ?>
+			<?php echo time_elapsed_string($fitoutReport['FitoutReport']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($fitoutReport['FitoutReport']['modified']); ?>
+			<?php echo time_elapsed_string($fitoutReport['FitoutReport']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -109,8 +109,8 @@
 			<td><?php echo $fitoutReportComment['fitout_report_id']; ?></td>
 			<td><?php echo $fitoutReportComment['comment']; ?></td>
 			<td><?php echo $fitoutReportComment['user_id']; ?></td>
-			<td><?php echo $fitoutReportComment['created']; ?></td>
-			<td><?php echo $fitoutReportComment['modified']; ?></td>
+			<td><?php echo time_elapsed_string($fitoutReportComment['created']); ?></td>
+			<td><?php echo time_elapsed_string($fitoutReportComment['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'fitout_report_comments', 'action' => 'view', $fitoutReportComment['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'fitout_report_comments', 'action' => 'edit', $fitoutReportComment['id']), array('escape' => false)); ?>

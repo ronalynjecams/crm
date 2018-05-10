@@ -55,8 +55,8 @@
 			<?php echo $this->Html->link($productSupplier['Supplier']['name'], array('controller' => 'suppliers', 'action' => 'view', $productSupplier['Supplier']['id'])); ?>
 		</td>
 						<td><?php echo h($productSupplier['ProductSupplier']['note']); ?>&nbsp;</td>
-						<td><?php echo h($productSupplier['ProductSupplier']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productSupplier['ProductSupplier']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSupplier['ProductSupplier']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSupplier['ProductSupplier']['modified']); ?>&nbsp;</td>
 						<td><?php echo h($productSupplier['ProductSupplier']['product_code']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $productSupplier['ProductSupplier']['id']), array('escape' => false)); ?>

@@ -191,45 +191,47 @@ class ProductCombosController extends AppController {
 		$this->loadModel('ProductCombo');
 		$this->loadModel('ProductComboProperty');
 		
-		$data = $this->request->data;
-		$ordering = $data['ordering'];
-		$id_str = $data['id'];
-		$ids = explode(",", rtrim($id_str, ','));
-		
-		$this->ProductCombo->recursive = -1;
-		$product_combo_ids = $this->ProductCombo->find('all', ['conditions'=>
-							['ordering'=>$ordering]]);
-		foreach ($product_combo_ids as $product_combo_id) {
-			$product_combo_id = $product_combo_id['ProductCombo']['id'];
-		}
-		echo json_encode($product_combo_id);
-		
+		$id = $this->request->data;
+		$this->ProductComboProperty->recursive = -1;
+		$get_combo_prop = $this->ProductComboProperty->find('all',
+			['conditions'=>['product_combo_id'=>$id],
+			 'fields'=>'id']);
+			
 		$DS_ProductComboProperty = $this->ProductComboProperty->getDataSource();
 		$DS_ProductComboProperty->begin();
 		
-		$DS_ProductCombo = $this->ProductCombo->getDataSource();
-		$DS_ProductCombo->begin();
-		
-		foreach($ids as $id) {
-			$this->ProductComboProperty->id = $id;
-			if($this->ProductComboProperty->delete()):
-				echo json_encode("Deleted prop");
-				$this->ProductCombo->id = $product_combo_id;
-				if($this->ProductCombo->delete()) {
-					echo json_encode("Deleted combo");
-					$DS_ProductCombo->commit();
-					$DS_ProductComboProperty->commit();
-				}
-				else {
-					$DS_ProductComboProperty->rollback();
-				}
-			else:
-				$DS_ProductComboProperty->rollback();
-			endif;
+		$isDeleted = 'true';
+		foreach($get_combo_prop as $ret_combo_prop) {
+			$combo_prop_arr = $ret_combo_prop['ProductComboProperty'];
+			$combo_prop_id = $combo_prop_arr['id'];
+			
+			$this->ProductComboProperty->id = $combo_prop_id;
+			if($this->ProductComboProperty->delete()) {
+				echo "Deleted prop.\n";
+			}
+			else {
+				$isDeleted = 'false';
+			}
 		}
 		
-		$DS_ProductComboProperty->commit();
-		$DS_ProductCombo->commit();
+		if($isDeleted) {
+			$DS_ProductCombo = $this->ProductCombo->getDataSource();
+			$DS_ProductCombo->begin();
+			
+			$this->ProductCombo->id = $id;
+			if($this->ProductCombo->delete()) {
+				echo json_encode("Deleted combo");
+				
+				$DS_ProductComboProperty->commit();
+				$DS_ProductCombo->commit();
+			}
+			else {
+				$DS_ProductComboProperty->rollback();
+			}
+		}
+		else {
+			$DS_ProductComboProperty->rollback();
+		}
 		
 		return json_encode("Everything was executed");
 	}
@@ -309,6 +311,9 @@ class ProductCombosController extends AppController {
 		}
 		// end of 3
 		
+		$this->ProductCombo->id = $prod_combo_id;
+		$this->ProductCombo->set(['unit_id'=>$unit_id]);
+		$this->ProductCombo->save();
 		if($check_result) {
 			$this->Session->setFlash('This combination already exists.',
 			'default', array('class' => 'alert alert-danger'), 'alertforexisting');

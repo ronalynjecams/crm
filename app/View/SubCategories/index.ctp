@@ -23,9 +23,7 @@
 								<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Sub Category'), array('action' => 'add'), array('escape' => false)); ?></li>
 								<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Categories'), array('controller' => 'categories', 'action' => 'index'), array('escape' => false)); ?> </li>
 		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Category'), array('controller' => 'categories', 'action' => 'add'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;List Products'), array('controller' => 'products', 'action' => 'index'), array('escape' => false)); ?> </li>
-		<li><?php echo $this->Html->link(__('<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;New Product'), array('controller' => 'products', 'action' => 'add'), array('escape' => false)); ?> </li>
-							</ul>
+ 							</ul>
 						</div><!-- end body -->
 				</div><!-- end panel -->
 			</div><!-- end actions -->
@@ -52,12 +50,12 @@
 								<td>
 			<?php echo $this->Html->link($subCategory['Category']['name'], array('controller' => 'categories', 'action' => 'view', $subCategory['Category']['id'])); ?>
 		</td>
-						<td><?php echo h($subCategory['SubCategory']['created']); ?>&nbsp;</td>
-						<td><?php echo h($subCategory['SubCategory']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($subCategory['SubCategory']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($subCategory['SubCategory']['modified']); ?>&nbsp;</td>
 						<td class="actions">
-							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $subCategory['SubCategory']['id']), array('escape' => false)); ?>
-							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $subCategory['SubCategory']['id']), array('escape' => false)); ?>
-							<?php echo $this->Form->postLink('<span class="glyphicon glyphicon-remove"></span>', array('action' => 'delete', $subCategory['SubCategory']['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $subCategory['SubCategory']['id'])); ?>
+							<?php echo $this->Html->link('<span class="fa fa-search"></span>', array('action' => 'view', $subCategory['SubCategory']['id']), array('escape' => false)); ?>
+							<?php echo $this->Html->link('<span class="fa fa-edit"></span>', array('action' => 'edit', $subCategory['SubCategory']['id']), array('escape' => false)); ?>
+							<?php echo $this->Form->postLink('<span class="fa fa-remove"></span>', array('action' => 'delete', $subCategory['SubCategory']['id']), array('escape' => false), __('Are you sure you want to delete # %s?', $subCategory['SubCategory']['id'])); ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>

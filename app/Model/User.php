@@ -17,6 +17,8 @@ class User extends AppModel {
 	    return true;
 	} 
 
+	// THIS IS VIRTUAL FIELDS
+	var $virtualFields = array('fullname' => 'CONCAT(User.first_name," ",User.last_name)');
 
 	// The Associations below have been created with all possible keys, those that are not needed can be removed
 

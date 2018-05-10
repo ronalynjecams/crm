@@ -63,14 +63,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($paymentRequestLog['PaymentRequestLog']['created']); ?>
+			<?php echo time_elapsed_string($paymentRequestLog['PaymentRequestLog']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($paymentRequestLog['PaymentRequestLog']['modified']); ?>
+			<?php echo time_elapsed_string($paymentRequestLog['PaymentRequestLog']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

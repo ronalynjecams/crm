@@ -64,28 +64,28 @@
 <tr>
 		<th><?php echo __('Date From'); ?></th>
 		<td>
-			<?php echo h($agentStatus['AgentStatus']['date_from']); ?>
+			<?php echo time_elapsed_string($agentStatus['AgentStatus']['date_from']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date To'); ?></th>
 		<td>
-			<?php echo h($agentStatus['AgentStatus']['date_to']); ?>
+			<?php echo time_elapsed_string($agentStatus['AgentStatus']['date_to']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($agentStatus['AgentStatus']['created']); ?>
+			<?php echo time_elapsed_string($agentStatus['AgentStatus']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($agentStatus['AgentStatus']['modified']); ?>
+			<?php echo time_elapsed_string($agentStatus['AgentStatus']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -9,6 +9,7 @@ App::uses('AppModel', 'Model');
  */
 class PaymentRequestCheque extends AppModel {
 
+    public $actsAs = array('Containable');
 /**
  * Validation rules
  *

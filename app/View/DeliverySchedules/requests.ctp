@@ -1,18 +1,18 @@
 
 
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<link href="../css/sweetalert.css" rel="stylesheet">
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<link href="/css/sweetalert.css" rel="stylesheet">
+<!--<link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">-->
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
 
 
 <!--CONTENT CONTAINER-->
@@ -45,15 +45,15 @@
                             <th>Delivery Date [Time]</th>  
                             <th>Deliver To</th>
                             <th>Requested By</th>
-                            <th></th>  
+                            <th>Action</th>  
                         </tr>
                     </thead> 
                     <tbody>
                         <?php foreach ($arr as $data) { ?>
                             <tr>
-                                <td>
+                                <td data-order="<?php echo $data['DeliverySchedule']['created']; ?>">
                                     <?php
-                                    echo date('F d, Y', strtotime($data['DeliverySchedule']['created']));
+                                    echo time_elapsed_string($data['DeliverySchedule']['created']);
                                     echo '<br/><small>' . date('h:i a', strtotime($data['DeliverySchedule']['created'])) . '</small>';
                                     ?>  
                                 </td> 
@@ -68,8 +68,9 @@
                                 <td><?php echo $data['User']['first_name'].'  '.$data['User']['last_name']; ?></td>
                                 <td>
                                     <?php 
-                                    if($data['DeliverySchedule']['type'] == 'dr'){
-                                         
+                                    if($data['DeliverySchedule']['type'] == 'dr' ||
+                                       $data['DeliverySchedule']['type'] == 'demo' ||
+                                       $data['DeliverySchedule']['type'] == 'pull_out'){
                                        echo '<a href="/delivery_sched_products/process?id='.$data['DeliverySchedule']['id'].'" class="btn btn-primary"><i class="fa fa-eye"></i></a>'; 
                                     }
                                     
@@ -104,7 +105,7 @@
     $(document).ready(function () {
         $('#example').DataTable({
             "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
-            "order": [[0, "asc"]],
+            "order": [[0, "desc"]],
             "stateSave": true
         });
     });

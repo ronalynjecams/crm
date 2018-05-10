@@ -44,8 +44,8 @@
                                 <tr>
                                     <td><?php echo h($role['Role']['id']); ?>&nbsp;</td>
                                     <td><?php echo h($role['Role']['name']); ?>&nbsp;</td>
-                                    <td><?php echo h($role['Role']['created']); ?>&nbsp;</td>
-                                    <td><?php echo h($role['Role']['modified']); ?>&nbsp;</td>
+                                    <td><?php echo time_elapsed_string($role['Role']['created']); ?>&nbsp;</td>
+                                    <td><?php echo time_elapsed_string($role['Role']['modified']); ?>&nbsp;</td>
                                     <td class="actions">
                                         <?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $role['Role']['id']), array('escape' => false)); ?>
                                         <?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $role['Role']['id']), array('escape' => false)); ?>

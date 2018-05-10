@@ -1,5 +1,5 @@
 <?php
-
+// App::uses('CakeTime', 'Utility');
 App::uses('AppController', 'Controller');
 
 /**
@@ -22,9 +22,14 @@ class QuotationsController extends AppController {
      *
      * @return void
      */
+     
+    
+     
     public function index() {
-        $this->Quotation->recursive = 0;
+        $this->Quotation->recursive = -1;
         $this->set('quotations', $this->Paginator->paginate());
+        $this->set('_serialize', array('quotations'));
+        
     }
 
     /**
@@ -41,8 +46,12 @@ class QuotationsController extends AppController {
 //        pr($qprod);
 //        error_reporting(0);
         $id = $this->params['url']['id'];
+        $this->Quotation->recursive = 2;
         $quote_data = $this->Quotation->findById($id);
-        $quote_number = $quote_data['Quotation']['quote_number'];
+        $quote_number = "";
+        if(!empty($quote_data)) {
+            $quote_number = $quote_data['Quotation']['quote_number'];
+        }
         $this->set(compact('quote_data'));
         
         // pr($quote_data);
@@ -68,11 +77,13 @@ class QuotationsController extends AppController {
         $this->set(compact('products'));
 
         $this->loadModel('QuotationProduct');
-        $this->QuotationProduct->recursive = 3;
+        $this->QuotationProduct->recursive = 2;
         if ($this->Auth->user('role') != 'supply_staff') {
-            $quote_products = $this->QuotationProduct->find('all', array(
-                'conditions' => array('QuotationProduct.quotation_id' => $quote_data['Quotation']['id'])
-            ));
+            $quote_products = [];
+            if(!empty($quote_data)) {
+                $quote_products = $this->QuotationProduct->find('all',
+                    ['conditions' => ['QuotationProduct.quotation_id' => $quote_data['Quotation']['id']]]);
+            }
         } else {
             $quote_products = $this->QuotationProduct->find('all', array(
                 'conditions' => array(
@@ -168,7 +179,6 @@ class QuotationsController extends AppController {
         $data = $this->request->data;
         $id = $data['id'];
 
-
         if($this->Auth->user('role') == 'sales_manager'){
             $this->loadModel('QuotationUpdateLog');
             
@@ -178,15 +188,14 @@ class QuotationsController extends AppController {
                 "quotation_id"=>$id
                 ]);
             $this->QuotationUpdateLog->save();
-            
         } 
 
-            $this->Quotation->id = $id;
-            if ($this->Quotation->save($data)) {
-                echo json_encode($data);
-            } else {
-                echo json_encode('invalid data');
-            } 
+        $this->Quotation->id = $id;
+        if ($this->Quotation->save($data)) {
+            echo json_encode($data);
+        } else {
+            echo json_encode('invalid data');
+        } 
         
         exit;
     }
@@ -211,7 +220,26 @@ class QuotationsController extends AppController {
     }
 
     public function create() {
-
+        $this->loadModel('SubCategory');
+        $this->SubCategory->recursive = 0;
+        $subcategories = $this->SubCategory->find('all',
+            ['conditions'=>['Category.name'=>'SWATCHES'],
+                            'fields'=>['SubCategory.id']]);
+        $subcategories_array = [];
+        foreach($subcategories as $each_subcategories) {
+            $subcategories_array[] = $each_subcategories['SubCategory']['id'];
+        }
+        
+        $this->loadModel('Product');
+        $this->Product->recursive = -1;
+        // $swatches = $this->Product->find('all',
+        //     ['conditions'=>['Product.sub_category_id']]);
+        
+        $swatches = $this->Product->find('all',
+            ['conditions'=>['OR'=>[['Product.type' => 'swatches'], ['Product.type' => 'SWATCHES']]]]);
+        $this->set(compact('swatches'));
+        
+        $this->Quotation->recursive = 2;
         $ongoing = $this->Quotation->find('first', array(
             'conditions' => array(
                 'Quotation.user_id' => $this->Auth->user('id'),
@@ -220,11 +248,13 @@ class QuotationsController extends AppController {
 
         $this->loadModel('AgentStatus');
         $agentStat = $this->AgentStatus->find('all', array(
-            'conditions' => array('AgentStatus.user_id' => $this->Auth->user('id')),
+            'conditions' => array(
+                'AgentStatus.user_id' => $this->Auth->user('id'),
+                'AgentStatus.date_to' => NULL),
             'fields' => array('MAX(AgentStatus.id) AS id')
         ));
         $current_team = $this->AgentStatus->findById($agentStat[0][0]['id']);
-
+        // pr($current_team);
         if (count($ongoing) != 0) {
             //retrieve data from quotation
             $quote_data = $ongoing;
@@ -261,7 +291,7 @@ class QuotationsController extends AppController {
                     . '<li><p>Items not mentioned in the proposed deliverables, cost breakdown, and other conditions shall not form part of this proposal. Fees related to bank charges, bonds, failed pick up or delivery, re-configuration or re-consignment shall require review of the cost implication and shall necessitate a written request, prior to approval. The charges or expenses mentioned in the preceding sentence shall be considered for the account of the Client in the absence of any specific agreement between the Parties.</p></li> '
                     . '</ol>'
                     . '<h3>VIII. PENALTY</h3> '
-                    . '<ol> <li><p>A Penalty of <strong>One Percent (1%) daily</strong> on all unpaid items shall be applied if Client fails to settle the obligation on the due date. For purposes of ascertaining when the due date is, it shall be the date when payment should have been made based on the completion and delivery as agreed upon by the Parties.</p></li> '
+                    . '<ol> <li><p>A Penalty of <strong>One Percent (1%) monthly</strong> on all unpaid items shall be applied if Client fails to settle the obligation on the due date. For purposes of ascertaining when the due date is, it shall be the date when payment should have been made based on the completion and delivery as agreed upon by the Parties.</p></li> '
                     . '<li><p>When the due date falls on a holiday or weekend, it shall be considered due on the next business day for purposes of ascertain the date when payment and penalties may be demanded.</p></li> '
                     . '<li><p>In case of return of items without the fault of JECAMS, INC. a penalty of THIRTY PERCENT (30%) on all items returned after delivery/ installation shall be imposed.</p></li> '
                     . '<li><p>In case of cancellation of order seven (7) days after the issuance and receipt by JECAMS, INC. of the Purchase Order, a penalty of THIRTY PERCENT (30%) on all items shall be imposed.</p></li> '
@@ -325,8 +355,11 @@ class QuotationsController extends AppController {
         $this->set(compact('quote_products'));
 
 
-//            pr($quote_products);exit;
         $this->set(compact('quote_number'));
+        
+        $this->loadModel('ClientIndustry');
+        $industries = $this->ClientIndustry->find('all');
+        $this->set(compact('industries'));
     }
 
     public function maps() {
@@ -436,6 +469,21 @@ class QuotationsController extends AppController {
             $this->loadModel('Product');
             $this->Product->recursive = 2;
             $product = $this->Product->findById($id);
+            
+            return (json_encode($product));
+            exit;
+        }
+    }
+    
+    public function product_info2() {
+        $this->autoRender = false;
+        $this->response->type('json');
+        if ($this->request->is('ajax')) {
+            $id = $this->request->query['id'];
+            $this->loadModel('TempProduct');
+            $this->TempProduct->recursive = 2;
+            $product = $this->TempProduct->findById($id);
+            
             return (json_encode($product));
             exit;
         }
@@ -454,6 +502,7 @@ class QuotationsController extends AppController {
             $this->Quotation->set(array(
                 'status' => $type,
                 'date_deleted_lost' => $dateToday,
+                'collection_status'=>'none'
             ));
             if ($this->Quotation->save()) {
                 return (json_encode($id));
@@ -473,13 +522,115 @@ class QuotationsController extends AppController {
                 'order' => 'Quotation.created DESC');
             $this->set('pending_quotations', $this->Quotation->find('all', $options));
         }
+        else {
+            $pending_quotations = [];
+            $this->set(compact('pending_quotations'));
+        }
+    }
+    
+    public function edited() {
+        if ($this->Auth->user('role') == 'sales_executive') {
+            $this->Quotation->recursive = 2;
+            $options = array('conditions' => array(
+                    'Quotation.user_id' => $this->Auth->user('id'),
+                    'Quotation.status' => 'rejected'),
+                'order' => 'Quotation.created DESC');
+            $this->set('pending_quotations', $this->Quotation->find('all', $options));
+        }
+    }
+    
+    public function pending_ajax() {
+        $this->layout = "ajax";
+	    $this->modelClass = "Quotation";
+	    $this->autoRender = false;    
+	    
+	    $user_id = $this->Auth->user('id');
+	//
+	    $model = 'quotations';
+	    $columns = array('created', 'type', 'client_id', 'quote_number', 'grand_total', 'job_request_id', 'id');
+	    $where = "status = 'pending' && user_id = '$user_id'";
+	    
+	    $output = $this->Quotation->GetMyData($model, $columns, $where); 
+        
+        $data = $output['data'];
+		$res = [];
+		$count = 0;
+		foreach($data as $items){
+		    $this->loadModel('Client', 'JobRequest');
+		    
+		    $this->Client->recursive = -1;
+		    $client = $this->Client->findById($items[2]);
+		    $this->JobRequest->recursive = -1;
+		    $jr = $this->JobRequest->findById($items[5]);
+		    foreach($items as $key => $item){
+		        if($key == 0){
+		            $data[$count][$key] = time_elapsed_string($item).'<br/><small>'. date('h:i a', strtotime($item)) . '</small>';
+		        }
+		        if($key == 3){
+		            $data[$count][$key] = $client['Client']['name'].'<br/><small>[' . $item . ']</small>';
+		        }
+		        if($key == 4){
+		            $data[$count][$key] = '&#8369; ' . number_format($item, 2);
+		        }
+		        if($key == 5){
+		            if($item != 0){
+		                $data[$count][$key] = '<div class="input-group mar-btm">
+                                                <input type="text" class="form-control" placeholder="Name" readonly value="'.$jr['JobRequest']['jr_number'].'">
+                                                <span class="input-group-btn"><button class="btn btn-mint add-tooltip jrupdateBtn" data-toggle="tooltip"  data-original-title="View Job Request"  type="button"data-jobrid="' . $items[6] . '"><i class="fa fa-external-link"></i></button></span>
+                                            </div>';
+		            } else{
+		                $data[$count][$key] = '<br/><button  class="btn btn-default  btn-icon  add-tooltip jobRequeBtn" data-toggle="tooltip"  data-original-title="With Job Request?"  type="button" data-quoteid="' . $items[6] . '"><i class="fa fa-plus"></i></button>';
+		            }
+		        }
+		        if($key == 6){
+		            if($this->Auth->user('role') == 'sales_executive'){
+		                $data[$count][$key] = '<button class="btn btn-mint btn-icon add-tooltip update_quote" data-toggle="tooltip"  data-original-title="Update Quotation?"   data-upquoteid="'.$item.'"><i class="fa fa-edit"></i></button>
+		                <button class="btn btn-danger btn-icon add-tooltip delete_quote" data-toggle="tooltip"  data-original-title="Delete Quotation?" data-typo="deleted" data-delquoteid="'.$item.'" data-jrid="'.$jr['JobRequest']['id'].'"><i class="fa fa-window-close"></i> </button>
+                        <button class="btn btn-danger btn-icon add-tooltip delete_quote" data-toggle="tooltip"  data-original-title="Lost Quotation?" data-typo="lost" data-delquoteid="'.$item.'" data-jrid="'.$jr['JobRequest']['id'].'"><i class="fa fa-thumbs-down"></i> </button>';
+		            }
+		        }
+		        unset($data[$count][2]);
+		    }
+		$count++;    
+		}         
+		$output['data'] = $data;
+	    echo json_encode($output);
+	    exit;
     }
 
     public function update_quotation() {
-
+        // ---------- FOR SWATCHES ---------- //
+        $this->loadModel('SubCategory');
+        $this->SubCategory->recursive = 0;
+        $subcategories = $this->SubCategory->find('all',
+            ['conditions'=>['Category.name'=>'SWATCHES'],
+                            'fields'=>['SubCategory.id']]);
+        $subcategories_array = [];
+        foreach($subcategories as $each_subcategories) {
+            $subcategories_array[] = $each_subcategories['SubCategory']['id'];
+        }
+        
+        $this->loadModel('Product');
+        $this->Product->recursive = -1;
+        // $swatches = $this->Product->find('all',
+        //     ['conditions'=>['Product.sub_category_id']]);
+        
+        // $swatches = $this->Product->find('all',
+        //     ['conditions'=>['Product.sub_category_id']]);
+        
+        // $swatches = $this->Product->find('all',
+        //     ['conditions'=>['Product.type' => 'raw']]);
+        // $this->set(compact('swatches'));
+        
+        $swatches = $this->Product->find('all',
+            ['conditions'=>['OR'=>[['Product.type' => 'swatches'], ['Product.type' => 'SWATCHES']]]]);
+        $this->set(compact('swatches'));
+        // ---------- END FOR SWATCHED ---------- //
+        
         $id = $this->params['url']['id'];
+        $this->Quotation->recursive = 2;
         $quote_data = $this->Quotation->findById($id);
-//        pr($this->Auth->user('id'));exit;
+        // pr($this->Auth->user('id'));exit;
         if (($this->Auth->user('id') != $quote_data['Quotation']['user_id']) && ($this->Auth->user('role')!= "sales_coordinator") && ($this->Auth->user('role')!= "sales_manager")) {
             return $this->redirect('/users/error_page');
         } else {
@@ -500,44 +651,78 @@ class QuotationsController extends AppController {
 
             $this->loadModel('QuotationProduct');
             $this->QuotationProduct->recursive = 2;
-            $quote_products = $this->QuotationProduct->find('all', array(
-                'conditions' => array('QuotationProduct.quotation_id' => $quote_data['Quotation']['id'])
-            ));
-            $this->set(compact('quote_products'));
+            $quote_products = $this->QuotationProduct->find('all',
+                ['conditions' => ['QuotationProduct.quotation_id' => $quote_data['Quotation']['id']]]
+            );
+            
+            $status = $quote_data['Quotation']['status'];
+            $this->set(compact('quote_products', 'status'));
 
             $this->set(compact('quote_number'));
         }
+        $this->loadModel('ClientIndustry');
+        $industries = $this->ClientIndustry->find('all');
+        $this->set(compact('industries'));
+    }
+    
+    public function update_qproduct() {
+        $this->autoRender = false;
+        $qpid = $this->request->query['pid'];
+        $this->loadModel('QuotationProduct');
+        
+        $qproduct = $this->QuotationProduct->findById($qpid);
+        
+        // the process below is to return the product property by getting product_id;
+        $this->loadModel('ProductProperty');
+        $get_pp = [];
+        $product_id = $qproduct['Product']['id'];
+            
+        $get_pp = $this->ProductProperty->findAllByProductId($product_id);
+        
+        $retval = ["qproduct"=>$qproduct,
+                  "prod_property"=>$get_pp];
+        return json_encode($retval);
     }
 
-    public function move() {
+     public function move() {
         $id = $this->params['url']['id'];
         $this->loadModel('Bank');
         $this->loadModel('QuotationTerm');
         $this->loadModel('AgentStatus');
+        $this->Quotation->recursive = 2; 
         $quote_data = $this->Quotation->findById($id);
+        $uid = $this->Auth->user('id');
+        // $quote_data = $this->Quotation->find('all',array(
+        //     'conditions' => array('id' => $id)));
         $quote_number = $quote_data['Quotation']['quote_number'];
         $this->set(compact('quote_data'));
 
         $this->loadModel('Client');
         $clients = $this->Client->find('all', array(
-            'conditions' => array('Client.user_id' => $this->Auth->user('id'), 'Client.lead' => 0)
+            'conditions' => array('Client.user_id' => $uid, 'Client.lead' => 0)
         ));
 
 
         $banks = $this->Bank->find('all');
-        $terms = $this->QuotationTerm->find('all', array(
-            'conditions' => array('QuotationTerm.id >=' => 3)
-        ));
+        
+        $this->QuotationTerm->recursive = -1;
+        $terms = $this->QuotationTerm->find('all', ['conditions' => ['name !=' => 'Full Payment']]);
+        
+        // $terms = $this->QuotationTerm->find('all', array(
+        //     'conditions' => array('QuotationTerm.id >=' => 3)
+        // ));
         
         //get agent status where date_to is null kasi ibig sabihin yun yung current team nya
-        $this->AgentStatus->recursive = -1; 
-        $agent_status = $this->AgentStatus->find('first',['conditions'=>['AgentStatus.date_to'=>NULL]]);
-//        pr($agent_status);
+        // $this->AgentStatus->recursive = -1; 
+        $agent_status = $this->AgentStatus->find('first',
+            ['conditions'=>
+                ['AgentStatus.date_to'=>NULL],
+                ['AgentStatus.user_id'=>$uid]]);
+        // pr($agent_status);
         $this->set(compact('clients', 'quote_number', 'banks', 'terms','id','agent_status'));
     }
 
     public function move_to_purchasing() {
-
         $this->autoRender = false;
         $this->response->type('json');
         $data = $this->request->data;
@@ -681,6 +866,7 @@ class QuotationsController extends AppController {
             'target_delivery' => $data['target_delivery'],
             'date_moved' => $dateToday,
             'advance_invoice' => $data['advance_invoice'],
+            'collection_status' => 'undelivered'
         ));
         $this->Quotation->save();
 
@@ -699,7 +885,7 @@ class QuotationsController extends AppController {
                     'Quotation.status' => array('approved', 'processed')),
                 'order' => 'Quotation.created DESC');
             $this->set('pending_quotations', $this->Quotation->find('all', $options));
-        } else if (($this->Auth->user('role') == 'supply_staff') || ($this->Auth->user('role') == 'supply_head')) {
+        } else if (($this->Auth->user('role') == 'supply_staff') || ($this->Auth->user('role') == 'supply_head') || ($this->Auth->user('role') == 'purchasing_supervisor')) {
             //kapag my supply or combination na product sa quotation, saka lang lalabas dito sa list ng supply purchasing
 //            $this->Quotation->recursive = 2;
 //            $options = array('conditions' => array( 
@@ -710,13 +896,13 @@ class QuotationsController extends AppController {
             $this->QuotationProduct->recursive = 2;
             $options = array('conditions' => array(
                     'Quotation.status' => 'approved',
-                    'QuotationProduct.type' => array('supply', 'combination')
+                    // 'QuotationProduct.type' => array('supply', 'combination')
                 ),
                 'group' => 'QuotationProduct.quotation_id'
             );
             $pending_quotations = $this->QuotationProduct->find('all', $options);
 
-//            pr($pending_quotations);
+            // pr($pending_quotations); exit;
             $this->set(compact('pending_quotations'));
 //            exit;
         } else if (($this->Auth->user('role') == 'raw_head') ) {
@@ -826,37 +1012,79 @@ class QuotationsController extends AppController {
          
     }
     
-    
     public function proprietor() {
-        if ($this->Auth->user('role') == 'proprietor' || $this->Auth->user('role') == 'accounting_head') {
+        if ($this->Auth->user('role') == 'proprietor' || $this->Auth->user('role') == 'accounting_head' || $this->Auth->user('role') == 'collection_officer' || $this->Auth->user('role') == 'cost_accountant' || $this->Auth->user('department_id') ==  6 ||  $this->Auth->user('department_id') ==  7 ||  $this->Auth->user('department_id') ==  17) {
+            $quote_status = $this->params['url']['status'];
+            $fields = array_keys($this->Quotation->getColumnTypes());
+            $key = array_search('terms_info', $fields);
+            unset($fields[$key]);
+            $fields[] = 'User.*';
+            $fields[] = 'Client.*';
+            $fields[] = 'JobRequest.*';
             
-        $quote_status = $this->params['url']['status'];
-            $this->Quotation->recursive = 2;
             $options = array('conditions' => array( 
                     'Quotation.status' => $quote_status),
-                'order' => 'Quotation.created DESC');
+                    'contain' => array('User','Collection','Client','JobRequest'),
+                    'order' => 'Quotation.created DESC',
+                    'fields' => $fields);
             $this->set('quotations', $this->Quotation->find('all', $options));
-            // pr($this->Quotation->find('all', $options));
         } else if($this->Auth->user('role') == 'sales_manager'){
-            
             $this->loadModel('AgentStatus');
             $stats = $this->AgentStatus->find('first',[
                 'conditions'=>[
                     'AgentStatus.user_id' => $this->Auth->user('id'),
                     'AgentStatus.date_to' => NULL
-                    
                     ]
                 ]);
-        $quote_status = $this->params['url']['status'];
-            $this->Quotation->recursive = 2;
+                
+            $quote_status = $this->params['url']['status'];
+            $fields = array_keys($this->Quotation->getColumnTypes());
+            $key = array_search('terms_info', $fields);
+            unset($fields[$key]);
+            $fields[] = 'User.*';
+            $fields[] = 'Client.*';
+            
             $options = array('conditions' => array( 
                     'Quotation.status' => $quote_status,
-                    'Quotation.team_id'=>$stats['AgentStatus']['team_id']
-                    ),
-                'order' => 'Quotation.created DESC');
+                    'Quotation.team_id'=>$stats['AgentStatus']['team_id']),
+                    'contain' => array('User','Collection','Client'),
+                    'order' => 'Quotation.created DESC',
+                    'fields' => $fields);
             $this->set('quotations', $this->Quotation->find('all', $options));
         }
     }
+    
+    
+    // public function proprietor() {
+    //     if ($this->Auth->user('role') == 'proprietor' || $this->Auth->user('role') == 'accounting_head') {
+            
+    //     $quote_status = $this->params['url']['status'];
+    //         $this->Quotation->recursive = 2;
+    //         $options = array('conditions' => array( 
+    //                 'Quotation.status' => $quote_status),
+    //             'order' => 'Quotation.created DESC');
+    //         $this->set('quotations', $this->Quotation->find('all', $options));
+    //         // pr($this->Quotation->find('all', $options));
+    //     } else if($this->Auth->user('role') == 'sales_manager'){
+            
+    //         $this->loadModel('AgentStatus');
+    //         $stats = $this->AgentStatus->find('first',[
+    //             'conditions'=>[
+    //                 'AgentStatus.user_id' => $this->Auth->user('id'),
+    //                 'AgentStatus.date_to' => NULL
+                    
+    //                 ]
+    //             ]);
+    //     $quote_status = $this->params['url']['status'];
+    //         $this->Quotation->recursive = 2;
+    //         $options = array('conditions' => array( 
+    //                 'Quotation.status' => $quote_status,
+    //                 'Quotation.team_id'=>$stats['AgentStatus']['team_id']
+    //                 ),
+    //             'order' => 'Quotation.created DESC');
+    //         $this->set('quotations', $this->Quotation->find('all', $options));
+    //     }
+    // }
     
     public function proprietor_approve(){
         $this->autoRender = false;
@@ -866,14 +1094,16 @@ class QuotationsController extends AppController {
             $id = $data['id']; 
             $usr = $data['usr']; 
             
+            
+            
             if($usr == 'proprietor'){
                 $dateA = 'date_approved';
                 $apprval = 'approved_by';
-                $stts = 'approved';
+                $stts = 'approved_by_proprietor'; //   accounting_moved
             }else if($usr == 'accounting'){
                 $dateA = 'accounting_approved_date';
                 $apprval = 'accounting_approved';
-                $stts = 'accounting_moved';
+                $stts = 'approved';
             }
              
             $dateToday = date("Y-m-d H:i:s");
@@ -895,14 +1125,362 @@ class QuotationsController extends AppController {
     
     
     public function sales_moved() {
-        if ($this->Auth->user('role') == 'sales_executive') {
-            $this->Quotation->recursive = 2;
-            $options = array('conditions' => array(
+    
+        $this->Quotation->recursive = 2;
+        if($this->Auth->user('role') == 'sales_executive') {
+            $pending_quotations = $this->Quotation->find('all',array(
+                'conditions'=>[
                     'Quotation.user_id' => $this->Auth->user('id'),
-                    'Quotation.status' => 'moved'),
-                'order' => 'Quotation.created DESC');
-            $this->set('pending_quotations', $this->Quotation->find('all', $options));
+                    'Quotation.status' => 'moved'
+                    ]
+                ));
+                $this->set(compact('pending_quotations'));
+            // $options = array('conditions' => array(
+            //         'Quotation.user_id' => $this->Auth->user('id'),
+            //         'Quotation.status' => 'moved'),
+            //     'order' => 'Quotation.created DESC');
+            // $this->set('pending_quotations', $this->Quotation->find('all'));
+        }
+        // if($this->Auth->user('role') == 'supply_staff'
+        //   || $this->Auth->user('role') == 'raw_head') {
+    if (($this->Auth->user('role') == 'supply_staff') || ($this->Auth->user('role') == 'supply_head') || ($this->Auth->user('role') == 'purchasing_supervisor') || ($this->Auth->user('role') == 'raw_head')) {
+       
+               
+            $pending_quotations = $this->Quotation->find('all',array(
+                'conditions'=>[ 
+                    'Quotation.status' => 'moved'
+                    ]
+                ));
+                $this->set(compact('pending_quotations'));
+            // $options = ['conditions' => ['Quotation.status' => 'moved']];
+            // $pending_quotations = $this->Quotation->find('all', $options);
+            // $this->set(compact('pending_quotations'));
         }
     }
 
+
+    public function get_prod_price() {
+        $this->autoRender = false;
+        $swatch_id = $this->request->data;
+        
+        $this->loadModel('Product');
+        $this->loadModel('ProductProperty');
+        $this->loadModel('ProductValue');
+        
+        $this->ProductProperty->recursive = -1;
+        $get_pprop = $this->ProductProperty->find('all',
+            ['conditions'=>['product_id'=>$swatch_id],
+                'fields'=>['id']]);
+                
+        $pprop_ids = [];
+        foreach($get_pprop as $ret_pprop) {
+            $pprop_obj = $ret_pprop['ProductProperty'];
+            $pprop_ids[] = $pprop_obj['id'];
+        }
+        
+        $this->ProductValue->recursive = -1;
+        $get_pval = $this->ProductValue->find('all',
+            ['conditions'=>['product_property_id'=>$pprop_ids],
+                'fields'=>['price']]);
+                
+        $pprice = 0;
+        foreach($get_pval as $ret_pval) {
+            $pval_obj = $ret_pval['ProductValue'];
+            $pprice += $pval_obj['price'];
+        }
+        
+        return $pprice;
+    }
+    
+    public function accounting_moved() {
+        $this->Quotation->recursive = 2;
+        if($this->Auth->user('role') == 'sales_executive') {
+            $get_ac_approved = $this->Quotation->find('all',array(
+                'conditions'=>[
+                    'Quotation.user_id' => $this->Auth->user('id'),
+                    'Quotation.status' => 'approved_by_proprietor'
+                    ]
+                ));
+                $this->set(compact('get_ac_approved')); 
+        }
+        // if($this->Auth->user('role') == 'supply_staff'
+        //   || $this->Auth->user('role') == 'raw_head') {
+               if (($this->Auth->user('role') == 'supply_staff') || ($this->Auth->user('role') == 'supply_head') || ($this->Auth->user('role') == 'purchasing_supervisor') || ($this->Auth->user('role') == 'raw_head')) {
+     
+            $get_ac_approved = $this->Quotation->find('all',array(
+                'conditions'=>[ 
+                    'Quotation.status' => 'approved_by_proprietor'
+                    ]
+                ));
+                $this->set(compact('get_ac_approved')); 
+        
+        }
+    }
+
+    public function quotations_for_accounting() {
+        $status =  $this->params['url']['status'];
+        
+        
+        $fields = array_keys($this->Quotation->getColumnTypes());
+            $key = array_search('terms_info', $fields);
+            unset($fields[$key]);
+            $fields[] = 'User.*';
+            $fields[] = 'Client.*';
+            $options = array('conditions' => array( 
+                    'Quotation.collection_status'=>$status),
+                    'contain' => array('User','Collection','Client'),
+                'order' => 'Quotation.created DESC',
+                'fields' => $fields);
+        // $this->Quotation->recursive=2;
+        $get_quotations = $this->Quotation->find('all', $options);
+        
+        $this->set(compact('get_quotations'));
+    }
+    
+    public function updateCollectionStatus(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $quotation_id = $data['quotation_id'];
+        $collection_status = $data['collection_status'];
+        $collection_remarks = $data['collection_remarks'];  
+         
+         $this->Quotation->id = $quotation_id;
+            $this->Quotation->set(array(
+                'collection_status' => $collection_status,
+                'collection_remarks' => $collection_remarks, 
+            ));
+            if ($this->Quotation->save()) {
+                echo json_encode($data);
+            }
+        
+        
+    }
+    public function make_processed(){
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+            $dateToday = date("Y-m-d H:i:s");
+        
+        $quotation_id = $data['id']; 
+         
+         $this->Quotation->id = $quotation_id;
+            $this->Quotation->set(array(
+                'status' => 'processed',
+                'date_processed' => $dateToday, 
+            ));
+            if ($this->Quotation->save()) {
+                echo json_encode($data);
+            }
+        
+    }
+    
+    public function updatePurchasingStatus(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+        
+        $quotation_id = $data['quotation_id']; 
+        $purchasing_remarks = $data['purchasing_remarks'];  
+         
+         $this->Quotation->id = $quotation_id;
+            $this->Quotation->set(array( 
+                'purchasing_remarks' => $purchasing_remarks, 
+            ));
+            if ($this->Quotation->save()) {
+                echo json_encode($data);
+            }
+    }
+    
+    public function proprietor_reject(){
+        
+        $this->autoRender = false;
+        $this->response->type('json');
+        $data = $this->request->data;
+            $dateToday = date("Y-m-d H:i:s");
+        
+        $quotation_id = $data['id']; 
+         
+         $this->Quotation->id = $quotation_id;
+            $this->Quotation->set(array(
+                'status' => 'rejected', 
+            ));
+            if ($this->Quotation->save()) {
+
+                    $this->loadModel('QuotationUpdateLog');
+                    
+                    $this->QuotationUpdateLog->create();
+                    $this->QuotationUpdateLog->set([
+                        "user_id"=>$this->Auth->user('id'),
+                        "quotation_id"=>$quotation_id,
+                        "status"=>'rejected'
+                        ]);
+                    if($this->QuotationUpdateLog->save()){
+                        echo json_encode($data);
+                    }
+            }
+    }
+    
+    public function all_list(){
+        
+        $quote_status = $this->params['url']['status'];
+        
+        // if ($this->Auth->user('role') == 'sales_executive' && $quote_status=='pending') {
+        //     $this->Quotation->recursive = 2;
+        //     $options = array('conditions' => array(
+        //             'Quotation.user_id' => $this->Auth->user('id'),
+        //             'Quotation.status' => 'pending'),
+        //         'order' => 'Quotation.created DESC');
+        //     $this->set('quotations', $this->Quotation->find('all', $options));
+        // }
+        
+        
+        $this->set(compact('quote_status'));
+    }
+    
+    public function all_list_ajax($quote_status = null) {
+        $this->layout = "ajax";
+	    $this->modelClass = "Quotation";
+	    $this->autoRender = false;  
+	    
+	    $user_id = $this->Auth->user('id');
+
+	    $model = 'quotations';
+	    $columns = array('created', 'type', 'client_id', 'quote_number', 'grand_total', 'job_request_id', 'id');
+	     if ($this->Auth->user('role') == 'sales_executive') {
+	        $where = "status = '$quote_status' && user_id = $user_id";
+	     }else{ 
+	       // $where = "status = '$quote_status' && user_id = $user_id";
+	     }
+	    
+	    $output = $this->Quotation->GetMyData($model, $columns, $where); 
+	    
+        $data = $output['data'];
+		$res = [];
+		$count = 0;
+		foreach($data as $items){
+		    $this->loadModel('Client', 'JobRequest');
+		    
+		    $this->Client->recursive = -1;
+		    $client = $this->Client->findById($items[2]);
+		    $this->JobRequest->recursive = -1;
+		    $jr = $this->JobRequest->findById($items[5]);
+		    foreach($items as $key => $item){
+		        if($key == 0){
+		            $data[$count][$key] = time_elapsed_string($item).'<br/><small>'. date('h:i a', strtotime($item)) . '</small>';
+		        }
+		        if($key == 3){
+		            $data[$count][$key] = $client['Client']['name'].'<br/><small>[' . $item . ']</small>';
+		        }
+		        if($key == 4){
+		            $data[$count][$key] = '&#8369; ' . number_format($item, 2);
+		        }
+		        if($key == 5){
+		            if($item != 0){
+		                $data[$count][$key] = '<div class="input-group mar-btm">
+                                                <input type="text" class="form-control" placeholder="Name" readonly value="'.$jr['JobRequest']['jr_number'].'">
+                                                <span class="input-group-btn"><button class="btn btn-mint add-tooltip jrupdateBtn" data-toggle="tooltip"  data-original-title="View Job Request"  type="button"data-jobrid="' . $items[6] . '"><i class="fa fa-external-link"></i></button></span>
+                                            </div>';
+		            } else{
+		                $data[$count][$key] = '<br/><button  class="btn btn-default  btn-icon  add-tooltip jobRequeBtn" data-toggle="tooltip"  data-original-title="With Job Request?"  type="button" data-quoteid="' . $items[6] . '"><i class="fa fa-plus"></i></button>';
+		            }
+		        }
+		        if($key == 6){
+		            if($this->Auth->user('role') == 'sales_executive'){
+		                $data[$count][$key] = '<button class="btn btn-mint btn-icon add-tooltip update_quote" data-toggle="tooltip"  data-original-title="Update Quotation?"   data-upquoteid="'.$item.'"><i class="fa fa-edit"></i></button>
+		                <button class="btn btn-danger btn-icon add-tooltip delete_quote" data-toggle="tooltip"  data-original-title="Delete Quotation?" data-typo="deleted" data-delquoteid="'.$item.'" data-jrid="'.$jr['JobRequest']['id'].'"><i class="fa fa-window-close"></i> </button>
+                        <button class="btn btn-danger btn-icon add-tooltip delete_quote" data-toggle="tooltip"  data-original-title="Lost Quotation?" data-typo="lost" data-delquoteid="'.$item.'" data-jrid="'.$jr['JobRequest']['id'].'"><i class="fa fa-thumbs-down"></i> </button>';
+		            }
+		        }
+		        unset($data[$count][2]);
+		    }
+		$count++;    
+		}         
+		$output['data'] = $data;
+	    echo json_encode($output);
+	    exit;
+    }
+
+    
+    public function update_tin() {
+        $this->autoRender = false;
+        $this->loadModel('QuotationUpdateLog');
+        $this->loadModel('Client');
+        $data = $this->request->data;
+        $userin = $this->Auth->user('id');
+        $DS_Quotations = $this->Quotation->getDataSource();
+        $DS_Quotations->begin();
+        $this->Quotation->id = $data['qid'];
+        $this->Quotation->set(['tin_number'=>$data['tin_number']]);
+        if($this->Quotation->save()) {
+            echo "Quotation saved";
+            $quotation_update_log_set = ['user_id'=>$userin,
+                                         'quotation_id'=>$data['qid'],
+                                         'status'=>"tin_number_update",
+                                         'quotation_product_id'=>0,
+                                         'tin_number'=>$data['tin_number']];
+            $DS_QuotationUpdateLogs = $this->QuotationUpdateLog->getDataSource();
+            $DS_QuotationUpdateLogs->begin();
+            $this->QuotationUpdateLog->create();
+            $this->QuotationUpdateLog->set($quotation_update_log_set);
+            if($this->QuotationUpdateLog->save()) {
+                echo "QuotationUpdateLog save";
+                
+                $DS_Client = $this->Client->getDataSource();
+                $DS_Client->begin();
+                $this->Client->id = $data['client_id'];
+                $this->Client->set(['tin_number'=>$data['tin_number']]);
+                if($this->Client->save()) {
+                    echo "Client saved";
+                    $DS_Client->commit();
+                    $DS_QuotationUpdateLogs->commit();
+                    $DS_Quotations->commit();
+                }
+                else {
+                    echo "Error in Client";
+                    $DS_Client->rollback();
+                    $DS_QuotationUpdateLogs->rollback();
+                    $DS_Quotations->rollback();
+                }
+            }
+            else {
+                echo "Error in QuotationUpdateLog";
+                $DS_QuotationUpdateLogs->rollback();
+                $DS_Quotations->rollback();
+            }
+        }
+        else {
+            echo "Error in Quotation";
+            $DS_Quotations->rollback();
+        }
+        return "Everything executed";
+    }
+    
+	public function try2(){
+	    $this->loadModel('SupplierProduct');
+	    $this->SupplierProduct->recursive = -1;
+	    pr($this->SupplierProduct->find('all',
+	    							['contain' => ['Supplier' => ['User']]]));
+	    							exit;
+	    
+	}
+	
+	public function quote_records() {
+	    $status = $this->params['url']['status'];
+	    
+	    $this->Quotation->contain(['Client', 'JobRequest']);
+	    $getQuotations = $this->Quotation->find('all',
+	        ['conditions'=>
+	            ['Quotation.status'=>$status],
+	         'fields'=>
+	            ['Quotation.id', 'Quotation.created', 'Quotation.type',
+	             'Quotation.grand_total', 'Quotation.quote_number',
+	             'Quotation.job_request_id', 'Quotation.subject',
+	             'Quotation.client_id', 'Client.name',
+	             'JobRequest.jr_number', 'JobRequest.created']]);
+	    $this->set(compact('status', 'getQuotations'));
+	}
 }

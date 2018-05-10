@@ -121,66 +121,74 @@ class ProductionProcessesController extends AppController {
 		$this->loadModel('User');
 		$this->loadModel('ProductionCarpenter');
 		
-		$production = $this->Production->findById($production_id);
-		
+		$this->Production->recursive = 2;
+		$production = $this->Production->findById($production_id,
+			['Production.id', 'Production.quotation_product_id',
+			 'Production.job_request_product_id',
+			 'QuotationProduct.quotation_id',
+			 'QuotationProduct.id',
+			 'JobRequestProduct.id',
+			 'JobRequestProduct.job_request_id']);
 		$production_processes = $this->ProductionProcess->find('all',
 			['conditions'=>
-			['ProductionProcess.production_id'=>$production_id]]);
-		
-		$client = [];
-		$section_head_id = 0;
-		$production_client_id = 0;
-		$production_process_id = 0;
-		foreach($production_processes as $production_process_obj) {
+			['production_id'=>$production_id]]);
+
+        if($production_processes) {
+			$client = [];
+			$section_head_id = 0;
+			$production_client_id = 0;
+			$production_process_id = 0;
+			$production_process_obj = $production_processes[0];
 			$production_obj = $production_process_obj['Production'];
 			$production_client_id = $production_obj['client_id'];
 			$section = $production_process_obj['ProductionSection'];
 			$section_head_id = $section['user_id'];
 			$production_process = $production_process_obj['ProductionProcess'];
+			
 			$production_process_id = $production_process['id'];
 			
 			$this->Client->recursive = -1;
 			$client[$production_client_id] = $this->Client->findById($production_client_id,
 				['Client.name']);
-		}
-		
-		$quotation_id = $production['QuotationProduct']['quotation_id'];
-		$sales_executive = $this->Quotation->findById($quotation_id,
-			['User.first_name','User.last_name', 'Quotation.target_delivery']);
-		
-		
-		$designer = [];
-		$jrproduct_obj = $production['JrProduct'];
-		$designer_id = $jrproduct_obj['user_id'];
-		
-		$this->User->recursive = -1;
-		$designer = $this->User->findById($designer_id,
-			['User.first_name', 'User.last_name']);
-		$section_head = $this->User->findById($section_head_id,
-			['User.first_name', 'User.last_name']);
 			
-		$q_prod_id = $production['QuotationProduct']['id'];
-		$this->QuotationProductProperty->recursive = -1;
-		$QuotationProductProperty = $this->QuotationProductProperty->find('all',
-			['conditions'=>['quotation_product_id'=>$q_prod_id],
-			 'fields'=>['QuotationProductProperty.id',
-			 			'QuotationProductProperty.property',
-						'QuotationProductProperty.value']]);
-
-		$ProductionCarpenter = $this->ProductionCarpenter->find('all',
-			['conditions'=>['production_process_id'=>$production_process_id],
-			'fields'=>['ProductionCarpenter.id',
-					   'ProductionCarpenter.qty_assigned',
-					   'ProductionCarpenter.status',
-					   'User.first_name','User.last_name']]);
-		
-		$carp_opts = $this->User->find('all',
-			['User.first_name', 'User.last_name']);
-		
-		$this->set(compact('production_processes', 'production', 'client',
-						   'sales_executive', 'designer', 'section_head',
-						   'QuotationProductProperty', 'ProductionCarpenter',
-						   'prod_carpenter_obj', 'carp_opts'));
+			$quotation_id = $production['QuotationProduct']['quotation_id'];
+			$this->Quotation->recursive = 2;
+			$sales_executive = $this->Quotation->findById($quotation_id,
+				['Quotation.id',
+				 'Quotation.user_id',
+				 'User.id',
+				 'User.first_name',
+				 'User.last_name',
+				 'Quotation.target_delivery']);
+			
+			$section_head = $this->User->findById($section_head_id,
+				['User.first_name', 'User.last_name']);
+				
+			$q_prod_id = $production['QuotationProduct']['id'];
+			$QuotationProductProperty = $this->QuotationProductProperty->find('all',
+				['conditions'=>['quotation_product_id'=>$q_prod_id],
+				 'fields'=>['QuotationProductProperty.id',
+				 			'QuotationProductProperty.property',
+							'QuotationProductProperty.value',
+							'QuotationProductProperty.quotation_product_id',
+							'QuotationProduct.other_info']]);
+			
+			$ProductionCarpenter = $this->ProductionCarpenter->find('all',
+				['conditions'=>['production_process_id'=>$production_process_id],
+				'fields'=>['ProductionCarpenter.id',
+						   'ProductionCarpenter.qty_assigned',
+						   'ProductionCarpenter.status',
+						   'ProductionCarpenter.user_id',
+						   'User.first_name','User.last_name']]);
+			
+			$carp_opts = $this->User->find('all',
+				['User.first_name', 'User.last_name']);
+			
+			$this->set(compact('production_processes', 'production', 'client',
+							   'sales_executive', 'designer', 'section_head',
+							   'QuotationProductProperty', 'ProductionCarpenter',
+							   'prod_carpenter_obj', 'carp_opts'));
+        }
 	}
 	
 	public function add_worker() {
@@ -230,7 +238,7 @@ class ProductionProcessesController extends AppController {
 			
 			$this->ProductionLog->create();
 			$this->ProductionLog->set($ProductionLog_set);
-			
+			echo json_encode($ProductionLog_set);
 			if($this->ProductionLog->save()) {
 				echo json_encode("ProductionLog saved");
 				$DS_ProductionProcess->begin();
@@ -266,7 +274,7 @@ class ProductionProcessesController extends AppController {
 			}
 			else {
 				$DS_ProductionCarpenter->rollback();
-				return json_encode("Error in saving ProductionLog 1");
+				return json_encode("Error in saving ProductionLog");
 				exit;
 			}
 		}

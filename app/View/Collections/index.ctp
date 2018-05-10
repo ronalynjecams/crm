@@ -75,13 +75,13 @@
 						<td><?php echo h($collection['Collection']['with_held']); ?>&nbsp;</td>
 						<td><?php echo h($collection['Collection']['payment_mode']); ?>&nbsp;</td>
 						<td><?php echo h($collection['Collection']['check_number']); ?>&nbsp;</td>
-						<td><?php echo h($collection['Collection']['check_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collection['Collection']['check_date']); ?>&nbsp;</td>
 						<td><?php echo h($collection['Collection']['status']); ?>&nbsp;</td>
-						<td><?php echo h($collection['Collection']['date_deleted']); ?>&nbsp;</td>
-						<td><?php echo h($collection['Collection']['date_updated']); ?>&nbsp;</td>
-						<td><?php echo h($collection['Collection']['created']); ?>&nbsp;</td>
-						<td><?php echo h($collection['Collection']['modified']); ?>&nbsp;</td>
-						<td><?php echo h($collection['Collection']['date_completed']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collection['Collection']['date_deleted']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collection['Collection']['date_updated']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collection['Collection']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collection['Collection']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($collection['Collection']['date_completed']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $collection['Collection']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $collection['Collection']['id']), array('escape' => false)); ?>

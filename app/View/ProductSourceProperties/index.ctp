@@ -52,8 +52,8 @@
 			<?php echo $this->Html->link($productSourceProperty['ProductSource']['id'], array('controller' => 'product_sources', 'action' => 'view', $productSourceProperty['ProductSource']['id'])); ?>
 		</td>
 						<td><?php echo h($productSourceProperty['ProductSourceProperty']['qty']); ?>&nbsp;</td>
-						<td><?php echo h($productSourceProperty['ProductSourceProperty']['created']); ?>&nbsp;</td>
-						<td><?php echo h($productSourceProperty['ProductSourceProperty']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSourceProperty['ProductSourceProperty']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productSourceProperty['ProductSourceProperty']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $productSourceProperty['ProductSourceProperty']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $productSourceProperty['ProductSourceProperty']['id']), array('escape' => false)); ?>

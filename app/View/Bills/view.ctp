@@ -87,14 +87,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($bill['Bill']['created']); ?>
+			<?php echo time_elapsed_string($bill['Bill']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($bill['Bill']['modified']); ?>
+			<?php echo time_elapsed_string($bill['Bill']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -139,8 +139,8 @@
 			<td><?php echo $billMonitoring['user_id']; ?></td>
 			<td><?php echo $billMonitoring['bill_id']; ?></td>
 			<td><?php echo $billMonitoring['paid_by']; ?></td>
-			<td><?php echo $billMonitoring['created']; ?></td>
-			<td><?php echo $billMonitoring['modified']; ?></td>
+			<td><?php echo time_elapsed_string($billMonitoring['created']); ?></td>
+			<td><?php echo time_elapsed_string($billMonitoring['modified']); ?></td>
 			<td><?php echo $billMonitoring['receipt_date']; ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'bill_monitorings', 'action' => 'view', $billMonitoring['id']), array('escape' => false)); ?>

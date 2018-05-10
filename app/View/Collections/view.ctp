@@ -103,7 +103,7 @@
 <tr>
 		<th><?php echo __('Check Date'); ?></th>
 		<td>
-			<?php echo h($collection['Collection']['check_date']); ?>
+			<?php echo time_elapsed_string($collection['Collection']['check_date']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -117,35 +117,35 @@
 <tr>
 		<th><?php echo __('Date Deleted'); ?></th>
 		<td>
-			<?php echo h($collection['Collection']['date_deleted']); ?>
+			<?php echo time_elapsed_string($collection['Collection']['date_deleted']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date Updated'); ?></th>
 		<td>
-			<?php echo h($collection['Collection']['date_updated']); ?>
+			<?php echo time_elapsed_string($collection['Collection']['date_updated']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($collection['Collection']['created']); ?>
+			<?php echo time_elapsed_string($collection['Collection']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($collection['Collection']['modified']); ?>
+			<?php echo time_elapsed_string($collection['Collection']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Date Completed'); ?></th>
 		<td>
-			<?php echo h($collection['Collection']['date_completed']); ?>
+			<?php echo time_elapsed_string($collection['Collection']['date_completed']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -186,12 +186,12 @@
 			<td><?php echo $collectionSchedule['quotation_id']; ?></td>
 			<td><?php echo $collectionSchedule['collection_id']; ?></td>
 			<td><?php echo $collectionSchedule['user_id']; ?></td>
-			<td><?php echo $collectionSchedule['created_by']; ?></td>
+			<td><?php echo time_elapsed_string($collectionSchedule['created_by']); ?></td>
 			<td><?php echo $collectionSchedule['onhand']; ?></td>
 			<td><?php echo $collectionSchedule['officer_remarks']; ?></td>
 			<td><?php echo $collectionSchedule['agent_instruction']; ?></td>
-			<td><?php echo $collectionSchedule['created']; ?></td>
-			<td><?php echo $collectionSchedule['modified']; ?></td>
+			<td><?php echo time_elapsed_string($collectionSchedule['created']); ?></td>
+			<td><?php echo time_elapsed_string($collectionSchedule['modified']); ?></td>
 			<td><?php echo $collectionSchedule['status']; ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'collection_schedules', 'action' => 'view', $collectionSchedule['id']), array('escape' => false)); ?>

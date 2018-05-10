@@ -1,19 +1,16 @@
-
-
-
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<link href="../css/sweetalert.css" rel="stylesheet">
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<link href="/css/sweetalert.css" rel="stylesheet">
+<!--<link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">-->
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
 
 
 <!--CONTENT CONTAINER-->
@@ -33,13 +30,14 @@
 
         <div class="panel">
             <div class="panel-heading" align="right">
-                <h3 class="panel-title">
-
+                <h3 class="panel-title"> 
+                <button class="btn btn-sm btn-success" id="import" data-toggle="tooltip"  data-original-title="Import Transportify Data" data-buttontype="start"><i class="fa fa-upload"></i> Import Transportify Data</button>
+                <button class="btn btn-sm btn-primary" id="print_itenerary" data-toggle="tooltip"  data-original-title="Print Itenerary" data-buttontype="start"><i class="fa fa-book"></i> Retrieve Itenerary</button>
+             
                 </h3>  
             </div>
             <div class="panel-body">
-             <button class="btn btn-xs btn-success" id="import" data-toggle="tooltip"  data-original-title="Import Transportify Data" data-buttontype="start"><i class="fa fa-upload"></i></button>
-                <div class="table-responsive">
+               <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -53,7 +51,8 @@
                         </tr>
                     </thead> 
                     <tbody>
-                        <?php foreach ($iteneraries as $data) { ?>
+                        <?php
+                        foreach ($iteneraries as $data) { ?>
                             <tr>
                                 <td>
                                     <?php
@@ -93,7 +92,7 @@
                                         if (!is_null($data['DeliveryItenerary']['booking_code'])) {
                                             echo $data['DeliveryItenerary']['booking_code'];
                                         } else {
-                                            echo '<button class="btn btn-xs btn-info add-tooltip update_booking_code" data-toggle="tooltip"  data-original-title="Update Booking Code" ><i class="fa fa-book"></i></button>';
+                                          //  echo '<button class="btn btn-xs btn-info add-tooltip update_booking_code" data-toggle="tooltip"  data-original-title="Update Booking Code" ><i class="fa fa-book"></i></button>';
                                         }
                                     }
                                     ?>
@@ -103,13 +102,13 @@
                                     if (!is_null($data['DeliveryItenerary']['departure'])) {
                                         if (!is_null($data['DeliveryItenerary']['actual_start'])) {
                                             echo'<div class="col-md-6">';
-                                            echo date('F d, Y', strtotime($data['DeliveryItenerary']['actual_start']));
+                                            echo time_elapsed_string($data['DeliveryItenerary']['actual_start']);
                                             echo '<br/><small>' . date('h:i a', strtotime($data['DeliveryItenerary']['actual_start'])) . '</small>';
                                             echo'</div>';
                                             if (!is_null($data['DeliveryItenerary']['end_work'])) {
                                                 echo'<div class="col-md-6">';
                                                 echo ' to ';
-                                                echo date('F d, Y', strtotime($data['DeliveryItenerary']['end_work']));
+                                                echo time_elapsed_string($data['DeliveryItenerary']['end_work']);
                                                 echo '<br/><small>' . date('h:i a', strtotime($data['DeliveryItenerary']['end_work'])) . '</small>';
                                                 echo'</div>';
                                             } else {
@@ -135,14 +134,18 @@
                                     <?php
                                     if($data['DeliveryItenerary']['status'] != "delivered"){
                                         if ($data['DeliveryItenerary']['delivery_mode'] == 'jecams') {
-                                            echo '<button class="btn btn-xs btn-success update_vehicle" data-toggle="tooltip"  data-original-title="Change Vehicle" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-car"></i></button>';
-                                            echo '<button class="btn btn-xs btn-success update_driver" data-toggle="tooltip"  data-original-title="Change Driver" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-id-card-o"></i></button>';
+                                            echo '<button class="btn btn-xs btn-success update_vehicle" data-toggle="tooltip"  data-original-title="Change Vehicle" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-car"></i> Change Vehicle</button>';
+                                            echo '<button class="btn btn-xs btn-warning update_driver" data-toggle="tooltip"  data-original-title="Change Driver" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-buttontype="start"><i class="fa fa-id-card-o"></i> Change Driver</button>';
                                             //add condition na kapag status != delivered
                                             //change vehicle_id ( select vehicle , value should be brand - plate number) 
                                             //change driver (query users, value of option should be first name and last name)
                                         } else if ($data['DeliveryItenerary']['delivery_mode'] == 'transportify') {
-                                           echo '<button class="btn btn-xs btn-success update_booking_code" data-toggle="tooltip"  data-original-title="Update Booking Code" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-code="' . $data['DeliveryItenerary']['booking_code'] . '" data-buttontype="start"><i class="fa fa-cog"></i></button>';
-                                    }
+                                           echo '<button class="btn btn-xs btn-info update_booking_code" data-toggle="tooltip"  data-original-title="Update Booking Code" data-actid="' . $data['DeliveryItenerary']['id'] . '" data-code="' . $data['DeliveryItenerary']['booking_code'] . '" data-buttontype="start"><i class="fa fa-cog"></i> Change Booking Code</button>';
+                                            ?>
+                                            <button class="btn btn-xs btn-primary add_booking_code" data-toggle="tooltip"  data-original-title="Add Booking Code" data-det='<?php echo json_encode($data['DeliveryItenerary']);?>' data-buttontype="start"><i class="fa fa-plus"></i> Add Booking Code</button>
+                                            <?php
+                                            
+                                        }
                                     }
                                 //   echo  $data['DeliveryItenerary']['delivery_mode'];
                                     ?>
@@ -209,10 +212,10 @@
             </div>
             <!--Modal body-->
             <div class="modal-body">
-                <p class="text-danger">Updating this will affect status of all products in this itenerary</p>
+                <p class="text-danger">Updating this will affect status of all products in this itenerary.</p>
                 <input type="hidden" class="form-control"  id="end_id">  
                 <p class="text-danger" id="error_agent"></p>
-                <div class="form-group"> 
+                <div class="form-group row"> 
                     <div class="col-sm-6">
                         <input type="date" value="<?php echo date('Y-m-d'); ?>" class="form-control" id="end_date"> 
                     </div>
@@ -339,7 +342,7 @@
                     <div class="col-sm-12">
                         <select class="form-control" id="driver">
                             <option value="none">Select Driver</option>
-                            <?php foreach($users as $user){ ?>
+                            <?php foreach($drivers as $user){ ?>
                             <option value="<?php echo $user['User']['first_name'].' '.$user['User']['last_name'];?>"><?php echo $user['User']['first_name'].' '.$user['User']['last_name'];?></option>
                             <?php } ?>
                         </select>
@@ -374,7 +377,7 @@
                 <p class="text-danger" id="error_agent"></p>
                 <div class="form-group"> 
                     <div class="col-sm-12">
-                         <input type="text" class="form-control" id="booking_code">
+                         <input type="number" class="form-control" id="booking_code">
                     </div>
 
                 </div>
@@ -394,19 +397,20 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <!--Modal header-->
+            <form action="/delivery_iteneraries/import" method="post" enctype="multipart/form-data" name="form1" id="form1">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="pci-cross pci-circle"></i>
                 </button>
                 <h4 class="modal-title">Import Transportify Data</h4>
             </div>
-            <!--Modal body-->
-            <form action="/delivery_iteneraries/import" method="post" enctype="multipart/form-data" name="form1" id="form1"> 
+            <!--Modal body--> 
             <div class="modal-body">
                 <!--<input type="hidden" class="form-control"  id="del_itenerary_id">  -->
-                <p class="text-danger" id="error_agent"></p>
                 <div class="form-group"> 
                     <div class="col-sm-12">
+                        <p class="text-danger" id="error_agent"></p>
+                        <p class="text-danger" id="error_agent">Note: Save excel file as .csv file  before uploading.</p>
                         Choose your file: <br /> 
                         <input type="file" name="file" class="form-control" />
                         <input type="hidden" name="status" value="<?php echo $status; ?>" class="form-control" />
@@ -426,6 +430,72 @@
 </div>
 <!-- UPDATE MODAL DRIVER END-->  
 
+<!--Date Range Modal Start-->
+<!--===================================================-->
+<div class="modal fade" id="print-itenerary-modal" role="dialog" tabindex="-1"
+     aria-labelledby="date-range-default-modal" aria-hidden="true">
+    <div class="modal-dialog">
+		<div class="modal-content">
+			<!--Modal header-->
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal">
+			    <i class="pci-cross pci-circle"></i>
+			  </button>
+			  <h4 class="modal-title">
+		          Select Date Range for Itenerary
+	          </h4>
+			</div>
+			<!--Modal body-->
+			<div class="modal-body">  
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="form-group">
+							Start Date
+							<input type="date" class="form-control" id="start_date" />
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="form-group">
+							End Date
+							<input type="date" class="form-control" id="end_date" />
+						</div>
+					</div> 
+					<div class="col-lg-6">
+						<div class="form-group">
+							Select Type
+							<select class="form-control" id="itenerary_type">
+							    <option value="all">ALL</option>
+							    <option value="per_driver">Per Driver</option>
+							</select>
+						</div>
+					</div> 
+					<div class="col-lg-6" id="itenerary_driver_div">
+						<div class="form-group">
+							Select Driver
+							<select class="form-control" id="itenerary_driver">
+                            <option value="">Select Driver</option>
+                            <?php foreach($drivers as $user){ ?>
+                            <option value="<?php echo $user['User']['first_name'].' '.$user['User']['last_name'];?>"><?php echo $user['User']['first_name'].' '.$user['User']['last_name'];?></option>
+                            <?php } ?>
+							</select>
+						</div>
+					</div> 
+					
+					
+			<div id="print_itenerary_error"></div>
+				</div>
+			</div> 
+			<!--Modal footer-->
+			<div class="modal-footer">
+			  <button data-dismiss="modal" class="btn btn-default"
+			    type="button">Close</button>
+			  <button class="btn btn-primary" id="btn_print_itenerary">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--===================================================-->
+<!--Date Range Modal End-->      
 <script>
     $(document).ready(function () {
         $('#example').DataTable({
@@ -434,7 +504,8 @@
             "stateSave": true
 
         });
-
+        
+        $('#itenerary_driver_div').hide();
 
 
         $(".update_departure").each(function (index) {
@@ -475,13 +546,63 @@
             });
         });
         
-        $("#import").on("click", function () {
+        $(".add_booking_code").each(function (index) {
             $(this).on("click", function () {
-                $('#import-modal').modal('show');
+                var det = $(this).data('det');
+                $('#delivery_itenerary').val(det);
+                console.log(det);
+                swal({
+                    title: "Are you sure?",
+                    text: "This will create duplicae of current delivery schedule it cannot be undone.",
+                    type: "warning",
+                    showCancelButton: true,
+    	            confirmButtonClass: "btn-danger",
+    	            confirmButtonText: "Yes",
+    	            cancelButtonText: "No",
+    	            closeOnConfirm: true,
+    	            closeOnCancel: true
+                },
+                function(isConfirm) {
+                    if(isConfirm) {
+                        var data = {"det": det};
+                        $.ajax({
+                           url: "/delivery_iteneraries/create_duplicate",
+                           type: "POST",
+                           data: {"data": data},
+                           dataType: "text",
+                           success: function(success) {
+                               console.log("Succes: "+success);
+                               swal({
+                                   title: "Success!",
+                                   text: "Successfull..",
+                                   type: "success"
+                               },
+                               function(isConfirm1) {
+                                   if(isConfirm1) {
+                                       location.reload();
+                                   }
+                               });
+                           },
+                           error: function(error) {
+                               console.log("Error: "+JSON.stringify(error));
+                               swal({
+                                  title: "Oops!",
+                                  text: "An error occured. Please try again.",
+                                  type: "warning"
+                               });
+                           }
+                        });
+                    }
+                });
+                // console.log(JSON.parse( det ));
 
             });
         });
-
+        
+        $("#import").on("click", function () { 
+                $('#import-modal').modal('show'); 
+        });
+        
         $(".update_end").each(function (index) {
             $(this).on("click", function () {
                 var id = $(this).data('endid');
@@ -498,8 +619,16 @@
             var end_time = $('#end_time').val();
             var status = $('#status').val();
             var remarks = $('#remarks').val();
-
-            if(( status != "none")){
+            var demodata = {"id": end_id};
+            if(( status != "none")) {
+                if(status=="delivered") {
+                    $.ajax({
+                        url: "/delivery_iteneraries/update_demo",
+                        type: "POST",
+                        data: {"data": demodata},
+                        dataType: "text",
+                        success: function(success) {
+                            console.log(success);
                             var data = {
                                 "end_id": end_id,
                                 "end_date": end_date,
@@ -507,24 +636,69 @@
                                 "status": status,
                                 "remarks": remarks
                             }
-                            
-            $.ajax({
-                url: "/delivery_iteneraries/process_update_end",
-                type: 'POST',
-                data: {'data': data},
-                dataType: 'json',
-                success: function (id) {
-                    location.reload();
-                },
-                erorr: function (id) {
-                    alert('error!');
+                            $.ajax({
+                                url: "/delivery_iteneraries/process_update_end",
+                                type: 'POST',
+                                data: {'data': data},
+                                dataType: 'text',
+                                success: function (success) {
+                                    console.log(success);
+                                    location.reload();
+                                },
+                                erorr: function (error) {
+                                    console.log(error);
+                                    swal({
+                                        title: "Oops!",
+                                        text: "An error occured. Please try again later.",
+                                        type: "warning"
+                                    });
+                                }
+                            });
+                        },
+                        error: function(error) {
+                            console.log(error);
+                            swal({
+                                title: "Oops!",
+                                text: "An error occured. Please try again later.",
+                                type: "warning"
+                            });
+                        }
+                    });
                 }
-            });
-            
+                else {
+                    var data = {
+                        "end_id": end_id,
+                        "end_date": end_date,
+                        "end_time": end_time,
+                        "status": status,
+                        "remarks": remarks
+                    }
+                    $.ajax({
+                        url: "/delivery_iteneraries/process_update_end",
+                        type: 'POST',
+                        data: {'data': data},
+                        dataType: 'text',
+                        success: function (success) {
+                            console.log(success);
+                            location.reload();
+                        },
+                        erorr: function (error) {
+                            console.log(error);
+                            swal({
+                                title: "Oops!",
+                                text: "An error occured. Please try again later.",
+                                type: "warning"
+                            });
+                        }
+                    });
+                }
             }else{
-                alert('Please select a status')
+                swal({
+                    title: "Status is empty!",
+                    text: "Please select status and try again.",
+                    type: "warning"
+                });
             }
-             
         });
 
         $(".update_actualstart").each(function (index) {
@@ -673,4 +847,67 @@
     });
 
 
+        $("#print_itenerary").on("click", function () { 
+                $('#print-itenerary-modal').modal('show'); 
+        });
+
+                $("#itenerary_type").change(function () {
+                    var itenerary_type = $("#itenerary_type").val();
+                    if(itenerary_type == 'per_driver'){
+                        $('#itenerary_driver_div').show();
+                    }else{
+                        $('#itenerary_driver_div').hide();
+                    }
+                });
+                
+                
+        $("#btn_print_itenerary").on("click", function () { 
+            $( "#print_itenerary_error_added" ).remove();
+            var end_date = $('#end_date').val();
+            var start_date = $('#start_date').val();
+            var itenerary_type = $("#itenerary_type").val();
+            var itenerary_driver = $("#itenerary_driver").val();
+            
+            
+            if (start_date==="" || end_date===""){
+                $( "#print_itenerary_error" ).append('<div class="col-sm-12" id="print_itenerary_error_added"><p class="text-danger">Date Could not be empty</p></div>');
+            } else if((new Date(start_date).getTime() > new Date(end_date).getTime())) { 
+                // print_itenerary_error
+                $( "#print_itenerary_error" ).append('<div class="col-sm-12"  id="print_itenerary_error_added"><p class="text-danger">Invalid Date Range</p></div>');
+            }else{
+                if(itenerary_type === 'per_driver'){
+                    //check if huser has selected driver
+                    if(itenerary_driver===""){
+                        $( "#print_itenerary_error" ).append('<div class="col-sm-12"  id="print_itenerary_error_added"><p class="text-danger">Please Select Driver</p></div>');
+                    }else{
+                        window.open("/pdfs/print_delivery_itenerary?start_date="+start_date+"&&end_date="+end_date+"&&type="+itenerary_type+"&&driver_id="+itenerary_driver, '_blank');
+                    }
+                }else{
+                        window.open("/pdfs/print_delivery_itenerary?start_date="+start_date+"&&end_date="+end_date+"&&type="+itenerary_type+"&&driver_id=0", '_blank');
+                  
+                }
+            }
+            // window.open("/pdfs/print_delivery_itenerary?start_date="+start_date+"&&end_date="+end_date, '_blank');
+        });
+         
+        function processupdateend(data) {
+            $.ajax({
+                url: "/delivery_iteneraries/process_update_end",
+                type: 'POST',
+                data: {'data': data},
+                dataType: 'text',
+                success: function (success) {
+                    console.log(success);
+                    location.reload();
+                },
+                erorr: function (error) {
+                    console.log(error);
+                    swal({
+                        title: "Oops!",
+                        text: "An error occured. Please try again later.",
+                        type: "warning"
+                    });
+                }
+            });
+        }
 </script>

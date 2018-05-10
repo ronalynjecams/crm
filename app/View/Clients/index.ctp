@@ -62,8 +62,8 @@
 						<td><?php echo h($client['Client']['email']); ?>&nbsp;</td>
 						<td><?php echo h($client['Client']['tin_number']); ?>&nbsp;</td>
 						<td><?php echo h($client['Client']['contact_number']); ?>&nbsp;</td>
-						<td><?php echo h($client['Client']['created']); ?>&nbsp;</td>
-						<td><?php echo h($client['Client']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($client['Client']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($client['Client']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $client['Client']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $client['Client']['id']), array('escape' => false)); ?>

@@ -73,14 +73,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($poProduct['PoProduct']['created']); ?>
+			<?php echo time_elapsed_string($poProduct['PoProduct']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($poProduct['PoProduct']['modified']); ?>
+			<?php echo time_elapsed_string($poProduct['PoProduct']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -123,8 +123,8 @@
 			<td><?php echo $poProductProperty['po_product_id']; ?></td>
 			<td><?php echo $poProductProperty['property']; ?></td>
 			<td><?php echo $poProductProperty['value']; ?></td>
-			<td><?php echo $poProductProperty['created']; ?></td>
-			<td><?php echo $poProductProperty['modified']; ?></td>
+			<td><?php echo time_elapsed_string($poProductProperty['created']); ?></td>
+			<td><?php echo time_elapsed_string($poProductProperty['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'po_product_properties', 'action' => 'view', $poProductProperty['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'po_product_properties', 'action' => 'edit', $poProductProperty['id']), array('escape' => false)); ?>

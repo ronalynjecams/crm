@@ -1,15 +1,15 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 
-<script src="../js/erp_js/erp_scripts.js"></script>
+<script src="/js/erp_scripts.js"></script>
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -58,7 +58,7 @@
                     <tbody>
                         <?php foreach($my_official_business_lists as $my_official_business_list){ ?>
                         <tr>
-                            <td><?php echo h(date('F d, Y h:i:a', strtotime($my_official_business_list['OfficialBusiness']['created']))); ?></td>
+                            <td><?php echo time_elapsed_string($my_official_business_list['OfficialBusiness']['created']); ?></td>
                             <td><?php echo h(date('F d, Y h:i:a', strtotime($my_official_business_list['OfficialBusiness']['expected_departure']))); ?></td>
                             <td>
                             <?php 

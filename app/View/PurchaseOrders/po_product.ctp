@@ -1,17 +1,17 @@
 
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
 
-<link href="../css/sweetalert.css" rel="stylesheet">
-<!--<link href="../plugins/magic-check/css/magic-check.min.css" rel="stylesheet">-->
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<link href="/css/sweetalert.css" rel="stylesheet">
+<!--<link href="/css/plug/magic-check/css/magic-check.min.css" rel="stylesheet">-->
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
 
 
 <!--CONTENT CONTAINER-->
@@ -69,6 +69,7 @@
                             <th></th>
                             <th>Date Created</th> 
                             <th>Image</th>
+                            <th>Client</th>
                             <th>Product Code</th>
                             <th>Quantity</th> 
                             <th>Price</th>  
@@ -80,10 +81,11 @@
                         $ctrr = 1;
                         $total_purchased = 0; 
                         foreach ($po['PurchaseOrderProduct'] as $po_products) {
+                            $po_products_client_id = $po_products['client_id'];
                             ?>
                             <tr>
                                 <td> 
-                                    <?php  if ($po_products['PurchaseOrder']['status'] != 'ongoing') { ?>
+                                    <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') { ?>
                                         <button class=" btn btn-mint  btn-icon  add-tooltip delivery_sched" data-toggle="tooltip"  data-original-title="Schedule Delivery"  data-dspquoteid="<?php echo $po_products['id']; ?>" data-dspquoteqty="<?php echo $po_products['qty']; ?>"><i class="fa fa-calendar"></i></button></td>
                                     <?php }
                                     else {
@@ -108,37 +110,53 @@
                                 <td>
                                    
                                     <?php
-                                    echo date('F d, Y', strtotime($po_products['created']));
+                                    echo time_elapsed_string($po_products['created']);
                                     echo '<br/><small>' . date('h:i a', strtotime($po_products['created'])) . '</small>';
                                     ?> 
                                 </td>
 
                                 <td>
                                     <?php if(!is_null($po_products['ProductCombo']['Product']['image'])){ ?>
-                                    <img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $po_products['ProductCombo']['Product']['image']; ?>" alt="Product Picture">
+                                    <img class="img-responsive" height="70" width="70" src="/img/product-uploads/<?php echo $po_products['ProductCombo']['Product']['image']; ?>" alt="Product Picture">
                                     <?php
                                     }else{ 
                                         echo 'no image';
                                     }?>
                                 </td> 
+                                
+                                <td><?php 
+                                        if($po_products['Client']) {
+                                            echo $po_products['Client']['name'];
+                                        }
+                                ?></td>
                                 <td><?php
                                     echo $po_products['ProductCombo']['Product']['name'];
-
                                     if ($type == 'supply') {
                                         if ($po_products['additional'] == 0) {
                                             if ($po_products['PurchaseOrder']['status'] == 'ongoing') {
                                                 ?>
-                                                <button class="btn btn-sm btn-mint additional_po_product add-tooltip" data-toggle="tooltip"  data-original-title="Purchase Additional Product" data-refnum="<?php echo $po_products['reference_num']; ?>" data-reftype="<?php echo $po_products['reference_type']; ?>"  ><i class="fa fa-plus"></i></button>
+                                                <button class="btn btn-sm btn-mint additional_po_product add-tooltip"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Purchase Additional Product"
+                                                        data-refnum="<?php echo $po_products['reference_num']; ?>"
+                                                        data-reftype="<?php echo $po_products['reference_type']; ?>"
+                                                        data-clientid="<?php echo $po_products_client_id; ?>">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
                                             <?php
                                             }
                                         }
                                     }
                                     ?>
                                 </td>
-                                <td><?php echo abs($po_products['qty']); ?>
-                                <!--<input type="text" value="<?php echo abs($po_products['qty']); ?>" class="qty"/>-->
+                                <td><?php 
+                                if(!($po_products['reference_num'] == 0 && ($po_products['PurchaseOrder']['status'] == 'ongoing' || $po_products['PurchaseOrder']['status'] == 'pending') && (int)$po['PurchaseOrder']['payment_request']==0)){
+                                    echo abs($po_products['qty']);
+                                } else{ ?>
+                                <input type="text" value="<?php echo abs($po_products['qty']); ?>" class="form-control qty" data-price="<?php echo abs($po_products['list_price']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>"/>
+                                <?php } ?>
                                 </td> 
-                                <td><input type="number" step="any" value="<?php echo abs($po_products['list_price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>" <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'readonly' ?>></td> 
+                                <td><input type="number" step="any" value="<?php echo abs($po_products['list_price']); ?>" class="form-control price" data-qqty="<?php echo abs($po_products['qty']); ?>" data-tid="id_<?php echo $ctrr; ?>" data-poprodid="<?php echo $po_products['id']; ?>" <?php if (!($po_products['reference_num'] == 0 && ($po_products['PurchaseOrder']['status'] == 'ongoing' || $po_products['PurchaseOrder']['status'] == 'pending') && (int)$po['PurchaseOrder']['payment_request']==0)) echo 'readonly' ?>></td> 
                                 <?php
                                 $total = $po_products['qty'] * $po_products['list_price'];
                                 ?>
@@ -151,7 +169,7 @@
                         ?>
 
                         <tr >
-                            <td colspan="5" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>>Without Discount</td>  
+                            <td colspan="6" align="right"><input id="nodiscount" type="checkbox" <?php if ($po['PurchaseOrder']['discount'] == 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>>Without Discount</td>  
                             <td align="right"><div class="discountDiv"><b>Discount:</b></div></td>  
                             <td>
                                 <input type="hidden" step="any"  class="form-control" id="discount_val" value="<?php echo abs($po['PurchaseOrder']['discount']); ?>"/>
@@ -159,12 +177,12 @@
 
                         </tr> 
                         <tr>
-                            <td colspan="6" align="right"><b>Total Purchased</b></td>  
+                            <td colspan="7" align="right"><b>Total Purchased</b></td>  
                             <td><input type="hidden" id="total_purchased_val" class="form-control" readonly value="<?php echo abs($total_purchased); ?>"/>
                                 <input type="text" id="total_purchased" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['total_purchased']); ?>"/></td>  
                         </tr>
                         <tr >
-                            <td colspan="5" align="right"><input id="nonvat" type="checkbox"  <?php if ((int)$po['PurchaseOrder']['vat_amount'] == 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
+                            <td colspan="6" align="right"><input id="nonvat" type="checkbox"  <?php if ((int)$po['PurchaseOrder']['vat_amount'] == 0) echo 'checked'; ?> <?php if ($po_products['PurchaseOrder']['status'] != 'ongoing') echo 'disabled' ?>> Non Vat</td>  
                             <td align="right"><div class="vatDiv"><b>ADD: 12% VAT:</b></div></td>  
                             <td><input type="hidden"  readonly class="form-control" id="vat_val" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/>
                                 <div class="vatDiv"><input type="text"  readonly class="form-control" id="vat" value="<?php echo abs($po['PurchaseOrder']['vat_amount']); ?>"/></div></td>  
@@ -177,21 +195,27 @@
                         </tr>-->
 
                         <tr>
-                            <td colspan="6" align="right">
+                            <td colspan="7" align="right">
                                 <select id="ewt_type" class="form-control">
                                     <?php if($po['PurchaseOrder']['ewt_type'] == 'one'):?>
                                         <option value="one">LESS: 1% EWT:</option>
                                         <option value="two">LESS: 2% EWT:</option>
-                                    <?php else: ?>
+                                        <option value="three">No EWT:</option>
+                                    <?php elseif($po['PurchaseOrder']['ewt_type'] == 'two'):?>
                                         <option value="two">LESS: 2% EWT:</option>
                                         <option value="one">LESS: 1% EWT:</option>
+                                        <option value="three">No EWT:</option>
+                                    <?php else: ?>
+                                        <option value="three">No EWT:</option>
+                                        <option value="one">LESS: 1% EWT:</option>
+                                        <option value="two">LESS: 2% EWT:</option>
                                     <?php endif; ?>
                                 </select>
-                            </td>  
+                            </td>
                             <td><input type="text" id="ewt" class="form-control" readonly value="<?php echo abs($po['PurchaseOrder']['ewt_amount']); ?>"/></td>  
                         </tr>
                         <tr>
-                            <td colspan="6" align="right"><b>Total Amount Due:</b></td>  
+                            <td colspan="7" align="right"><b>Total Amount Due:</b></td>  
                             <td><input type="text" id="grand_total" class="form-control" readonly  value="<?php echo abs($po['PurchaseOrder']['grand_total']); ?>"/></td>  
                         </tr>
                     </tbody>
@@ -420,6 +444,7 @@
 //$( document ).load(function() {
 
     $(document).ready(function () {
+        var po_products_client_id = 0;
         $('[data-toggle="tooltip"]').tooltip();
         
         $("button#btn_delete").on('click', function() {
@@ -725,6 +750,65 @@
             });
         });
     });
+    
+    $('.qty').each(function (index) {
+        $(this).change(function () {
+
+            var qty = $(this).val();
+            var tid = $(this).data("tid");
+            var po_product_id = $(this).data("poprodid");
+            var price = $(this).data("price");
+
+            var total = qty * price;
+
+
+            var data = {
+                "qty": qty,
+                "po_product_id": po_product_id
+            }
+
+            $.ajax({
+                url: "/purchase_orders/updatePoProductQty",
+                type: 'POST',
+                data: {'data': data},
+                dataType: 'json',
+                success: function (dd) {
+                    var discount = $("#discount").val();
+                    var total_purchased_val = $("#total_purchased_val").val();
+                    var total_purchased = $("#total_purchased_val").val();
+                    //            var total = $("#total").val();
+                    var ewt = $("#ewt").val();
+                    var ewt_type = $("#ewt_type").val();
+                    var grand_total = $("#grand_total").val();
+                    var po_id = $("#po_idd").val();
+
+                    if ($("#nonvat").is(':checked')) {
+                        var new_total_purchased = parseFloat(total_purchased_val) - parseFloat(discount);
+                        var new_vat = parseFloat(new_total_purchased) * 0.12;
+
+                        var vat = new_vat;
+                    } else {
+                        var vat = $("#vat").val();
+                    }
+                    var data = {
+                        "discount": discount,
+                        "vat": vat,
+                        "total_purchased_val": total_purchased_val,
+                        "total_purchased": total_purchased_val,
+                        //                "total": total,
+                        "ewt": ewt,
+                        "ewt_type": ewt_type,
+                        "grand_total": grand_total,
+                        "po_id": po_id
+                    }
+                    changeAmount(data);
+                },
+                error: function (dd) {
+                    console.log('error');
+                }
+            });
+        });
+    });
 //    $('.additional_po_product').each(function (index) {
 //        $(this).click(function () {
 //            $('#set-supplier-modal').modal('show'); 
@@ -830,8 +914,8 @@
                 confirmButtonClass: "btn-danger",
                 confirmButtonText: "Yes, save it!",
                 cancelButtonText: "No, cancel!",
-                closeOnConfirm: false,
-                closeOnCancel: false
+                closeOnConfirm: true,
+                closeOnCancel: true
             },
                     function (isConfirm) {
                         if (isConfirm) {
@@ -858,6 +942,7 @@
 
         $('.additional_po_product').each(function (index) {
             $(this).click(function () {
+                po_products_client_id = $(this).data('clientid');
                 var reference_number = $(this).data("refnum");
                 var reference_type = $(this).data("reftype");
                 $('#reference_number').val(reference_number);
@@ -888,8 +973,9 @@
                         }
                     });
 
-                    ////in here get suppliers for selected profct combo
+                    ////in here get suppliers for selected product combo
                     $("#slctd_prdctcombo").change(function () {
+                        // $(this).empty().append('<option></option>');
                         $('.added_product_combo_properties_div').each(function (index) {
                             $(".added_product_combo_properties_div").remove();
                         });
@@ -906,18 +992,37 @@
                         $.get('/supplier_products/get_po_product_last_supplier', {
                             id: selected_product_combo_id,
                         }, function (data) {
-                            console.log(data);
                             $("#added_last_supplier").remove();
-                            $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data[0]['PurchaseOrder']['Supplier']['name'] + '  [<small>' + data[0]['PurchaseOrder']['created'] + '</small>]</div>')
+                            $("#added_last_price").remove();
+                            if($.isEmptyObject(data['PurchaseOrderProduct'])!=true) {
+                                if(data['PurchaseOrderProduct']['list_price']!=null) {
+                                    var price = data['PurchaseOrderProduct']['list_price'];
+                                    $('#last_supplier').append('<div id="added_last_price" class="text-primary"> Last Purchased Price:  &#8369;'+ price + ' </div>');
+                                }
+                            }
+                            if(data['Supplier']!=null) {
+                                $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data['Supplier']['name'] + '  [<small>' + data['created'] + '</small>]</div>');
+                            }
                         }); //end of ajax get /supplier_products/get_po_product_last_supplier
+                        // $.get('/supplier_products/get_po_product_last_supplier', {
+                        //     id: selected_product_combo_id,
+                        // }, function (data) {
+                        //     var data_supplier_name = ''; 
+                        //     if(data[0]['PurchaseOrder']['supplier_id']!=null && data[0]['PurchaseOrder']['supplier_id']!="") {
+                        //         data_supplier_name = data[0]['PurchaseOrder']['Supplier']['name'];
+                        //     }
+                        //     $("#added_last_supplier").remove();
+                        //     $('#last_supplier').append('<div id="added_last_supplier" class="text-primary"> Last Purchased:  ' + data_supplier_name + '  [<small>' + data[0]['PurchaseOrder']['created'] + '</small>]</div>')
+                        // }); //end of ajax get /supplier_products/get_po_product_last_supplier
 
                         $.get('/supplier_products/get_supplier_product_combo', {
                             id: selected_product_id,
                         }, function (data) {
+                            console.log(data);
                             for (i = 0; i < data.length; i++) {
                                 $('#slctd_prdctcombo').append($('<option>', {
                                     value: data[i]['ProductCombo']['id'],
-                                    text: data[i]['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
+                                    text: data[i]['ProductCombo']['Product']['name'] + ' [' + data[i]['ProductCombo']['ordering'] + ']'
                                 }));
                             }
                         }); //end of ajax get /supplier_products/get_product_combination
@@ -966,7 +1071,7 @@
             var po_qty = $("#po_qty").val();
             var list_price = $("#list_price").val();
             var supplier_product_id = $("#supplier_product_id").val();
-//console.log(reference_num);
+            //console.log(reference_num);
 
             if (product_id != "") {
                 if (product_combo_id != "") {
@@ -986,19 +1091,21 @@
                                     "additional": 1,
                                     "supplier_product_id": supplier_product_id,
                                     "inventory_job_order_type": 'po',
+                                    "po_raw_request_id":0,
+                                    "po_raw_request_qty":0,
+                                    "client": po_products_client_id    
                                 }
                                 $.ajax({
                                     url: "/purchase_orders/process_new_po",
                                     type: 'POST',
                                     data: {'data': data},
-                                    dataType: 'json',
+                                    dataType: 'text',
                                     success: function (dd) {
+                                        console.log('SUCCESS \n' + dd);
                                         location.reload();
-//                    console.log(dd);
                                     },
                                     error: function (dd) {
-                                        // console.log('error' + dd);
-                                        
+                                        console.log('ERROR \n' + JSON.stringify(dd));
                                         location.reload();
                                     }
                                 });
@@ -1019,9 +1126,6 @@
             }
         });
         
-        
-        
-        
         $('.delivery_sched').each(function (index) {
             $(this).click(function () {
                 var pqid = $(this).data("dspquoteid");
@@ -1031,10 +1135,6 @@
                 $('#requested_qty').val(pqqty);
             });
         });
-        
-        
-    
- 
     
         $('#saveDeliverySched').click(function () {
             var delivery_date = $('#delivery_date').val();
@@ -1065,7 +1165,9 @@
                                 "client_id":clnt_id,
                                 "supplier_id":0,
                                 "shipping_address":shipping_address,
-                                "g_maps": g_maps
+                                "g_maps": g_maps,
+                                "delivered_qty": 0,
+                                "date_delivered": null
                             }
                             // console.log(data);
                             $.ajax({
@@ -1093,5 +1195,4 @@
                 document.getElementById('delivery_date').style.borderColor = "red";
             }
         });
-    
 </script>

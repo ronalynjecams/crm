@@ -57,14 +57,14 @@
 <tr>
 		<th><?php echo __('Billing Date From'); ?></th>
 		<td>
-			<?php echo h($billMonitoring['BillMonitoring']['billing_date_from']); ?>
+			<?php echo time_elapsed_string($billMonitoring['BillMonitoring']['billing_date_from']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Billing Date To'); ?></th>
 		<td>
-			<?php echo h($billMonitoring['BillMonitoring']['billing_date_to']); ?>
+			<?php echo time_elapsed_string($billMonitoring['BillMonitoring']['billing_date_to']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -92,21 +92,21 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($billMonitoring['BillMonitoring']['created']); ?>
+			<?php echo time_elapsed_string($billMonitoring['BillMonitoring']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($billMonitoring['BillMonitoring']['modified']); ?>
+			<?php echo time_elapsed_string($billMonitoring['BillMonitoring']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Receipt Date'); ?></th>
 		<td>
-			<?php echo h($billMonitoring['BillMonitoring']['receipt_date']); ?>
+			<?php echo time_elapsed_string($billMonitoring['BillMonitoring']['receipt_date']); ?>
 			&nbsp;
 		</td>
 </tr>

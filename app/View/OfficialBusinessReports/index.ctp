@@ -48,8 +48,8 @@
 								<td>
 			<?php echo $this->Html->link($officialBusinessReport['OfficialBusiness']['id'], array('controller' => 'official_businesses', 'action' => 'view', $officialBusinessReport['OfficialBusiness']['id'])); ?>
 		</td>
-						<td><?php echo h($officialBusinessReport['OfficialBusinessReport']['created']); ?>&nbsp;</td>
-						<td><?php echo h($officialBusinessReport['OfficialBusinessReport']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusinessReport['OfficialBusinessReport']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($officialBusinessReport['OfficialBusinessReport']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $officialBusinessReport['OfficialBusinessReport']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $officialBusinessReport['OfficialBusinessReport']['id']), array('escape' => false)); ?>

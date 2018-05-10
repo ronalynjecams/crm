@@ -111,14 +111,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($supplier['Supplier']['created']); ?>
+			<?php echo time_elapsed_string($supplier['Supplier']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($supplier['Supplier']['modified']); ?>
+			<?php echo time_elapsed_string($supplier['Supplier']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -152,8 +152,8 @@
 			<td><?php echo $supplierTag['id']; ?></td>
 			<td><?php echo $supplierTag['name']; ?></td>
 			<td><?php echo $supplierTag['supplier_id']; ?></td>
-			<td><?php echo $supplierTag['created']; ?></td>
-			<td><?php echo $supplierTag['modified']; ?></td>
+			<td><?php echo time_elapsed_string($supplierTag['created']); ?></td>
+			<td><?php echo time_elapsed_string($supplierTag['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'supplier_tags', 'action' => 'view', $supplierTag['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'supplier_tags', 'action' => 'edit', $supplierTag['id']), array('escape' => false)); ?>

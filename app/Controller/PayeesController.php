@@ -50,7 +50,7 @@ class PayeesController extends AppController {
 			$this->Payee->create();
 			if ($this->Payee->save($this->request->data)) {
 				$this->Session->setFlash(__('The payee has been saved.'), 'default', array('class' => 'alert alert-success'));
-				return $this->redirect(array('action' => 'index'));
+				// return $this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The payee could not be saved. Please, try again.'), 'default', array('class' => 'alert alert-danger'));
 			}

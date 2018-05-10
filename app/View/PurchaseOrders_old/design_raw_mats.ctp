@@ -1,17 +1,17 @@
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 <!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />-->
 
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 <!--<link href="plugins/bootstrap-validator/bootstrapValidator.min.css" rel="stylesheet">-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-<script src="../plugins/select2/js/select2.min.js"></script>   
+<script src="/css/plug/select/js/select2.min.js"></script>   
    <!--<script src="plugins/masked-input/jquery.maskedinput.min.js"></script>-->
    <!--<script src="plugins/bootstrap-validator/bootstrapValidator.min.js"></script>-->
 <!--<script src="../js/erp_js/quotation.js"></script>--> 
 <!--<script src="../js/erp_js/erp_scripts.js"></script>-->  
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> 
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/js/sweetalert.min.js"></script>  
 <!--===================================================-->
 <div id="content-container" >
     <div id="page-title">
@@ -53,7 +53,7 @@
                                             foreach ($raws as $raw) {
                                                 ?>
                                                 <tr>
-                                                    <td><img class="img-responsive" height="70" width="70" src="../product_uploads/<?php echo $raw['Product']['image']; ?>"></td>
+                                                    <td><img class="img-responsive" height="70" width="70" src="/img/product-uploads/<?php echo $raw['Product']['image']; ?>"></td>
                                                     <td><?php echo $raw['Product']['name']; ?></td>
                                                     <td>
                                                         <?php
@@ -209,7 +209,7 @@
 
                 $("#prod_img").remove();
                 $(".initial_product_type_div").remove();
-                $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="../product_uploads/' + data['Product']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['Product']['image'] + '"></div>' +
+                $("#prod_image_add_div").append('<div id="prod_img"><img class="img-responsive" src="/img/product-uploads/' + data['Product']['image'] + '"><input type="hidden" id="prdct_image" value="' + data['Product']['image'] + '"></div>' +
                         '<div class="initial_product_type_div form-group"><br/><label>Product Type</label><input type="text" readonly value="' + data['Product']['type'] + '" class="form-control" id="initial_prod_type"></div>');
 
 

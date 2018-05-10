@@ -103,8 +103,8 @@
 			<td><?php echo $prodInvLocationProperty['qty']; ?></td>
 			<td><?php echo $prodInvLocationProperty['property']; ?></td>
 			<td><?php echo $prodInvLocationProperty['value']; ?></td>
-			<td><?php echo $prodInvLocationProperty['created']; ?></td>
-			<td><?php echo $prodInvLocationProperty['modified']; ?></td>
+			<td><?php echo time_elapsed_string($prodInvLocationProperty['created']); ?></td>
+			<td><?php echo time_elapsed_string($prodInvLocationProperty['modified']); ?></td>
 			<td><?php echo $prodInvLocationProperty['prod_inv_combo_id']; ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'prod_inv_location_properties', 'action' => 'view', $prodInvLocationProperty['id']), array('escape' => false)); ?>

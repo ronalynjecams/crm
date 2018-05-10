@@ -108,6 +108,7 @@ class CollectionPapersController extends AppController {
 
     public function advance_invoice() {
         $this->loadModel('Quotation');
+        $this->Quotation->recursive = 2;
         if ($this->params['url']['status'] == 'pending') {
             $quotations = $this->Quotation->find('all', ['conditions' => [
                     'Quotation.advance_invoice' => 1,

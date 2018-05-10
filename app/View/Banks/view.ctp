@@ -55,14 +55,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($bank['Bank']['created']); ?>
+			<?php echo time_elapsed_string($bank['Bank']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($bank['Bank']['modified']); ?>
+			<?php echo time_elapsed_string($bank['Bank']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -117,9 +117,9 @@
 			<td><?php echo $collection['status']; ?></td>
 			<td><?php echo $collection['date_deleted']; ?></td>
 			<td><?php echo $collection['date_updated']; ?></td>
-			<td><?php echo $collection['created']; ?></td>
-			<td><?php echo $collection['modified']; ?></td>
-			<td><?php echo $collection['date_completed']; ?></td>
+			<td><?php echo time_elapsed_string($collection['created']); ?></td>
+			<td><?php echo time_elapsed_string($collection['modified']); ?></td>
+			<td><?php echo time_elapsed_string($collection['date_completed']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'collections', 'action' => 'view', $collection['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'collections', 'action' => 'edit', $collection['id']), array('escape' => false)); ?>

@@ -1,12 +1,12 @@
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>  
 
 <!--CONTENT CONTAINER-->
 <!--===================================================-->
@@ -45,7 +45,7 @@
                             <tr>
                                 <td >
                                     <?php
-                                    echo date('F d, Y', strtotime($pending_jr['JobRequest']['created']));
+                                    echo time_elapsed_string($pending_jr['JobRequest']['created']);
                                     echo '<br/><small>' . date('h:i a', strtotime($pending_jr['JobRequest']['created'])) . '</small>';
                                     ?>
                                 </td>
@@ -57,7 +57,7 @@
                                 <td ><?php echo $pending_jr['Client']['name']; ?><br/><small>[ <?php echo $pending_jr['JobRequest']['jr_number']; ?> ]</small></td>
                                 <td ><?php echo $pending_jr['User']['first_name']; ?></td>  
                                 <td> <?php
-                                    echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jobrid="' . $pending_jr['Quotation']['id'] . '"><i class="fa fa-edit"></i></button>';
+                                    echo '<button class="jrupdateBtn btn btn-mint  btn-icon  add-tooltip" data-toggle="tooltip"  data-original-title="Update Job Request"  type="button" data-jrid="' . $pending_jr['JobRequest']['id'] . '"><i class="fa fa-edit"></i></button>';
                                     ?>
                                 </td> 
                             </tr>
@@ -90,8 +90,8 @@
 
         $('.jrupdateBtn').each(function (index) {
             $(this).click(function () {
-                var quote_id = $(this).data("jobrid");
-                window.location.replace("/job_requests/joupdate?id=" + quote_id);
+                var jr_id = $(this).data("jrid");
+                window.location.replace("/job_requests/view_jr?id=" + jr_id);
             });
         });
 

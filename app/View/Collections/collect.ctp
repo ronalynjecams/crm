@@ -1,11 +1,11 @@
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-<script src="../plugins/select2/js/select2.min.js"></script> 
-<script src="../js/sweetalert.min.js"></script>  
+<script src="/css/plug/select/js/select2.min.js"></script> 
+<script src="/js/sweetalert.min.js"></script>  
 <div id="content-container" >
     <div id="page-title">
         <h4 class="  text-overflow">Collections for <b><?php echo $quote_data['Client']['name']; ?></b> with a total contract of &#8369; <?php echo number_format($quote_data['Quotation']['grand_total'], 2); ?></h4>
@@ -244,7 +244,7 @@
                                             <td>
 
                                                 <?php
-                                                echo date('F d, Y', strtotime($collection['Collection']['created']));
+                                                echo time_elapsed_string($collection['Collection']['created']);
                                                 echo '<br/><small>' . date('h:i a', strtotime($collection['Collection']['created'])) . '</small>';
                                                 ?>  
                                             </td>
@@ -292,7 +292,7 @@
                                             <td> 
                                                 <?php
                                                 if (!is_null($collection['Collection']['check_date'])) {
-                                                    echo date('F d, Y', strtotime($collection['Collection']['check_date']));
+                                                    echo time_elapsed_string($collection['Collection']['check_date']);
                                                     echo '<br/><small>' . date('h:i a', strtotime($collection['Collection']['check_date'])) . '</small>';
                                                 } else {
                                                     echo '-';
@@ -363,14 +363,14 @@
                                         <tr>
                                             <td>
                                                 <?php
-                                                echo date('F d, Y', strtotime($collection_paper['CollectionPaper']['created']));
+                                                echo time_elapsed_string($collection_paper['CollectionPaper']['created']);
                                                 echo '<br/><small>' . date('h:i a', strtotime($collection_paper['CollectionPaper']['created'])) . '</small>';
                                                 ?> 
                                             </td>
                                             <td> <?php echo $collection_paper['AccountingPaper']['name']; ?>  </td> 
                                             <td> <?php echo '&#8369; ' . number_format($collection_paper['CollectionPaper']['amount'], 2); ?>  </td> 
                                             <td> <?php echo $collection_paper['CollectionPaper']['ref_number']; ?>  </td> 
-                                            <td> <?php if(!is_null($collection_paper['CollectionPaper']['ref_date']))echo date('F d, Y', strtotime($collection_paper['CollectionPaper']['ref_date'])); ?>  </td> 
+                                            <td> <?php if(!is_null($collection_paper['CollectionPaper']['ref_date']))echo time_elapsed_string($collection_paper['CollectionPaper']['ref_date']); ?>  </td> 
                                             <td> <?php
                                                 if ($collection_paper['CollectionPaper']['status'] == 'onhand') {
                                                     echo '<p class="text-success">Onhand</p>';
@@ -446,11 +446,10 @@
 
         var date = new Date();
         date.setDate(date.getDate() - 1);
-        $('#datePicker-deliver')
-                .datepicker({
-                    format: 'yyyy-mm-dd',
-                    startDate: date,
-                });
+        $('#datePicker-deliver').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: date,
+        });
 
     });
 

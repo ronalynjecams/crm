@@ -46,8 +46,8 @@
 						<td><?php echo h($erpPermission['ErpPermission']['id']); ?>&nbsp;</td>
 						<td><?php echo h($erpPermission['ErpPermission']['name']); ?>&nbsp;</td>
 						<td><?php echo h($erpPermission['ErpPermission']['display_name']); ?>&nbsp;</td>
-						<td><?php echo h($erpPermission['ErpPermission']['created']); ?>&nbsp;</td>
-						<td><?php echo h($erpPermission['ErpPermission']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($erpPermission['ErpPermission']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($erpPermission['ErpPermission']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $erpPermission['ErpPermission']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $erpPermission['ErpPermission']['id']), array('escape' => false)); ?>

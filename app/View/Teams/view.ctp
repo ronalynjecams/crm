@@ -50,14 +50,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($team['Team']['created']); ?>
+			<?php echo time_elapsed_string($team['Team']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($team['Team']['modified']); ?>
+			<?php echo time_elapsed_string($team['Team']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -97,8 +97,8 @@
 			<td><?php echo $agentStatus['team_id']; ?></td>
 			<td><?php echo $agentStatus['date_from']; ?></td>
 			<td><?php echo $agentStatus['date_to']; ?></td>
-			<td><?php echo $agentStatus['created']; ?></td>
-			<td><?php echo $agentStatus['modified']; ?></td>
+			<td><?php echo time_elapsed_string($agentStatus['created']); ?></td>
+			<td><?php echo time_elapsed_string($agentStatus['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'agent_statuses', 'action' => 'view', $agentStatus['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'agent_statuses', 'action' => 'edit', $agentStatus['id']), array('escape' => false)); ?>
@@ -157,12 +157,12 @@
 			<td><?php echo $client['email']; ?></td>
 			<td><?php echo $client['tin_number']; ?></td>
 			<td><?php echo $client['contact_number']; ?></td>
-			<td><?php echo $client['created']; ?></td>
-			<td><?php echo $client['modified']; ?></td>
+			<td><?php echo time_elapsed_string($client['created']); ?></td>
+			<td><?php echo time_elapsed_string($client['modified']); ?></td>
 			<td><?php echo $client['owner_marketing']; ?></td>
-			<td><?php echo $client['date_forwarded']; ?></td>
+			<td><?php echo time_elapsed_string($client['date_forwarded']); ?></td>
 			<td><?php echo $client['original_owner']; ?></td>
-			<td><?php echo $client['date_transfered']; ?></td>
+			<td><?php echo time_elapsed_string($client['date_transfered']); ?></td>
 			<td><?php echo $client['team_id']; ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'clients', 'action' => 'view', $client['id']), array('escape' => false)); ?>

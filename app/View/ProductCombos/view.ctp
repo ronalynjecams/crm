@@ -1,11 +1,15 @@
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<!--SWEET ALERT-->
+<link href="/css/sweetalert.css" rel="stylesheet">
+<script src="/js/sweetalert.min.js"></script>
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../plugins/datatables/media/js/bootstrap-confirmation.min.js"></script>
+<link href="http://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/css/plug/datatables/media/js/bootstrap-confirmation.min.js"></script>
 
 <div id="content-container">
 	<div>
@@ -20,7 +24,13 @@
 			<div class="panel">
 				<div class="panel-heading" align="right">
 	                <h3 class="panel-title">
-	                    <?php if (($UserIn['User']['role'] == 'it_staff')) { ?>
+	                    <?php if (($UserIn['User']['role'] == 'it_staff')
+	                    		  ||
+	                    		  ($UserIn['User']['role'] == 'proprietor')
+	                    		  ||
+	                    		  ($UserIn['User']['role'] == 'raw_head')
+	                    		  ||
+	                    		  ($UserIn['User']['role'] == 'supply_staff')) { ?>
 	                    
 	                    <button id="add_new_prod_combo" class="btn btn-mint"
 	                    		style="font-weight:bold;">
@@ -73,12 +83,13 @@
 											value="<?php echo $product_combo['ProductCombo']['id']; ?>" />
 											<span class="fa fa-edit"></span>
 										</button>
-										<?php if($UserIn['User']['role'] == 'super_admin') { ?>
+										<?php if($UserIn['User']['role'] == 'super_admin' ||
+												 $UserIn['User']['role'] == 'raw_head' ||
+												 $UserIn['User']['role'] == 'supply_staff') { ?>
 										<button class="btn btn-danger remove"
-											data-toggle="confirmation" data-placement="top"
-											data-title="Are you sure?"
-											data-popout="true"
-											value="<?php echo $prod_combo_id; ?>" />
+											data-toggle="tooltip" data-placement="top"
+											title="Delete Combination"
+											value="<?php echo $product_combo['ProductCombo']['id']; ?>" />
 											<span class="fa fa-close"></span>
 										</button>
 										<?php } ?>
@@ -209,27 +220,33 @@
         
         $("button.remove").on("click", function () {
         	var id = $(this).val();
-        	var ordering = $(this).closest("tr").find(".ordering").text();
         	
-        	var data = {
-        		'id':id,
-        		'ordering': ordering
-        	};
-        	
-        	$.ajax({
-        		url: '/product_combos/remove',
-	        		type: 'Post',
-					data: {'data': data},
-					dataType: 'text',
-					success: function(id) {
-						console.log(id);
-						location.reload();
-					},
-					error: function(err) {
-						console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-						console.log("Error in ajax add prod combo");
-					}
-        	});
+        	swal({
+                title: "Are you sure?",
+                text: "This will delete combination.",
+                type: "warning",
+                showCancelButton: true,
+                closeOnConfirm: true,
+	            closeOnCancel: true
+            },
+            function(isConfirm) {
+                if(isConfirm) {
+		        	$.ajax({
+		        		url: '/product_combos/remove',
+			        		type: 'Post',
+							data: {"data":id},
+							dataType: 'text',
+							success: function(id) {
+								console.log(id);
+								location.reload();
+							},
+							error: function(err) {
+								console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+								console.log("Error in ajax add prod combo");
+							}
+		        	});
+                }
+            });
 		})
         
         $('#prop_value_field').each(function(index) {

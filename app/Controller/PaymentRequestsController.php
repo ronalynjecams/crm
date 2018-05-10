@@ -96,6 +96,8 @@ class PaymentRequestsController extends AppController {
 	public function all_list() {
 		$type = $this->params['url']['type'];
 		$status = $this->params['url']['status'];
+		$uid = $this->Auth->user('id');
+		$role = $this->Auth->user('role');
 		$this->set(compact('type','status'));
 		
 		$this->loadModel('PaymentRequest');
@@ -105,9 +107,41 @@ class PaymentRequestsController extends AppController {
 		$this->loadModel('User');
 		$this->loadModel('Payee');
 		
-		$payment_requests = $this->PaymentRequest->find('all', ['conditions'=>
-									['PaymentRequest.type'=>$type,
-									 'PaymentRequest.status'=>$status]]);
+		if($role=="supply_staff" || $role=="raw_head" || $role=="subcon_purchasing") {
+			$payment_requests = $this->PaymentRequest->find('all',
+										['conditions'=>
+											['PaymentRequest.type'=>$type,
+											 'PaymentRequest.status'=>$status,
+											 'PaymentRequest.inserted_by'=>$uid]
+											//  ,
+										 //'fields'=>['PaymentRequest.id', 
+											// 		'PaymentRequest.payee_id',
+											// 		'PaymentRequest.created']
+										]);
+		}
+		else {
+			$payment_requests = $this->PaymentRequest->find('all', ['conditions'=>
+										['PaymentRequest.type'=>$type,
+										 'PaymentRequest.status'=>$status]]);
+		}
+		
+		// =====> MODIFICATION FOR SHOWING PO
+		$ppos_obj = [];
+		foreach($payment_requests as $each_payment_request) {
+			$payment_request_obj = $each_payment_request['PaymentRequest'];
+			$id = $payment_request_obj['id'];
+			$supplier_id = $payment_request_obj['supplier_id'];
+			
+			$this->loadModel('PaymentPurchaseOrder');
+			$ppos = $this->PaymentPurchaseOrder->find('all', ['conditions'=>
+				['payment_request_id'=>$id]]);
+			foreach($ppos as $eppos) {
+				$ppos_obj[$id][] = $eppos;
+			}
+		}
+		$this->set(compact('ppos_obj'));
+		// =====> END OF SHOWING PO
+		
 		$this->set(compact('payment_requests'));
 		
 		$payment_request_logs = [];
@@ -121,7 +155,7 @@ class PaymentRequestsController extends AppController {
 				['conditions'=>
 				['payment_request_id'=>$payment_request_id,
 				 'status'=>$status],
-				'fields'=>['created']]);
+				 'fields'=>['created']]);
 			
 			$this->PaymentRequestLog->recursive = -1;
 			$payment_request_logs_released[$payment_request_id] = $this->PaymentRequestLog->find('all',
@@ -142,12 +176,18 @@ class PaymentRequestsController extends AppController {
 	    $this->User->recursive = -1;
 	    $users = $this->User->find('all');
 	   
-	    $payees = $this->Payee->find('all');
+	    $payees = $this->Payee->find('all', ['order'=>'name ASC']);
 	    
+	    // MARK: OFFLINE MODIFICATION
+		$this->loadModel('PaymentRequestCategory');
+		$this->PaymentRequestCategory->recursive = -1;
+		$get_categories = $this->PaymentRequestCategory->find('all');
 		$this->set(compact('payment_request_logs',
 						   'payment_request_logs_released',
 						   'payment_request_cheques',
-						   'banks', 'users', 'payees'));
+						   'banks', 'users', 'payees',
+						   'get_categories', 'role'));
+		// MARK: END OF OFFLINE MODIFICATION
 	}
 	
 	public function add_request() {
@@ -155,29 +195,49 @@ class PaymentRequestsController extends AppController {
 		$this->response->type('text');
 		
 		$data = $this->request->data;
+		$userin = $this->Auth->user('id');
+		$category = $data['category'];
 		$payee_id = $data['payee_id'];
-		$amount = $data['amount'];
-		$requested_by = $data['requested_by'];
+		$amount = floatval($data['amount']);
+		if($this->Auth->user('role')=='proprietor'
+		   || $this->Auth->user('role')=='proprietor_secretary'
+		   || $this->Auth->user('role')=='supply_staff'
+		   || $this->Auth->user('role')=='raw_head') {
+		   	echo "REQUESTED BY:";
+			$requested_by = $data['requested_by'];
+		}
+		else {
+			$requested_by = $userin;
+		}
 		$purpose = $data['purpose'];
 		$type = $data['type'];
 		$status = $data['status'];
-		$userin = $this->Auth->user('id');
 		
-		if($payee_id==0) {
-			$payee = $userin;
+		if($type=="pettycash") {
+			$control_number = $data['control_number'];
+			$data_array = ['control_number'=>$control_number,
+						   'user_id'=>$requested_by,
+						   'payee_id'=>$payee_id,
+						   'requested_amount'=>$amount,
+						   'payment_request_category_id'=>$category,
+						   'requested_by'=>$requested_by,
+						   'purpose'=>$purpose,
+						   'status'=>'pending',
+						   'type'=>$type,
+						   'inserted_by'=>$userin];
 		}
 		else {
-			$payee = $payee_id;
+			$data_array = ['user_id'=>$requested_by,
+						   'payee_id'=>$payee_id,
+						   'requested_amount'=>$amount,
+						   'payment_request_category_id'=>$category,
+						   'requested_by'=>$requested_by,
+						   'purpose'=>$purpose,
+						   'status'=>'pending',
+						   'type'=>$type,
+						   'inserted_by'=>$userin];
 		}
-		
-		$data_array = ['user_id'=>$payee,
-					   'requested_amount'=>$amount,
-					   'requested_by'=>$requested_by,
-					   'purpose'=>$purpose,
-					   'status'=>'pending',
-					   'type'=>$type,
-					   'inserted_by'=>$userin];
-					   
+		echo json_encode($data_array);
 		$this->loadModel('PaymentRequest');
 		$this->loadModel('PaymentRequestLog');
 		
@@ -188,9 +248,10 @@ class PaymentRequestsController extends AppController {
 		$this->PaymentRequest->set($data_array);
 		
 		if($this->PaymentRequest->save()) {
+			echo "PaymentRequest save";
 			$payment_request_id = $this->PaymentRequest->getLastInsertId();
 			$payment_request_log = ['payment_request_id'=>$payment_request_id,
-									'user_id'=>$payee,
+									'user_id'=>$userin,
 									'status'=>$status];
 									
 			$DS_PaymentRequestLog = $this->PaymentRequestLog->getDataSource();
@@ -202,18 +263,16 @@ class PaymentRequestsController extends AppController {
 				$DS_PaymentRequest->commit();
 			}
 			else {
+				$DS_PaymentRequestLog->rollback();
 				$DS_PaymentRequest->rollback();
 			}
 				
-			return json_encode($data_array);
 		}
 		else {
-			return json_encode("Error in saving request");
+			echo "Error in Payment Request";
+			$DS_PaymentRequest->rollback();
 		}
-		$DS_PaymentRequestLog->commit();
-		$DS_PaymentRequest->commit();
-		
-		exit;
+		return "done";
 	}
 	
 	public function my_list() {
@@ -253,58 +312,52 @@ class PaymentRequestsController extends AppController {
 	public function po_request_add() {
 		$this->loadModel('Payee');
 		$this->loadModel('Supplier');
+		$this->loadModel('User');
 		
 	    $payees = $this->Payee->find('all');
 	    $type = $this->params['url']['type'];
 	    
 	    $this->Supplier->recursive = -1;
-	    $suppliers = $this->Supplier->find('all', ['conditions'=>[],
+	    $suppliers = $this->Supplier->find('all', ['conditions'=>['status'=>'active'],
 	    	'fields'=>['Supplier.id','Supplier.name']]);
+	    	
+	    $this->User->recursive = -1;
+	    $users = $this->User->find('all');
 
-	    $this->set(compact('payees','suppliers','type'));
+	    $this->set(compact('payees','suppliers','type','users'));
 	}
-	
+
 	public function get_po() {
 		$this->autoRender = false;
 		$this->response->type('json');
-		
-		$supplier_id = $this->request->query['id'];
+		$supplier_id = $this->request->data;
 		$userin = $this->Auth->user('id');
 		
 		$this->loadModel("PaymentPurchaseOrder");
-		$this->loadModel("PaymentRequest");
 		$this->loadModel("PurchaseOrder");
-		
-		$this->PaymentRequest->recursive = -1;
-		$get_payment_request = $this->PaymentRequest->find('all',
-			['conditions'=>['PaymentRequest.inserted_by'=>$userin],
-							'fields'=>['id']]);
-							
-		$purchase_order_ids = [];
-		foreach($get_payment_request as $payment_request) {
-			$pr_id = $payment_request['PaymentRequest']['id'];
-
-			$this->PaymentPurchaseOrder->recursive = -1;
-			$payment_pos = $this->PaymentPurchaseOrder->find('all',
-				['conditions'=>['payment_request_id'=>$pr_id]]);
-			
-			foreach($payment_pos as $payment_po) {
-				$purchase_order_ids[] =$payment_po['PaymentPurchaseOrder']['purchase_order_id'];	
-			}
-		}
 
 		$this->PurchaseOrder->recursive = -1;
 		$pos = $this->PurchaseOrder->find('all', ['conditions'=>
-			['supplier_id'=>$supplier_id,
-			 'NOT'=>['id'=>$purchase_order_ids]],
-			'fields'=>['id', 'po_number']]);
+			['supplier_id'=>$supplier_id],
+			'fields'=>['id', 'po_number', 'grand_total', 'payment_request']]);
+
+		$valid_pos = [];
+		foreach($pos as $each_pos) {
+			$PurchaseOrder = $each_pos['PurchaseOrder'];
+			$grand_total = $PurchaseOrder['grand_total'];
+			$payment_request = $PurchaseOrder['payment_request'];
 			
-		if(!empty($pos)) {
-			$retVal = $pos;
+			if($payment_request==0) {
+				$valid_pos[] = $each_pos;
+			}
+			else {
+				if(floatval($payment_request)<floatval($grand_total)) {
+					$valid_pos[] = $each_pos;
+				}
+			}
 		}
-		else { $retVal = []; }
 		
-		return json_encode($retVal);
+		return json_encode($valid_pos);
 	}
 	
 	public function get_po_each() {
@@ -345,20 +398,31 @@ class PaymentRequestsController extends AppController {
 		$values=$data['values'];
 		$inserted_by=$userin;
 		$payee = $data['payee'];
+		$user=$data['requested_by'];
 		
-		if($payee==0){ $user=$userin; }
-		else { $user = $payee; }
-		
-		$create = ['type'=>$type,
+		if($type=="pettycash") {
+			$control_number = $data['control_number'];
+			$create = ['type'=>$type,
+					   'requested_amount'=>$requested_amount,
+					   'user_id'=>$user,
+					   'payee_id'=>$payee,
+					   'inserted_by'=>$inserted_by,
+					   'purpose'=>$purpose,
+					   'status'=>$status,
+					   'supplier_id'=>$supplier_id,
+					   'control_number'=>$control_number];
+		}
+		else {
+			$create = ['type'=>$type,
 				   'requested_amount'=>$requested_amount,
 				   'user_id'=>$user,
+				   'payee_id'=>$payee,
+				   'inserted_by'=>$inserted_by,
 				   'purpose'=>$purpose,
 				   'status'=>$status,
-				   'supplier_id'=>$supplier_id,
-				   'inserted_by'=>$inserted_by];
-				   
+				   'supplier_id'=>$supplier_id];
+		}
 		
-		$this->loadModel('PaymentRequest');
 		$this->loadModel('PaymentRequestLog');
 		$this->loadModel('PaymentPurchaseOrder');
 		
@@ -369,65 +433,99 @@ class PaymentRequestsController extends AppController {
 		$this->PaymentRequest->set($create);
 		
 		if($this->PaymentRequest->save()) {
+			echo "PaymenRequest saved";
 			$payment_request_id = $this->PaymentRequest->getLastInsertId();
 			
+			$isAllPurchaseOrderSave = [];
 			$this->loadModel('PurchaseOrder');
 			$DS_PurchaseOrder = $this->PurchaseOrder->getDataSource();
 			$DS_PurchaseOrder->begin();
 			
+			$isAllPaymentPurchaseOrder = [];
 			$DS_PaymentPurchaseOrder = $this->PaymentPurchaseOrder->getDataSource();
 			$DS_PaymentPurchaseOrder->begin();
 
 			for($c=0;$c<count($pos);$c++) {
 				$po_id = $pos[$c];
-				$value = $values[$c];
 				
 				$data_payment_purchase_order = ['payment_request_id'=>$payment_request_id,
 												'purchase_order_id'=>$po_id,
-												'po_amount_request'=>$requested_amount];
-				
+												'po_amount_request'=>$values[$c],
+												'user_id'=>$userin];
 				$this->PaymentPurchaseOrder->create();
 				$this->PaymentPurchaseOrder->set($data_payment_purchase_order);
-				$this->PaymentPurchaseOrder->save();
+				if($this->PaymentPurchaseOrder->save()) {
+					$isAllPaymentPurchaseOrder[] = "yes";
+				}
+				else {
+					$isAllPaymentPurchaseOrder[] = "no";
+				}
 				
-				$this->PurchaseOrder->recursive = -1;
-				$purchase_order = $this->PurchaseOrder->findById($po_id);
-				
-				$paynent_request = $purchase_order['PurchaseOrder']['payment_request'];
-				$total_payment_request = $value + $paynent_request;
-				
-				$update = ['payment_request'=>$total_payment_request];
-						   
+				$getPOAmount = $this->PurchaseOrder->findById($po_id, ['id', 'grand_total', 'payment_request']);
+				$POAmount = $getPOAmount['PurchaseOrder']['grand_total'];
+				$PO_payment_request = $getPOAmount['PurchaseOrder']['payment_request'];
+				$total_requests = $PO_payment_request+$values[$c];
+				echo "POAmount: ".gettype($POAmount);
+				echo "RequestedAmount: ".gettype($total_requests);
+				if(floatval($POAmount) > floatval($total_requests)) {
+					$update = ['payment_request'=>$total_requests,
+							   'status'=>'partial'];
+				}
+				else {
+					$update = ['payment_request'=>$total_requests,
+							   'status'=>'processed'];
+				}
+				echo "UPDATE: ";
+				echo json_encode($update);
 				$this->PurchaseOrder->id = $po_id;
 				$this->PurchaseOrder->set($update);
-				$this->PurchaseOrder->save();
+				if($this->PurchaseOrder->save()) {
+					echo "PurchaseOrder Payment Request is saved";
+					$isAllPurchaseOrderSave[] = "yes";
+				}
+				else {
+					$isAllPurchaseOrderSave[] = "no";
+				}
 			}
 
-			if($DS_PurchaseOrder->commit()&&$DS_PaymentPurchaseOrder->commit()) {			
+			if(in_array('no', $isAllPurchaseOrderSave) && in_array('no', $isAllPaymentPurchaseOrder)) {
+				echo "Cannot save PurchaseOrder and PaymentPurchaseOrder. Error occurred.";
+				$DS_PurchaseOrder->rollback();
+				$DS_PaymentPurchaseOrder->rollback();
+				$DS_PaymentRequestLog->rollback();
+				$DS_PaymentRequest->rollback();
+			}
+			else {
+				echo "No error in PurchaseOrder and PaymentPurchaseOrder";
 				$payment_request_log = ['payment_request_id'=>$payment_request_id,
-									'user_id'=>$user,
-									'status'=>$status];
+										'user_id'=>$user,
+										'status'=>$status];
 									
 				$DS_PaymentRequestLog = $this->PaymentRequestLog->getDataSource();
 				$DS_PaymentRequestLog->begin();
+				$this->PaymentRequestLog->create();
 				$this->PaymentRequestLog->set($payment_request_log);
-				
 				if($this->PaymentRequestLog->save()) {
+					echo "PaymentRequestLog saved";
+					$DS_PurchaseOrder->commit();
+					$DS_PaymentPurchaseOrder->commit();
 					$DS_PaymentRequestLog->commit();
 					$DS_PaymentRequest->commit();
 				}
-			}
-			else {
-				$DS_PaymentPurchaseOrder->rollback();
-				$DS_PurchaseOrder->rollback();
-				$DS_PaymentRequest->rollback();
+				else {
+					echo "Error in PaymentRequestLog";
+					$DS_PurchaseOrder->rollback();
+					$DS_PaymentPurchaseOrder->rollback();
+					$DS_PaymentRequestLog->rollback();
+					$DS_PaymentRequest->rollback();
+				}
 			}
 		}
+		else {
+			echo "Error in PaymentRequest";
+			$DS_PaymentRequest->rollback();
+		}
 		
-		$DS_PaymentPurchaseOrder->commit();
-		$DS_PaymentRequest->commit();
-		$DS_PurchaseOrder->commit();
-		$DS_PaymentRequestLog->commit();
 		
 		return json_encode("end");
 	}
@@ -439,11 +537,10 @@ class PaymentRequestsController extends AppController {
 		$this->loadModel("PaymentRequest");
 		$request_details = $this->PaymentRequest->find('all', ['conditions'=>
 			['PaymentRequest.id'=>$payment_request_id]]);
-		
 		$this->loadModel("PaymentRequestLog");
 		$logs = $this->PaymentRequestLog->find('all', ['conditions'=>
 			['payment_request_id'=>$payment_request_id]]);
-		
+
 		$this->loadModel("PaymentPurchaseOrder");
 		$ppos = $this->PaymentPurchaseOrder->find('all', ['conditions'=>
 			['payment_request_id'=>$payment_request_id]]);
@@ -464,23 +561,32 @@ class PaymentRequestsController extends AppController {
 		$payment_request_cheques = $this->PaymentRequestCheque->find('all',
 			['conditions'=>['payment_request_id'=>$payment_request_id]]);
 		
+		$this->loadModel('Bank');
+		$this->Bank->recursive = -1;
+		$banks = $this->Bank->find('all');
+		
+		$this->loadModel('Payee');
+	    $payees = $this->Payee->find('all', ['order'=>'name ASC']);
+		
 		$this->set(compact('request_details', 'logs', 'ppos', 'withPO',
 			'payment_invoices', 'payment_request_cheques', 'user_role',
-			'payment_request_id'));
+			'payment_request_id', 'banks', 'payees'));
 	}
 	
 	public function void() {
 		$this->autoRender = false;
 		
-		$payment_request_cheque_id = $this->params['url']['id'];
-		$pr_id = $this->params['url']['pr_id'];
+		$data = $this->request->data;
+		$payment_request_cheque_id = $data['id'];
+		$pr_id = $data['pr_id'];
+		$remarks = $data['remarks'];
 		
 		$this->loadModel('PaymentRequestCheque');
 		$DS_PaymentRequestCheque = $this->PaymentRequestCheque->getDataSource();
 		$DS_PaymentRequestCheque->begin();
 		
 		$this->PaymentRequestCheque->id = $payment_request_cheque_id;
-		$this->PaymentRequestCheque->set(['status'=>'void']);
+		$this->PaymentRequestCheque->set(['status'=>'void', 'void_reason'=>$remarks]);
 		
 		if($this->PaymentRequestCheque->save()) {
 			$this->loadModel('PaymentRequest');
@@ -507,8 +613,8 @@ class PaymentRequestsController extends AppController {
 	
 	public function update_ewt() {
 		$this->autoRender = false;
-		$pr_id = $this->request->query['id'];
-		$type = $this->request->query['type'];
+		$pr_id = $this->request->data['id'];
+		$status = $this->request->data['status'];
 		
 		$today = date("Y-m-d H:i:s"); 
 		
@@ -519,18 +625,23 @@ class PaymentRequestsController extends AppController {
 		
 		$this->PaymentRequest->id = $pr_id;
 		
-		if($type=="release") {
+		if($status=="released") {
 			$this->PaymentRequest->set(['ewt_released'=>$today]);
 		}
-		else if($type=="return") {
+		else if($status=="returned") {
 			$this->PaymentRequest->set(['ewt_returned'=>$today]);
 		}
 		
 		if($this->PaymentRequest->save()) {
 			$DS_PaymentRequest->commit();
+			return "PaymentRequest saved";
+		}
+		else {
+			$DS_PaymentRequest->rollback();
+			return "Error in update_ewt";
+			exit;
 		}
 		
-		$DS_PaymentRequest->commit();
 		return json_encode("Updated EWT @".$today);
 	}
 	
@@ -539,10 +650,10 @@ class PaymentRequestsController extends AppController {
 		
 		$data = $this->request->data;
 		$payment_request_id = $data['payment_request_id'];
-		$amount = $data['receipt_amount'];
-		$with_held_amount = $data['with_held'];
-		$ewt_amount = $data['ewt'];
-		$tax_amount = $data['tax'];
+		$amount = floatval($data['receipt_amount']);
+		$with_held_amount = floatval($data['with_held']);
+		$ewt_amount = floatval($data['ewt']);
+		$tax_amount = floatval($data['tax']);
 		$reference_number = $data['reference_number'];
 		$reference_type = $data['type'];
 		$purchase_order_id_tmp = $data['po_id'];
@@ -570,45 +681,68 @@ class PaymentRequestsController extends AppController {
 		$this->PaymentInvoice->create();
 		$this->PaymentInvoice->set($payment_invoice_data);
 		if($this->PaymentInvoice->save()) {
-			$this->loadModel('PaymentRequest');
-			$DS_PaymentRequest = $this->PaymentRequest->getDataSource();
-			$DS_PaymentRequest->begin();
-			
-			$this->PaymentRequest->id = $payment_request_id;
-			$this->PaymentRequest->set(['status'=>'liquidated']);
-			if($this->PaymentRequest->save()) {
-				$this->loadModel('PaymentRequestLog');
-				$DS_PaymentRequestLog = $this->PaymentRequestLog->getDataSource();
-				$DS_PaymentRequestLog->begin();
-				
-				$this->PaymentRequestLog->create();
-				$this->PaymentRequestLog->set(['payment_request_id'=>$payment_request_id,
-											   'user_id'=>$user_id,
-											   'status'=>'liquidated']);
-				
-				if($this->PaymentRequestLog->save()) {
-					$DS_PaymentRequestLog->commit();
-					$DS_PaymentRequest->commit();
-					$DS_PaymentInvoice->commit();
-					return json_encode($payment_invoice_data);
-				}
-				else {
-					$DS_PaymentInvoice->rollback();
-					$DS_PaymentRequest->rollback();
-				}
-			}
-			else {
-				$DS_PaymentInvoice->rollback();
-			}
+			$DS_PaymentInvoice->commit();
+			return "Payment Invoice save";
 		}
 		else {
+			$DS_PaymentInvoice->rollback();
 			echo json_encode($payment_invoice_data);
 			return json_encode("There was something wrong in saving PaymentInvoice");
 		}
+	}
+	
+	public function done_liquidation() {
+		$this->autoRender = false;
 		
-		$DS_PaymentInvoice->commit();
-		$DS_PaymentRequest->commit();
-		$DS_PaymentRequestLog->commit();
+		$today = date("Y-m-d H:m:s");
+		$data = $this->request->data;
+		$user_id = $this->Auth->user('id');
+		$payment_request_id = $data['payment_request_id'];
+		
+		$this->loadModel('PaymentInvoice');
+		$this->PaymentInvoice->recursive = -1;
+		$PaymentInvoice = $this->PaymentInvoice->findAllByPaymentRequestId($payment_request_id);
+		
+		$liquidated_amount = 0;
+		foreach($PaymentInvoice as $return_payment_invoice) {
+			$PaymentInvoiceObject = $return_payment_invoice['PaymentInvoice'];
+			$liquidated_amount += $PaymentInvoiceObject['amount'] + $PaymentInvoiceObject['with_held_amount'] + $PaymentInvoiceObject['ewt_amount'] + $PaymentInvoiceObject['tax_amount'];
+		}
+		
+		$this->loadModel('PaymentRequest');
+		$DS_PaymentRequest = $this->PaymentRequest->getDataSource();
+		$DS_PaymentRequest->begin();
+		
+		$this->PaymentRequest->id = $payment_request_id;
+		$this->PaymentRequest->set(['status'=>'liquidated',
+									'liquidated_amount'=>$liquidated_amount,
+									'liquidated_date'=>$today]);
+		if($this->PaymentRequest->save()) {
+			echo "PaymentRequest saved";
+			$this->loadModel('PaymentRequestLog');
+			$DS_PaymentRequestLog = $this->PaymentRequestLog->getDataSource();
+			$DS_PaymentRequestLog->begin();
+			
+			$this->PaymentRequestLog->create();
+			$this->PaymentRequestLog->set(['payment_request_id'=>$payment_request_id,
+										   'user_id'=>$user_id,
+										   'status'=>'liquidated']);
+			
+			if($this->PaymentRequestLog->save()) {
+				echo "Payment Request Log saved";
+				$DS_PaymentRequestLog->commit();
+				$DS_PaymentRequest->commit();
+			}
+			else {
+				echo "ERROR in PaymentRequestLog";
+				$DS_PaymentRequestLog->rollback();
+				$DS_PaymentRequest->rollback();
+			}
+		}
+		else {
+			echo "Error in PaymentRequest";
+			$DS_PaymentRequest->rollback();
+		}
 		
 		return json_encode($data);
 	}
@@ -619,7 +753,7 @@ class PaymentRequestsController extends AppController {
 		$data = $this->request->data;
 		$pr_id = $data['id'];
 		$type = $data['type'];
-		$amount = $data['amount'];
+		$amount = floatval($data['amount']);
 		
 		$this->loadModel('PaymentRequest');
 		$DS_PaymentRequest = $this->PaymentRequest->getDataSource();
@@ -654,31 +788,64 @@ class PaymentRequestsController extends AppController {
 		
 		$data = $this->request->data;
 		$payment_request_id = $data['id'];
-		$type = $data['type'];
+		$type = strtolower($data['type']);
+		$status = strtolower($data['status']);
 		$userin = $this->Auth->user('id');
+		$released_amount = $data['released_amount'];
+		$today = date("Y-m-d H:i:s"); 
 		
 		$this->loadModel('PaymentRequest');
 		$this->loadModel('PaymentRequestCheque');
 		$this->loadModel('PaymentRequestLog');
 		
-		$DS_PaymentRequestCheque = $this->PaymentRequestCheque->getDataSource();
-		
 		if($type!="cheque") {
-			$released_amount = $data['released_amount'];
-			$data_payment_request = ['released_amount'=>$released_amount,
-									 'status'=>'released'];
+			if($status=='released') {
+				$data_payment_request = ['released_amount'=>$released_amount,
+										 'status'=>$status,
+										 'ewt_released'=>$today];
+			}
+			else {
+				$data_payment_request = ['released_amount'=>$released_amount,
+										 'status'=>$type,
+										 'ewt_returned'=>$today];
+			}
 		}
 		else {
+			$payee_id = $data['selected_payee'];
 			$select_bank = $data['select_bank'];
 			$input_cheque_number = $data['input_cheque_number'];
 			$input_cheque_date = $data['input_cheque_date'];
-			$data_payment_request_cheques = ['payment_request_id'=>$payment_request_id,
-									 'cheque_number'=>$input_cheque_number,
-									 'payee_id'=>$userin,
-									 'cheque_date'=>$input_cheque_date,
-									 'bank_id'=>$select_bank,
-									 'status'=>'released'];
+			if($status=='released') {
+				$data_payment_request_cheques = [
+										 'released_amount'=>$released_amount,
+										 'payment_request_id'=>$payment_request_id,
+										 'cheque_number'=>$input_cheque_number,
+										 'payee_id'=>$payee_id,
+										 'cheque_date'=>$input_cheque_date,
+										 'bank_id'=>$select_bank,
+										 'status'=>$status,
+										 'ewt_released'=>$today];
+										 
+				$data_payment_request = ['status'=>$status,
+										 'ewt_released'=>$today];
+			}
+			else {
+				$data_payment_request_cheques = [
+										 'released_amount'=>$released_amount,
+										 'payment_request_id'=>$payment_request_id,
+										 'cheque_number'=>$input_cheque_number,
+										 'payee_id'=>$payee_id,
+										 'cheque_date'=>$input_cheque_date,
+										 'bank_id'=>$select_bank,
+										 'status'=>$status,
+										 'ewt_returned'=>$today];
+										 
+				$data_payment_request = ['status'=>$status,
+										 'ewt_returned'=>$today];
+			}
 			
+			$this->loadModel('PaymentRequestCheque');
+			$DS_PaymentRequestCheque = $this->PaymentRequestCheque->getDataSource();
 			$DS_PaymentRequestCheque->begin();
 			$this->PaymentRequestCheque->create();
 			$this->PaymentRequestCheque->set($data_payment_request_cheques);
@@ -686,13 +853,15 @@ class PaymentRequestsController extends AppController {
 			if($this->PaymentRequestCheque->save()) {
 				$DS_PaymentRequestCheque->commit();
 			}
+			else {
+				$DS_PaymentRequestCheque->rollback();
+			}
 			
-			$data_payment_request = ['status'=>'released'];
 		}
 		
 		$data_payment_request_log = ['payment_request_id'=>$payment_request_id,
 									 'user_id'=>$userin,
-									 'status'=>'released'];
+									 'status'=>$status];
 		
 	    $DS_PaymentRequest = $this->PaymentRequest->getDataSource();
 		$DS_PaymentRequest->begin();
@@ -707,22 +876,75 @@ class PaymentRequestsController extends AppController {
 			$this->PaymentRequestLog->set($data_payment_request_log);
 			
 			if($this->PaymentRequestLog->save()) {
-				$DS_PaymentRequestLog->commit();
-				$DS_PaymentRequest->commit();
-				$DS_PaymentRequestCheque->commit();
+				// MAE's MODIFICATION FOR COMPANY FUND LOGS
+				// ===============================================================>
+				if($type=="pettycash") {
+					$this->loadModel('CompanyFund');
+					$get_company_fund = $this->CompanyFund->find('first', ['fields'=>'id, amount']);
+					$CompanyFundId = $get_company_fund['CompanyFund']['id'];
+					$CompanyFundAmount = $get_company_fund['CompanyFund']['amount'];
+					
+					if($CompanyFundAmount!=0 && $CompanyFundAmount!=null && $CompanyFundAmount!="") {
+						$updated_amount = (double)$CompanyFundAmount-(double)$released_amount;
+						echo $updated_amount;
+						$DS_CompanyFund = $this->CompanyFund->getDataSource();
+						$DS_CompanyFund->begin();
+						
+						$this->CompanyFund->id = $CompanyFundId;
+						$this->CompanyFund->set(['amount'=>$updated_amount]);
+						if($this->CompanyFund->save()) {
+							echo "SAVE COMPANY FUND";
+							$this->loadModel('CompanyFundLog');
+							$DS_CompanyFundLog = $this->CompanyFundLog->getDataSource();
+							$DS_CompanyFundLog->begin();
+							
+							$company_fund_log = ['source'=>'pettycash',
+												 'amount'=>$released_amount,
+												 'process'=>'debit',
+												 'payment_request_id'=>$payment_request_id,
+												 'user_id'=>$userin];
+							
+							$this->CompanyFundLog->create();
+							$this->CompanyFundLog->set($company_fund_log);
+							if($this->CompanyFundLog->save()) {
+								echo "CompanyFundLog saved";
+								$DS_CompanyFund->commit();
+								$DS_CompanyFundLog->commit();
+								$DS_PaymentRequestLog->commit();
+								$DS_PaymentRequest->commit();
+							}
+							else {
+								echo "ERROR IN COMPANY FUND LOG";
+								$DS_CompanyFund->rollback();
+								$DS_CompanyFundLog->rollback();
+								$DS_PaymentRequestLog->rollback();
+								$DS_PaymentRequest->rollback();
+							}
+						}
+						else {
+							echo "ERROR IN COMPANY FUND";
+							$DS_CompanyFund->rollback();
+						}
+					}
+					else {
+						$DS_PaymentRequestLog->rollback();
+						$DS_PaymentRequest->rollback();
+					}
+				}
+				else {
+					$DS_PaymentRequestLog->commit();
+					$DS_PaymentRequest->commit();
+				}
+				// END OF COMPANY FUND LOG MODIFICATION
+				// ===============================================================>
 			}
 			else {
 				$DS_PaymentRequest->rollback();
-				$DS_PaymentRequestCheque->rollback();
 			}
 		}
 		else {
-			$DS_PaymentRequestCheque->rollback();
+			$DS_PaymentRequest->rollback();
 		}
-		
-		$DS_PaymentRequestLog->commit();
-		$DS_PaymentRequest->commit();
-		$DS_PaymentRequestCheque->commit();
 		
 		return json_encode($data_payment_request);
 	}
@@ -732,7 +954,12 @@ class PaymentRequestsController extends AppController {
 		$data = $this->request->data;
 		$id = $data['id'];
 		$action = $data['action'];
+		$supplier_id = $data['supplier_id'];
 		$userin = $this->Auth->user('id');
+		
+		$dateTodayVerified = date("Y-m-d H:i:s");
+
+		echo "PO ID".$supplier_id;
 		
 		$this->loadModel('PaymentRequest');
 		$this->loadModel('PaymentRequestLog');
@@ -741,7 +968,7 @@ class PaymentRequestsController extends AppController {
 		$DS_PaymentRequest->begin();
 		
 		$this->PaymentRequest->id = $id;
-		$this->PaymentRequest->set(['status'=>$action]);
+		$this->PaymentRequest->set(['status'=>$action, 'verified_date'=>$dateTodayVerified]);
 		
 		if($this->PaymentRequest->save()) {
 			$DS_PaymentRequestLog = $this->PaymentRequestLog->getDataSource();
@@ -752,16 +979,37 @@ class PaymentRequestsController extends AppController {
 										   'user_id'=>$userin,
 										   'status'=>$action]);
 			if($this->PaymentRequestLog->save()) {
-				$DS_PaymentRequestLog->commit();
-				$DS_PaymentRequest->commit();
+				if($supplier_id!=0) {
+					$this->loadModel('PurchaseOrder');
+					$DS_PurchaseOrder = $this->PurchaseOrder->getDataSource();
+					$DS_PurchaseOrder->begin();
+					
+					$this->PurchaseOrder->id = $supplier_id;
+					$this->PurchaseOrder->set(['payment_request'=>0]);
+					if($this->PurchaseOrder->save()) {
+						$DS_PurchaseOrder->commit();
+						$DS_PaymentRequestLog->commit();
+						$DS_PaymentRequest->commit();
+					}
+					else {
+						$DS_PurchaseOrder->rollback();
+						$DS_PaymentRequestLog->rollback();
+						$DS_PaymentRequest->rollback();
+					}
+				}
+				else {
+					$DS_PaymentRequestLog->commit();
+					$DS_PaymentRequest->commit();
+				}
 			}
 			else {
 				$DS_PaymentRequest->rollback();
 			}
 		}
+		else {
+			$DS_PaymentRequest->rollback();
+		}
 		
-		$DS_PaymentRequestLog->commit();
-		$DS_PaymentRequest->commit();
 		return json_encode($data);
 	}
 	
@@ -825,13 +1073,10 @@ class PaymentRequestsController extends AppController {
 				
 				if($this->PaymentRequestLog->save()) {
 					$payment_request_log_save[] = true;
-					$DS_PaymentRequestLog->commit();
-					$DS_PaymentRequest->commit();
 				}
 				else {
 					echo json_encode("Error in PaymentRequestLog save");
 					$payment_request_log_save[] = false;
-					$DS_PaymentRequest->rollback();
 				}
 			}
 		}
@@ -846,7 +1091,11 @@ class PaymentRequestsController extends AppController {
 			$get_p_replenishement = $this->PaymentReplenishment->find('all',
 				['conditions'=>['user_id'=>$userin,
 							    'acknowledged_date'=>null]]);
+		    $ret_p_rep = [];
+			// echo json_encode($get_p_replenishement);
+			if(!empty($get_p_replenishement)) {
 				$ret_p_rep = $get_p_replenishement[0]['PaymentReplenishment'];
+			}
 
 			if(!empty($get_p_replenishement)) {
 				// PAYMENT REPLENISHMENT
@@ -912,7 +1161,6 @@ class PaymentRequestsController extends AppController {
 			$DS_PaymentRequest->rollback();
 		}
 		
-		
 		return json_encode("Replenishment Done");
 	}
 	
@@ -930,6 +1178,7 @@ class PaymentRequestsController extends AppController {
 				['conditions'=>['NOT'=>['acknowledged_date'=>null]]]);
 		}
 		
+		// pr($payment_replenishments);
 		$this->set(compact('payment_replenishments', 'status'));
 	}
 	
@@ -937,15 +1186,26 @@ class PaymentRequestsController extends AppController {
 		$id = $this->params['url']['id'];
 		
 		$this->loadModel('PaymentReplenishedDetail');
-		
+		$this->PaymentReplenishedDetail->recursive = 2;
 		$payment_replenished_detail = $this->PaymentReplenishedDetail->find('all',
-			['conditions'=>['payment_replenishment_id'=>$id]]);
+			['conditions'=>['PaymentReplenishedDetail.payment_replenishment_id'=>$id],
+			 'fields'=>[
+			 	'PaymentReplenishedDetail.created,
+			 	PaymentRequest.id,
+			 	PaymentRequest.returned_amount,
+			 	PaymentRequest.reimbursed_amount,
+			 	PaymentRequest.requested_amount,
+			 	PaymentRequest.released_amount,
+			 	PaymentRequest.purpose,
+			 	PaymentReplenishment.acknowledged_date,
+			 	PaymentReplenishment.user_id,
+			 	PaymentReplenishedDetail.id']]);
 		
 		$this->loadModel('PaymentReplenishment');
 		$this->PaymentReplenishment->recursive = -1;
 		$payment_replenishment = $this->PaymentReplenishment->findById($id);
 		
-		$this->set(compact('id','payment_replenished_detail', 'payment_replenishment'));
+		$this->set(compact('id','payment_replenished_detail','payment_replenishment'));
 	}
 	
 	public function delete_replenishment() {
@@ -971,26 +1231,120 @@ class PaymentRequestsController extends AppController {
 	
 	public function acknowledge_replenishment() {
 		$this->autoRender = false;
-		$id = $this->request->query['id'];
+		$id = $this->request->data;
 		$today = date("Y-m-d H:i:s");
 		
-		$this->loadModel('PaymentReplenishment');
-		$DS_PaymentReplenishment = $this->PaymentReplenishment->getDataSource();
+		$this->loadModel('PaymentReplenishedDetail');
+		$get_payment_replenished_detail = $this->PaymentReplenishedDetail->findAllByPaymentReplenishmentId($id,
+			['fields'=>'PaymentRequest.id, PaymentRequest.released_amount, PaymentReplenishment.amount']);
+		// echo json_encode($get_payment_replenished_detail);
+		$this->loadModel('PaymentRequest');
+		$DS_PaymentRequest = $this->PaymentRequest->getDataSource();
+		$DS_PaymentRequest->begin();
 		
-		$data_payment_replenishment = ['acknowledged_date'=>$today];
-		$DS_PaymentReplenishment->begin();
-		$this->PaymentReplenishment->id = $id;
-		$this->PaymentReplenishment->set($data_payment_replenishment);
+		$this->loadModel('CompanyFundLog');
+		$DS_CompanyFundLog = $this->CompanyFundLog->getDataSource();
+		$DS_CompanyFundLog->begin();
+
+		$total_released_amount = 0;
+		$isSavedAll = true;
+		foreach($get_payment_replenished_detail as $return_payment_replenished_detail) {
+			$payment_request_id = $return_payment_replenished_detail['PaymentRequest']['id'];
+			$released_amount = $return_payment_replenished_detail['PaymentRequest']['released_amount'];
+			$total_released_amount += $released_amount;
+			$this->PaymentRequest->id = $payment_request_id;
+			$this->PaymentRequest->set(['status'=>'closed']);
+			
+			if($this->PaymentRequest->save()) {
+				echo "PaymentRequest saved\n";
+				$company_fund_log_set = ['source'=>'pettycash',
+										 'amount'=>$released_amount,
+										 'process'=>'credit',
+										 'payment_request_id'=>$payment_request_id];
+				$this->CompanyFundLog->create();
+				$this->CompanyFundLog->set($company_fund_log_set);
+				if($this->CompanyFundLog->save()) {
+					echo "CompanyFundLog saved\n";
+				}
+				else {
+					$isSavedAll = false;
+				}
+			}
+			else {
+				$isSavedAll = false;
+			}
+		}
 		
-		if($this->PaymentReplenishment->save()) {
-			$DS_PaymentReplenishment->commit();
+		echo $total_released_amount;
+		if($isSavedAll) {
+			echo "PaymentRequest AND CompanyFundLog committed\n";
+			
+			$this->loadModel('PaymentReplenishment');
+			$DS_PaymentReplenishment = $this->PaymentReplenishment->getDataSource();
+			
+			$data_payment_replenishment = ['acknowledged_date'=>$today];
+			$DS_PaymentReplenishment->begin();
+			$this->PaymentReplenishment->id = $id;
+			$this->PaymentReplenishment->set($data_payment_replenishment);
+			
+			if($this->PaymentReplenishment->save()) {
+				echo "PaymentReplenishment saved";
+				$DS_PaymentReplenishment->commit();
+				$DS_CompanyFundLog->commit();
+				$DS_PaymentRequest->commit();
+			}
+			else {
+				$DS_PaymentReplenishment->rollback();
+				echo "Error in acknowledging replenishment.";
+			}
 		}
 		else {
-			return json_encode("Error in acknowledging replenishment.");
+			echo "ERROR IN PAYMENT REQUEST AND COMPANYFUND LOG\n";
+			$DS_CompanyFundLog->rollback();
+			$DS_PaymentRequest->rollback();
+		}
+		return "\nEverything Done";
+	}
+	
+	public function valid() {
+		$this->autoRender = false;
+		$this->loadModel('PaymentInvoice');
+		
+		$piid = $this->request->data['id'];
+		$valid = $this->request->data['valid'];
+
+		$DS_PaymentInvoice = $this->PaymentInvoice->getDataSource();
+		$DS_PaymentInvoice->begin();
+		$this->PaymentInvoice->id = $piid;
+		$this->PaymentInvoice->set(['valid_purchase'=>$valid]);
+		if($this->PaymentInvoice->save()) {
+			$DS_PaymentInvoice->commit();
+			return json_encode("Valid saved");
+			exit;
+		}
+		else {
+			$DS_PaymentInvoice->rollback();
+			return "Error in saving valid";
+			exit;
+		}
+	}
+	
+	public function check($type = null){
+		$this->count_pending_pr($type);
+		exit;
+	}
+	
+	public function user_id_to_payee_id() {
+		// date('y/m/d', strtotime('+2 weeks', strtotime('10/10/10')));
+		$getPaymentRequests = $this->PaymentRequest->find('all');
+		foreach($getPaymentRequests as $retPaymentRequests)  {
+			$PaymentRequest = $retPaymentRequests['PaymentRequest'];
+			$PaymentRequest_id = $PaymentRequest['id'];
+			$PaymentRequest_user_id = $PaymentRequest['user_id'];
+			
+			echo $PaymentRequest_id."_".$PaymentRequest_user_id;
 		}
 		
-		$DS_PaymentReplenishment->commit();
-		return json_encode("Acknowledge Replenishment Done.");
-		exit;
+		return "Executed Everything!";
 	}
 }

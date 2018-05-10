@@ -65,8 +65,8 @@
 								<td>
 			<?php echo $this->Html->link($productionProcess['User']['id'], array('controller' => 'users', 'action' => 'view', $productionProcess['User']['id'])); ?>
 		</td>
-						<td><?php echo h($productionProcess['ProductionProcess']['start_work']); ?>&nbsp;</td>
-						<td><?php echo h($productionProcess['ProductionProcess']['end_work']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productionProcess['ProductionProcess']['start_work']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($productionProcess['ProductionProcess']['end_work']); ?>&nbsp;</td>
 						<td><?php echo h($productionProcess['ProductionProcess']['expected_start']); ?>&nbsp;</td>
 						<td><?php echo h($productionProcess['ProductionProcess']['expected_end']); ?>&nbsp;</td>
 						<td><?php echo h($productionProcess['ProductionProcess']['status']); ?>&nbsp;</td>

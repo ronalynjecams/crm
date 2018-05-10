@@ -48,14 +48,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($department['Department']['created']); ?>
+			<?php echo time_elapsed_string($department['Department']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($department['Department']['modified']); ?>
+			<?php echo time_elapsed_string($department['Department']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

@@ -54,8 +54,8 @@
 						<td><?php echo h($billMonitoring['BillMonitoring']['id']); ?>&nbsp;</td>
 						<td><?php echo h($billMonitoring['BillMonitoring']['receipt_reference_num']); ?>&nbsp;</td>
 						<td><?php echo h($billMonitoring['BillMonitoring']['payment_mode']); ?>&nbsp;</td>
-						<td><?php echo h($billMonitoring['BillMonitoring']['billing_date_from']); ?>&nbsp;</td>
-						<td><?php echo h($billMonitoring['BillMonitoring']['billing_date_to']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($billMonitoring['BillMonitoring']['billing_date_from']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($billMonitoring['BillMonitoring']['billing_date_to']); ?>&nbsp;</td>
 								<td>
 			<?php echo $this->Html->link($billMonitoring['User']['id'], array('controller' => 'users', 'action' => 'view', $billMonitoring['User']['id'])); ?>
 		</td>
@@ -63,9 +63,9 @@
 			<?php echo $this->Html->link($billMonitoring['Bill']['id'], array('controller' => 'bills', 'action' => 'view', $billMonitoring['Bill']['id'])); ?>
 		</td>
 						<td><?php echo h($billMonitoring['BillMonitoring']['paid_by']); ?>&nbsp;</td>
-						<td><?php echo h($billMonitoring['BillMonitoring']['created']); ?>&nbsp;</td>
-						<td><?php echo h($billMonitoring['BillMonitoring']['modified']); ?>&nbsp;</td>
-						<td><?php echo h($billMonitoring['BillMonitoring']['receipt_date']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($billMonitoring['BillMonitoring']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($billMonitoring['BillMonitoring']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($billMonitoring['BillMonitoring']['receipt_date']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $billMonitoring['BillMonitoring']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $billMonitoring['BillMonitoring']['id']), array('escape' => false)); ?>

@@ -71,14 +71,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['created']); ?>
+			<?php echo time_elapsed_string($prodInvLocationProperty['ProdInvLocationProperty']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($prodInvLocationProperty['ProdInvLocationProperty']['modified']); ?>
+			<?php echo time_elapsed_string($prodInvLocationProperty['ProdInvLocationProperty']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>
@@ -116,8 +116,8 @@
 			<td><?php echo $prodInvCondition['product_id']; ?></td>
 			<td><?php echo $prodInvCondition['qty']; ?></td>
 			<td><?php echo $prodInvCondition['conditions']; ?></td>
-			<td><?php echo $prodInvCondition['created']; ?></td>
-			<td><?php echo $prodInvCondition['modified']; ?></td>
+			<td><?php echo time_elapsed_string($prodInvCondition['created']); ?></td>
+			<td><?php echo time_elapsed_string($prodInvCondition['modified']); ?></td>
 			<td class="actions">
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-search"></span>'), array('controller' => 'prod_inv_conditions', 'action' => 'view', $prodInvCondition['id']), array('escape' => false)); ?>
 				<?php echo $this->Html->link(__('<span class="glyphicon glyphicon-edit"></span>'), array('controller' => 'prod_inv_conditions', 'action' => 'edit', $prodInvCondition['id']), array('escape' => false)); ?>

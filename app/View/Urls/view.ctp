@@ -62,14 +62,14 @@
 <tr>
 		<th><?php echo __('Created'); ?></th>
 		<td>
-			<?php echo h($url['Url']['created']); ?>
+			<?php echo time_elapsed_string($url['Url']['created']); ?>
 			&nbsp;
 		</td>
 </tr>
 <tr>
 		<th><?php echo __('Modified'); ?></th>
 		<td>
-			<?php echo h($url['Url']['modified']); ?>
+			<?php echo time_elapsed_string($url['Url']['modified']); ?>
 			&nbsp;
 		</td>
 </tr>

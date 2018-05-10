@@ -1,16 +1,16 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 
 <div id="content-container">
     <div id="page-title">
@@ -41,9 +41,46 @@
                             foreach($productions as $production_obj) {
                                 $production = $production_obj['Production'];
                                 $client = $production_obj['Client'];
+                                $JobRequestProduct = $production_obj['JobRequestProduct'];
+                                $QuotationProduct = $production_obj['QuotationProduct'];
+                                $other_info = '<ul class="list-group">
+                                                   <li class="list-group-item">
+                                                       Other Info:
+                                                   </li>
+                                                   <li class="list-group-item">
+                                                       '.$QuotationProduct['other_info'].'
+                                                   </li>
+                                               </ul>';
+                                
+                                $JobRequest_jr_number = '<font class="text-danger">Unknown</font>';
+                                if(array_key_exists('JobRequest', $JobRequestProduct)) {
+                                    if(!empty($JobRequestProduct['JobRequest'])) {
+                                        $JobRequest = $JobRequestProduct['JobRequest'];
+                                        if(!empty($JobRequest['jr_number'])) {
+                                            $JobRequest_jr_number = $JobRequest['jr_number'];
+                                        }
+                                    }
+                                }
+                                
+                                $designers = [];
+                                $JobRequestAssignment_designers = '<font class="text-danger">No designer assigned.</font>';
+                                if(array_key_exists('JobRequestAssignment', $JobRequestProduct)) {
+                                    if(!empty($JobRequestProduct['JobRequestAssignment'])) {
+                                        $JobRequestAssignments = $JobRequestProduct['JobRequestAssignment'];
+                                        foreach($JobRequestAssignments as $JobRequestAssignment) {
+                                            $designers[] = '<li class="list-group-item">'.$JobRequestAssignment['designer_name'].'</li>';
+                                        }
+                                        
+                                        $designer_label = '<font style="font-weight: bold;">Designer</font>';
+                                        if(count(array_unique($designers))>1) {
+                                            $designer_label = '<font style="font-weight: bold;">Designers</font>';
+                                        }
+                                        $JobRequestAssignment_designers = $designer_label.' : <ul class="list-group">'.implode(array_unique($designers)).'</ul>';
+                                    }
+                                }
                                 
                                 $client_name = ucwords($client['name']);
-                                $jr_product_id = $production['jr_product_id'];
+                                $jr_product_id = $production['job_request_product_id'];
                                 $production_id = $production['id'];
                                 $quotation_product_id = $production['quotation_product_id'];
                                 
@@ -53,15 +90,6 @@
                                     $production_log_created = $production_log['created'];
                                 }
                                 
-                                $user_name = 'No Designer';
-                                foreach($users[$jr_product_id] as $user_obj) {
-                                    $user_design = $user_obj['User'];
-                                    $user_last_name = $user_design['last_name'];
-                                    $user_first_name = $user_design['first_name'];
-                                    // DESIGNER
-                                    $user_name = ucwords($user_first_name." ".$user_last_name);
-                                }
-                                
                                 $user_sales_name = 'No Sales Executive';
                                 if(!empty($quotations[$quotation_product_id])) {
                                     foreach($quotations[$quotation_product_id] as $quotation_obj) {
@@ -69,48 +97,45 @@
                                         $user_sales = $quotation_obj['User'];
                                         $user_sales_last_name = $user_sales['last_name'];
                                         $user_sales_first_name = $user_sales['first_name'];
-                                        $user_sales_name = ucwords($user_sales_first_name.
+                                        $user_sales_name = "<font style='font-weight: bold;'>Agent : </font>".ucwords($user_sales_first_name.
                                             " ".$user_sales_last_name);
                                     }
                                 }
                                 
+                                $product_name = '<font class="text-danger">No Product Name</font>';
                                 foreach($quotation_products[$quotation_product_id] as $quotation_product_obj) {
                                     $product = $quotation_product_obj['Product'];
                                     $productProperty = $quotation_product_obj['QuotationProductProperty'];
                                     $product_name = $product['name'];
+                                    echo $product_name;
                                 }
                                 ?>
 
                                 <tr>
                                     <td>
-                                        <?php echo date("F d, Y [ h:i A ]",
-                                              strtotime($production_log_created));
+                                        <?php echo time_elapsed_string($production_log_created);
                                         ?>
                                     </td>
                                     <td>
-                                        <?php echo $client_name." [ ".$jr_product_id." ]"; ?>
+                                        <?php echo $client_name."<br/><small>[ ".$JobRequest_jr_number." ]</small>"; ?>
                                     </td>
                                     <td>
-                                        <?php echo $user_sales_name." [ ".$user_name." ]"; ?>
+                                            <?php echo $user_sales_name."<br/><br/>".$JobRequestAssignment_designers; ?>
                                     </td>
                                     <td>
-                                        <?php
-                                            if($product_name!=""):
-                                                echo $product_name;
-                                            else:
-                                                echo 'No Product Name';
-                                            endif
-                                        ?>
+                                        <?php echo $product_name; ?>
                                     </td>
                                     <td>
                                         <?php
                                         if(!empty($productProperty)) {
+                                            echo '<ul class="list-group">';
                                             foreach($productProperty as $eachprodprop) {
                                                 $prop = $eachprodprop['property'];
                                                 $val = $eachprodprop['value'];
-                                                $propval = ucwords($prop." : ".$val);
-                                                echo '<p>'.$propval.'</p>';
+                                                $propval = ucwords($prop.": ".$val);
+                                                echo '<li class="list-group-item">'.$propval.'</li>';
                                             }
+                                            echo '</ul>'.$other_info;
                                         }
                                         else {
                                             echo 'No Description';
@@ -129,19 +154,20 @@
                                         
                                         <?php
                                         if($UserIn['User']['role'] == "production_head" ||
-                                          $UserIn['User']['role'] == "production_manager_assistant" &&
-                                          $status == "pending" || 
-                                          $status == "viewed") {
-                                        ?>
-                                        <button class="btn btn-warning"
-                                                data-toggle="tooltip"
-                                                data-placement="top"
-                                                title="Update Details"
-                                                id="btn_update_details"
-                                                value="<?php echo $production_id; ?>">
-                                            <span class="fa fa-edit"></span>
-                                        </button>
-                                        <?php } ?>
+                                          $UserIn['User']['role'] == "production_manager_assistant") {
+                                            if($status == "pending" || $status == "viewed"):
+                                                ?>
+                                                <button class="btn btn-warning"
+                                                        data-toggle="tooltip"
+                                                        data-placement="top"
+                                                        title="Update Details"
+                                                        id="btn_update_details"
+                                                        value="<?php echo $production_id; ?>">
+                                                    <span class="fa fa-edit"></span>
+                                                </button>
+                                                <?php
+                                            endif;
+                                        } ?>
                                     </td>
                                 </tr>
                                 <?php
@@ -273,6 +299,7 @@ $(document).ready(function() {
                     },
                     function (isConfirm) {
                         if (isConfirm) {
+                            // alert("expected_start:"+date_expected_end.val()+"expected_end:"+date_expected_end.val());
                             var data = {'production_id':btn_update_id,
                                         'section':select_section.val(),
                                         'expected_start':date_expected_start.val(),
@@ -285,7 +312,7 @@ $(document).ready(function() {
     							dataType: 'text',
     							success: function(id) {
     								console.log(id);
-    								// location.reload();
+    								location.reload();
     							},
     							error: function(err) {
     								console.log("AJAX error: " + JSON.stringify(err, null, 2));

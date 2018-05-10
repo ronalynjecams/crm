@@ -51,8 +51,8 @@
 								<td>
 			<?php echo $this->Html->link($quotationUpdateLog['Quotation']['id'], array('controller' => 'quotations', 'action' => 'view', $quotationUpdateLog['Quotation']['id'])); ?>
 		</td>
-						<td><?php echo h($quotationUpdateLog['QuotationUpdateLog']['created']); ?>&nbsp;</td>
-						<td><?php echo h($quotationUpdateLog['QuotationUpdateLog']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationUpdateLog['QuotationUpdateLog']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($quotationUpdateLog['QuotationUpdateLog']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $quotationUpdateLog['QuotationUpdateLog']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $quotationUpdateLog['QuotationUpdateLog']['id']), array('escape' => false)); ?>

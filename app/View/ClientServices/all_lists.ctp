@@ -1,16 +1,34 @@
 <!--Select2 [ OPTIONAL ]-->
-<link href="../plugins/select2/css/select2.min.css" rel="stylesheet">
-<script src="../plugins/select2/js/select2.min.js"></script>
+<link href="/css/plug/select/css/select2.min.css" rel="stylesheet">
+<script src="/css/plug/select/js/select2.min.js"></script>
 
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
-<link href="../plugins/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
-<link href="../plugins/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
-<link href="../css/sweetalert.css" rel="stylesheet">
+<link href="http://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/css/plug/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/css/plug/datatables/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 
-<script src="../plugins/datatables/media/js/jquery.dataTables.js"></script>
-<script src="../plugins/datatables/media/js/dataTables.bootstrap.js"></script>
-<script src="../plugins/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
-<script src="../js/sweetalert.min.js"></script>
+<script src="/css/plug/datatables/media/js/jquery.dataTables.js"></script>
+<script src="/css/plug/datatables/media/js/dataTables.bootstrap.js"></script>
+<script src="/css/plug/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
+
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        height: 150,
+        menubar: false,
+        plugins: [
+            'autolink',
+            'link',
+            'codesample',
+            'lists',
+            'searchreplace visualblocks',
+            'table contextmenu paste code'
+        ],
+        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | codesample | link',
+    });
+</script>
 
 <div id="content-container">
     <div id="page-title">
@@ -19,34 +37,47 @@
                 if($type=="service_unit") {
                     $type_tmp="Service Unit";
                 }
+                elseif($type=="pull_out") {
+                    $type_tmp="Pull Out";
+                }
                 else {
                     $type_tmp=ucwords($type);
                 }
-                echo ucwords($status)." ".$type_tmp;
+                
+                if($status=="pullout_successful") {
+                    $status_tmp = "Successful";
+                }
+                else { $status_tmp = ucwords($status); }
+                echo ucwords($status_tmp)." ".$type_tmp;
             ?>
         </h1>
     </div>
     <div id="page-content">
         <div class="panel">
+            <?php
+            if (($UserIn['User']['role'] == 'fitout_facilitator')
+                || ($UserIn['User']['department_id'] == 6)
+                || ($UserIn['User']['department_id'] == 7)) { ?>
             <div class="panel-heading" align="right">
                 <h3 class="panel-title">
-                    <?php if (($UserIn['User']['role'] == 'fitout_facilitator')
-                        || ($UserIn['User']['role'] == 'sales_executive')
-                        || ($UserIn['User']['department_id'] == 6)
-                        || ($UserIn['User']['department_id'] == 7)) { ?>
                     <button id="show_modal" class="btn btn-mint">
                         <i class="fa fa-plus"></i>
                         Add <?php echo $type_tmp; ?>
                     </button>
-                    <?php } ?>
                 </h3>
             </div>
+            <?php } ?>
             <div class="panel-body">
                 <div class="table-responsive">
 					<table id="example" class="table table-striped table-bordered"
 					        cellspacing="0" width="100%">
 					    <thead>
 					        <tr>
+					            <?php
+					            if($UserIn['User']['role']=="sales_executive") {
+					                echo '<th width="10">#</th>';
+					            }
+					            ?>
 					            <th>Date Created</th>
 					            <th>Control Number</th>
 					            <th>Client</th>
@@ -54,29 +85,24 @@
 					            if($UserIn['User']['role'] != 'sales_executive') {
     					            ?><th>Sales Agent</th><?php 
 					            } ?>
-					            <th>
-					            <?php
-					            if($status=="newest" || $status =="pending" ||
-					                $status=="processed") {
-					                    echo 'Expected Demo Date';
-				                }
-				                else if($status=="delivered") {
-				                    echo 'Expected Pull Out Date';
-				                }
-				                else if($status=="pullout") {
-				                    echo 'Pull Out Date';
-				                }
-					            ?>
-					            </th>
 					            <th>Action</th>
 					        </tr>
 					    </thead>
 					    <tbody>
-					        <?php foreach($client_services as $client_service) {
+					        <?php
+					        $count = 0;
+					        foreach($client_services as $client_service) {
+					            $count++;
 					            $client_service_id = $client_service['ClientService']['id'];
+					            $cli_srvcs_stat = $client_service['ClientService']['status'];
 					        ?>
 					        <tr>
-					            <td><?php echo date("F d, Y [ h:i A ]", strtotime($client_service['ClientService']['created'])); ?></td>
+					            <?php
+					            if($UserIn['User']['role']=="sales_executive") {
+					                echo "<td>$count</td>";
+					            }
+					            ?>
+					            <td><?php echo time_elapsed_string($client_service['ClientService']['created']); ?></td>
 					            <td><?php echo $client_service['ClientService']['service_code']; ?></td>
 					            <td><?php echo $client_service['Client']['name']; ?></td>
 					            <?php
@@ -95,52 +121,30 @@
 				                    $expected_pullout_date = $cs_prod['ClientServiceProduct']['expected_pullout_date'];
 				                    $pullout_date = $cs_prod['ClientServiceProduct']['pullout_date'];
 				                ?>
-					            <td>
-        			                <?php
-        					            if($status=="newest" || $status =="pending" ||
-        					                $status=="processed") {
-    					                    if($expected_demo_date != null) {
-            					                echo date('F d, Y [ h:i A ]', strtotime($expected_demo_date));
-    					                    }
-    					                    else {
-    					                        echo "Date is not specified";
-    					                    }
-        				                }
-        				                else if($status=="delivered") {
-        				                    if($expected_pullout_date != null) {
-            				                    echo date("F d, Y [ h:i A ]", strtotime($expected_pullout_date));
-        				                    }
-        				                    else {
-        				                        echo "Date is not specified";
-        				                    }
-        				                }
-        				                else if($status=="pullout") {
-        				                    if($pullout_date != null) {
-            				                    echo date("F d, Y [ h:i A]", strtotime($pullout_date));
-        				                    }
-        				                    else {
-        				                        echo "Date is not specified";
-        				                    }
-        				                }
-        				            ?>
-					            </td>
 					            <?php } ?>
 					            <td align="center">
-					                <a style="color:white;font-weight:bold;"
-					                    href="/client_services/view?id=<?php echo $client_service['ClientService']['id'] ?>&&status=<?php echo $status; ?>"
+					                <a type="button" style="color:white;font-weight:bold;"
+					                    href="/client_services/view?id=<?php echo $client_service['ClientService']['id']; ?>"
                                         class="btn btn-primary btn-sm"
                                         data-toggle="tooltip"
                                         data-placement="top"
                                         title="View">
                                         <i class="fa fa-eye"></i>
                                     </a>
-					                <!--<button class="btn btn-sm btn-danger"-->
-					                <!--        id="btn_delete" data-toggle="tooltip"-->
-					                <!--           data-placement="top" title="Delete"-->
-					                <!--           value="<?php //echo $client_service['ClientService']['id'] ?>">-->
-					                <!--    <span class="fa fa-close"></span>-->
-					                <!--</button>-->
-					            </td>
+                                    
+                                    <?php
+                                    if($UserIn['User']['role']=="supply_staff" ||
+                                       $UserIn['User']['role']=="logistics_head") { ?>
+                                    <a type="button" target="_blank" style="color:white;font-weight:bold;"
+					                    href="/reports/print_demo?id=<?php echo $client_service['ClientService']['id']; ?>&&type=<?php echo $type; ?>"
+                                        class="btn btn-default btn-sm"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Print">
+                                        <i class="fa fa-file-pdf-o text-danger"></i>
+                                    </a>
+                                    <?php } ?>
+    					       </td>
 					        </tr>
 					        <?php } ?>
 					    </tbody>
@@ -167,6 +171,7 @@
 				<!--Modal body-->
 				<div class="modal-body">
 				    <div class="form-group row">
+				        <input type="hidden" id="input_agent_id" />
 				        <div class="col-lg-6">
 				             <?php
 				                $service_code="";
@@ -225,6 +230,7 @@
         				    </select>
                         </div>
                     </div>
+                    <div class="form-group row" id="label_here"></div>
 				    <br/>
 				    <div class="form-group row">
 				        <div class="col-lg-6">
@@ -233,7 +239,7 @@
         				        id="expected_delivery_date"/>
 				        </div>
 				        <div class="col-lg-6">
-				            <label>Expected Delivery Time <span class="text-danger"> *</span></label>
+				            <label>Expected Delivery Time</label>
 				             <input type="time" class="form-control"
         				        id="expected_delivery_time" />
 				        </div>
@@ -246,13 +252,14 @@
         				        id="expected_pull_out_date"/>
 				        </div>
 				        <div class="col-lg-6">
-				            <label>Expected Pull Out Time <span class="text-danger"> *</span></label>
+				            <label>Expected Pull Out Time</label>
 				             <input type="time" class="form-control"
         				        id="expected_pull_out_time"/>
 				        </div>
 				    </div>
 				    <br/>
-                    <div class="form-group row" id="label_here"></div>
+		            <label>Other Information</label>
+				    <textarea class="form-control" id="textarea_other_info" aria-label="Other Info"></textarea>
 				</div>
 				<!--Modal footer-->
 				<div class="modal-footer">
@@ -265,8 +272,11 @@
 	</div>
 	<!--===================================================-->
 	<!--Add New Demo Or Service Unit Modal End-->
-    
 </div>
+
+
+
+
 
 <!---JAVASCRIPT FUNCTIONS--->
 <script>
@@ -274,15 +284,17 @@
     var qty;
     var product;
     var product_combo;
-    var expected__delivery_date;
+    var agent_id;
+    var expected_delivery_date;
     var expected_pull_out_date;
-    var expected__delivery_time;
+    var expected_delivery_time;
     var expected_pull_out_time;
     var type = "<?php echo $type; ?>";
     var status = "<?php echo $status; ?>";
     var service_code = $("#service_code").val();
     var prop_tmp = [];
     var value_tmp = [];
+    var textarea_other_info = '';
     
     $(document).ready(function () {
     	$('[data-toggle="tooltip"]').tooltip();
@@ -306,6 +318,7 @@
         });
         
         $('#show_modal').on("click", function() {
+            $("button#btn_add").removeAttr('attr');
             $('#add-demo-su-modal').modal('show');
         });
         
@@ -353,8 +366,27 @@
             });
         });
         
+        $("#select_client").on('change', function() {
+            var data = {"id": $(this).val()};
+            $.ajax({
+                url: "/clients/get_agent",
+                type: "POST",
+                data: {"data": data},
+                dataType: "text",
+                success: function(success) {
+                    console.log("Success: "+success);
+                    $("#input_agent_id").val(success);
+                },
+                error: function(error) {
+                    console.log("Error in getting sales agent: "+error);
+                }
+            });
+        });
         
-        $("#btn_add").on('click', function(){
+        $("#btn_add").on('click', function() {
+            var btn_add = $(this);
+            btn_add.attr('disabled', 'disabled');
+            agent_id = $("#input_agent_id").val();
             client = $("#select_client").val();
             qty = $("#qty").val();
             product = $("#select_product").val();
@@ -363,16 +395,19 @@
             expected_pull_out_date = $("#expected_pull_out_date").val();
             expected_delivery_time = $("#expected_delivery_time").val();
             expected_pull_out_time = $("#expected_pull_out_time").val();
+            textarea_other_info = tinymce.get('textarea_other_info').getContent();
             console.log((product_combo!="Select Product Combination"));
             if(client!="Select Client") {
                 if(qty!="" && parseInt(qty)) {
                     if(product!="Select Product") {
-                        if(product_combo!="Select Product Combination") {
-                            if(product_combo!="No Product Combination") {
-                                if(expected_delivery_date!="") {
-                                    if(expected_pull_out_date!="") {
+                        if(product_combo!="Select Product Combination" &&
+                           product_combo!="No Product Combination") {
+                            if(expected_delivery_date!="") {
+                                if(expected_pull_out_date!="") {
+                                    // if(textarea_other_info!="") {
                                         var data = {
                                             'client_id':client,
+                                            'agent_id': agent_id,
                                             'qty':qty,
                                             'product_id':product,
                                             'product_combo_id':product_combo,
@@ -385,6 +420,7 @@
                                             'status':status,
                                             'property': prop_tmp,
                                             'value':value_tmp,
+                                            'textarea_other_info': textarea_other_info,
                                             'quotation_product_id':0
                                         };
                                         $.ajax({
@@ -402,59 +438,77 @@
                 							}
                 						});
                                         console.log(data);
-                                    }
-                                    else {
-                                        $("#expected_pull_out_date").css({'border-color':'red'});
-                                    }
+                                    // }
+                                    // else {
+                                    //     swal({
+                                    //         title: "Oops!",
+                                    //         text: "Other Information is empty.\n"+
+                                    //               "Please add other information and try again.",
+                                    //         type: "warning"
+                                    //     });
+                                    //     btn_add.removeAttr('disabled');
+                                    // }
                                 }
                                 else {
-                                    $("#expected_delivery_date").css({'border-color':'red'});
+                                    $("#expected_pull_out_date").css({'border-color':'red'});
+                                    swal({
+                                        title: "Oops!",
+                                        text: "Expected Pull Out Date is empty.\n"+
+                                              "Please indicate pullout date and try again.",
+                                        type: "warning"
+                                    });
+                                    btn_add.removeAttr('disabled');
                                 }
                             }
                             else {
-                                $("#select_product_combo").css({'border-color':'red'});
+                                $("#expected_delivery_date").css({'border-color':'red'});
+                                swal({
+                                    title: "Oops!",
+                                    text: "Expected Delivery Date is empty.\n"+
+                                          "Please indicate delivery date and try again.",
+                                    type: "warning"
+                                });
+                                btn_add.removeAttr('disabled');
                             }
                         }
                         else {
-                            $("#select_product_combo").css({'border-color':'red'});
+                            swal({
+                                title: "Oops!",
+                                text: "Product Combo is empty.\n"+
+                                      "Please select product combo and try again.",
+                                type: "warning"
+                            });
+                            btn_add.removeAttr('disabled');
                         }
                     }
                     else {
-                        $("#select_product").css({'border-color':'red'});
+                        swal({
+                            title: "Oops!",
+                            text: "Product is empty.\n Please select product and try again.",
+                            type: "warning"
+                        });
+                        btn_add.removeAttr('disabled');
                     }
                 }
                 else {
                     $("#qty").css({'border-color':'red'});
+                    swal({
+                        title: "Oops!",
+                        text: "Quantity is empty.\n Please indicate quantity and try again.",
+                        type: "warning"
+                    });
+                    btn_add.removeAttr('disabled');
                 }
             }
             else {
-                $("#select_client").css({'border-color':'red'});
+                swal({
+                    title: "Oops!",
+                    text: "Client is empty.\n Please select client and try again.",
+                    type: "warning"
+                });
+                btn_add.removeAttr('disabled');
             }
         });
-        
-        // $("button#btn_delete").on('click', function() {
-        //     var client_service_id = $(this).val();
-        // 	var qpid = $(this).data('qpid');
-        // 	swal({
-	       //     title: "Are you sure?",
-	       //     text: "This will cancel <?php //echo $type_tmp; ?>.",
-	       //     type: "warning",
-	       //     showCancelButton: true,
-	       //     confirmButtonClass: "btn-danger",
-	       //     confirmButtonText: "Yes",
-	       //     cancelButtonText: "No",
-	       //     closeOnConfirm: false,
-	       //     closeOnCancel: true
-	       // },
-	       // function (isConfirm) {
-	       //     if (isConfirm) {
-		      //  	$.get("/client_services/delete", {id: client_service_id, qpid: qpid}, 
-		      //  	function(data) {
-		      //      	window.location.replace("/client_services/all_lists?type="+type+"&&status="+status);
-		      //  	});
-	       //     }
-	       // });
-        // });
     });
 </script>
 <script> 

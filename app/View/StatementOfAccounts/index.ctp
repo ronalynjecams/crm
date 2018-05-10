@@ -62,8 +62,8 @@
 								<td>
 			<?php echo $this->Html->link($statementOfAccount['User']['id'], array('controller' => 'users', 'action' => 'view', $statementOfAccount['User']['id'])); ?>
 		</td>
-						<td><?php echo h($statementOfAccount['StatementOfAccount']['created']); ?>&nbsp;</td>
-						<td><?php echo h($statementOfAccount['StatementOfAccount']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($statementOfAccount['StatementOfAccount']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($statementOfAccount['StatementOfAccount']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $statementOfAccount['StatementOfAccount']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $statementOfAccount['StatementOfAccount']['id']), array('escape' => false)); ?>

@@ -56,8 +56,8 @@
 								<td>
 			<?php echo $this->Html->link($fitoutReport['FitoutWork']['id'], array('controller' => 'fitout_works', 'action' => 'view', $fitoutReport['FitoutWork']['id'])); ?>
 		</td>
-						<td><?php echo h($fitoutReport['FitoutReport']['created']); ?>&nbsp;</td>
-						<td><?php echo h($fitoutReport['FitoutReport']['modified']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutReport['FitoutReport']['created']); ?>&nbsp;</td>
+						<td><?php echo time_elapsed_string($fitoutReport['FitoutReport']['modified']); ?>&nbsp;</td>
 						<td class="actions">
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-search"></span>', array('action' => 'view', $fitoutReport['FitoutReport']['id']), array('escape' => false)); ?>
 							<?php echo $this->Html->link('<span class="glyphicon glyphicon-edit"></span>', array('action' => 'edit', $fitoutReport['FitoutReport']['id']), array('escape' => false)); ?>

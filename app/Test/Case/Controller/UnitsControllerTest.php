@@ -19,7 +19,8 @@ class UnitsControllerTest extends ControllerTestCase {
 		'app.department',
 		'app.client',
 		'app.team',
-		'app.agent_status'
+		'app.agent_status',
+		'app.social_profile'
 	);
 
 /**
