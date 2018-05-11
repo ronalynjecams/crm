@@ -218,7 +218,9 @@ class ClientsController extends AppController {
             else {
                 echo "Client Did not saved";
             }
-            
+        }
+        else {
+            echo "Client Already Exists";
         }
     }
 

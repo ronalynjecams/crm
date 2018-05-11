@@ -9,39 +9,7 @@
 <script src="/css/plug/morris-js/morris.min.js"></script>
 <script src="/css/plug/morris-js/raphael-js/raphael.min.js"></script>
 
-<script>            
-$(window).on('load', function() {
-    // Network chart ( Morris Line Chart )
-    // =================================================================
-    // Require MorrisJS Chart
-    // -----------------------------------------------------------------
-    // http://morrisjs.github.io/morris.js/
-    // =================================================================
 
-    var graph_data_str = '<?php echo $json_graph_data; ?>';
-    var graph_data = JSON.parse(graph_data_str);
-    var chart = Morris.Area({
-        element : 'morris-chart-network',
-        data: graph_data,
-        axes:false,
-        xkey: 'elapsed',
-        ykeys: ['pending', 'approved'],
-        labels: ['Pending', 'Approved'],
-        yLabelFormat :function (y) { return y.toString() },
-        gridEnabled: false,
-        gridLineColor: 'transparent',
-        lineColors: ['#82c4f8','#0d92fc'],
-        lineWidth:[0,0],
-        pointSize:[0,0],
-        fillOpacity: 1,
-        gridTextColor:'#999',
-        parseTime: false,
-        resize:true,
-        behaveLikeLine : true,
-        hideHover: 'auto'
-    });
-});
-</script>
 
 
 <!--FLOT PIE CHART-->
@@ -85,41 +53,6 @@ $(window).on('load', function() {
 		
 		        <!--Network Line Chart-->
 		        <!--===================================================-->
-		        <div id="demo-panel-network" class="panel">
-		            <div class="panel-heading">
-		                <h3 class="panel-title">Quotation</h3>
-		            </div>
-		
-					<div class="panel-body">
-						<div class="row">
-				            <!--Morris line chart placeholder-->
-				            <div id="morris-chart-network" class="morris-full-content"></div>
-				        </div>
-				    </div>
-		        </div>
-				
-				<?php foreach($tteams as $tteam){ ?>	 
-		            <div class="col-sm-2"> 
-		                <div class="panel panel-info ">
-		                    <div class="pad-all">
-		                        <p class="text-sm text-semibold"> <?php echo $tteam['Team']['display_name']; ?> <br/>[Daily]</p> 
-		                        	<!--<span class="text-2x text-semibold"><a href="/pdfs/print_sales?range=m" target="_blank" style="color:white"> <?php echo '&#8369; '.number_format($monthly,2); ?> </a></span>-->
-		                        <p class="mar-no">
-		                        	<?php  
-		                        	$variable = new AppController();
-									$pending_ccount = $variable->team_count_quotes('pending', $tteam['Team']['id']);
-									$approved_ccount = $variable->team_count_quotes('moved', $tteam['Team']['id']);
-		                        	// echo $this->team_total('daily', $tteam['Team']['id']);
-		                        	echo 'Pending:'.$pending_ccount.'<br/>Moved: '.$approved_ccount.'' ;
-		                        	
-		                        	?>
-		                        	
-		                        	
-		                        </p>
-		                    </div> 
-		                </div> 
-				    </div> 
-				    <?php } ?>
 		        <!--===================================================-->
 		        <!--End network line chart-->
 		
@@ -136,7 +69,8 @@ $(window).on('load', function() {
 		                            Pending
 		                        </p>
 		                        <p class="mar-no">
-		                            <span class="pull-right text-bold"><?php echo $edited_quote_count_left_side; ?></span>
+		                            <span class="pull-right text-bold"><?php //echo $this->requestAction('App/edited_quote_count_left_side/moved');
+		                            echo $this->requestAction('App/edited_quote_count_left_side/moved'); ?></span>
 		                            Rejected
 		                        </p>
 		                        <p class="mar-no">
@@ -160,13 +94,16 @@ $(window).on('load', function() {
 		                <div class="panel panel-success panel-colorful">
 		                    <div class="pad-all">
 		                        <p class="text-lg text-semibold"><i class="demo-pli-data-storage icon-fw"></i> Sales  [<?php echo $month; ?>]</p>
-		                        <!--<p class="mar-no"> <?php //echo 'For the month of '.$month; ?>  </p>-->
-		                        	<span class="text-2x text-semibold"><a href="/pdfs/print_sales?range=m" target="_blank" style="color:white"> <?php echo '&#8369; '.number_format($monthly,2); ?> </a></span>
+	                        	<span class="text-2x text-semibold">
+	                        		<a href="/pdfs/print_sales?range=m" target="_blank" style="color:white">
+	                        			&#8369; <font id="monthly">0.00</font>
+	                        		</a>
+	                        	</span>
 		                          
 		                        <p class="mar-no">
 		                        	<a href="/pdfs/print_sales?range=t" target="_blank" style="color:white">
 				                        Today:
-										&#8369; <?php echo number_format($daily, 2); ?>
+										&#8369; <font id="today">0.00</font>
 									</a>
 		                        </p>
 		                    </div>
@@ -185,18 +122,7 @@ $(window).on('load', function() {
 		                <div class="panel panel-purple panel-colorful">
 		                    <div class="pad-all">
 		                        <p class="text-lg text-semibold"><i class="demo-pli-bag-coins icon-fw"></i>Team Sales [<?php echo $month;?>]</p>
-		                        <?php foreach($team_monthly as $data):
-		                        	$team_id = $data['id'];
-		                        ?>
-			                        <p class="mar-no">
-			                            <span class="pull-right text-bold">&#8369; <?php if(!empty($data['grand_total_team'])) echo number_format($data['grand_total_team'],2); else echo 0;?></span>
-			                            <a id="team_clicked" data-id="<?php echo $team_id; ?>"
-			                               data-name="<?php echo $data['display_name']; ?>"
-			                               style="color:white;cursor:pointer;">
-			                            		[<?php echo $data['display_name']; ?>]
-			                            </a> =>
-			                        </p>
-		                        <?php endforeach; ?>
+		                        <div id="team_monthly"></div>
 		                    </div>
 		                    <!--<div class="pad-all text-center">-->
 		                        <!--Placeholder-->
@@ -214,7 +140,7 @@ $(window).on('load', function() {
 		                    	
 		                        <p class="text-lg text-semibold"><i class="demo-pli-wallet-2 icon-fw"></i> Earning</p>
 		                        <a href="/pdfs/print_sales?range=y" target="_blank" style="color:white">
-		                   		<span class="text-2x text-semibold">&#8369; <?php echo number_format($yearly, 2);?></span>
+		                   		<span class="text-2x text-semibold">&#8369; <font id="yearly">0.00</font></span>
 		                        <p class="mar-no">
 		                         	For the year <?php echo $year;?>
 		                        </p>
@@ -383,146 +309,7 @@ $(window).on('load', function() {
 	 
 		
 	 <!--AGENT STATUS-------------------------------------->
-	 <?php
-		$mo_now = date("F");
-		$yr_now = date("Y");
-		if(!empty($get_users)) {
- 	 ?>
-	 <div class="col-lg-12" style="margin-bottom:30px;">
-	 	<h2 id="page-header text-overflow" align="center">
- 			Agents' Status (<?php echo $mo_now.", ".$yr_now; ?>)
- 		</h2>
- 		
- 		<div class="row" id="sort_divs">
- 			<?php
- 			$c=0;
- 			foreach($get_users as $ret_user) {
- 				$c++;
- 				$user = $ret_user['User'];
- 				$user_id = $user['id'];
- 				$first_name_tmp = $user['first_name'];
- 				
- 				if($first_name_tmp != "") {
- 					$first_name = ucwords(strtolower($first_name_tmp));
- 				}
- 				else {
- 					$first_name = "<font style='color:red'>Unknown</font>";
- 				}
- 				
- 				$pending_count = 0;
- 				$approved_count = 0;
- 				$tot_contract_amount_tmp = 0;
- 				$tot_contract_amount = 0;
- 				
- 				foreach($get_quotations[$user_id] as $ret_quotations) {
- 					$quotations = $ret_quotations['Quotation'];
- 					$status = $quotations['status'];
- 					$contract_amount_tmp = $quotations['grand_total'];
- 					
- 					if($status == "approved" || $status == "processed") {
- 						$tot_contract_amount_tmp+=$contract_amount_tmp;
- 						$approved_count++;
- 					}
- 					else if($status == "pending") {
- 						$pending_count++;
- 					}
- 					$tot_contract_amount = number_format((float)$tot_contract_amount_tmp,2,'.',',');
- 					 
- 				}
- 				
- 				$team_name = "<font class='text-danger'>Unknown</font>";
- 				$agent_status_quota = 0;
- 				$team_id = 0;
- 				foreach($get_agent_status[$user_id] as $ret_agent_status) {
- 					$agent_status = $ret_agent_status['AgentStatus'];
- 					$team = $ret_agent_status['Team'];
-
- 					$team_id = $team['id'];
- 					$team_name = ucwords(strtolower($team['name']));
- 					$agent_status_quota = $agent_status['quota'];
- 				}
- 			?>
- 			<div class="box">
- 			<div class="col-sm-2 eq-box-sm">
- 				<div class="panel panel-default">
- 					<div class="panel-heading">
- 						<a href="/pdfs/print_sales?range=m&&salesagent=<?php echo $user_id; ?>"
- 						   class="panel-title text-primary"
- 						   target="_blank"
- 						   style="font-size:12px;margin-left:-1em;">
- 							<?php echo $first_name." [".$team_name."]"; ?>
- 						</a>
- 					</div>
- 					<div class="panel-body"> 
- 						<input id="tot_amount_id" value="<?php echo $tot_contract_amount_tmp; ?>" hidden /> 
-                                        
-                                        
-						<p id="tot_amount"><small>Yearly: &#8369 <?php echo $tot_contract_amount; ?> </small></p>
-						<p>[<small>Quota &#8369 <?php echo number_format((float)$agent_status_quota,2,'.',','); ?> </small>]</p>
-						<?php if ($this->requestAction('App/my_monthly_total/'.$user_id.'') != 0) { ?>
-							 
-						<p><small><?php
-								echo date('F'); ?>: &#8369 <?php echo number_format($this->requestAction('App/my_monthly_total/'.$user_id.''),2); 
-								if((floatval($this->requestAction('App/my_monthly_total/'.$user_id.''))) >= $agent_status_quota){
-									echo '<i class="fa fa-check text-success></i>';
-								} 
-						?> </small></p>
-						<?php
-							}else{
-								 ?>
-							 
-						<p><small><?php
-								echo date('F').': &#8369  0.00';
-						?> </small></p>
-						<?php
-								
-							}
-						?>
-						
-						<p><small><i class="fa fa-circle" style="color: #009933;"></i> Approved: </small> <?php echo $approved_count; ?></p>
-						<p><small><i class="fa fa-circle" style="color: #3399ff;"></i> Pending: </small> <?php echo $pending_count; ?></p>
-						
-						<!--Flot Donut Chart placeholder -->
-				        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-				        <div class="PiePendingApproved" style="height:180px">
-				        	<?php
-				        		$datatopass = [["label"=>"Approved","data"=>$approved_count,"color"=>"#009933"],
-				        					   ["label"=>"Pending","data"=>$pending_count,"color"=>"#3399ff" ]];
-				        	?>
-				        	<textarea class="data" hidden><?php echo json_encode($datatopass); ?></textarea>
-				        	
-				        </div>
-				        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-				         
-					</div>
-					
-					<div class="panel-footer">
-						<div align="right">
-							<a href="/pdfs/print_sales?range=y&&salesagent=<?php echo $user_id; ?>" target="_blank" class="btn btn-default btn-xs">Yearly</a>
- 							
- 							<?php
- 							if($team_name!="<font class='text-danger'>Unknown</font>") {
- 								?>
- 								<button id="monthly_btn"
- 										target="_blank"
- 										class="btn btn-default btn-xs"
- 										data-id="<?php echo $user_id; ?>"
- 										data-name="<?php echo $first_name; ?>">Monthly</button>
- 							<?php
- 							}
- 							else {
- 								echo '<button disabled style="cursor:not-allowed;" class="btn btn-default btn-xs">Monthly</button>';
- 							}
- 							?>
-						</div>
-					</div>
- 				</div>
- 			</div>
- 			</div>
- 			<?php }
- 			} ?>
- 		</div>
-	 </div>
+	 
 	 <!--END of AGENT STATUS------------------------------->
 		
 		
@@ -741,11 +528,10 @@ $(window).on('load', function() {
 <!-- Itenerary Date Range Modal End-->      
 <!--JAVASCIPT FUNCTIONS-->
 <script>
-$(document).ready(function() {  
+$(document).ready(function() { 		 
 	$('#cheque_div').hide();
 	$('#itenerary_driver_div').hide();
 
-	// alert('asdasd');
 	
 	$('div.box').sort(function(a, b) {
 		// alert(parseInt($(a).find("#tot_amount_id").val()));

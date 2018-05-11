@@ -765,7 +765,7 @@ class PurchaseOrdersController extends AppController {
             $products = $this->Product->find('all', ['conditions'=>['type'=>'raw']]);
         }
         elseif($department_name == "Purchasing (Supply)") {
-            $products = $this->Product->find('all', ['conditions'=>['type'=>['supply','customized']]]);
+            $products = $this->Product->find('all', ['conditions'=>['type'=>['supply','customized', 'combination']]]);
         }
         else {
             $products = $this->Product->find('all');

@@ -101,7 +101,6 @@
     
     
                             <!-- proprietor -->
-    
                             <?php if ($UserIn['User']['role'] == 'proprietor') { ?> 
                                 <li class="active-link">
                                     <a href="/users/dashboard_proprietor"> 
@@ -115,24 +114,29 @@
                                 <li>
                                     <a href=""> 
                                         <i class="fa fa-file-pdf-o"></i>
-                                        <span class="menu-title">
+                                        <span class="menu-title" id="moved_edited_quote_count_left_side">
                                             <strong>Quotations</strong>
-                                            <?php if ($this->requestAction('App/moved_edited_quote_count_left_side/moved') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/moved_edited_quote_count_left_side/moved'); ?></span>
-                                            <?php } ?>
+                                            
+                                            <span id="moved_edited_quote_count_left_side_view">
+                                                
+                                            </span>
                                         </span>
                                         <i class="arrow"></i>
                                     </a> 
                                     <ul class="collapse">
                                         <li><a href="/quotations/proprietor?status=pending">Pending</a></li>
-                                        <li><a href="/quotations/proprietor?status=rejected">Rejected
-                                        <?php if ($this->requestAction('App/edited_quote_count_left_side/rejected') != 0) { ?>
-                                                    <span class="label label-danger "><?php echo $this->requestAction('App/edited_quote_count_left_side/rejected'); ?></span>
-                                                <?php } ?></a></li>
-                                        <li><a href="/quotations/proprietor?status=moved">Moved
-                                                <?php if ($this->requestAction('App/moved_quote_count_left_side/moved') != 0) { ?>
-                                                    <span class="label label-danger "><?php echo $this->requestAction('App/moved_quote_count_left_side/moved'); ?></span>
-                                                <?php } ?></a></li>
+                                        <li id="edited_quote_count_left_side">
+                                            <a href="/quotations/proprietor?status=rejected">Rejected
+                                                <span id="edited_quote_count_left_side_view">
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li id="moved_quote_count_left_side">
+                                            <a href="/quotations/proprietor?status=moved">Moved
+                                                <span id="moved_quote_count_left_side_view">
+                                                </span>
+                                            </a>
+                                        </li>
                                         <li><a href="/quotations/proprietor?status=approved_by_proprietor">Approved</a></li>
                                         <li><a href="/quotations/proprietor?status=approved">Approved By Accounting</a></li>
                                         <li><a href="/quotations/proprietor?status=processed">Processed</a></li>
@@ -218,11 +222,10 @@
                                 <li >
                                     <a href="/products/list_requests"> 
                                         <i class="ion-soup-can"></i>
-                                        <span class="menu-title">
+                                        <span class="menu-title" id="count_product_request">
                                             <strong>Product Request</strong>
-                                            <?php if ($this->requestAction('App/count_product_request/request') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_product_request/request'); ?></span>
-                                            <?php } ?>
+                                            <span id="count_product_request_view">
+                                            </span>
                                         </span>
                                     </a>
                                 </li>
@@ -245,22 +248,19 @@
                                 <li>
                                     <a href=""> 
                                         <i class="fa fa-money"></i>
-                                        <span class="menu-title">
+                                        <span class="menu-title" id="count_pending_pr">
                                             <strong>Cash Request</strong>
-                                            <?php if ($this->requestAction('App/count_pending_pr/cash/acknowledged') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_pending_pr/cash/acknowledged'); ?></span>
-                                            <?php } ?>
+                                            <span id="count_pending_pr_view">
+                                            </span>
                                         </span>
                                         <i class="arrow"></i>
                                     </a> 
                                     <ul class="collapse">  
                                         <li><a href="/payment_requests/all_list?type=cash&&status=pending">Pending</a></li>
                                         <li><a href="/payment_requests/all_list?type=cash&&status=acknowledged">Acknowledged
-                                        <?php if ($this->requestAction('App/count_pending_pr/cash/acknowledged') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_pending_pr/cash/acknowledged'); ?></span>
-                                            <?php }
-                                            ?></a>
-                                            </li>
+                                            <span id="count_pending_pr_view1">
+                                            </span></a>
+                                        </li>
                                         <li><a href="/payment_requests/all_list?type=cash&&status=approved">Approved</a></li> 
                                         <li><a href="/payment_requests/all_list?type=cash&&status=released">Released</a></li>
                                         <li><a href="/payment_requests/all_list?type=cash&&status=liquidated">Liquidated</a></li> 
@@ -284,19 +284,18 @@
                                 <li>
                                     <a href=""> 
                                         <i class="fa fa-money"></i>
-                                        <span class="menu-title">
+                                        <span class="menu-title" id="count_pending_pr_cheque">
                                             <strong>Cheque Request</strong>
-                                            <?php if ($this->requestAction('App/count_pending_pr/cheque/pending') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_pending_pr/cheque/pending'); ?></span>
-                                            <?php } ?>
+                                            <span id="count_pending_pr_cheque_view">
+                                            </span>
                                         </span>
                                         <i class="arrow"></i>
                                     </a> 
                                     <ul class="collapse">  
                                         <li><a href="/payment_requests/all_list?type=cheque&&status=pending">Pending
-                                        <?php if ($this->requestAction('App/count_pending_pr/cheque/pending') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_pending_pr/cheque/pending'); ?></span>
-                                            <?php } ?></a>
+                                            <span id="count_pending_pr_cheque_view1">
+                                            </span>
+                                        </a>
                                         </li>
                                         <li><a href="/payment_requests/all_list?type=cheque&&status=approved">Approved</a></li> 
                                         <li><a href="/payment_requests/all_list?type=cheque&&status=released">Released</a></li>
@@ -308,11 +307,10 @@
                                 <li>
                                     <a href=""> 
                                         <i class="fa fa-money"></i>
-                                        <span class="menu-title">
+                                        <span class="menu-title" id="count_pending_pr_pettycash">
                                             <strong>Petty Cash Request</strong>
-                                            <?php if ($this->requestAction('App/count_pending_pr/pettycash/replenished') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_pending_pr/pettycash/replenished'); ?></span>
-                                            <?php } ?>
+                                            <span id="count_pending_pr_pettycash_view">
+                                            </span>
                                         </span>
                                         <i class="arrow"></i>
                                     </a> 
@@ -329,11 +327,10 @@
                                 <li>
                                     <a href="">
                                         <i class="fa fa-check-square"></i>
-                                        <span class="menu-title">
+                                        <span class="menu-title" id="count_pending_replenishment">
                                             <strong>Replenishments</strong>
-                                            <?php if ($this->requestAction('App/count_pending_replenishment') != 0) { ?>
-                                                <span class="label label-danger "><?php echo $this->requestAction('App/count_pending_replenishment'); ?></span>
-                                            <?php } ?>
+                                            <span id="count_pending_replenishment_view">
+                                            </span>
                                         </span>
                                         <i class="arrow"></i>
                                     </a>
@@ -361,19 +358,19 @@
                                             <ul class="list-group">
                                                 <li class="list-header pad-no pad-ver">Quotation Status</li>
                                                 <li class="mar-btm">
-                                                    <span class="label label-primary pull-right"><?php echo $this->requestAction('App/PendingApproved_count/approved_count'); ?>%</span>
+                                                    <span class="label label-primary pull-right"><?php //echo $this->requestAction('App/PendingApproved_count/approved_count'); ?>%</span>
                                                     <p>Approved</p>
                                                     <div class="progress progress-sm">
-                                                        <div class="progress-bar progress-bar-primary" style="width:<?php echo $this->requestAction('App/PendingApproved_count/approved_count'); ?>%;">
-                                                            <span class="sr-only"><?php echo $this->requestAction('App/PendingApproved_count/approved_count'); ?>%</span>
+                                                        <div class="progress-bar progress-bar-primary" style="width:<?php //echo $this->requestAction('App/PendingApproved_count/approved_count'); ?>%;">
+                                                            <span class="sr-only"><?php //echo $this->requestAction('App/PendingApproved_count/approved_count'); ?>%</span>
                                                         </div>
                                                     </div>
                                                 </li>
                                                 <li class="mar-btm">
-                                                    <span class="label label-purple pull-right"><?php echo $this->requestAction('App/PendingApproved_count/pending_count'); ?>%</span>
+                                                    <span class="label label-purple pull-right"><?php //echo $this->requestAction('App/PendingApproved_count/pending_count'); ?>%</span>
                                                     <p>Pending</p>
                                                     <div class="progress progress-sm">
-                                                        <div class="progress-bar progress-bar-purple" style="width:<?php echo $this->requestAction('App/PendingApproved_count/pending_count'); ?>%;">
+                                                        <div class="progress-bar progress-bar-purple" style="width:<?php //echo $this->requestAction('App/PendingApproved_count/pending_count'); ?>%;">
                                                         </div>
                                                     </div>
                                                 </li>
@@ -386,6 +383,7 @@
                                 <!--End widget-->
                             <?php } ?>
                             <!-- proprietor -->
+                            
                             <!-- sales_executive -->
                             <?php if ($UserIn['User']['role'] == 'sales_executive') { ?>
                                 <li class="active-link">
@@ -399,7 +397,7 @@
                                 </li>
                                 <li>
                                     <a href="/products/add_temp"> 
-                                        <i class="ion-soup-can"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="ion-soup-can"></i>
                                         <span class="menu-title">
                                             <strong>Product Request</strong>
                                         </span>
@@ -2202,6 +2200,7 @@
                                         <li><a href="/purchase_order_products/top_purchased?dept=6">Top Purchased </a></li> 
                                         <li><a href="/purchase_orders/all_list?status=ongoing">Ongoing</a></li>
                                         <li><a href="/purchase_orders/all_list?status=pending">Pending</a></li>   
+                                        <li><a href="/purchase_orders/all_list?status=partial">Partial</a></li>   
                                         <li><a href="/purchase_orders/all_list?status=processed">Processed</a></li>   	
                                     </ul>
                                 </li>  

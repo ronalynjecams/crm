@@ -129,6 +129,8 @@ class UsersController extends AppController {
         if ($this->Auth->user('id')) {
             if ($this->Auth->user('role') == 'sales_executive') {
                 return $this->redirect('/users/dashboard_sales');
+            }  else if ($this->Auth->user('role') == 'proprietor') {
+                return $this->redirect('/users/dashboard_proprietor');
             } else if ($this->Auth->user('role') == 'marketing_staff') {
                 return $this->redirect('/users/dashboard_marketing');
             } else if ($this->Auth->user('role') == 'super_admin') {
@@ -159,8 +161,6 @@ class UsersController extends AppController {
                 return $this->redirect('/users/dashboard_it_staff');
             } else if ($this->Auth->user('role') == 'admin_staff') {
                 return $this->redirect('/users/dashboard_admin_staff');
-            }  else if ($this->Auth->user('role') == 'proprietor') {
-                return $this->redirect('/users/dashboard_proprietor');
             }  else if ($this->Auth->user('role') == 'proprietor_secretary') {
                 return $this->redirect('/users/dashboard_proprietor_secretary');
             }   else if ($this->Auth->user('role') == 'accounting_head') {
@@ -187,19 +187,27 @@ class UsersController extends AppController {
         if ($this->request->is('post')) {
             if ($this->Auth->login()) {
                 
-                $options = array('conditions' => array('User.' . $this->User->primaryKey => $this->Auth->user('id')));
-                // $this->set('UserIn', $this->User->find('first', $options));
+                $options = ['conditions' =>
+                                ['User.' . $this->User->primaryKey => $this->Auth->user('id')],
+                            'fields'=>['User.id',
+                                       'User.first_name',
+                                       'User.last_name',
+                                       'User.role',
+                                       'User.position_id',
+                                       'User.department_id',
+                                       'Position.name',
+                                       'Department.name']];
                 $userss = $this->User->find('first', $options);
                 $user_up = $userss['User'];
                 $user_up['User'] = $userss['User'];
                 $user_up['Position'] = $userss['Position'];
                 $user_up['Department'] = $userss['Department'];
-                $user_up['Client'] = $userss['Client'];
-                $user_up['SocialProfile'] = $userss['SocialProfile'];
                 $this->Session->write('Auth.User', $user_up);
 
                 if ($this->Auth->user('role') == 'sales_executive') {
                     return $this->redirect('/users/dashboard_sales');
+                } else if ($this->Auth->user('role') == 'proprietor') {
+                    return $this->redirect('/users/dashboard_proprietor');
                 } else if ($this->Auth->user('role') == 'marketing_staff') {
                     return $this->redirect('/users/dashboard_marketing');
                 } else if ($this->Auth->user('role') == 'super_admin') {
@@ -230,8 +238,6 @@ class UsersController extends AppController {
                     return $this->redirect('/users/dashboard_it_staff');
                 } else if ($this->Auth->user('role') == 'admin_staff') {
                     return $this->redirect('/users/dashboard_admin_staff');
-                }  else if ($this->Auth->user('role') == 'proprietor') {
-                    return $this->redirect('/users/dashboard_proprietor');
                 }  else if ($this->Auth->user('role') == 'proprietor_secretary') {
                     return $this->redirect('/users/dashboard_proprietor_secretary');
                 }  else if ($this->Auth->user('role') == 'accounting_head') {
@@ -828,56 +834,193 @@ class UsersController extends AppController {
                           'json_graph_data'));
     }
 
+
+    public function monthly_total() {
+	    $this->autoRender = false;
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+					'fields' => 'grand_total',
+					'recursive' => -1,
+					'conditions' => array(
+						'MONTH(date_moved)' => date('m'),
+						'YEAR(date_moved)' => date('Y'),
+						'OR' =>
+						array(
+							array('Quotation.status' => 'approved'),
+							array('Quotation.status' => 'processed'),
+							array('Quotation.status' => 'approved_by_proprietor')
+						)
+					)
+				));
+			
+		$grand_total = array_sum($total);
+		
+		return number_format((float)$grand_total, 2, '.', ',');
+	}
+	
+	public function yearly_total() {
+	    $this->autoRender = false;
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+					'fields' => 'grand_total',
+					'recursive' => -1,
+					'conditions' => array(
+						'YEAR(date_moved)' => date('Y'),
+						'OR' =>
+						array(
+							array('Quotation.status' => 'approved'),
+							array('Quotation.status' => 'processed'),
+							array('Quotation.status' => 'approved_by_proprietor')
+						)
+					)
+				));
+			
+		$grand_total = array_sum($total);
+		
+		return number_format((float)$grand_total, 2, '.', ',');
+	}
+	
+	public function daily_total(){
+	    $this->autoRender = false;
+		$this->loadModel('Quotation');
+		
+		$total = $this->Quotation->find('list', array(
+					'fields' => 'grand_total',
+					'recursive' => -1,
+					'conditions' => array(
+						'DAY(date_moved)' => date('d'),
+						'MONTH(date_moved)' => date('m'),
+						'YEAR(date_moved)' => date('Y'),
+						'OR' =>
+						array(
+							array('Quotation.status' => 'approved'),
+							array('Quotation.status' => 'processed'),
+							array('Quotation.status' => 'approved_by_proprietor')
+						)
+					)
+				));
+			
+		$grand_total = array_sum($total);
+		
+		return $grand_total;
+	}
+	
+	public function team_total($type = null, $team = null) {
+	    $this->autoRender = false;
+		$this->loadModel('Quotation');
+		$this->loadModel('Team');
+		$res = [];
+		
+		if($type == 'yearly'){
+		$condition['YEAR(date_moved)'] = date('Y');
+		}
+		
+		if($type == 'monthly'){
+		$condition['YEAR(date_moved)'] = date('Y');
+		$condition['MONTH(date_moved)'] = date('m');
+		}
+		
+		if($type == 'daily'){
+		$condition['YEAR(date_moved)'] = date('Y');
+		$condition['MONTH(date_moved)'] = date('m');
+		$condition['DAY(date_moved)'] = date('d');
+		}
+		
+		$condition['OR'] = array(
+						array('Quotation.status' => 'approved'),
+						array('Quotation.status' => 'processed'),
+						array('Quotation.status' => 'approved_by_proprietor')
+					);
+					
+		if($team != null){
+			$condition['Quotation.team_id'] = $team;
+			$total = $this->Quotation->find('first', array(
+					'fields' => 'sum(Quotation.grand_total) as grand_total_team, Quotation.team_id, Quotation.date_moved',
+					'recursive' => -1,
+					'conditions' => $condition,
+				));
+			if($total){
+				$team_data = $this->Team->findById($team);
+				$exploit = 0.00;
+				if(!empty($total[0]['grand_total_team'])) {
+					$exploit = $total[0]['grand_total_team'];
+				}
+				$res['grand_total_team'] = $exploit;
+				$res['Team'] = $team_data['Team'];
+			}
+		} else{
+			$this->Team->recursive = 0;
+			$team_list = $this->Team->find('all');
+			$count = 0;
+			foreach($team_list as $data){
+				
+				$team_data = $data['Team'];
+				$condition['Quotation.team_id'] = $team_data['id'];
+				$total = $this->Quotation->find('first', array(
+							'fields' => 'sum(Quotation.grand_total) as grand_total_team, Quotation.id',
+							'recursive' => -1,
+							'conditions' => $condition,
+						));
+				$res[$count] = $team_data;
+				$exploit = 0.00;
+				if(!empty($total[0]['grand_total_team'])) {
+					$exploit = $total[0]['grand_total_team'];
+				}
+				$res[$count]['grand_total_team'] = $exploit;
+				$res[$count]['quotation_id'] = $total['Quotation']['id'];
+				$count++;
+			}	
+		}
+		
+		return json_encode($res);
+	}
+
     public function dashboard_proprietor() {
-        // $month = date('F');
-        // $year = date('Y');
-        // $today = date('F d, Y');
-        // $yearly = $this->yearly_total();
-        // $monthly = $this->monthly_total();
-        // $daily = $this->daily_total();
+        $this->loadModel('Quotation');
+        $this->loadModel('AgentStatus');
+        $this->loadModel('User');
         
-        // $team_daily = $this->team_total('daily');
-        // $team_monthly = $this->team_total('monthly');
-        // $team_yearly = $this->team_total('yearly');
+        $month = date('F');
+        $year = date('Y');
+        $today = date('F d, Y');
+        $this->set(compact('month', 'year', 'today'));
         
-        // $this->set(compact('month', 'year', 'today', 'yearly', 'monthly', 'daily',
-        //                   'team_daily', 'team_monthly', 'team_yearly'));
-        
-        // $this->loadModel('User');
         // $get_users = $this->User->find('all',
         //     ['conditions'=>['active'=>1,
-        //                     'role'=>'sales_executive']]);
+        //                     'role'=>'sales_executive'],
+        //      'fields'=>['id', 'active', 'role', 'first_name'],
+        //      'recursive'=>-1]);
             
         // $this->set(compact('get_users'));
-            
-        // $this->loadModel('Quotation');
-        // $this->loadModel('AgentStatus');
         
         // $get_quotations = [];
         // $get_agent_status = [];
         // $current_mo = date("m");
         // $this->Quotation->recursive = -1;
-        
         // foreach($get_users as $ret_users) {
         //     $user_id = $ret_users['User']['id'];
             
         //     $get_quotations[$user_id] = $this->Quotation->find('all',
-        //         ['conditions' =>
-        //             [
-        //                 'Quotation.user_id'=>$user_id
-        //             ]
+        //         ['conditions' => ['Quotation.user_id'=>$user_id],
+        //          'fields' => ['id', 'status', 'grand_total', 'user_id'],
+        //          'recursive' => -1
         //         ]);
             
         //     $get_agent_status[$user_id] = $this->AgentStatus->find('all',
         //         ['conditions'=>[
         //             'AgentStatus.user_id'=>$user_id,
         //             'AgentStatus.date_to'=>NULL,
-        //             ]]);
+        //             ],
+        //          'fields'=>['AgentStatus.id', 'AgentStatus.quota', 'AgentStatus.user_id',
+        //                     'AgentStatus.date_to', 'AgentStatus.team_id',
+        //                     'Team.id', 'Team.name']]);
         // }
         
         // $this->set(compact('get_quotations', 'get_agent_status'));
         
-        // // =====================================================
+        // // =====================================================> START FOR GRAPH
         // $user_id = $this->Auth->user('id');
         // $user_role = $this->Auth->user('role');
 
@@ -998,35 +1141,36 @@ class UsersController extends AppController {
         //                      'approved'=>$approved[$i]];
         // }
         // $json_graph_data = json_encode($graph_data);
+        // // ===================================================================> End for graph
         
         // $this->loadModel('Payee');
-        // $payees = $this->Payee->find('all');
+        // $payees = $this->Payee->find('all', ['id', 'name']);
         
-        // $drivers = $this->User->find('all',[
-        //     'conditions'=>['User.role' => 'driver']
+        // $drivers = $this->User->find('all',
+        //     ['conditions'=>['User.role' => 'driver'],
+        //      'fields'=>['id', 'role', 'first_name', 'last_name'],
         //     ]);
             
         // $date_today = date('Y-m-d');
         // $this->loadModel('CollectionSchedule'); 
-        // $daily_collection_schedule = $this->CollectionSchedule->find('count',[
-        //     'conditions'=>[
-        //     'CollectionSchedule.collection_date' => $date_today,
-        //     'CollectionSchedule.status !=' => 'cancelled'
-        //     ]]);
-        //     // pr($daily_collection_schedule);
+        // $daily_collection_schedule = $this->CollectionSchedule->find('count',
+        //     ['conditions'=>
+        //         ['CollectionSchedule.collection_date' => $date_today,
+        //          'CollectionSchedule.status !=' => 'cancelled'],
+        //      'fields'=>['id', 'collection_date', 'status']
+        //     ]);
         
-        // $tteams = $this->Team->find('all');
-        // pr($tteams);z
+        // $tteams = $this->Team->find('all', ['id', 'display_name']);
     
-        // $this->set(compact('pending_accounting_counts',
-        //                   'moved_counts',
-        //                   'pending_counts',
-        //                   'approved_counts',
-        //                   'json_graph_data',
-        //                   'payees',
-        //                   'drivers',
-        //                   'daily_collection_schedule',
-        //                   'tteams'));
+        $this->set(compact('pending_accounting_counts',
+                          'moved_counts',
+                          'pending_counts',
+                          'approved_counts',
+                          'json_graph_data',
+                          'payees',
+                          'drivers',
+                          'daily_collection_schedule',
+                          'tteams'));
     }
     
     public function quotation1($passed_status){

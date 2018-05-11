@@ -328,77 +328,7 @@ class AppController extends Controller {
 			exit;
 	}
 	
-	public function monthly_total(){
-		$this->loadModel('Quotation');
-		
-		$total = $this->Quotation->find('list', array(
-					'fields' => 'grand_total',
-					'recursive' => -1,
-					'conditions' => array(
-						'MONTH(date_moved)' => date('m'),
-						'YEAR(date_moved)' => date('Y'),
-						'OR' =>
-						array(
-							array('Quotation.status' => 'approved'),
-							array('Quotation.status' => 'processed'),
-							array('Quotation.status' => 'approved_by_proprietor')
-						)
-					)
-				));
-			
-		$grand_total = array_sum($total);
-		
-		return $grand_total;
-		exit;
-	}
 	
-	public function yearly_total(){
-		$this->loadModel('Quotation');
-		
-		$total = $this->Quotation->find('list', array(
-					'fields' => 'grand_total',
-					'recursive' => -1,
-					'conditions' => array(
-						'YEAR(date_moved)' => date('Y'),
-						'OR' =>
-						array(
-							array('Quotation.status' => 'approved'),
-							array('Quotation.status' => 'processed'),
-							array('Quotation.status' => 'approved_by_proprietor')
-						)
-					)
-				));
-			
-		$grand_total = array_sum($total);
-		
-		return $grand_total;
-		exit;
-	}
-	
-	public function daily_total(){
-		$this->loadModel('Quotation');
-		
-		$total = $this->Quotation->find('list', array(
-					'fields' => 'grand_total',
-					'recursive' => -1,
-					'conditions' => array(
-						'DAY(date_moved)' => date('d'),
-						'MONTH(date_moved)' => date('m'),
-						'YEAR(date_moved)' => date('Y'),
-						'OR' =>
-						array(
-							array('Quotation.status' => 'approved'),
-							array('Quotation.status' => 'processed'),
-							array('Quotation.status' => 'approved_by_proprietor')
-						)
-					)
-				));
-			
-		$grand_total = array_sum($total);
-		
-		return $grand_total;
-		exit;
-	}
 	
 	
 	public function agent_total($type = null, $user_id = null, $team = null){
@@ -440,79 +370,6 @@ class AppController extends Controller {
 						
 		return $total[0]['grand_total_team'];
 	}
-	
-	public function team_total($type = null, $team = null){
-		$this->loadModel('Quotation');
-		$this->loadModel('Team');
-		$res = [];
-		
-		if($type == 'yearly'){
-		$condition['YEAR(date_moved)'] = date('Y');
-		}
-		
-		if($type == 'monthly'){
-		$condition['YEAR(date_moved)'] = date('Y');
-		$condition['MONTH(date_moved)'] = date('m');
-		}
-		
-		if($type == 'daily'){
-		$condition['YEAR(date_moved)'] = date('Y');
-		$condition['MONTH(date_moved)'] = date('m');
-		$condition['DAY(date_moved)'] = date('d');
-		}
-		
-		$condition['OR'] = array(
-						array('Quotation.status' => 'approved'),
-						array('Quotation.status' => 'processed'),
-						array('Quotation.status' => 'approved_by_proprietor')
-					);
-					
-		if($team != null){
-			$condition['Quotation.team_id'] = $team;
-			$total = $this->Quotation->find('first', array(
-					'fields' => 'sum(Quotation.grand_total) as grand_total_team, Quotation.team_id, Quotation.date_moved',
-					'recursive' => -1,
-					'conditions' => $condition,
-				));
-			if($total){
-				$team_data = $this->Team->findById($team);
-				$exploit = 0.00;
-				if(!empty($total[0]['grand_total_team'])) {
-					$exploit = $total[0]['grand_total_team'];
-				}
-				$res['grand_total_team'] = $exploit;
-				$res['Team'] = $team_data['Team'];
-			}
-		} else{
-			$this->Team->recursive = 0;
-			$team_list = $this->Team->find('all');
-			$count = 0;
-			foreach($team_list as $data){
-				
-				$team_data = $data['Team'];
-				$condition['Quotation.team_id'] = $team_data['id'];
-				$total = $this->Quotation->find('first', array(
-							'fields' => 'sum(Quotation.grand_total) as grand_total_team, Quotation.id',
-							'recursive' => -1,
-							'conditions' => $condition,
-						));
-				$res[$count] = $team_data;
-				$exploit = 0.00;
-				if(!empty($total[0]['grand_total_team'])) {
-					$exploit = $total[0]['grand_total_team'];
-				}
-				$res[$count]['grand_total_team'] = $exploit;
-				$res[$count]['quotation_id'] = $total['Quotation']['id'];
-				$count++;
-			}	
-		}
-		// $grand_total = array_sum($total);
-		
-		return $res;
-		exit;
-	}
-	
-	
 	
 	public function my_monthly_total($user_id){
 		$this->loadModel('Quotation');
@@ -807,6 +664,7 @@ class AppController extends Controller {
 	} 
 	
 	public function count_pending_pr($type = null, $status = null){
+		$this->autoRender = false;
 		$this->loadModel('PaymentRequest');
 		$this->PaymentRequest->recursive = -1;
 		
@@ -818,6 +676,7 @@ class AppController extends Controller {
 	}
 	
 	public function count_pending_replenishment(){
+		$this->autoRender = false;
 		$this->loadModel('PaymentReplenishment');
 		$this->PaymentReplenishment->recursive = -1;
 		
@@ -839,6 +698,7 @@ class AppController extends Controller {
 	}
 	
 	public function count_product_request($status = null){
+		$this->autoRender = false;
 		$this->loadModel('TempProduct');
 		$this->TempProduct->recursive = -1;
 		
@@ -1026,6 +886,7 @@ class AppController extends Controller {
 	}
 	
 	public function get_inv_status($status = null){
+		$this->autoRender  = false;
     	$ret = 0;
     	
     	$this->loadModel('InventoryStatus');
@@ -1040,6 +901,7 @@ class AppController extends Controller {
     }
     
     public function jr_head_count_left_side($status = null) {
+    	$this->autoRender  = false;
 	    $this->loadModel('JobRequest');
         $jr_head_count_left_side = $this->JobRequest->find('count', array(
 	        'conditions' => array('JobRequest.status !=' => $status 
@@ -1049,6 +911,7 @@ class AppController extends Controller {
     }
     
     public function moved_quote_count_left_side($status = null) {
+    	$this->autoRender  = false;
 	    $this->loadModel('Quotation');
         $moved_quote_count_left_side = $this->Quotation->find('count', array(
 	        'conditions' => array('Quotation.status' => $status 
@@ -1057,6 +920,7 @@ class AppController extends Controller {
     }
     
     public function edited_quote_count_left_side($status = null) {
+    	$this->autoRender  = false;
     	$this->loadModel('Quotation');
 	    $edited_quote_count_left_side = $this->Quotation->find('count', array(
 	    	'conditions' => array('Quotation.status' => $status // rejected
@@ -1065,14 +929,16 @@ class AppController extends Controller {
     }
     
     public function moved_edited_quote_count_left_side($status = null) {
+    	$this->autoRender = false;
     	$this->loadModel('Quotation');
 	    $moved_edited_quote_count_left_side = $this->Quotation->find('count', array(
 	        'conditions' => array('Quotation.status' => $status
 	            )));
-    	return $moved_edited_quote_count_left_side;
+    	return $moved_edited_quote_count_left_side;																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															
     }
     
     public function approved_by_proprietor_quote_count_left_side($status = null) {
+    	$this->autoRender  = false;
     	$this->loadModel('Quotation');
         $approved_by_proprietor_quote_count_left_side = $this->Quotation->find('count', array(
         'conditions' => array('Quotation.status' => $status //'approved_by_proprietor' 
@@ -1081,6 +947,7 @@ class AppController extends Controller {
     }
     
     public function pending_po_raw_request_count_lest_side($status = null) {
+    	$this->autoRender  = false;
 	    $this->loadModel('PoRawRequest');
         $pending_po_raw_request_count_lest_side =  $this->PoRawRequest->find('count', array(
         'conditions' => array('PoRawRequest.status' => $status 
@@ -1089,6 +956,7 @@ class AppController extends Controller {
     }
     
     public function approved_po_raw_request_count_lest_side($status = null) {
+    	$this->autoRender  = false;
     	$this->loadModel('PoRawRequest');
 	    $approved_po_raw_request_count_lest_side =  $this->PoRawRequest->find('count', array(
 	        'conditions' => array('PoRawRequest.status' => $status 
@@ -1097,6 +965,7 @@ class AppController extends Controller {
     }
     
     public function PendingApproved_count($type = null) {
+    	$this->autoRender  = false;
    	$user_id = $this->Auth->user('id');
         $user_role = $this->Auth->user('role');
         $is_authorized=false;
@@ -1132,9 +1001,10 @@ class AppController extends Controller {
    }
    
    public function ac_approved_count() {
+   	$this->autoRender  = false;
         $user_role = $this->Auth->user('role');
-	if($user_role=="accounting_head") {
-		$ac_approved_obj = $this->count_ac_approved($user_role);
+		if($user_role=="accounting_head") {
+			$ac_approved_obj = $this->count_ac_approved($user_role);
 	    	$ac = $ac_approved_obj[0];
 	    	$all = $ac_approved_obj[1];
 	    	if($all!=0) {

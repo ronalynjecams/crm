@@ -26,7 +26,7 @@
 
   </head>
 
-  <body>
+  <body onload="onload_functions()">
 
             <?php 
              echo $this->Element('header');
@@ -64,11 +64,126 @@
 <!--<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>-->
 <!--<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-messaging.js"></script>-->
 <script>
-
 //get hostname DO NOT COMMENT OUT!
 var host = window.location.hostname;
+var userDetails = <?php echo json_encode($UserIn); ?>;
+console.log(userDetails['id']);
 
-
+function onload_functions(){
+    // =============================================================>
+    var path = window.location.pathname;
+    if(path == "/users/dashboard_proprietor") {
+        $.get('/users/yearly_total', function(data) {
+    		$("#yearly").text(data);
+    	});
+    	$.get('/users/monthly_total', function(data) {
+    		$("#monthly").text(data);
+    	});
+    	$.get('/users/daily_total', function(data) {
+    		$("#daily").text(data);
+    	});
+    	$.get('/users/team_total/monthly', function(data) {
+    		var team_monthly = '';
+    		var returnval = $.parseJSON(data);
+    		
+    		for(var i=0;i<=returnval.length;i++) {
+    		    var team_id = data[i]['id'];
+    		    team_monthly += '<p class="mar-no">'+
+                     <span class="pull-right text-bold">&#8369; <?php if(!empty($data['grand_total_team'])) echo number_format($data['grand_total_team'],2); else echo 0;?></span>
+                     <a id="team_clicked" data-id="<?php echo $team_id; ?>"
+                        data-name="<?php echo $data['display_name']; ?>"
+                        style="color:white;cursor:pointer;">
+                     		[<?php echo $data['display_name']; ?>]
+                     </a> =>
+                 </p>
+    		}
+    	});
+    }
+    // ===============================================================>
+    var moved_edited_quote_count_left_side = document.getElementById("moved_edited_quote_count_left_side");
+    var edited_quote_count_left_side = document.getElementById("edited_quote_count_left_side");
+    var moved_quote_count_left_side = document.getElementById("moved_quote_count_left_side");
+    var count_product_request = document.getElementById("count_product_request");
+    var count_pending_pr = document.getElementById("count_pending_pr");
+    var count_pending_pr_cheque = document.getElementById("count_pending_pr_cheque");
+    var count_pending_pr_pettycash = document.getElementById("count_pending_pr_pettycash");
+    var count_pending_replenishment = document.getElementById("count_pending_replenishment");
+    
+    if(moved_edited_quote_count_left_side){
+        $.get("/app/moved_edited_quote_count_left_side/moved", function(data, status){
+            if(data > 0 && status == "success"){
+                $("#moved_edited_quote_count_left_side_view").append('<span class="label label-danger ">'+data+'</span>');
+        
+            }
+        });
+    }
+    if(edited_quote_count_left_side){
+        $.get("/app/edited_quote_count_left_side/rejected", function(data, status){
+            if(data > 0 && status == "success"){
+                $("#edited_quote_count_left_side_view").append('<span class="label label-danger ">'+data+'</span>');
+        
+            }
+        });
+    }
+    if(moved_quote_count_left_side){
+        $.get("/app/moved_quote_count_left_side/moved", function(data, status){
+            if(data > 0 && status == "success"){
+                $("#moved_quote_count_left_side_view").append('<span class="label label-danger ">'+data+'</span>');
+        
+            }
+        });
+    }
+    if(count_product_request){
+        $.get("/app/count_product_request/request", function(data, status){
+            if(data > 0 && status == "success"){
+                $("#count_product_request_view").append('<span class="label label-danger ">'+data+'</span>');
+        
+            }
+        });
+    }
+    if(count_pending_pr){
+        $.get("/app/count_pending_pr/cash/acknowledged", function(data, status){
+            if(data > 0 && status == "success"){
+                $("#count_pending_pr_view").append('<span class="label label-danger ">'+data+'</span>');
+                $("#count_pending_pr_view1").append('<span class="label label-danger ">'+data+'</span>');
+        
+            }
+        });
+    }
+    if(count_pending_pr_cheque){
+        $.get("/app/count_pending_pr/cheque/pending", function(data, status){
+            data = 5;
+            if(data > 0 && status == "success"){
+                $("#count_pending_pr_cheque_view").append('<span class="label label-danger ">'+data+'</span>');
+                $("#count_pending_pr_cheque_view1").append('<span class="label label-danger ">'+data+'</span>');
+        
+            }
+        });
+    }
+    if(count_pending_pr_pettycash){
+        $.get("/app/count_pending_pr/pettycash/replenished", function(data, status){
+            data = 5;
+            if(data > 0 && status == "success"){
+                $("#count_pending_pr_pettycash_view").append('<span class="label label-danger ">'+data+'</span>');
+                
+            }
+        });
+    }
+    if(count_pending_replenishment){
+        $.get("/app/count_pending_replenishment", function(data, status){
+            data = 5;
+            if(data > 0 && status == "success"){
+                $("#count_pending_replenishment_view").append('<span class="label label-danger ">'+data+'</span>');
+                
+            }
+        });
+    }
+}
+// function moved_edited_quote_count_left_side(){
+//     $.get("app/moved_edited_quote_count_left_side/moved", function(data, status){
+//             alert("Data: " + data + "\nStatus: " + status);
+//     });
+// }
   // Initialize Firebase
 //   var config = {
 //     apiKey: "AIzaSyDEQ5dupvtFW1KyMxtX3as5xR3HiHWz_go",
